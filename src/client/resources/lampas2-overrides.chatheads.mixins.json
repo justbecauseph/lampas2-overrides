@@ -1,0 +1,16 @@
+{
+	"required": true,
+	"package": "lampas2overrides.client.chatheads.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.client.chatheads.ChatHeadsMixinPlugin",
+	"client": [
+		"ChatHeadsMixin",
+		"PlayerFaceExtractorMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

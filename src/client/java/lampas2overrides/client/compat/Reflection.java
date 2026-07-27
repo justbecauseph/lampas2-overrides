@@ -1,4 +1,4 @@
-package lampas2overrides.client.figurareplay;
+package lampas2overrides.client.compat;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
@@ -15,12 +15,12 @@ import java.lang.reflect.Method;
  * something we already resolved has since misbehaved, so they throw {@link BridgeException} and
  * take the whole bridge offline rather than being swallowed per-tick.
  */
-final class Reflection {
+public final class Reflection {
 
 	private Reflection() {
 	}
 
-	static Class<?> findClass(String name) {
+	public static Class<?> findClass(String name) {
 		try {
 			return Class.forName(name);
 		} catch (Throwable ignored) {
@@ -28,7 +28,7 @@ final class Reflection {
 		}
 	}
 
-	static Method findMethod(Class<?> owner, String name, Class<?>... params) {
+	public static Method findMethod(Class<?> owner, String name, Class<?>... params) {
 		if (owner == null) {
 			return null;
 		}
@@ -44,7 +44,7 @@ final class Reflection {
 		}
 	}
 
-	static Field findField(Class<?> owner, String name) {
+	public static Field findField(Class<?> owner, String name) {
 		if (owner == null) {
 			return null;
 		}
@@ -60,7 +60,7 @@ final class Reflection {
 		}
 	}
 
-	static Object invoke(Method method, Object target, Object... args) {
+	public static Object invoke(Method method, Object target, Object... args) {
 		try {
 			return method.invoke(target, args);
 		} catch (InvocationTargetException e) {
@@ -70,7 +70,7 @@ final class Reflection {
 		}
 	}
 
-	static Object read(Field field, Object target) {
+	public static Object read(Field field, Object target) {
 		try {
 			return field.get(target);
 		} catch (Throwable t) {

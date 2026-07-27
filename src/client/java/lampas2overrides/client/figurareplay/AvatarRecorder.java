@@ -1,5 +1,7 @@
 package lampas2overrides.client.figurareplay;
 
+import lampas2overrides.client.compat.BridgeException;
+import lampas2overrides.client.compat.Reflection;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;

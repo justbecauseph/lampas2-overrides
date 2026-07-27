@@ -1,8 +1,13 @@
 # lampas2-overrides — Agent Operating Guidelines
 
-This repo is a Fabric **client** mod for Minecraft 26.2 whose only feature is the Figura ↔ ReplayMod
-avatar bridge. Read this file fully before touching anything; most of it is knowledge that cost real
-time to establish and is not recoverable from the code.
+This repo is a Fabric **client** mod for Minecraft 26.2 holding compatibility fixes between mods
+that do not know about each other: the Figura ↔ ReplayMod avatar bridge, and Figura avatars in
+Chatting's chat heads. Read this file fully before touching anything; most of it is knowledge that
+cost real time to establish and is not recoverable from the code.
+
+Each feature lives in its own package with its own mixin config and gate plugin, and binds only the
+members it needs. Keep it that way — one mod being absent or having moved a member must never
+disable an unrelated feature.
 
 ## Hard rules
 
@@ -29,6 +34,7 @@ time to establish and is not recoverable from the code.
 |---|---|
 | Figura 0.1.6+26.2 | `../figura-port/fabric/build/libs/figura-0.1.6+26.2.jar` — builds locally |
 | ReplayMod 26.2-2.6.27 | `C:\Users\markj\AppData\Roaming\PrismLauncher\instances\26.2\minecraft\mods\replaymod-26.2-2.6.27.jar` |
+| Chatting 3.1.0+26.2 | same `mods/` folder; sources at `../Chatting` (stonecutter — the `//? if` blocks mean the source you read may not be the 26.2 build, so trust the jar) |
 | Figura sources | `../figura-port/common/src/main/java/org/figuramc/figura/` |
 | ReplayMod sources | `../ReplayMod/src/main/java/com/replaymod/` — preprocessed, read `//#if MC>=…` blocks carefully |
 | Minecraft 26.2 sources | `../figura-port/.mcsources/` — decompiled, authoritative |
@@ -90,10 +96,28 @@ Zip-level and format work can be tested outside the game entirely; that is how `
 - **Video export never enters `Minecraft#runTick`**, which is why the bridge counts ticks with its
   own `Minecraft#tick` mixin rather than Fabric's lifecycle event, and drives animations from
   `VideoRenderer#updateForNextFrame`.
+- **Chatting draws chat heads two ways.** Its default path calls vanilla
+  `PlayerFaceExtractor#extractRenderState` (every shorter overload funnels into the eight-argument
+  one); its *improved heads* option calls `chatting$draw`, which it adds to that same class and
+  which blits the face itself without touching the vanilla extractor. Hooking one covers half the
+  users.
+- **Injecting into another mod's `@Unique` method needs a higher `priority`**, since the method only
+  exists once that mod's mixin has been applied — Mixin applies higher priority values later. Pair
+  it with `require = 0` when the feature is cosmetic: losing a path beats refusing to start.
+- **Figura already replaces skin faces with avatar faces** in the tab list and permissions screen
+  via `Avatar#renderPortrait`, using the trick of zeroing the vanilla face's size. Reuse that entry
+  point rather than rendering an avatar head by hand, and pass a model scale of twice the face size
+  as its tab list does.
 
 ## Structure
 
 ```
+compat/
+  Reflection              nullable lookups; invocation failures throw BridgeException
+chatheads/
+  ChatHeadAvatars         entry point; arms on Chatting's head lookup, draws on the face hooks
+  FiguraPortraits         Figura's portrait members, resolved by name
+  mixin/                  ChatHeads (arm/disarm) and PlayerFaceExtractor (both draw paths)
 figurareplay/
   FiguraReplayBridge      entry point, tick loop, animation clock, post-processing hooks
   AvatarRecorder          capture side, one Session per recording
@@ -102,7 +126,6 @@ figurareplay/
   ReplayArchives          zip-level entry copying, for post-processing carry-over
   FiguraApi, ReplayModApi members of each mod, resolved by name
   ReplayFiles             .mcpr entry read/write via ReplayStudio
-  Reflection              nullable lookups; invocation failures throw BridgeException
   BridgeMixinPlugin       applies the mixins only when both mods are present
   mixin/                  each class documents what it hooks and why
 ```

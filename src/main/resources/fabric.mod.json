@@ -24,6 +24,10 @@
 		{
 			"config": "lampas2-overrides.figurareplay.mixins.json",
 			"environment": "client"
+		},
+		{
+			"config": "lampas2-overrides.chatheads.mixins.json",
+			"environment": "client"
 		}
 	],
 	"depends": {

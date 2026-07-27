@@ -1,12 +1,30 @@
 # lampas2-overrides
 
-A Fabric client mod for Minecraft 26.2 that makes [Figura](https://figuramc.org/) avatars survive
-into [ReplayMod](https://replaymod.com/) recordings, playback and video exports.
+A Fabric client mod for Minecraft 26.2 holding compatibility fixes between mods that do not know
+about each other. Each feature is gated on the mods it bridges and is inert without them.
 
-Client-side only, and inert unless both mods are installed — the mixins that reach into them are
-gated on their presence, and a replay recorded without this mod plays back exactly as it does today.
+| Feature | Needs | What it does |
+|---|---|---|
+| [Figura in ReplayMod](#figura--replaymod) | Figura + ReplayMod | Makes Figura avatars survive into recordings, playback and video exports |
+| [Figura chat heads](#figura-chat-heads) | Figura + Chatting | Draws the Figura avatar's face in Chatting's chat heads instead of the vanilla skin |
 
-## Why a bridge is needed
+## Figura chat heads
+
+Chatting draws a chat head from the player's skin texture, so someone wearing a Figura avatar shows
+up in chat as their vanilla face rather than the character everyone can see in the world. Figura
+already substitutes its avatars for skin faces in the tab list and the permissions screen, through
+`Avatar#renderPortrait`; this extends the same treatment to chat, so a chat head matches the face
+Figura draws everywhere else.
+
+Both of Chatting's drawing paths are covered: its default path goes through vanilla
+`PlayerFaceExtractor#extractRenderState`, while its *improved heads* option blits the face itself
+via a method Chatting adds to that same class. Players without an avatar keep their skin face.
+
+Chat screenshots pick it up too, since they resolve the head owner the same way.
+
+## Figura ↔ ReplayMod
+
+### Why a bridge is needed
 
 Figura avatars are fetched from Figura's own backend over a websocket, keyed by player UUID. Nothing
 about them travels over the Minecraft protocol, so a ReplayMod recording — which is a capture of the
@@ -30,7 +48,7 @@ than absent:
   drives `Minecraft#tick` and the world renderer directly and never enters `runTick`, so exported
   footage shows every avatar frozen in whatever pose it held when rendering started.
 
-## What it does
+### What it does
 
 | | |
 |---|---|
@@ -55,7 +73,7 @@ That timestamp records when the recording client finished downloading the avatar
 player put it on, so honouring it literally would leave players briefly vanilla-skinned for reasons
 that have nothing to do with what was recorded.
 
-## Known limitations
+### Known limitations
 
 - **Change timestamps are not remapped across cuts and splits.** The data is carried into
   post-processed replays, but the times in the index still refer to the original recording. Because
@@ -79,7 +97,8 @@ that have nothing to do with what was recorded.
 
 ## Installing
 
-Requires Minecraft 26.2, Fabric Loader 0.19.3+, Java 25, and both Figura and ReplayMod. Drop the jar
+Requires Minecraft 26.2, Fabric Loader 0.19.3+ and Java 25. Each feature additionally needs the
+mods it bridges; anything absent simply switches that feature off. Drop the jar
 from [Releases](https://github.com/justbecauseph/lampas2-overrides/releases) — or from the `build`
 workflow's artifacts — into your `mods` folder.
 
