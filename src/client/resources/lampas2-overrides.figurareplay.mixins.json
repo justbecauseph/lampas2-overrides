@@ -1,0 +1,22 @@
+{
+	"required": true,
+	"package": "lampas2overrides.client.figurareplay.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.client.figurareplay.BridgeMixinPlugin",
+	"client": [
+		"MinecraftTickMixin",
+		"figura.AvatarManagerMixin",
+		"figura.AvatarMixin",
+		"figura.NetworkStuffMixin",
+		"figura.TimeControllerMixin",
+		"replaymod.MarkerProcessorMixin",
+		"replaymod.PacketListenerMixin",
+		"replaymod.VideoRendererMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

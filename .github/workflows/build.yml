@@ -1,0 +1,41 @@
+# Builds the mod on every push and pull request, and uploads the resulting jars as workflow
+# artifacts so a build can be downloaded without tagging a release.
+
+name: build
+on: [pull_request, push]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v6
+
+      - name: validate gradle wrapper
+        uses: gradle/actions/wrapper-validation@v6
+
+      - name: setup jdk
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+
+      # Caches the Gradle user home, which for a Loom build is mostly the Minecraft artifacts.
+      - name: setup gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: make gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: build
+        run: ./gradlew build --stacktrace
+
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: lampas2-overrides-${{ github.sha }}
+          path: build/libs/
+          if-no-files-found: error
