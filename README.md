@@ -1,12 +1,29 @@
 # lampas2-overrides
 
-A Fabric client mod for Minecraft 26.2 holding compatibility fixes between mods that do not know
+A Fabric mod for Minecraft 26.2 holding compatibility fixes between mods that do not know
 about each other. Each feature is gated on the mods it bridges and is inert without them.
 
 | Feature | Needs | What it does |
 |---|---|---|
 | [Figura in ReplayMod](#figura--replaymod) | Figura + ReplayMod | Makes Figura avatars survive into recordings, playback and video exports |
 | [Figura chat heads](#figura-chat-heads) | Figura + Chatting | Draws the Figura avatar's face in Chatting's chat heads instead of the vanilla skin |
+| [Lootr fast item frames](#lootr--fast-item-frames) | Lootr + Fast Item Frames | Converts Lootr item-frame entities into blocks while preserving per-player loot |
+
+## Lootr ↔ Fast Item Frames
+
+Fast Item Frames normally converts vanilla item-frame entities into block entities, but does not
+recognize Lootr's custom `lootr:item_frame` entity. This bridge adds that entity type to the
+conversion set and transfers its UUID, reference inventory and opened state into the resulting Fast
+Item Frames block entity. The converted frame continues to use Lootr's per-player inventory,
+protection, advancement and refresh behavior instead of becoming a shared vanilla item frame.
+
+The common hooks run on the server and the renderer hooks run on the client, so the mod must be
+installed on both sides when this feature is used. Lootr and Fast Item Frames remain optional; the
+bridge is not applied unless both are present.
+
+Live testing confirmed conversion, per-player looting and Lootr refresh behavior. Once a player
+takes their item, the converted frame renders empty for that player; refreshing it through Lootr
+repopulates it, and its Lootr identity and properties remain intact.
 
 ## Figura chat heads
 
@@ -109,6 +126,7 @@ workflow's artifacts — into your `mods` folder.
 ./gradlew runClient      # dev client; put figura + replaymod jars in run/mods/ first
 ```
 
-Neither Figura nor ReplayMod is a build dependency, so the build needs nothing beyond Minecraft and
-Fabric Loader. See [CLAUDE.md](CLAUDE.md) for how the bridge is structured and how changes to it get
+Neither Figura nor ReplayMod is a build dependency. The optional Lootr and Fast Item Frames bridge
+uses compile-only artifacts for Lootr, Fast Item Frames, Puzzles Lib and Fabric API; none are bundled
+into this mod. See [CLAUDE.md](CLAUDE.md) for how the bridges are structured and how changes get
 verified.

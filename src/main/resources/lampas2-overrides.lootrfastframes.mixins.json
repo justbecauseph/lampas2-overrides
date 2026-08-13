@@ -1,0 +1,21 @@
+{
+	"required": true,
+	"package": "lampas2overrides.lootrfastframes.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.lootrfastframes.LootrFastFramesMixinPlugin",
+	"mixins": [
+		"ItemFrameBlockEntityMixin",
+		"ItemFrameBlockMixin",
+		"ItemFrameHandlerMixin"
+	],
+	"client": [
+		"client.ClientEventHandlerMixin",
+		"client.ItemFrameBlockRendererMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

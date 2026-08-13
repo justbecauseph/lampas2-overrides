@@ -3,7 +3,7 @@
 	"id": "lampas2-overrides",
 	"version": "${version}",
 	"name": "Lampas2 Overrides",
-	"description": "Makes Figura avatars survive into ReplayMod recordings, playback and video exports.",
+	"description": "Compatibility fixes for Figura, ReplayMod, Chatting, Lootr and Fast Item Frames.",
 	"authors": [
 		"justbecauseph"
 	],
@@ -14,7 +14,7 @@
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/lampas2-overrides/icon.png",
-	"environment": "client",
+	"environment": "*",
 	"entrypoints": {
 		"client": [
 			"lampas2overrides.client.Lampas2OverridesClient"
@@ -28,11 +28,18 @@
 		{
 			"config": "lampas2-overrides.chatheads.mixins.json",
 			"environment": "client"
+		},
+		{
+			"config": "lampas2-overrides.lootrfastframes.mixins.json"
 		}
 	],
 	"depends": {
 		"fabricloader": ">=0.19.3",
 		"minecraft": "~26.2",
 		"java": ">=25"
+	},
+	"suggests": {
+		"lootr": "*",
+		"fastitemframes": "*"
 	}
 }

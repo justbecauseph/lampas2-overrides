@@ -7,11 +7,13 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
-	// Add repositories to retrieve artifacts from in here.
-	// You should only use this when depending on other mods because
-	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
-	// for more information about repositories.
+	maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+		content {
+			includeGroup "maven.modrinth"
+		}
+	}
 }
 
 loom {
@@ -29,9 +31,13 @@ dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	compileOnly "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+	compileOnly "maven.modrinth:lootr:${project.lootr_version}"
+	compileOnly "maven.modrinth:fast-item-frames:${project.fast_item_frames_version}"
+	compileOnly "maven.modrinth:puzzles-lib:${project.puzzles_lib_version}"
 
-	// No Fabric API: the bridge only needs the loader's mod lookup, and it hooks the game through
-	// its own mixins so that its tick counter follows the tick ReplayMod drives during an export.
+	// Optional mods are compile-only: every compatibility feature is gated by its mixin plugin,
+	// and none of their classes are bundled into the output jar.
 }
 
 processResources {
