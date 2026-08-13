@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "lampas2overrides.betterlib.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.betterlib.BetterLibMixinPlugin",
+	"mixins": [
+		"JsonVillagerLoaderMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

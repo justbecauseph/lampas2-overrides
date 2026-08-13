@@ -2,7 +2,8 @@
 
 This repo is a Fabric mod for Minecraft 26.2 holding compatibility fixes between mods that do not
 know about each other: the Figura ↔ ReplayMod avatar bridge, Figura avatars in Chatting's chat
-heads, and Lootr item frames converted into Fast Item Frames blocks. The first two features are
+heads, Lootr item frames converted into Fast Item Frames blocks, and Better Lib's Fabric ZIP
+filesystem startup fix. The first two features are
 client-only; the Lootr ↔ Fast Item Frames bridge has common server hooks and client renderer hooks,
 so the mod's declared environment is `*`. Read this file fully before touching anything; most of it
 is knowledge that cost real time to establish and is not recoverable from the code.
@@ -51,6 +52,7 @@ disable an unrelated feature.
 | Fast Item Frames 26.2.0 | `../lampas-server-fabric/mods/FastItemFrames-v26.2.0-mc26.2.x-Fabric.jar`; sources at `../fast-item-frames` |
 | Puzzles Lib 26.2.3 | `../lampas-server-fabric/mods/PuzzlesLib-v26.2.3-mc26.2.x-Fabric.jar` |
 | Fabric API 0.157.0+26.2 | `../lampas-server-fabric/mods/fabric-api-0.157.0+26.2.jar` |
+| Better Lib 2.1.0 | `../lampas-server-fabric/mods/better_lib-fabric-26.1-2.1.0.jar` |
 | Figura sources | `../figura-port/common/src/main/java/org/figuramc/figura/` |
 | ReplayMod sources | `../ReplayMod/src/main/java/com/replaymod/` — preprocessed, read `//#if MC>=…` blocks carefully |
 | Minecraft 26.2 sources | `../figura-port/.mcsources/` — decompiled, authoritative |
@@ -89,6 +91,9 @@ successful conversion removes the entity and leaves a block entity:
 ```mcfunction
 /data get entity @e[type=lootr:item_frame,sort=nearest,limit=1] Pos
 ```
+
+For Better Lib, dedicated-server startup must pass its `registerJsonVillagers` call without
+`FileSystemAlreadyExistsException`, and `JsonVillagerLoaderMixin` must appear in `debug.log`.
 
 **The user's live Prism instance** proves rendering. Build, copy
 `build/libs/lampas2-overrides-1.0.0.jar` over the one in the instance's `mods/`, and ask them to
@@ -164,6 +169,10 @@ Zip-level and format work can be tested outside the game entirely; that is how `
 - **An emptied frame is not a deleted frame.** After a player takes their item, client rendering can
   show the converted frame as absent or empty. A Lootr refresh repopulates it, and its UUID and
   Lootr properties remain present. Confirm block-entity state before diagnosing this as data loss.
+- **Better Lib borrows Fabric Loader's open ZIP filesystem.** The redirect returns a close-shield
+  only after `FileSystems.newFileSystem` reports that the filesystem already exists. The shield's
+  `close()` must remain a no-op; returning the shared filesystem directly lets Better Lib's
+  try-with-resources block close a filesystem owned by the loader.
 
 ## Structure
 
@@ -192,6 +201,10 @@ lootrfastframes/
   LootrFastItemFrameType      Lootr data type registered through ServiceLoader
   LootrFastItemFrameWrapper   resolves marked Fast Item Frames block entities for Lootr
   mixin/                      conversion, state persistence, interaction and client rendering hooks
+betterlib/
+  BetterLibMixinPlugin       applies the startup fix only when Better Lib is present
+  BorrowedFileSystem         close-shield for Fabric Loader's shared mod-jar filesystem
+  mixin/                     redirects Better Lib's conflicting ZIP filesystem open
 ```
 
 Threading: the client thread owns everything except the recorder's serialisation executor, the

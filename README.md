@@ -8,6 +8,18 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Figura in ReplayMod](#figura--replaymod) | Figura + ReplayMod | Makes Figura avatars survive into recordings, playback and video exports |
 | [Figura chat heads](#figura-chat-heads) | Figura + Chatting | Draws the Figura avatar's face in Chatting's chat heads instead of the vanilla skin |
 | [Lootr fast item frames](#lootr--fast-item-frames) | Lootr + Fast Item Frames | Converts Lootr item-frame entities into blocks while preserving per-player loot |
+| [Better Lib startup](#better-lib-startup) | Better Lib | Prevents Better Lib from reopening Fabric Loader's shared mod-jar filesystem |
+
+## Better Lib startup
+
+Better Lib 2.1.0 scans its bundled JSON villager definitions by opening its own jar as a ZIP
+filesystem. Fabric Loader 0.19.3 already has that filesystem open, so the second open throws
+`FileSystemAlreadyExistsException` and aborts the common mod entrypoint. This compatibility fix
+reuses the existing filesystem behind a close shield: Better Lib can scan its resources normally,
+but its try-with-resources block cannot close Fabric Loader's shared filesystem afterward.
+
+The mixin is common and therefore fixes both dedicated-server and client startup. It is gated on
+the `better_lib` mod id and is inert when Better Lib is absent.
 
 ## Lootr ↔ Fast Item Frames
 
