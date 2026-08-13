@@ -2,8 +2,8 @@
 
 This repo is a Fabric mod for Minecraft 26.2 holding compatibility fixes between mods that do not
 know about each other: the Figura ↔ ReplayMod avatar bridge, Figura avatars in Chatting's chat
-heads, Lootr item frames converted into Fast Item Frames blocks, and Better Lib's Fabric ZIP
-filesystem startup fix. The first two features are
+heads, Lootr item frames converted into Fast Item Frames blocks, Better Lib's Fabric ZIP filesystem
+startup fix, and Underground Village's stale loot data. The first two features are
 client-only; the Lootr ↔ Fast Item Frames bridge has common server hooks and client renderer hooks,
 so the mod's declared environment is `*`. Read this file fully before touching anything; most of it
 is knowledge that cost real time to establish and is not recoverable from the code.
@@ -53,6 +53,7 @@ disable an unrelated feature.
 | Puzzles Lib 26.2.3 | `../lampas-server-fabric/mods/PuzzlesLib-v26.2.3-mc26.2.x-Fabric.jar` |
 | Fabric API 0.157.0+26.2 | `../lampas-server-fabric/mods/fabric-api-0.157.0+26.2.jar` |
 | Better Lib 2.1.0 | `../lampas-server-fabric/mods/better_lib-fabric-26.1-2.1.0.jar` |
+| Underground Village 2.1.1 | `../lampas-server-fabric/mods/underground_village-fabric-26.1-2.1.1.jar` |
 | Figura sources | `../figura-port/common/src/main/java/org/figuramc/figura/` |
 | ReplayMod sources | `../ReplayMod/src/main/java/com/replaymod/` — preprocessed, read `//#if MC>=…` blocks carefully |
 | Minecraft 26.2 sources | `../figura-port/.mcsources/` — decompiled, authoritative |
@@ -94,6 +95,8 @@ successful conversion removes the entity and leaves a block entity:
 
 For Better Lib, dedicated-server startup must pass its `registerJsonVillagers` call without
 `FileSystemAlreadyExistsException`, and `JsonVillagerLoaderMixin` must appear in `debug.log`.
+For Stoneholm, no parse errors should remain for `andesite_worker`, `brass_worker`,
+`copper_worker`, or `cleric`; the compatibility logger should name all four repairs.
 
 **The user's live Prism instance** proves rendering. Build, copy
 `build/libs/lampas2-overrides-1.0.0.jar` over the one in the instance's `mods/`, and ask them to
@@ -173,6 +176,11 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   only after `FileSystems.newFileSystem` reports that the filesystem already exists. The shield's
   `close()` must remain a no-op; returning the shared filesystem directly lets Better Lib's
   try-with-resources block close a filesystem owned by the loader.
+- **Better Lib's bundled villager professions are disabled demos.** Its `andesite_worker.json` is
+  entirely commented out and its `ModOreTrader.register()` call is commented out, but generated
+  data still adds both ids to `minecraft:acquirable_job_site`. `TagLoaderMixin` removes only entries
+  with those ids and Better Lib as their source after all tag resources have merged; do not replace
+  the whole tag or enable the demo professions.
 
 ## Structure
 
@@ -204,7 +212,10 @@ lootrfastframes/
 betterlib/
   BetterLibMixinPlugin       applies the startup fix only when Better Lib is present
   BorrowedFileSystem         close-shield for Fabric Loader's shared mod-jar filesystem
-  mixin/                     redirects Better Lib's conflicting ZIP filesystem open
+  mixin/                     fixes Better Lib's ZIP open and stale job-site tag entries
+stoneholm/
+  StoneholmMixinPlugin      applies loot repairs only when Underground Village is present
+  mixin/                     suppresses absent-Create tables and upgrades legacy potion functions
 ```
 
 Threading: the client thread owns everything except the recorder's serialisation executor, the

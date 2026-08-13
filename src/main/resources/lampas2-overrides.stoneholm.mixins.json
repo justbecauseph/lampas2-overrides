@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "lampas2overrides.stoneholm.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.stoneholm.StoneholmMixinPlugin",
+	"mixins": [
+		"SimpleJsonResourceReloadListenerMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

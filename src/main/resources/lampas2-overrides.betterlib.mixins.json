@@ -4,7 +4,8 @@
 	"compatibilityLevel": "JAVA_25",
 	"plugin": "lampas2overrides.betterlib.BetterLibMixinPlugin",
 	"mixins": [
-		"JsonVillagerLoaderMixin"
+		"JsonVillagerLoaderMixin",
+		"TagLoaderMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

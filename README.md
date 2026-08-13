@@ -9,6 +9,15 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Figura chat heads](#figura-chat-heads) | Figura + Chatting | Draws the Figura avatar's face in Chatting's chat heads instead of the vanilla skin |
 | [Lootr fast item frames](#lootr--fast-item-frames) | Lootr + Fast Item Frames | Converts Lootr item-frame entities into blocks while preserving per-player loot |
 | [Better Lib startup](#better-lib-startup) | Better Lib | Prevents Better Lib from reopening Fabric Loader's shared mod-jar filesystem |
+| [Underground Village loot](#underground-village-loot) | Underground Village | Repairs obsolete and absent-mod Stoneholm loot data |
+
+## Underground Village loot
+
+Underground Village 2.1.1 bundles three Create integration loot tables that hard-reference Create
+items even when Create is absent, plus a cleric table using the removed `minecraft:set_nbt` loot
+function. Before registry-aware loot validation, this compatibility layer substitutes empty tables
+for the Create-only rooms when Create is not installed and upgrades the cleric potion entries to
+Minecraft 26.2's `minecraft:set_potion` format. Other Stoneholm loot tables are untouched.
 
 ## Better Lib startup
 
@@ -19,7 +28,10 @@ reuses the existing filesystem behind a close shield: Better Lib can scan its re
 but its try-with-resources block cannot close Fabric Loader's shared filesystem afterward.
 
 The mixin is common and therefore fixes both dedicated-server and client startup. It is gated on
-the `better_lib` mod id and is inert when Better Lib is absent.
+the `better_lib` mod id and is inert when Better Lib is absent. A second gated mixin also removes
+Better Lib's stale `andesite_worker` and `ore_trader` entries after job-site tags have been merged.
+Both demo professions are disabled in Better Lib 2.1.0, so leaving their generated tag entries in
+place prevents Minecraft from resolving the tag while serving no gameplay content.
 
 ## Lootr ↔ Fast Item Frames
 
