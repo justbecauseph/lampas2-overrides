@@ -16,8 +16,12 @@
 	"icon": "assets/lampas2-overrides/icon.png",
 	"environment": "*",
 	"entrypoints": {
+		"main": [
+			"lampas2overrides.protocol.LampasProtocolServer"
+		],
 		"client": [
-			"lampas2overrides.client.Lampas2OverridesClient"
+			"lampas2overrides.client.Lampas2OverridesClient",
+			"lampas2overrides.client.protocol.LampasProtocolClient"
 		]
 	},
 	"mixins": [
