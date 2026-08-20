@@ -10,6 +10,22 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Lootr fast item frames](#lootr--fast-item-frames) | Lootr + Fast Item Frames | Converts Lootr item-frame entities into blocks while preserving per-player loot |
 | [Better Lib startup](#better-lib-startup) | Better Lib | Prevents Better Lib from reopening Fabric Loader's shared mod-jar filesystem |
 | [Underground Village loot](#underground-village-loot) | Underground Village | Repairs obsolete and absent-mod Stoneholm loot data |
+| [Plasmo Voice permissions](#plasmo-voice-permissions) | Plasmo Voice 2.1.14 | Prevents wildcard permissions from becoming invalid Fabric permission identifiers |
+
+## Plasmo Voice permissions
+
+Plasmo Voice 2.1.14's Fabric permission adapter converts dotted permission strings into Fabric
+Permission API v1 identifiers. Wildcard permissions such as `pv.addon.broadcast.*` and
+`pv.activation.*` cannot be identifiers because `*` is not valid in an identifier path. When the
+Broadcast add-on checks its command permission while Minecraft sends the command tree, the
+resulting `IdentifierException` aborts player placement and disconnects the player as
+`Invalid player data`.
+
+This compatibility mixin declines only permission strings containing `*` before SLIB calls
+`PermissionNode.of`. SLIB can then consult its next permission backend and, if none resolves the
+wildcard, use its normal OP/default fallback. Concrete permissions such as
+`pv.addon.broadcast.server` still go through Fabric Permission API v1 unchanged. The mixin is
+version-gated to Plasmo Voice 2.1.14 so an upstream implementation is not shadowed automatically.
 
 ## Underground Village loot
 

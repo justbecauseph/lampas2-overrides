@@ -3,7 +3,7 @@
 	"id": "lampas2-overrides",
 	"version": "${version}",
 	"name": "Lampas2 Overrides",
-	"description": "Compatibility fixes for Figura, ReplayMod, Chatting, Lootr, Fast Item Frames, Better Lib and Underground Village.",
+	"description": "Compatibility fixes for Figura, ReplayMod, Chatting, Lootr, Fast Item Frames, Better Lib, Underground Village and Plasmo Voice.",
 	"authors": [
 		"justbecauseph"
 	],
@@ -41,6 +41,9 @@
 		},
 		{
 			"config": "lampas2-overrides.stoneholm.mixins.json"
+		},
+		{
+			"config": "lampas2-overrides.plasmovoice.mixins.json"
 		}
 	],
 	"depends": {
@@ -52,6 +55,8 @@
 		"lootr": "*",
 		"fastitemframes": "*",
 		"better_lib": "*",
-		"underground_village": "*"
+		"underground_village": "*",
+		"plasmovoice": "*",
+		"pv-addon-broadcast": "*"
 	}
 }

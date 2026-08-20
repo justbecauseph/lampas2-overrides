@@ -3,7 +3,8 @@
 This repo is a Fabric mod for Minecraft 26.2 holding compatibility fixes between mods that do not
 know about each other: the Figura ↔ ReplayMod avatar bridge, Figura avatars in Chatting's chat
 heads, Lootr item frames converted into Fast Item Frames blocks, Better Lib's Fabric ZIP filesystem
-startup fix, and Underground Village's stale loot data. The first two features are
+startup fix, Underground Village's stale loot data, and Plasmo Voice 2.1.14 wildcard permissions.
+The first two features are
 client-only; the Lootr ↔ Fast Item Frames bridge has common server hooks and client renderer hooks,
 so the mod's declared environment is `*`. Read this file fully before touching anything; most of it
 is knowledge that cost real time to establish and is not recoverable from the code.
@@ -51,7 +52,7 @@ disable an unrelated feature.
 | Lootr 1.24.39.121 | `../lampas-server-fabric/mods/lootr-fabric-26.2-1.24.39.121.jar`; sources at `../Lootr` |
 | Fast Item Frames 26.2.0 | `../lampas-server-fabric/mods/FastItemFrames-v26.2.0-mc26.2.x-Fabric.jar`; sources at `../fast-item-frames` |
 | Puzzles Lib 26.2.3 | `../lampas-server-fabric/mods/PuzzlesLib-v26.2.3-mc26.2.x-Fabric.jar` |
-| Fabric API 0.157.0+26.2 | `../lampas-server-fabric/mods/fabric-api-0.157.0+26.2.jar` |
+| Fabric API 0.158.0+26.2 | `../lampas-server-fabric/mods/fabric-api-0.158.0+26.2.jar` |
 | Better Lib 2.1.0 | `../lampas-server-fabric/mods/better_lib-fabric-26.1-2.1.0.jar` |
 | Underground Village 2.1.1 | `../lampas-server-fabric/mods/underground_village-fabric-26.1-2.1.1.jar` |
 | Figura sources | `../figura-port/common/src/main/java/org/figuramc/figura/` |
@@ -216,6 +217,9 @@ betterlib/
 stoneholm/
   StoneholmMixinPlugin      applies loot repairs only when Underground Village is present
   mixin/                     suppresses absent-Create tables and upgrades legacy potion functions
+plasmovoice/
+  PlasmoVoiceMixinPlugin    applies only to the affected Plasmo Voice 2.1.14 release
+  mixin/                     declines wildcard strings before Fabric Permission API creates a node
 ```
 
 Threading: the client thread owns everything except the recorder's serialisation executor, the
