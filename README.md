@@ -10,22 +10,20 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Lootr fast item frames](#lootr--fast-item-frames) | Lootr + Fast Item Frames | Converts Lootr item-frame entities into blocks while preserving per-player loot |
 | [Better Lib startup](#better-lib-startup) | Better Lib | Prevents Better Lib from reopening Fabric Loader's shared mod-jar filesystem |
 | [Underground Village loot](#underground-village-loot) | Underground Village | Repairs obsolete and absent-mod Stoneholm loot data |
-| [Plasmo Voice permissions](#plasmo-voice-permissions) | Plasmo Voice 2.1.14 | Prevents wildcard permissions from becoming invalid Fabric permission identifiers |
+| [Additional Lanterns chunk loading](#additional-lanterns-chunk-loading) | Additional Lanterns 1.1.2 | Prevents redstone neighbor checks from synchronously loading unloaded chunks |
 
-## Plasmo Voice permissions
+## Additional Lanterns chunk loading
 
-Plasmo Voice 2.1.14's Fabric permission adapter converts dotted permission strings into Fabric
-Permission API v1 identifiers. Wildcard permissions such as `pv.addon.broadcast.*` and
-`pv.activation.*` cannot be identifiers because `*` is not valid in an identifier path. When the
-Broadcast add-on checks its command permission while Minecraft sends the command tree, the
-resulting `IdentifierException` aborts player placement and disconnects the player as
-`Invalid player data`.
+Additional Lanterns 1.1.2 hooks `ServerLevel` neighbor updates (`updateNeighborsAt` and
+`updateNeighborsAtExceptFromFacing`) and inspects each adjacent block to convert powered vanilla
+lanterns into Additional Lanterns equivalents.
 
-This compatibility mixin declines only permission strings containing `*` before SLIB calls
-`PermissionNode.of`. SLIB can then consult its next permission backend and, if none resolves the
-wildcard, use its normal OP/default fallback. Concrete permissions such as
-`pv.addon.broadcast.server` still go through Fabric Permission API v1 unchanged. The mixin is
-version-gated to Plasmo Voice 2.1.14 so an upstream implementation is not shadowed automatically.
+At chunk boundaries, the inspected position can belong to an unloaded chunk. `Level#getBlockState`
+then synchronously requests that chunk from `ServerChunkCache`, stalling the server thread.
+
+Lampas2 Overrides cancels Additional Lanterns' `VanillaLanternEvents.handleLanternRedstone` call
+when the target position's chunk is not currently loaded in `ServerChunkCache`. Loaded chunks retain
+the original behavior. The mixin is version-gated to Additional Lanterns 1.1.2.
 
 ## Underground Village loot
 
@@ -76,6 +74,12 @@ Figura draws everywhere else.
 Both of Chatting's drawing paths are covered: its default path goes through vanilla
 `PlayerFaceExtractor#extractRenderState`, while its *improved heads* option blits the face itself
 via a method Chatting adds to that same class. Players without an avatar keep their skin face.
+
+Chatting's sender detector is also enhanced with `ChatPlayerResolver` to associate multi-word,
+formatted, or custom TAB display names (e.g. from CustomName or server prefixes such as
+`The Administrator` or `[Admin] The Administrator`) with their authentic `PlayerInfo`. Display names
+are used strictly to discover the player; the player's real UUID remains the identity for Figura avatar
+lookups and permissions.
 
 Chat screenshots pick it up too, since they resolve the head owner the same way.
 

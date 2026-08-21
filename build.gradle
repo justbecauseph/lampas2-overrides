@@ -7,6 +7,7 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
+	mavenCentral()
 	maven {
 		name = "Modrinth"
 		url = "https://api.modrinth.com/maven"
@@ -38,7 +39,16 @@ dependencies {
 
 	// Optional mods are compile-only: every compatibility feature is gated by its mixin plugin,
 	// and none of their classes are bundled into the output jar.
+
+	testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
+
+test {
+	useJUnitPlatform()
+}
+
+
 
 processResources {
 	def version = project.version

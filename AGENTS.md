@@ -3,8 +3,8 @@
 This repo is a Fabric mod for Minecraft 26.2 holding compatibility fixes between mods that do not
 know about each other: the Figura ↔ ReplayMod avatar bridge, Figura avatars in Chatting's chat
 heads, Lootr item frames converted into Fast Item Frames blocks, Better Lib's Fabric ZIP filesystem
-startup fix, Underground Village's stale loot data, and Plasmo Voice 2.1.14 wildcard permissions.
-The first two features are
+startup fix, Underground Village's stale loot data, and
+Additional Lanterns 1.1.2 unloaded-chunk redstone checks. The first two features are
 client-only; the Lootr ↔ Fast Item Frames bridge has common server hooks and client renderer hooks,
 so the mod's declared environment is `*`. Read this file fully before touching anything; most of it
 is knowledge that cost real time to establish and is not recoverable from the code.
@@ -55,6 +55,7 @@ disable an unrelated feature.
 | Fabric API 0.158.0+26.2 | `../lampas-server-fabric/mods/fabric-api-0.158.0+26.2.jar` |
 | Better Lib 2.1.0 | `../lampas-server-fabric/mods/better_lib-fabric-26.1-2.1.0.jar` |
 | Underground Village 2.1.1 | `../lampas-server-fabric/mods/underground_village-fabric-26.1-2.1.1.jar` |
+| Additional Lanterns 1.1.2 | `../lampas-server-fabric/mods/additionallanterns-1.1.2-fabric-mc26.2.jar` |
 | Figura sources | `../figura-port/common/src/main/java/org/figuramc/figura/` |
 | ReplayMod sources | `../ReplayMod/src/main/java/com/replaymod/` — preprocessed, read `//#if MC>=…` blocks carefully |
 | Minecraft 26.2 sources | `../figura-port/.mcsources/` — decompiled, authoritative |
@@ -99,22 +100,18 @@ For Better Lib, dedicated-server startup must pass its `registerJsonVillagers` c
 For Stoneholm, no parse errors should remain for `andesite_worker`, `brass_worker`,
 `copper_worker`, or `cleric`; the compatibility logger should name all four repairs.
 
-**The user's live Prism instance** proves rendering. Build, copy
-`build/libs/lampas2-overrides-1.0.0.jar` over the one in the instance's `mods/`, and ask them to
-restart and check. The dev account is offline-mode, so Figura's backend auth fails with "Invalid
-session" — which makes the dev client a good *negative* control (any avatar that appears came from
-the bridge) and useless for anything visual.
+**Live testing and deployment** are managed declaratively via `lampas-pipeline` (`../lampas-pipeline`):
 
-The Lootr bridge must be deployed to both:
-
-- `C:\Users\markj\source\repos\lampas-server-fabric\mods\`
-- `C:\Users\markj\AppData\Roaming\PrismLauncher\instances\26.2-fabric\minecraft\mods\`
-
-Restart both processes after replacing the jar. Live verification on 2026-08-13 confirmed that a
-`lootr:item_frame` converts to a Fast Item Frames block, retains per-player Lootr behavior, and can
-be repopulated by Lootr refresh after looting. The frame may appear absent/empty to the player who
-looted it until it is refreshed; its Lootr identity and properties remain intact. Treat that as the
-accepted current visual behavior, not as evidence that the block or Lootr data was deleted.
+1. Copy the built jar `build/libs/lampas2-overrides-1.0.0.jar` to `../lampas-pipeline/pack/custom/lampas2-overrides-1.0.0.jar`.
+2. In `../lampas-pipeline`, run:
+   ```bash
+   bun run lampasctl resolve
+   bun run lampasctl validate
+   bun run lampasctl manifest
+   bun run lampasctl publish
+   ```
+3. Deploy the server via `python deploy_pack.py` in `../lampas-server-fabric` (which ingests `lampas-pipeline/manifest/server-manifest.json`).
+4. Client instances sync from `lampas-pipeline` manifests via the Lampas Launcher or `lampasctl install`.
 
 Zip-level and format work can be tested outside the game entirely; that is how `ReplayArchives` and
 `PingLog` were verified, against real `.mcpr` files from `run/replay_recordings/`.
@@ -182,6 +179,10 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   data still adds both ids to `minecraft:acquirable_job_site`. `TagLoaderMixin` removes only entries
   with those ids and Better Lib as their source after all tag resources have merged; do not replace
   the whole tag or enable the demo professions.
+- **`VanillaLanternEvents.handleLanternRedstone` calls `Level#getBlockState` on every neighbor update.**
+  At chunk boundaries, this causes `ServerChunkCache` to synchronously load or generate the adjacent
+  unloaded chunk on the server thread. Checking `ServerChunkCache#hasChunk` before executing the
+  method prevents the stall while leaving loaded-chunk lantern conversion unaffected.
 
 ## Structure
 
@@ -190,8 +191,9 @@ compat/
   Reflection              nullable lookups; invocation failures throw BridgeException
 chatheads/
   ChatHeadAvatars         entry point; arms on Chatting's head lookup, draws on the face hooks
+  ChatPlayerResolver      resolves multi-word and custom TAB display names to PlayerInfo
   FiguraPortraits         Figura's portrait members, resolved by name
-  mixin/                  ChatHeads (arm/disarm) and PlayerFaceExtractor (both draw paths)
+  mixin/                  ChatHeads (detect, arm/disarm) and PlayerFaceExtractor (both draw paths)
 figurareplay/
   FiguraReplayBridge      entry point, tick loop, animation clock, post-processing hooks
   AvatarRecorder          capture side, one Session per recording
@@ -217,9 +219,9 @@ betterlib/
 stoneholm/
   StoneholmMixinPlugin      applies loot repairs only when Underground Village is present
   mixin/                     suppresses absent-Create tables and upgrades legacy potion functions
-plasmovoice/
-  PlasmoVoiceMixinPlugin    applies only to the affected Plasmo Voice 2.1.14 release
-  mixin/                     declines wildcard strings before Fabric Permission API creates a node
+additionallanterns/
+  AdditionalLanternsMixinPlugin applies only to the affected Additional Lanterns 1.1.2 release
+  mixin/                     skips handleLanternRedstone on unloaded target chunks
 ```
 
 Threading: the client thread owns everything except the recorder's serialisation executor, the

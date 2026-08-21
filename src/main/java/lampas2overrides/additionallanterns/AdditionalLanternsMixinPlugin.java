@@ -1,4 +1,4 @@
-package lampas2overrides.plasmovoice;
+package lampas2overrides.additionallanterns;
 
 import java.util.List;
 import java.util.Set;
@@ -9,17 +9,17 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 import net.fabricmc.loader.api.FabricLoader;
 
-/** Applies the permission-node compatibility fix only to the affected Plasmo Voice release. */
-public final class PlasmoVoiceMixinPlugin implements IMixinConfigPlugin {
+/** Applies the unloaded-chunk redstone guard only to the affected Additional Lanterns release. */
+public final class AdditionalLanternsMixinPlugin implements IMixinConfigPlugin {
 
-	private static final String AFFECTED_VERSION = "2.1.14";
+	private static final String AFFECTED_VERSION = "1.1.2";
 
 	private boolean apply;
 
 	@Override
 	public void onLoad(String mixinPackage) {
 		apply = FabricLoader.getInstance()
-			.getModContainer("plasmovoice")
+			.getModContainer("additionallanterns")
 			.map(container -> AFFECTED_VERSION.equals(container.getMetadata().getVersion().getFriendlyString()))
 			.orElse(false);
 	}

@@ -63,11 +63,18 @@ grep "lampas2-overrides/figura-replay" run/logs/latest.log
 A mixin only applies when its target class loads: `MarkerProcessor` and `VideoRenderer` do not load
 until a recording stops or a render starts.
 
-**The user's live Prism instance** proves rendering. Build, copy
-`build/libs/lampas2-overrides-1.0.0.jar` over the one in the instance's `mods/`, and ask them to
-restart and check. The dev account is offline-mode, so Figura's backend auth fails with "Invalid
-session" — which makes the dev client a good *negative* control (any avatar that appears came from
-the bridge) and useless for anything visual.
+**Live testing and deployment** are managed declaratively via `lampas-pipeline` (`../lampas-pipeline`):
+
+1. Copy the built jar `build/libs/lampas2-overrides-1.0.0.jar` to `../lampas-pipeline/pack/custom/lampas2-overrides-1.0.0.jar`.
+2. In `../lampas-pipeline`, run:
+   ```bash
+   bun run lampasctl resolve
+   bun run lampasctl validate
+   bun run lampasctl manifest
+   bun run lampasctl publish
+   ```
+3. Deploy the server via `python deploy_pack.py` in `../lampas-server-fabric` (which ingests `lampas-pipeline/manifest/server-manifest.json`).
+4. Client instances sync from `lampas-pipeline` manifests via the Lampas Launcher or `lampasctl install`.
 
 Zip-level and format work can be tested outside the game entirely; that is how `ReplayArchives` and
 `PingLog` were verified, against real `.mcpr` files from `run/replay_recordings/`.
@@ -116,8 +123,9 @@ compat/
   Reflection              nullable lookups; invocation failures throw BridgeException
 chatheads/
   ChatHeadAvatars         entry point; arms on Chatting's head lookup, draws on the face hooks
+  ChatPlayerResolver      resolves multi-word and custom TAB display names to PlayerInfo
   FiguraPortraits         Figura's portrait members, resolved by name
-  mixin/                  ChatHeads (arm/disarm) and PlayerFaceExtractor (both draw paths)
+  mixin/                  ChatHeads (detect, arm/disarm) and PlayerFaceExtractor (both draw paths)
 figurareplay/
   FiguraReplayBridge      entry point, tick loop, animation clock, post-processing hooks
   AvatarRecorder          capture side, one Session per recording

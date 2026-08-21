@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "lampas2overrides.additionallanterns.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.additionallanterns.AdditionalLanternsMixinPlugin",
+	"mixins": [
+		"VanillaLanternEventsMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
