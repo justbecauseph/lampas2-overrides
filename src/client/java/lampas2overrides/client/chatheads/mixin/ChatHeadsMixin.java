@@ -31,9 +31,11 @@ public class ChatHeadsMixin {
 			at = @At("HEAD"),
 			cancellable = true)
 	private void lampas2$detectDisplayName(String message, CallbackInfoReturnable<PlayerInfo> cir) {
-		PlayerInfo player = ChatPlayerResolver.resolve(message);
-		if (player != null) {
-			cir.setReturnValue(player);
+		ChatPlayerResolver.Resolution result = ChatPlayerResolver.resolve(message);
+		switch (result.type()) {
+			case MATCH -> cir.setReturnValue(result.player());
+			case AMBIGUOUS -> cir.setReturnValue(null);
+			case NO_MATCH -> {}
 		}
 	}
 

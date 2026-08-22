@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,51 +24,77 @@ import net.minecraft.network.chat.Component;
  * {@code [Admin] The Administrator}, {@code Lord Bucket of Chicken}).
  *
  * <p>This resolver gives priority to matching complete TAB display names against the chat sender
- * prefix. If no confident match is found (or if multiple players match ambiguously), this returns
- * {@code null} and allows Chatting's standard detector to handle single-token usernames.
+ * prefix. It returns a tri-state {@link Resolution}:
+ * <ul>
+ *   <li>{@link ResolutionType#MATCH}: An unambiguous custom TAB name match was found.</li>
+ *   <li>{@link ResolutionType#AMBIGUOUS}: Multiple players matched the candidate display name;
+ *       cancels detection to prevent Chatting from guessing the wrong player account.</li>
+ *   <li>{@link ResolutionType#NO_MATCH}: No custom display name matched; allows Chatting's native
+ *       username detector to run.</li>
+ * </ul>
  */
 public final class ChatPlayerResolver {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Lampas2Overrides.MOD_ID + "/chat-resolver");
 
+	public enum ResolutionType {
+		MATCH,
+		NO_MATCH,
+		AMBIGUOUS
+	}
+
+	public record Resolution(ResolutionType type, @Nullable PlayerInfo player) {
+		public static Resolution match(PlayerInfo player) {
+			return new Resolution(ResolutionType.MATCH, player);
+		}
+
+		public static Resolution noMatch() {
+			return new Resolution(ResolutionType.NO_MATCH, null);
+		}
+
+		public static Resolution ambiguous() {
+			return new Resolution(ResolutionType.AMBIGUOUS, null);
+		}
+	}
+
 	private ChatPlayerResolver() {
 	}
 
 	/**
-	 * Resolves the {@link PlayerInfo} for the given chat message using currently online players.
+	 * Resolves the {@link Resolution} for the given chat message using currently online players.
 	 *
 	 * @param message the raw chat message content
-	 * @return the matching {@link PlayerInfo}, or {@code null} if no unambiguous match was found
+	 * @return the {@link Resolution}
 	 */
-	public static PlayerInfo resolve(String message) {
+	public static Resolution resolve(String message) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc == null) {
-			return null;
+			return Resolution.noMatch();
 		}
 
 		ClientPacketListener connection = mc.getConnection();
 		if (connection == null) {
-			return null;
+			return Resolution.noMatch();
 		}
 
 		return resolve(connection.getOnlinePlayers(), message);
 	}
 
 	/**
-	 * Resolves the {@link PlayerInfo} for the given chat message against a candidate collection of players.
+	 * Resolves the {@link Resolution} for the given chat message against a candidate collection of players.
 	 *
 	 * @param players the online players to check
 	 * @param message the raw chat message content
-	 * @return the matching {@link PlayerInfo}, or {@code null} if no unambiguous match was found
+	 * @return the {@link Resolution}
 	 */
-	public static PlayerInfo resolve(Collection<PlayerInfo> players, String message) {
+	public static Resolution resolve(Collection<PlayerInfo> players, String message) {
 		if (players == null || players.isEmpty() || message == null || message.isEmpty()) {
-			return null;
+			return Resolution.noMatch();
 		}
 
 		String prefix = extractPrefix(message);
 		if (prefix == null || prefix.isEmpty()) {
-			return null;
+			return Resolution.noMatch();
 		}
 
 		// Candidate records with a configured, non-empty TAB display name
@@ -93,7 +120,7 @@ public final class ChatPlayerResolver {
 		}
 
 		if (candidates.isEmpty()) {
-			return null;
+			return Resolution.noMatch();
 		}
 
 		// 1. Exact TAB display-name match
@@ -105,10 +132,10 @@ public final class ChatPlayerResolver {
 		}
 
 		if (exactMatches.size() == 1) {
-			return exactMatches.get(0);
+			return Resolution.match(exactMatches.get(0));
 		} else if (exactMatches.size() > 1) {
 			LOGGER.debug("Ambiguous Chatting display-name exact match \"{}\": {} players", prefix, exactMatches.size());
-			return null;
+			return Resolution.ambiguous();
 		}
 
 		// 2. Longest boundary-safe contained TAB display-name match
@@ -132,20 +159,20 @@ public final class ChatPlayerResolver {
 		}
 
 		if (bestCandidates.size() == 1) {
-			return bestCandidates.get(0);
+			return Resolution.match(bestCandidates.get(0));
 		} else if (bestCandidates.size() > 1) {
 			LOGGER.debug("Ambiguous Chatting display-name match \"{}\": {} players", bestDisplayName, bestCandidates.size());
-			return null;
+			return Resolution.ambiguous();
 		}
 
-		return null;
+		return Resolution.noMatch();
 	}
 
 	/**
 	 * Extracts the sender portion of a chat message.
 	 *
-	 * <p>Supports standard colon separators ({@code Sender: message}), angle brackets ({@code <Sender> message}),
-	 * and common arrow prefixes ({@code Sender » message}, {@code Sender -> message}).
+	 * <p>Supports standard colon separators ({@code Sender: message}), bracketed tags (e.g. {@code [Rank: Admin] Sender: message}),
+	 * angle brackets ({@code <Sender> message}), and common arrow prefixes ({@code Sender » message}, {@code Sender -> message}).
 	 */
 	public static String extractPrefix(String message) {
 		if (message == null || message.isEmpty()) {
@@ -157,7 +184,7 @@ public final class ChatPlayerResolver {
 			return null;
 		}
 
-		int colon = cleanMessage.indexOf(':');
+		int colon = findTopLevelColon(cleanMessage);
 		if (colon >= 0) {
 			String prefix = cleanMessage.substring(0, colon).trim();
 			return prefix.isEmpty() ? null : prefix;
@@ -183,6 +210,29 @@ public final class ChatPlayerResolver {
 		}
 
 		return null;
+	}
+
+	private static int findTopLevelColon(String text) {
+		int bracketDepth = 0;
+		int parenDepth = 0;
+
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			if (c == '[' || c == '{') {
+				bracketDepth++;
+			} else if (c == ']' || c == '}') {
+				if (bracketDepth > 0) bracketDepth--;
+			} else if (c == '(') {
+				parenDepth++;
+			} else if (c == ')') {
+				if (parenDepth > 0) parenDepth--;
+			} else if (c == ':' && bracketDepth == 0 && parenDepth == 0) {
+				return i;
+			}
+		}
+
+		// Fallback to first colon if all colons were nested inside unclosed brackets
+		return text.indexOf(':');
 	}
 
 	/**
