@@ -11,7 +11,23 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Better Lib startup](#better-lib-startup) | Better Lib | Prevents Better Lib from reopening Fabric Loader's shared mod-jar filesystem |
 | [Underground Village loot](#underground-village-loot) | Underground Village | Repairs obsolete and absent-mod Stoneholm loot data |
 | [Additional Lanterns chunk loading](#additional-lanterns-chunk-loading) | Additional Lanterns 1.1.2 | Prevents redstone neighbor checks from synchronously loading unloaded chunks |
+| [Visual Workbench tag rebinding](#visual-workbench-tag-rebinding) | Visual Workbench + Puzzles Lib | Prevents replay loading and tag reload crashes from stale Visual Workbench tags |
 | [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.0 | Removes a redundant 20 Hz entity-ID scan and throttles living-mob initialization |
+
+## Visual Workbench tag rebinding
+
+Visual Workbench dynamically creates replacement crafting-table blocks and copies the source
+block's bound tags into them.
+
+Puzzles Lib's `BlockConversionHelper.copyBoundTags` assumes a target block's tags are either empty or
+identical. ReplayMod playback and repeated client configuration reloads trigger client tag updates
+in the same process, leaving the generated target block with stale tags and causing Puzzles Lib to throw
+`IllegalStateException`.
+
+Lampas2 Overrides intercepts `BlockConversionHelper.copyBoundTags` and rebinds the tags when the target
+block belongs to the `visualworkbench` namespace. Puzzles Lib's strict invariant remains untouched for
+all other targets and callers. The mixin is client-only and gated on both `visualworkbench` and
+`puzzleslib`.
 
 ## Incendium tick optimization
 

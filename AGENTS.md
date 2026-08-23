@@ -3,12 +3,13 @@
 This repo is a Fabric mod for Minecraft 26.2 holding compatibility fixes between mods that do not
 know about each other: the Figura ↔ ReplayMod avatar bridge, Figura avatars in Chatting's chat
 heads, Lootr item frames converted into Fast Item Frames blocks, Better Lib's Fabric ZIP filesystem
-startup fix, Underground Village's stale loot data, and
-Additional Lanterns 1.1.2 unloaded-chunk redstone checks, plus a version-gated Incendium Legacy
-5.5.0 tick-function optimization. The first two features are
-client-only; the Lootr ↔ Fast Item Frames bridge has common server hooks and client renderer hooks,
-so the mod's declared environment is `*`. Read this file fully before touching anything; most of it
-is knowledge that cost real time to establish and is not recoverable from the code.
+startup fix, Underground Village's stale loot data,
+Additional Lanterns 1.1.2 unloaded-chunk redstone checks, and Visual Workbench tag reloads under
+Puzzles Lib, plus a version-gated Incendium Legacy 5.5.0 tick-function optimization. The first two
+features and Visual Workbench are client-only; the Lootr ↔ Fast Item Frames bridge has common server
+hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
+before touching anything; most of it is knowledge that cost real time to establish and is not
+recoverable from the code.
 
 Each feature lives in its own package with its own mixin config and gate plugin, and binds only the
 members it needs. Keep it that way — one mod being absent or having moved a member must never
@@ -201,6 +202,13 @@ Zip-level and format work can be tested outside the game entirely; that is how `
 - **The Incendium optimization is gated twice.** The initializer requires the exact 5.5.0 version
   and fingerprints the three upstream functions it replaces before registering its always-enabled
   built-in datapack. Update both gates only after auditing a new upstream jar.
+- **Visual Workbench dynamically creates replacement crafting-table blocks and copies the source block's bound tags into them.**
+  Puzzles Lib's `copyBoundTags` assumes a target's tags are either empty or identical. ReplayMod
+  playback and repeated client configuration reloads cause client tags to be reloaded in the same
+  process, leaving the generated target block with stale tags and triggering an `IllegalStateException`.
+  Rebinding tags is permitted only when the target block belongs to the `visualworkbench` namespace;
+  Puzzles Lib's strict behavior remains intact for all other callers/targets. Do NOT broaden the
+  patch to all `BlockConversionHelper` calls.
 
 ## Structure
 
@@ -240,6 +248,10 @@ stoneholm/
 additionallanterns/
   AdditionalLanternsMixinPlugin applies only to the affected Additional Lanterns 1.1.2 release
   mixin/                     skips handleLanternRedstone on unloaded target chunks
+visualworkbench/
+  VisualWorkbenchMixinPlugin applies only when Visual Workbench + Puzzles Lib exist
+  VisualWorkbenchTagFix     policy check and tag rebinding helper
+  mixin/                    intercepts copyBoundTags for visualworkbench:* blocks
 incendium/
   IncendiumOptimization     fingerprints Incendium and registers the built-in pack
   IncendiumCompatibility    exact version and upstream-function fingerprint gate

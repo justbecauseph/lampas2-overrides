@@ -3,7 +3,7 @@
 	"id": "lampas2-overrides",
 	"version": "${version}",
 	"name": "Lampas2 Overrides",
-	"description": "Compatibility fixes for Figura, ReplayMod, Chatting, Lootr, Fast Item Frames, Better Lib, Underground Village, Additional Lanterns and Incendium.",
+	"description": "Compatibility fixes for Figura, ReplayMod, Chatting, Lootr, Fast Item Frames, Better Lib, Underground Village, Additional Lanterns, Incendium and Visual Workbench.",
 	"authors": [
 		"justbecauseph"
 	],
@@ -35,6 +35,10 @@
 			"environment": "client"
 		},
 		{
+			"config": "lampas2-overrides.visualworkbench.mixins.json",
+			"environment": "client"
+		},
+		{
 			"config": "lampas2-overrides.lootrfastframes.mixins.json"
 		},
 		{
@@ -58,6 +62,7 @@
 		"better_lib": "*",
 		"underground_village": "*",
 		"additionallanterns": "*",
-		"incendium": "=5.5.0"
+		"incendium": "=5.5.0",
+		"visualworkbench": "*"
 	}
 }

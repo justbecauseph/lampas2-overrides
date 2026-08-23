@@ -1,0 +1,15 @@
+{
+	"required": true,
+	"package": "lampas2overrides.client.visualworkbench.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.client.visualworkbench.VisualWorkbenchMixinPlugin",
+	"client": [
+		"BlockConversionHelperMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}
