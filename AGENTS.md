@@ -4,7 +4,8 @@ This repo is a Fabric mod for Minecraft 26.2 holding compatibility fixes between
 know about each other: the Figura ↔ ReplayMod avatar bridge, Figura avatars in Chatting's chat
 heads, Lootr item frames converted into Fast Item Frames blocks, Better Lib's Fabric ZIP filesystem
 startup fix, Underground Village's stale loot data, and
-Additional Lanterns 1.1.2 unloaded-chunk redstone checks. The first two features are
+Additional Lanterns 1.1.2 unloaded-chunk redstone checks, plus a version-gated Incendium Legacy
+5.5.0 tick-function optimization. The first two features are
 client-only; the Lootr ↔ Fast Item Frames bridge has common server hooks and client renderer hooks,
 so the mod's declared environment is `*`. Read this file fully before touching anything; most of it
 is knowledge that cost real time to establish and is not recoverable from the code.
@@ -56,6 +57,7 @@ disable an unrelated feature.
 | Better Lib 2.1.0 | `../lampas-server-fabric/mods/better_lib-fabric-26.1-2.1.0.jar` |
 | Underground Village 2.1.1 | `../lampas-server-fabric/mods/underground_village-fabric-26.1-2.1.1.jar` |
 | Additional Lanterns 1.1.2 | `../lampas-server-fabric/mods/additionallanterns-1.1.2-fabric-mc26.2.jar` |
+| Incendium Legacy 5.5.0 | `../lampas-server-fabric/mods/Incendium_Legacy_26.2_v5.5.0.jar` |
 | Figura sources | `../figura-port/common/src/main/java/org/figuramc/figura/` |
 | ReplayMod sources | `../ReplayMod/src/main/java/com/replaymod/` — preprocessed, read `//#if MC>=…` blocks carefully |
 | Minecraft 26.2 sources | `../figura-port/.mcsources/` — decompiled, authoritative |
@@ -99,6 +101,14 @@ For Better Lib, dedicated-server startup must pass its `registerJsonVillagers` c
 `FileSystemAlreadyExistsException`, and `JsonVillagerLoaderMixin` must appear in `debug.log`.
 For Stoneholm, no parse errors should remain for `andesite_worker`, `brass_worker`,
 `copper_worker`, or `cleric`; the compatibility logger should name all four repairs.
+
+For Incendium, dedicated-server startup must log
+`Enabled the version-gated Incendium 5.5.0 performance datapack`, and `/datapack list enabled` must
+include the Lampas2 Incendium pack. Test the ID rollover by setting `$current.id` in `in.eid` to
+`32767`, then spawning a new living mob.
+After at most five ticks, the new mob and all previously initialized mobs and players must have
+unique IDs in `0..32767`; no entity may retain 32768 or lose its `in.eid_*` bit tags. A version or
+fingerprint mismatch must instead log that the performance datapack remains disabled.
 
 **Live testing and deployment** are managed declaratively via `lampas-pipeline` (`../lampas-pipeline`):
 
@@ -183,6 +193,14 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   At chunk boundaries, this causes `ServerChunkCache` to synchronously load or generate the adjacent
   unloaded chunk on the server thread. Checking `ServerChunkCache#hasChunk` before executing the
   method prevents the stall while leaving loaded-chunk lantern conversion unaffected.
+- **Incendium's entity ID is a 15-bit hit-matching key shared by players and living mobs.** Its
+  `entity_id/init` increments `$current.id` before assignment, so rollover must start when the
+  counter is 32767, reassign all existing owners, exclude the caller during that repair, and let
+  `entity_id/check` initialize the caller once after reset. Non-living entities in the `other` tag
+  do not call the ID allocator.
+- **The Incendium optimization is gated twice.** The initializer requires the exact 5.5.0 version
+  and fingerprints the three upstream functions it replaces before registering its always-enabled
+  built-in datapack. Update both gates only after auditing a new upstream jar.
 
 ## Structure
 
@@ -222,6 +240,11 @@ stoneholm/
 additionallanterns/
   AdditionalLanternsMixinPlugin applies only to the affected Additional Lanterns 1.1.2 release
   mixin/                     skips handleLanternRedstone on unloaded target chunks
+incendium/
+  IncendiumOptimization     fingerprints Incendium and registers the built-in pack
+  IncendiumCompatibility    exact version and upstream-function fingerprint gate
+resourcepacks/incendium_5_5_0_optimizations/
+  data/incendium/function/  clock and entity-ID overrides for verified Incendium 5.5.0 only
 ```
 
 Threading: the client thread owns everything except the recorder's serialisation executor, the

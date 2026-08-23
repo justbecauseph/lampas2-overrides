@@ -11,6 +11,24 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Better Lib startup](#better-lib-startup) | Better Lib | Prevents Better Lib from reopening Fabric Loader's shared mod-jar filesystem |
 | [Underground Village loot](#underground-village-loot) | Underground Village | Repairs obsolete and absent-mod Stoneholm loot data |
 | [Additional Lanterns chunk loading](#additional-lanterns-chunk-loading) | Additional Lanterns 1.1.2 | Prevents redstone neighbor checks from synchronously loading unloaded chunks |
+| [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.0 | Removes a redundant 20 Hz entity-ID scan and throttles living-mob initialization |
+
+## Incendium tick optimization
+
+Incendium Legacy 5.5.0 scans every living non-player entity each tick to repair missing or invalid
+entity IDs, even though the same clock initializes previously unseen mobs. Lampas2 Overrides installs
+an always-enabled built-in datapack that removes that redundant scan and runs only the unseen
+living-mob initialization pass every five ticks (4 Hz). Existing ticking mobs, frozen-state updates,
+particles, player logic, altar items, and short-lived projectile initialization remain at 20 Hz.
+
+The pack also makes the 15-bit ID rollover safe without relying on the removed validation pass. It
+resets before assigning 32768, immediately reassigns every existing player and initialized mob, and
+then assigns the entity that triggered the rollover exactly once.
+
+This feature fails closed. It registers only when Fabric Loader reports Incendium version 5.5.0 and
+the original `clocks/main`, `entity_id/check`, and `entity_id/reset` functions match the verified
+SHA-256 fingerprints. A modified or updated Incendium jar is left untouched and produces a warning
+in the server log instead of receiving potentially stale function overrides.
 
 ## Additional Lanterns chunk loading
 
