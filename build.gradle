@@ -36,6 +36,7 @@ dependencies {
 	compileOnly "maven.modrinth:lootr:${project.lootr_version}"
 	compileOnly "maven.modrinth:fast-item-frames:${project.fast_item_frames_version}"
 	compileOnly "maven.modrinth:puzzles-lib:${project.puzzles_lib_version}"
+	compileOnly "maven.modrinth:pneumono_gravestones:${project.gravestones_version}"
 
 	// Optional mods are compile-only: every compatibility feature is gated by its mixin plugin,
 	// and none of their classes are bundled into the output jar.

@@ -1,0 +1,17 @@
+{
+	"required": true,
+	"package": "lampas2overrides.client.gravestones.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.client.gravestones.GravestonesMixinPlugin",
+	"client": [
+		"AbstractGravestoneBlockEntityRendererMixin",
+		"TechnicalGravestoneBlockEntityRendererMixin",
+		"TechnicalRenderStateMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

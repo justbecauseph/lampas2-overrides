@@ -14,6 +14,24 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Visual Workbench tag rebinding](#visual-workbench-tag-rebinding) | Visual Workbench + Puzzles Lib | Prevents replay loading and tag reload crashes from stale Visual Workbench tags |
 | [Name Tag Upgrade selection drag](#name-tag-upgrade-selection-drag) | Name Tag Upgrade 26.2.0 | Prevents a client crash when dragging selection left in a scrolled name field |
 | [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.0 | Removes a redundant 20 Hz entity-ID scan and throttles living-mob initialization |
+| [Gravestones death inscription and glow](#gravestones-death-inscription-and-glow) | Gravestones 1.4.2 | Suppresses technical death grave text and renders a glowing outline only on your own graves |
+
+## Gravestones death inscription and glow
+
+Gravestones normally renders an inscription on technical player death graves showing the owner's
+name, death date, and death time.
+
+Lampas2 Overrides implements a client-only, version-gated override for Gravestones:
+- **Technical/death graves render no text at all**: `TechnicalGravestoneBlockEntityRenderer#getSignText`
+  returns a blank `SignText`, eliminating in-world text inscriptions.
+- **Your own graves receive a vanilla-style glowing outline**: local player ownership is determined
+  during `extractRenderState` and attached to the render state. During `AbstractGravestoneBlockEntityRenderer#submit`,
+  an outline pass for the grave's block model is submitted using `RenderTypes.outline(TextureAtlas.LOCATION_BLOCKS)`.
+- **Other players' graves render with no outline and no inscription**.
+- **Aesthetic/decorative gravestones remain untouched**, keeping their custom text and normal rendering.
+- **Player skulls/heads on the grave remain untouched**, honoring Gravestones' `SHOW_HEADS` configuration.
+
+The mixin is client-only and version-gated to Gravestones 1.4.2 (`1.4.2+26.2+A`).
 
 ## Name Tag Upgrade selection drag
 

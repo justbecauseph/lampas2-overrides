@@ -5,8 +5,8 @@ know about each other: the Figura ↔ ReplayMod avatar bridge, Figura avatars in
 heads, Lootr item frames converted into Fast Item Frames blocks, Better Lib's Fabric ZIP filesystem
 startup fix, Underground Village's stale loot data,
 Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Visual Workbench tag reloads under
-Puzzles Lib, and Name Tag Upgrade 26.2.0 mouse drag crashes, plus a version-gated Incendium Legacy 5.5.0 tick-function optimization. The first two
-features, Visual Workbench, and Name Tag Upgrade are client-only; the Lootr ↔ Fast Item Frames bridge has common server
+Puzzles Lib, Name Tag Upgrade 26.2.0 mouse drag crashes, and Gravestones 1.4.2 death inscriptions and glowing outline, plus a version-gated Incendium Legacy 5.5.0 tick-function optimization. The first two
+features, Visual Workbench, Name Tag Upgrade, and Gravestones are client-only; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -59,6 +59,7 @@ disable an unrelated feature.
 | Underground Village 2.1.1 | `../lampas-server-fabric/mods/underground_village-fabric-26.1-2.1.1.jar` |
 | Additional Lanterns 1.1.2 | `../lampas-server-fabric/mods/additionallanterns-1.1.2-fabric-mc26.2.jar` |
 | Name Tag Upgrade 26.2.0 | `run/mods/NameTagUpgrade-v26.2.0-mc26.2.x-Fabric.jar` |
+| Gravestones 1.4.2 | `../lampas-server-fabric/mods/gravestones-1.4.2+26.2+A.jar` |
 | Incendium Legacy 5.5.0 | `../lampas-server-fabric/mods/Incendium_Legacy_26.2_v5.5.0.jar` |
 | Figura sources | `../figura-port/common/src/main/java/org/figuramc/figura/` |
 | ReplayMod sources | `../ReplayMod/src/main/java/com/replaymod/` — preprocessed, read `//#if MC>=…` blocks carefully |
@@ -215,6 +216,13 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   `displayPos` characters, resulting in `substring(displayPos, 0)` when `displayPos > 0`. Clamping the
   first argument of `Math.min` to `0` leaves all formatting-aware cursor logic intact without needing
   broader patches in `FormattedStringSplitter` or `WidthLimitedCharSink`.
+- **`TechnicalGravestoneBlockEntityRenderer` constructs sign text dynamically while the grave body is a block model.**
+  Overriding `getSignText(TechnicalGravestoneBlockEntity)` to return a blank `SignText` suppresses player name,
+  death date, and death time for all death graves without touching aesthetic gravestones (which use `AestheticGravestoneBlockEntityRenderer`).
+- **Grave ownership is extracted into the render state during `extractRenderState`.**
+  This adheres to Minecraft 26.2's render pipeline separation: the local player UUID is matched against `GraveOwner#getUuid()`
+  during state extraction, allowing `AbstractGravestoneBlockEntityRenderer#submit` to submit a block model outline pass
+  via `RenderTypes.outline(TextureAtlas.LOCATION_BLOCKS)` without touching entity/level state during drawing.
 
 ## Structure
 
@@ -261,6 +269,10 @@ visualworkbench/
 nametagupgrade/
   NameTagUpgradeMixinPlugin applies only to the affected Name Tag Upgrade 26.2.0 release
   mixin/                    clamps mouse offset in FormattableEditBox#findClickedPositionInText
+gravestones/
+  GravestonesMixinPlugin    applies only to the affected Gravestones 1.4.2 release
+  OwnedGraveRenderState     duck interface carrying ownership and block state across render phases
+  mixin/                    suppresses death grave text and submits model glowing outline
 incendium/
   IncendiumOptimization     fingerprints Incendium and registers the built-in pack
   IncendiumCompatibility    exact version and upstream-function fingerprint gate
