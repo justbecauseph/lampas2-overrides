@@ -1,7 +1,9 @@
 package lampas2overrides.client.gravestones.mixin;
 
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -17,11 +19,11 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.BlockModelRenderState;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.renderer.block.BlockStateModelSet;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.pneumono.gravestones.content.AbstractGravestoneBlockEntityRenderer;
@@ -34,6 +36,34 @@ public abstract class AbstractGravestoneBlockEntityRendererMixin {
 
 	@Unique
 	private static final int OUTLINE_COLOR_WHITE = 0xFFFFFFFF;
+
+	@Unique
+	private static BlockStateModelSet lampas2$lastModelSet;
+
+	@Unique
+	private static final Map<BlockState, List<BlockStateModelPart>> lampas2$modelPartsCache = new IdentityHashMap<>(4);
+
+	@Unique
+	private static List<BlockStateModelPart> lampas2$getOrComputeParts(BlockState blockState, BlockStateModelSet modelSet) {
+		if (lampas2$lastModelSet != modelSet) {
+			lampas2$modelPartsCache.clear();
+			lampas2$lastModelSet = modelSet;
+		}
+
+		List<BlockStateModelPart> parts = lampas2$modelPartsCache.get(blockState);
+		if (parts == null) {
+			BlockStateModel model = modelSet.get(blockState);
+			if (model == null) {
+				parts = List.of();
+			} else {
+				List<BlockStateModelPart> collected = new ArrayList<>();
+				model.collectParts(RandomSource.create(0L), collected);
+				parts = List.copyOf(collected);
+			}
+			lampas2$modelPartsCache.put(blockState, parts);
+		}
+		return parts;
+	}
 
 	@Inject(
 		method = "submit(Lnet/pneumono/gravestones/content/AbstractGravestoneBlockEntityRenderer$RenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V",
@@ -52,16 +82,12 @@ public abstract class AbstractGravestoneBlockEntityRendererMixin {
 				return;
 			}
 
-			BlockPos pos = renderState.getPos();
-			BlockStateModel model = Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(blockState);
-			if (model == null) {
+			BlockStateModelSet modelSet = Minecraft.getInstance().getModelManager().getBlockStateModelSet();
+			if (modelSet == null) {
 				return;
 			}
 
-			RandomSource random = RandomSource.createThreadLocalInstance();
-			random.setSeed(blockState.getSeed(pos));
-			List<BlockStateModelPart> parts = new ArrayList<>();
-			model.collectParts(random, parts);
+			List<BlockStateModelPart> parts = lampas2$getOrComputeParts(blockState, modelSet);
 			if (!parts.isEmpty()) {
 				submitNodeCollector.submitBlockModel(
 					poseStack,
