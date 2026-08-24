@@ -4,9 +4,9 @@ This repo is a Fabric mod for Minecraft 26.2 holding compatibility fixes between
 know about each other: the Figura ↔ ReplayMod avatar bridge, Figura avatars in Chatting's chat
 heads, Lootr item frames converted into Fast Item Frames blocks, Better Lib's Fabric ZIP filesystem
 startup fix, Underground Village's stale loot data,
-Additional Lanterns 1.1.2 unloaded-chunk redstone checks, and Visual Workbench tag reloads under
-Puzzles Lib, plus a version-gated Incendium Legacy 5.5.0 tick-function optimization. The first two
-features and Visual Workbench are client-only; the Lootr ↔ Fast Item Frames bridge has common server
+Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Visual Workbench tag reloads under
+Puzzles Lib, and Name Tag Upgrade 26.2.0 mouse drag crashes, plus a version-gated Incendium Legacy 5.5.0 tick-function optimization. The first two
+features, Visual Workbench, and Name Tag Upgrade are client-only; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -58,6 +58,7 @@ disable an unrelated feature.
 | Better Lib 2.1.0 | `../lampas-server-fabric/mods/better_lib-fabric-26.1-2.1.0.jar` |
 | Underground Village 2.1.1 | `../lampas-server-fabric/mods/underground_village-fabric-26.1-2.1.1.jar` |
 | Additional Lanterns 1.1.2 | `../lampas-server-fabric/mods/additionallanterns-1.1.2-fabric-mc26.2.jar` |
+| Name Tag Upgrade 26.2.0 | `run/mods/NameTagUpgrade-v26.2.0-mc26.2.x-Fabric.jar` |
 | Incendium Legacy 5.5.0 | `../lampas-server-fabric/mods/Incendium_Legacy_26.2_v5.5.0.jar` |
 | Figura sources | `../figura-port/common/src/main/java/org/figuramc/figura/` |
 | ReplayMod sources | `../ReplayMod/src/main/java/com/replaymod/` — preprocessed, read `//#if MC>=…` blocks carefully |
@@ -209,6 +210,11 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   Rebinding tags is permitted only when the target block belongs to the `visualworkbench` namespace;
   Puzzles Lib's strict behavior remains intact for all other callers/targets. Do NOT broaden the
   patch to all `BlockConversionHelper` calls.
+- **`FormattableEditBox.findClickedPositionInText` permits negative mouse offsets when dragging left.**
+  In Name Tag Upgrade 26.2.0, a negative offset prevents `WidthLimitedCharSink` from advancing past
+  `displayPos` characters, resulting in `substring(displayPos, 0)` when `displayPos > 0`. Clamping the
+  first argument of `Math.min` to `0` leaves all formatting-aware cursor logic intact without needing
+  broader patches in `FormattedStringSplitter` or `WidthLimitedCharSink`.
 
 ## Structure
 
@@ -252,6 +258,9 @@ visualworkbench/
   VisualWorkbenchMixinPlugin applies only when Visual Workbench + Puzzles Lib exist
   VisualWorkbenchTagFix     policy check and tag rebinding helper
   mixin/                    intercepts copyBoundTags for visualworkbench:* blocks
+nametagupgrade/
+  NameTagUpgradeMixinPlugin applies only to the affected Name Tag Upgrade 26.2.0 release
+  mixin/                    clamps mouse offset in FormattableEditBox#findClickedPositionInText
 incendium/
   IncendiumOptimization     fingerprints Incendium and registers the built-in pack
   IncendiumCompatibility    exact version and upstream-function fingerprint gate
