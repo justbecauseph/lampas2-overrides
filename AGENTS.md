@@ -228,8 +228,10 @@ Zip-level and format work can be tested outside the game entirely; that is how `
 - **`EntityRenderer#submitNameDisplay` is the single funnel for in-world name tags and scoreboard below-name text.**
   `AvatarRenderer` (players) and all standard `EntityRenderer` subclasses delegate to the five-argument
   `submitNameDisplay(EntityRenderState, PoseStack, SubmitNodeCollector, CameraRenderState, int offset)` method.
-  Cancelling this method at `HEAD` suppresses floating nameplates without touching render-state extraction or
-  `TextDisplayRenderer` text geometry.
+  Wrapping and suppressing `SubmitNodeCollector#submitNameTag` within this method hides floating nameplates and
+  scoreboard text without early-aborting `submitNameDisplay`, preserving Figura's `NameplateRenderContext`
+  lifecycle (`begin` at HEAD, `end` at RETURN) and leaving render-state extraction and `TextDisplayRenderer`
+  text geometry intact.
 - **Custom Name's above-player display creates fake `TextDisplay` passenger entities.**
   When `display_above_player.enabled` is `true`, Custom Name spawns two clientbound `TextDisplay` entities
   riding the player. Because these render via `DisplayRenderer.TextDisplayRenderer`, they bypass

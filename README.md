@@ -24,9 +24,10 @@ This integration comprises two independent client features:
 ### 1. Jade nameplates (gated on `jade`)
 When Jade is installed, entity and player identification is handled through Jade's HUD tooltip rather
 than floating vanilla world nameplates:
-- **Suppresses vanilla in-world nameplate rendering**: Cancels `EntityRenderer#submitNameDisplay` at `HEAD`.
-  This hides floating player usernames, custom-named mobs, named pets, armor-stand nameplates, and
-  below-name scoreboard objective text.
+- **Suppresses vanilla in-world nameplate rendering**: Wraps and suppresses `SubmitNodeCollector#submitNameTag`
+  calls inside `EntityRenderer#submitNameDisplay`. This hides floating player usernames, custom-named mobs,
+  named pets, armor-stand nameplates, below-name scoreboard objective text, and Figura entity nameplates, while
+  allowing surrounding method lifecycles (such as Figura's `NameplateRenderContext.begin/end`) to execute cleanly.
 - **Preserves render-state extraction and data queries**: Render-state properties (`state.nameTag`,
   `state.scoreText`, `state.nameTagAttachment`) and entity data methods (`getName()`, `getCustomName()`,
   `getDisplayName()`, `hasCustomName()`) remain fully populated, allowing Jade and other mods to inspect
