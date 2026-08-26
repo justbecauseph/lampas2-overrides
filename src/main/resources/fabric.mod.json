@@ -51,6 +51,10 @@
 			"environment": "client"
 		},
 		{
+			"config": "lampas2-overrides.jadecustomname.mixins.json",
+			"environment": "client"
+		},
+		{
 			"config": "lampas2-overrides.lootrfastframes.mixins.json"
 		},
 		{
@@ -78,6 +82,7 @@
 		"visualworkbench": "*",
 		"nametagupgrade": "*",
 		"gravestones": "*",
-		"jade": "*"
+		"jade": "*",
+		"eclipsescustomname": "*"
 	}
 }

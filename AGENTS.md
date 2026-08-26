@@ -5,8 +5,8 @@ know about each other: the Figura ↔ ReplayMod avatar bridge, Figura avatars in
 heads, Lootr item frames converted into Fast Item Frames blocks, Better Lib's Fabric ZIP filesystem
 startup fix, Underground Village's stale loot data,
 Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Visual Workbench tag reloads under
-Puzzles Lib, Name Tag Upgrade 26.2.0 mouse drag crashes, Gravestones 1.4.2 death inscriptions and glowing outline, and Jade entity nameplate suppression, plus a version-gated Incendium Legacy 5.5.0 tick-function optimization. The first two
-features, Visual Workbench, Name Tag Upgrade, Gravestones, and Jade nameplates are client-only; the Lootr ↔ Fast Item Frames bridge has common server
+Puzzles Lib, Name Tag Upgrade 26.2.0 mouse drag crashes, Gravestones 1.4.2 death inscriptions and glowing outline, Jade entity nameplate suppression, and Jade ↔ Custom Name display name bridge, plus a version-gated Incendium Legacy 5.5.0 tick-function optimization. The first two
+features, Visual Workbench, Name Tag Upgrade, Gravestones, Jade nameplates, and Jade Custom Name are client-only; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -59,6 +59,7 @@ disable an unrelated feature.
 | Underground Village 2.1.1 | `../lampas-server-fabric/mods/underground_village-fabric-26.1-2.1.1.jar` |
 | Additional Lanterns 1.1.2 | `../lampas-server-fabric/mods/additionallanterns-1.1.2-fabric-mc26.2.jar` |
 | Jade 26.2.11 | `../lampas-server-fabric/mods/Jade-mc26.2-Fabric-26.2.11.jar` |
+| Custom Name 0.4.4 | `../lampas-server-fabric/mods/customname-fabric-0.4.4-26.2.jar` |
 | Name Tag Upgrade 26.2.0 | `run/mods/NameTagUpgrade-v26.2.0-mc26.2.x-Fabric.jar` |
 | Gravestones 1.4.2 | `../lampas-server-fabric/mods/gravestones-1.4.2+26.2+A.jar` |
 | Incendium Legacy 5.5.0 | `../lampas-server-fabric/mods/Incendium_Legacy_26.2_v5.5.0.jar` |
@@ -234,6 +235,10 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   riding the player. Because these render via `DisplayRenderer.TextDisplayRenderer`, they bypass
   `EntityRenderer#submitNameDisplay`. To let Jade own above-player presentation, `display_above_player.enabled`
   must remain `false` in `eclipsescustomname.json`.
+- **Client `Player#getDisplayName()` does not contain Custom Name's formatted name.**
+  Custom Name syncs formatted player display names over `ClientboundPlayerInfoUpdatePacket.UPDATE_DISPLAY_NAME`,
+  populating `PlayerInfo#getTabListDisplayName()`. `ObjectNameProviderMixin` redirects `Entity#getDisplayName()`
+  inside `ObjectNameProvider#getEntityName` to `JadeCustomNameResolver` so Jade shows the synced player display name.
 
 ## Structure
 
@@ -248,6 +253,10 @@ chatheads/
 jadenameplates/
   JadeNameplatesMixinPlugin applies when Jade is present
   mixin/                    cancels EntityRenderer#submitNameDisplay
+jadecustomname/
+  JadeCustomNameMixinPlugin applies when Jade + Custom Name exist
+  JadeCustomNameResolver    resolves PlayerInfo tabListDisplayName with fallback
+  mixin/                    redirects Entity#getDisplayName in ObjectNameProvider
 figurareplay/
   FiguraReplayBridge      entry point, tick loop, animation clock, post-processing hooks
   AvatarRecorder          capture side, one Session per recording

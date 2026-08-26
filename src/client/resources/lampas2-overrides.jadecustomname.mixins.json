@@ -1,0 +1,15 @@
+{
+	"required": true,
+	"package": "lampas2overrides.client.jadecustomname.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.client.jadecustomname.JadeCustomNameMixinPlugin",
+	"client": [
+		"ObjectNameProviderMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}
