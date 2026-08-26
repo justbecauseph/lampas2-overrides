@@ -3,7 +3,7 @@
 	"id": "lampas2-overrides",
 	"version": "${version}",
 	"name": "Lampas2 Overrides",
-	"description": "Compatibility fixes for Figura, ReplayMod, Chatting, Lootr, Fast Item Frames, Better Lib, Underground Village, Additional Lanterns, Incendium, Visual Workbench, Name Tag Upgrade and Gravestones.",
+	"description": "Compatibility fixes for Figura, ReplayMod, Chatting, Lootr, Fast Item Frames, Better Lib, Underground Village, Additional Lanterns, Incendium, Visual Workbench, Name Tag Upgrade, Gravestones and Jade.",
 	"authors": [
 		"justbecauseph"
 	],
@@ -47,6 +47,10 @@
 			"environment": "client"
 		},
 		{
+			"config": "lampas2-overrides.jadenameplates.mixins.json",
+			"environment": "client"
+		},
+		{
 			"config": "lampas2-overrides.lootrfastframes.mixins.json"
 		},
 		{
@@ -73,6 +77,7 @@
 		"incendium": "=5.5.0",
 		"visualworkbench": "*",
 		"nametagupgrade": "*",
-		"gravestones": "*"
+		"gravestones": "*",
+		"jade": "*"
 	}
 }

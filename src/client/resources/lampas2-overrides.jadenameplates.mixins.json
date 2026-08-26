@@ -1,0 +1,15 @@
+{
+	"required": true,
+	"package": "lampas2overrides.client.jadenameplates.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.client.jadenameplates.JadeNameplatesMixinPlugin",
+	"client": [
+		"EntityRendererMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

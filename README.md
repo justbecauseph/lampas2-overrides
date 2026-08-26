@@ -15,6 +15,28 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Name Tag Upgrade selection drag](#name-tag-upgrade-selection-drag) | Name Tag Upgrade 26.2.0 | Prevents a client crash when dragging selection left in a scrolled name field |
 | [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.0 | Removes a redundant 20 Hz entity-ID scan and throttles living-mob initialization |
 | [Gravestones death inscription and glow](#gravestones-death-inscription-and-glow) | Gravestones 1.4.2 | Suppresses technical death grave text and renders a glowing outline only on your own graves |
+| [Jade nameplates](#jade-nameplates) | Jade | Removes vanilla in-world entity/player nameplates so identity presentation is handled through Jade |
+
+## Jade nameplates
+
+When Jade is installed, entity and player identification is handled through Jade's HUD tooltip rather
+than floating vanilla world nameplates.
+
+Lampas2 Overrides provides a client-only mixin gated on `jade`:
+- **Suppresses vanilla in-world nameplate rendering**: Cancels `EntityRenderer#submitNameDisplay` at `HEAD`.
+  This hides floating player usernames, custom-named mobs, named pets, armor-stand nameplates, and
+  below-name scoreboard objective text.
+- **Preserves render-state extraction and data queries**: Render-state properties (`state.nameTag`,
+  `state.scoreText`, `state.nameTagAttachment`) and entity data methods (`getName()`, `getCustomName()`,
+  `getDisplayName()`, `hasCustomName()`) remain fully populated, allowing Jade and other mods to inspect
+  them normally.
+- **Genuine `TextDisplay` entities remain visible**: Content rendered via `DisplayRenderer.TextDisplayRenderer`
+  does not rely on entity nameplates and continues to render uninterrupted.
+- **Custom Name compatibility**: Custom Name's optional floating above-head labels use fake clientbound
+  `TextDisplay` passengers rather than vanilla nameplates. When using Jade nameplates, keep
+  `display_above_player.enabled = false` (the default) in `eclipsescustomname.json`. Custom Name continues
+  to manage nicknames, prefixes, suffixes, chat formatting, tab list entries, and LuckPerms integration.
+- **Fail-safe**: When Jade is not installed, the mixin is disabled and vanilla nameplates render normally.
 
 ## Gravestones death inscription and glow
 

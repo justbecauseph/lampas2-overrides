@@ -5,8 +5,8 @@ know about each other: the Figura ↔ ReplayMod avatar bridge, Figura avatars in
 heads, Lootr item frames converted into Fast Item Frames blocks, Better Lib's Fabric ZIP filesystem
 startup fix, Underground Village's stale loot data,
 Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Visual Workbench tag reloads under
-Puzzles Lib, Name Tag Upgrade 26.2.0 mouse drag crashes, and Gravestones 1.4.2 death inscriptions and glowing outline, plus a version-gated Incendium Legacy 5.5.0 tick-function optimization. The first two
-features, Visual Workbench, Name Tag Upgrade, and Gravestones are client-only; the Lootr ↔ Fast Item Frames bridge has common server
+Puzzles Lib, Name Tag Upgrade 26.2.0 mouse drag crashes, Gravestones 1.4.2 death inscriptions and glowing outline, and Jade entity nameplate suppression, plus a version-gated Incendium Legacy 5.5.0 tick-function optimization. The first two
+features, Visual Workbench, Name Tag Upgrade, Gravestones, and Jade nameplates are client-only; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -58,6 +58,7 @@ disable an unrelated feature.
 | Better Lib 2.1.0 | `../lampas-server-fabric/mods/better_lib-fabric-26.1-2.1.0.jar` |
 | Underground Village 2.1.1 | `../lampas-server-fabric/mods/underground_village-fabric-26.1-2.1.1.jar` |
 | Additional Lanterns 1.1.2 | `../lampas-server-fabric/mods/additionallanterns-1.1.2-fabric-mc26.2.jar` |
+| Jade 26.2.11 | `../lampas-server-fabric/mods/Jade-mc26.2-Fabric-26.2.11.jar` |
 | Name Tag Upgrade 26.2.0 | `run/mods/NameTagUpgrade-v26.2.0-mc26.2.x-Fabric.jar` |
 | Gravestones 1.4.2 | `../lampas-server-fabric/mods/gravestones-1.4.2+26.2+A.jar` |
 | Incendium Legacy 5.5.0 | `../lampas-server-fabric/mods/Incendium_Legacy_26.2_v5.5.0.jar` |
@@ -223,6 +224,16 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   This adheres to Minecraft 26.2's render pipeline separation: the local player UUID is matched against `GraveOwner#getUuid()`
   during state extraction, allowing `AbstractGravestoneBlockEntityRenderer#submit` to submit a block model outline pass
   via `RenderTypes.outline(TextureAtlas.LOCATION_BLOCKS)` without touching entity/level state during drawing.
+- **`EntityRenderer#submitNameDisplay` is the single funnel for in-world name tags and scoreboard below-name text.**
+  `AvatarRenderer` (players) and all standard `EntityRenderer` subclasses delegate to the five-argument
+  `submitNameDisplay(EntityRenderState, PoseStack, SubmitNodeCollector, CameraRenderState, int offset)` method.
+  Cancelling this method at `HEAD` suppresses floating nameplates without touching render-state extraction or
+  `TextDisplayRenderer` text geometry.
+- **Custom Name's above-player display creates fake `TextDisplay` passenger entities.**
+  When `display_above_player.enabled` is `true`, Custom Name spawns two clientbound `TextDisplay` entities
+  riding the player. Because these render via `DisplayRenderer.TextDisplayRenderer`, they bypass
+  `EntityRenderer#submitNameDisplay`. To let Jade own above-player presentation, `display_above_player.enabled`
+  must remain `false` in `eclipsescustomname.json`.
 
 ## Structure
 
@@ -234,6 +245,9 @@ chatheads/
   ChatPlayerResolver      resolves multi-word and custom TAB display names to PlayerInfo
   FiguraPortraits         Figura's portrait members, resolved by name
   mixin/                  ChatHeads (detect, arm/disarm) and PlayerFaceExtractor (both draw paths)
+jadenameplates/
+  JadeNameplatesMixinPlugin applies when Jade is present
+  mixin/                    cancels EntityRenderer#submitNameDisplay
 figurareplay/
   FiguraReplayBridge      entry point, tick loop, animation clock, post-processing hooks
   AvatarRecorder          capture side, one Session per recording
