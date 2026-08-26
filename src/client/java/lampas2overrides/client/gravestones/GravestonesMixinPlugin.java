@@ -10,12 +10,9 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import net.fabricmc.loader.api.FabricLoader;
 
 /**
- * Applies the Gravestones overrides only to the affected Gravestones release.
+ * Applies the Gravestones overrides whenever Gravestones is present.
  */
 public final class GravestonesMixinPlugin implements IMixinConfigPlugin {
-
-	private static final String AFFECTED_VERSION = "1.4.2";
-	private static final String AFFECTED_VERSION_FULL = "1.4.2+26.2+A";
 
 	private boolean apply;
 
@@ -23,11 +20,7 @@ public final class GravestonesMixinPlugin implements IMixinConfigPlugin {
 	public void onLoad(String mixinPackage) {
 		apply = FabricLoader.getInstance()
 			.getModContainer("gravestones")
-			.map(container -> {
-				String version = container.getMetadata().getVersion().getFriendlyString();
-				return AFFECTED_VERSION.equals(version) || AFFECTED_VERSION_FULL.equals(version);
-			})
-			.orElse(false);
+			.isPresent();
 	}
 
 	@Override

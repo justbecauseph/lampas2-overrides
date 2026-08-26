@@ -5,7 +5,7 @@ know about each other: the Figura ↔ ReplayMod avatar bridge, Figura avatars in
 heads, Lootr item frames converted into Fast Item Frames blocks, Better Lib's Fabric ZIP filesystem
 startup fix, Underground Village's stale loot data,
 Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Visual Workbench tag reloads under
-Puzzles Lib, Name Tag Upgrade 26.2.0 mouse drag crashes, Gravestones 1.4.2 death inscriptions and glowing outline, Jade entity nameplate suppression, and Jade ↔ Custom Name display name bridge, plus a version-gated Incendium Legacy 5.5.0 tick-function optimization. The first two
+Puzzles Lib, Name Tag Upgrade 26.2.0 mouse drag crashes, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, and Jade ↔ Custom Name display name bridge, plus a version-gated Incendium Legacy 5.5.0 tick-function optimization. The first two
 features, Visual Workbench, Name Tag Upgrade, Gravestones, Jade nameplates, and Jade Custom Name are client-only; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
@@ -295,7 +295,7 @@ nametagupgrade/
   NameTagUpgradeMixinPlugin applies only to the affected Name Tag Upgrade 26.2.0 release
   mixin/                    clamps mouse offset in FormattableEditBox#findClickedPositionInText
 gravestones/
-  GravestonesMixinPlugin    applies only to the affected Gravestones 1.4.2 release
+  GravestonesMixinPlugin    applies whenever Gravestones is present
   OwnedGraveRenderState     duck interface carrying ownership and block state across render phases
   mixin/                    suppresses death grave text and submits model glowing outline
 incendium/
