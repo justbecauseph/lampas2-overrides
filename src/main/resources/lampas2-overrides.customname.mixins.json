@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "lampas2overrides.customname.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.customname.CustomNameMixinPlugin",
+	"mixins": [
+		"CustomNameUtilMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

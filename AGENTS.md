@@ -5,8 +5,8 @@ know about each other: the Figura ↔ ReplayMod avatar bridge, Figura avatars in
 heads, Lootr item frames converted into Fast Item Frames blocks, Better Lib's Fabric ZIP filesystem
 startup fix, Underground Village's stale loot data,
 Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Visual Workbench tag reloads under
-Puzzles Lib, Name Tag Upgrade 26.2.0 mouse drag crashes, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, and Jade ↔ Custom Name display name bridge, plus a version-gated Incendium Legacy 5.5.0 tick-function optimization. The first two
-features, Visual Workbench, Name Tag Upgrade, Gravestones, Jade nameplates, and Jade Custom Name are client-only; the Lootr ↔ Fast Item Frames bridge has common server
+Puzzles Lib, Name Tag Upgrade 26.2.0 mouse drag crashes, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, plus a version-gated Incendium Legacy 5.5.0 tick-function optimization. The first two
+features, Visual Workbench, Name Tag Upgrade, Gravestones, Jade nameplates, and Jade Custom Name are client-only; the Custom Name space fix is common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -241,6 +241,13 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   Custom Name syncs formatted player display names over `ClientboundPlayerInfoUpdatePacket.UPDATE_DISPLAY_NAME`,
   populating `PlayerInfo#getTabListDisplayName()`. `ObjectNameProviderMixin` redirects `Entity#getDisplayName()`
   inside `ObjectNameProvider#getEntityName` to `JadeCustomNameResolver` so Jade shows the synced player display name.
+- **Custom Name 0.4.4-26.2 passes `operatorsBypassRestrictions` directly as `spaceAllowed` inside `CustomNameUtil#playerNameArgumentToComponent`.**
+  When restrictions are not bypassed, `spaceAllowed` is `false` and `nameArgumentToComponent` truncates the argument at the
+  first ASCII space — so `/name nickname The Admin` silently becomes `The`. The Lampas compatibility mixin changes only
+  that one call-site's `spaceAllowed` argument to `true`. Do not replace this with forcing `bypassRestrictions=true`;
+  max-name-length and blacklist enforcement must remain active. The patch intentionally affects `PREFIX`, `NICKNAME`, and
+  `SUFFIX` because all three use the same `playerNameArgumentToComponent` path. Spaces are syntax, not a bypass.
+  Do not move this fix into `jadecustomname`; Jade is only a display consumer and is unrelated to command parsing.
 
 ## Structure
 
@@ -303,6 +310,9 @@ incendium/
   IncendiumCompatibility    exact version and upstream-function fingerprint gate
 resourcepacks/incendium_5_5_0_optimizations/
   data/incendium/function/  clock and entity-ID overrides for verified Incendium 5.5.0 only
+customname/
+  CustomNameMixinPlugin     applies only to Custom Name 0.4.4-26.2 (common-side, server-safe)
+  mixin/                    forces spaceAllowed=true in playerNameArgumentToComponent's nameArgumentToComponent call
 ```
 
 Threading: the client thread owns everything except the recorder's serialisation executor, the
