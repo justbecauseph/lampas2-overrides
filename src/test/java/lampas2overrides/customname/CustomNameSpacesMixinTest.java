@@ -6,23 +6,37 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 /**
  * Contract tests for the Custom Name 0.4.4-26.2 player-name space fix.
  *
- * <p>These tests verify the mixin configuration document and the version gate constant
- * without loading any Custom Name classes. They act as a compile-time and packaging check:
- * if someone "simplifies" the mixin to {@code return original} or the config drifts, the
- * test suite catches it before a build reaches the server.
+ * <p>Config-document tests verify the mixin JSON is present and well-formed.
+ * Structural tests use ASM to read the <em>compiled</em> class file — bypassing
+ * the {@code RetentionPolicy.CLASS} limitation that makes Mixin annotations
+ * invisible to {@code Class#getAnnotation()} at runtime.
+ * The handler invocation test uses standard reflection, which works for the
+ * handler body regardless of annotation retention.
  *
- * <p>Live regression tests are documented in AGENTS.md (Phase 12 restriction matrix).
+ * <p>There is no silent-skip path in any of these tests.
+ *
+ * <p>Live regression tests are documented in AGENTS.md (restriction matrix).
  */
 public class CustomNameSpacesMixinTest {
 
 	private static final String MIXIN_CONFIG = "lampas2-overrides.customname.mixins.json";
+	private static final String MIXIN_CLASS_RESOURCE =
+		"lampas2overrides/customname/mixin/CustomNameUtilMixin.class";
 
 	// ── Mixin config document ──────────────────────────────────────────────────
 
@@ -69,42 +83,173 @@ public class CustomNameSpacesMixinTest {
 	 */
 	@Test
 	void pluginGatesOnExactVersion() {
-		// Access through the class directly — no FabricLoader in test scope,
-		// but we can verify the constant's declared value via the source contract.
 		assertEquals("0.4.4-26.2", CustomNameMixinPlugin.AFFECTED_VERSION,
 			"plugin must gate on exactly 0.4.4-26.2; update only after inspecting the new jar");
 	}
 
-	// ── Mixin target contract ─────────────────────────────────────────────────
+	// ── Compiled mixin structural contract (ASM) ──────────────────────────────
 
 	/**
-	 * Verifies that the mixin targets the correct class and method, and that the
-	 * @ModifyArg injects at the right invocation, on the right argument index.
+	 * Reads the compiled mixin class with ASM to inspect its {@code @Mixin} target,
+	 * {@code @ModifyArg} method/index, and {@code @At} descriptor — all of which carry
+	 * {@code RetentionPolicy.CLASS} and are therefore invisible to
+	 * {@code Class#getAnnotation()} at runtime.
 	 *
-	 * <p>These are source-level checks. The authoritative runtime check is observing
-	 * "Mixing CustomNameUtilMixin" in debug.log. These tests exist so that structural
-	 * regressions (wrong class, index change, replaced with redirect) are visible
-	 * in CI without requiring a live Minecraft server.
+	 * <p>If someone shifts the argument index, changes the descriptor, or swaps the
+	 * {@code @ModifyArg} for a {@code @Redirect}, this test fails immediately.
 	 */
 	@Test
-	void mixinTargetsCustomNameUtil() {
-		// The mixin class name encodes the target via @Mixin(targets=...).
-		// Verify the descriptor strings used in @ModifyArg are present in the source.
-		// (The injector strings are validated by reading the compiled class; here we
-		//  read the source file from the test classpath as a documentation contract.)
-		String src = readSourceOrSkip();
-		if (src == null) return; // source not on test classpath — skip structural checks
+	void mixinTargetsExpectedCallSite() throws IOException {
+		MixinClassInfo info = readMixinClass();
 
-		assertTrue(src.contains("xyz.eclipseisoffline.eclipsescustomname.CustomNameUtil"),
-			"mixin must target CustomNameUtil");
-		assertTrue(src.contains("playerNameArgumentToComponent"),
-			"ModifyArg method must be playerNameArgumentToComponent");
-		assertTrue(src.contains("nameArgumentToComponent"),
-			"injection site must be the nameArgumentToComponent call");
-		assertTrue(src.contains("index = 2"),
-			"must modify argument index 2 (spaceAllowed)");
-		assertTrue(src.contains("return true"),
-			"replacement value must always be true — do not simplify to 'return original'");
+		assertEquals(
+			"xyz.eclipseisoffline.eclipsescustomname.CustomNameUtil",
+			info.mixinTarget,
+			"@Mixin must target CustomNameUtil"
+		);
+		assertNotNull(info.modifyArgMethod,
+			"handler must carry @ModifyArg; was it renamed or replaced with @Redirect?");
+		assertEquals(
+			"lampas2$allowSpacesInPlayerNames",
+			info.modifyArgMethod,
+			"@ModifyArg handler method name must be lampas2$allowSpacesInPlayerNames"
+		);
+		assertTrue(
+			info.modifyArgMethodDescriptors.contains(
+				"playerNameArgumentToComponent(Ljava/lang/String;Z)"
+					+ "Lnet/minecraft/network/chat/Component;"),
+			"@ModifyArg method value must be playerNameArgumentToComponent with the two-argument descriptor; got: "
+				+ info.modifyArgMethodDescriptors
+		);
+		assertEquals(2, info.modifyArgIndex,
+			"@ModifyArg must modify argument index 2 (spaceAllowed)");
+		assertEquals("INVOKE", info.atValue, "@At value must be INVOKE");
+		assertEquals(
+			"Lxyz/eclipseisoffline/eclipsescustomname/CustomNameUtil;"
+				+ "nameArgumentToComponent(Ljava/lang/String;ZZZ)"
+				+ "Lnet/minecraft/network/chat/Component;",
+			info.atTarget,
+			"@At target must be nameArgumentToComponent with the four-argument descriptor"
+		);
+	}
+
+	/**
+	 * Invokes the handler directly via reflection to confirm it always returns {@code true},
+	 * regardless of the original argument value. The patch unconditionally allows spaces;
+	 * it must never be simplified to {@code return original}.
+	 */
+	@Test
+	void alwaysAllowsSpaces() throws Exception {
+		Class<?> mixinClass = Class.forName(
+			"lampas2overrides.customname.mixin.CustomNameUtilMixin");
+		Method handler = mixinClass.getDeclaredMethod(
+			"lampas2$allowSpacesInPlayerNames", boolean.class);
+		handler.setAccessible(true);
+
+		assertEquals(Boolean.TRUE, handler.invoke(null, false),
+			"handler must return true when original is false (the bug case: restrictions not bypassed)");
+		assertEquals(Boolean.TRUE, handler.invoke(null, true),
+			"handler must return true when original is true (no regression when bypass is active)");
+	}
+
+	// ── ASM reader ────────────────────────────────────────────────────────────
+
+	private static MixinClassInfo readMixinClass() throws IOException {
+		try (InputStream input = resource(MIXIN_CLASS_RESOURCE)) {
+			assertNotNull(input, MIXIN_CLASS_RESOURCE + " must exist on the test classpath");
+			MixinClassInfo info = new MixinClassInfo();
+			new ClassReader(input).accept(new MixinClassVisitor(info), 0);
+			return info;
+		}
+	}
+
+	private static final class MixinClassInfo {
+		String mixinTarget;
+		String modifyArgMethod;
+		List<String> modifyArgMethodDescriptors = new ArrayList<>();
+		int modifyArgIndex = -1;
+		String atValue;
+		String atTarget;
+	}
+
+	private static final class MixinClassVisitor extends ClassVisitor {
+		private final MixinClassInfo info;
+
+		MixinClassVisitor(MixinClassInfo info) {
+			super(Opcodes.ASM9);
+			this.info = info;
+		}
+
+		@Override
+		public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
+			// @Mixin is RetentionPolicy.CLASS → visible=false
+			if (descriptor.equals("Lorg/spongepowered/asm/mixin/Mixin;")) {
+				return new AnnotationVisitor(Opcodes.ASM9) {
+					@Override
+					public AnnotationVisitor visitArray(String name) {
+						if ("targets".equals(name)) {
+							return new AnnotationVisitor(Opcodes.ASM9) {
+								@Override
+								public void visit(String name, Object value) {
+									info.mixinTarget = (String) value;
+								}
+							};
+						}
+						return super.visitArray(name);
+					}
+				};
+			}
+			return super.visitAnnotation(descriptor, visible);
+		}
+
+		@Override
+		public MethodVisitor visitMethod(int access, String name, String descriptor,
+				String signature, String[] exceptions) {
+			return new MethodVisitor(Opcodes.ASM9) {
+				@Override
+				public AnnotationVisitor visitAnnotation(String annDesc, boolean visible) {
+					if (annDesc.equals("Lorg/spongepowered/asm/mixin/injection/ModifyArg;")) {
+						info.modifyArgMethod = name;
+						return new AnnotationVisitor(Opcodes.ASM9) {
+							@Override
+							public AnnotationVisitor visitArray(String annName) {
+								if ("method".equals(annName)) {
+									return new AnnotationVisitor(Opcodes.ASM9) {
+										@Override
+										public void visit(String n, Object value) {
+											info.modifyArgMethodDescriptors.add((String) value);
+										}
+									};
+								}
+								return super.visitArray(annName);
+							}
+
+							@Override
+							public void visit(String annName, Object value) {
+								if ("index".equals(annName)) {
+									info.modifyArgIndex = (int) value;
+								}
+							}
+
+							@Override
+							public AnnotationVisitor visitAnnotation(String annName, String annDesc2) {
+								if ("at".equals(annName)) {
+									return new AnnotationVisitor(Opcodes.ASM9) {
+										@Override
+										public void visit(String n, Object value) {
+											if ("value".equals(n)) info.atValue = (String) value;
+											if ("target".equals(n)) info.atTarget = (String) value;
+										}
+									};
+								}
+								return super.visitAnnotation(annName, annDesc2);
+							}
+						};
+					}
+					return super.visitAnnotation(annDesc, visible);
+				}
+			};
+		}
 	}
 
 	// ── Helpers ───────────────────────────────────────────────────────────────
@@ -118,21 +263,5 @@ public class CustomNameSpacesMixinTest {
 
 	private static InputStream resource(String name) {
 		return CustomNameSpacesMixinTest.class.getClassLoader().getResourceAsStream(name);
-	}
-
-	/**
-	 * Attempts to read the mixin source file from the test classpath. Returns null
-	 * (and causes the structural checks to skip) when the build does not include
-	 * sources on the test classpath — that is acceptable because the runtime mixin
-	 * application in debug.log is the authoritative check.
-	 */
-	private static String readSourceOrSkip() {
-		try (InputStream src = resource(
-				"lampas2overrides/customname/mixin/CustomNameUtilMixin.java")) {
-			if (src == null) return null;
-			return new String(src.readAllBytes(), StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			return null;
-		}
 	}
 }
