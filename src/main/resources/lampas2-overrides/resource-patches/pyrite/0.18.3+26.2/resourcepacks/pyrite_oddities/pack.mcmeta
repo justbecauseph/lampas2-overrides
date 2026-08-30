@@ -1,0 +1,15 @@
+{
+  "pack": {
+    "description": "Removed features from Pyrite.",
+    "pack_format": 48,
+    "supported_formats": [
+      34,
+      107
+    ],
+    "min_format": 34,
+    "max_format": [
+      107,
+      1
+    ]
+  }
+}

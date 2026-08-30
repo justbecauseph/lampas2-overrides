@@ -72,6 +72,9 @@
 		},
 		{
 			"config": "lampas2-overrides.mobfilter.mixins.json"
+		},
+		{
+			"config": "lampas2-overrides.resourcefix.mixins.json"
 		}
 	],
 	"depends": {

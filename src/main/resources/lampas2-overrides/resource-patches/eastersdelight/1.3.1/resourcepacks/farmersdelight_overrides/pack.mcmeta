@@ -1,0 +1,15 @@
+{
+  "pack": {
+    "description": "Easter's Delight overrides for Farmer's Delight recipes (cod stew, noodle soup).",
+    "pack_format": 101,
+    "supported_formats": [
+      48,
+      107
+    ],
+    "min_format": 48,
+    "max_format": [
+      107,
+      1
+    ]
+  }
+}

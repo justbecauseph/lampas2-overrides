@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "lampas2overrides.resourcefix.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.resourcefix.ResourceFixMixinPlugin",
+	"mixins": [
+		"ModNioPackResourcesMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
