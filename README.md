@@ -11,11 +11,42 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Better Lib startup](#better-lib-startup) | Better Lib | Prevents Better Lib from reopening Fabric Loader's shared mod-jar filesystem |
 | [Underground Village loot](#underground-village-loot) | Underground Village | Repairs obsolete and absent-mod Stoneholm loot data |
 | [Additional Lanterns chunk loading](#additional-lanterns-chunk-loading) | Additional Lanterns 1.1.2 | Prevents redstone neighbor checks from synchronously loading unloaded chunks |
+| [Mob Filter worldgen safety](#mob-filter-worldgen-safety) | Mob Filter | Prevents rejected worldgen mobs from recursively synchronously loading their generating chunk |
 | [Visual Workbench tag rebinding](#visual-workbench-tag-rebinding) | Visual Workbench + Puzzles Lib | Prevents replay loading and tag reload crashes from stale Visual Workbench tags |
 | [Name Tag Upgrade selection drag](#name-tag-upgrade-selection-drag) | Name Tag Upgrade 26.2.0 | Prevents a client crash when dragging selection left in a scrolled name field |
 | [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.0 | Removes a redundant 20 Hz entity-ID scan and throttles living-mob initialization |
 | [Gravestones death inscription and glow](#gravestones-death-inscription-and-glow) | Gravestones | Suppresses technical death grave text and renders a glowing outline only on your own graves |
 | [Jade nameplates and Custom Name](#jade-nameplates-and-custom-name) | Jade (+ Custom Name) | Suppresses vanilla in-world entity/player nameplates and syncs Custom Name player display names into Jade |
+
+## Mob Filter worldgen safety
+
+Mob Filter `0.28.0+26.2` rejects disallowed mobs from `WorldGenRegion#addFreshEntity` by first
+calling `Entity.remove(DISCARDED)` and then returning `false`. During threaded C2ME worldgen, that
+removal can enter `LivingEntity` dismount collision resolution, ask Lithium for a chunk, and
+synchronously join the server thread while the same chunk is still waiting for its C2ME
+`FEATURES` stage:
+
+```text
+Mob Filter rejection
+  -> Entity.remove
+  -> dismount collision search
+  -> Lithium getChunk
+  -> server thread
+  -> same C2ME generation future
+  -> deadlock
+```
+
+Lampas2 Overrides suppresses only that `Entity.remove(...)` call inside Mob Filter's
+`WorldGenRegion_addFreshEntity` callback. Mob Filter still performs its complete rule evaluation
+and its existing `CallbackInfoReturnable#setReturnValue(false)`, so rejected worldgen mobs remain
+absent. The `ServerLevel_addFreshEntity` callback is deliberately untouched; normal server-thread
+rejections retain their ordinary removal behavior.
+
+This compatibility mixin is common-side and is enabled whenever Mob Filter is installed. C2ME,
+Lithium, and Chunky are not activation requirements: Chunky exposed the issue through aggressive
+generation, but the unsafe side effect belongs to Mob Filter's worldgen veto. The mixin keeps a
+hard `require = 1` contract, so a Mob Filter release that changes this call site fails loudly at
+startup and requires a bytecode review before use.
 
 ## Jade nameplates and Custom Name
 

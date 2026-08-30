@@ -37,6 +37,10 @@ dependencies {
 	compileOnly "maven.modrinth:fast-item-frames:${project.fast_item_frames_version}"
 	compileOnly "maven.modrinth:puzzles-lib:${project.puzzles_lib_version}"
 	compileOnly "maven.modrinth:pneumono_gravestones:${project.gravestones_version}"
+	compileOnly "maven.modrinth:gRn1FzwR:${project.mob_filter_version}"
+	// The upstream bytecode contract test reads MixinService.class at test runtime;
+	// this test-only dependency is never included in the published mod jar.
+	testRuntimeOnly "maven.modrinth:gRn1FzwR:${project.mob_filter_version}"
 
 	// Optional mods are compile-only: every compatibility feature is gated by its mixin plugin,
 	// and none of their classes are bundled into the output jar.
