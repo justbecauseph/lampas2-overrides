@@ -1,6 +1,7 @@
 package lampas2overrides.mobfilter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -23,8 +24,6 @@ public final class MobFilterWorldgenSafetyMixinTest {
 	private static final String MIXIN_CONFIG = "lampas2-overrides.mobfilter.mixins.json";
 	private static final String MIXIN_CLASS_RESOURCE =
 		"lampas2overrides/mobfilter/mixin/MixinServiceMixin.class";
-	private static final String PLUGIN_CLASS_RESOURCE =
-		"lampas2overrides/mobfilter/MobFilterMixinPlugin.class";
 	private static final String UPSTREAM_CLASS_RESOURCE =
 		"net/pcal/mobfilter/MixinService.class";
 	private static final String REMOVE_DESCRIPTOR =
@@ -47,15 +46,8 @@ public final class MobFilterWorldgenSafetyMixinTest {
 	}
 
 	@Test
-	void pluginUsesPresenceGateWithoutVersionInspection() throws IOException {
-		PluginClassInfo info = readPluginClass();
-
-		assertTrue(info.modLoadedCall,
-			"plugin must use FabricLoader.isModLoaded(\"mobfilter\")");
-		assertTrue(info.mobFilterConstant,
-			"plugin must identify the mobfilter mod id");
-		assertTrue(!info.modContainerCall,
-			"plugin must not inspect a Mob Filter version");
+	void pluginGatesOnExactAffectedVersion() {
+		assertEquals("0.28.0+26.2", MobFilterMixinPlugin.AFFECTED_VERSION);
 	}
 
 	@Test
@@ -74,6 +66,8 @@ public final class MobFilterWorldgenSafetyMixinTest {
 		assertEquals(
 			"(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity$RemovalReason;)V",
 			info.handlerDescriptor);
+		assertFalse(info.handlerStatic,
+			"redirect handler must be non-static because the target method is an instance method");
 		assertEquals(List.of(Opcodes.RETURN), info.handlerInstructions);
 	}
 
@@ -86,6 +80,8 @@ public final class MobFilterWorldgenSafetyMixinTest {
 
 			assertEquals(1, info.worldgenRemoveCalls);
 			assertEquals(1, info.worldgenSetReturnValueCalls);
+			assertFalse(info.worldgenMethodStatic,
+				"WorldGenRegion_addFreshEntity must be an instance method");
 			assertEquals(1, info.serverRemoveCalls);
 			assertEquals(1, info.serverSetReturnValueCalls);
 		}
@@ -96,15 +92,6 @@ public final class MobFilterWorldgenSafetyMixinTest {
 			assertNotNull(input, MIXIN_CLASS_RESOURCE + " must exist on the test classpath");
 			MixinClassInfo info = new MixinClassInfo();
 			new ClassReader(input).accept(new MixinClassVisitor(info), 0);
-			return info;
-		}
-	}
-
-	private static PluginClassInfo readPluginClass() throws IOException {
-		try (InputStream input = resource(PLUGIN_CLASS_RESOURCE)) {
-			assertNotNull(input, PLUGIN_CLASS_RESOURCE + " must exist on the test classpath");
-			PluginClassInfo info = new PluginClassInfo();
-			new ClassReader(input).accept(new PluginClassVisitor(info), 0);
 			return info;
 		}
 	}
@@ -122,49 +109,9 @@ public final class MobFilterWorldgenSafetyMixinTest {
 		String atValue;
 		String atTarget;
 		int require = -1;
+		boolean handlerStatic;
 		final List<String> redirectMethods = new ArrayList<>();
 		final List<Integer> handlerInstructions = new ArrayList<>();
-	}
-
-	private static final class PluginClassInfo {
-		boolean modLoadedCall;
-		boolean modContainerCall;
-		boolean mobFilterConstant;
-	}
-
-	private static final class PluginClassVisitor extends ClassVisitor {
-		private final PluginClassInfo info;
-
-		PluginClassVisitor(PluginClassInfo info) {
-			super(Opcodes.ASM9);
-			this.info = info;
-		}
-
-		@Override
-		public MethodVisitor visitMethod(int access, String name, String descriptor,
-				String signature, String[] exceptions) {
-			if (!name.equals("onLoad")) return null;
-			return new MethodVisitor(Opcodes.ASM9) {
-				@Override
-				public void visitMethodInsn(int opcode, String owner, String methodName,
-						String methodDescriptor, boolean isInterface) {
-					if (owner.equals("net/fabricmc/loader/api/FabricLoader")
-							&& methodName.equals("isModLoaded")
-							&& methodDescriptor.equals("(Ljava/lang/String;)Z")) {
-						info.modLoadedCall = true;
-					}
-					if (owner.equals("net/fabricmc/loader/api/FabricLoader")
-							&& methodName.equals("getModContainer")) {
-						info.modContainerCall = true;
-					}
-				}
-
-				@Override
-				public void visitLdcInsn(Object value) {
-					if (value.equals("mobfilter")) info.mobFilterConstant = true;
-				}
-			};
-		}
 	}
 
 	private static final class MixinClassVisitor extends ClassVisitor {
@@ -202,6 +149,7 @@ public final class MobFilterWorldgenSafetyMixinTest {
 			boolean handler = name.equals("lampas2$skipWorldgenDiscard");
 			if (handler) {
 				info.handlerDescriptor = descriptor;
+				info.handlerStatic = (access & Opcodes.ACC_STATIC) != 0;
 			}
 			return new MethodVisitor(Opcodes.ASM9) {
 				@Override
@@ -265,6 +213,7 @@ public final class MobFilterWorldgenSafetyMixinTest {
 	private static final class UpstreamClassInfo {
 		int worldgenRemoveCalls;
 		int worldgenSetReturnValueCalls;
+		boolean worldgenMethodStatic;
 		int serverRemoveCalls;
 		int serverSetReturnValueCalls;
 	}
@@ -282,6 +231,7 @@ public final class MobFilterWorldgenSafetyMixinTest {
 				String signature, String[] exceptions) {
 			boolean worldgen = name.equals("WorldGenRegion_addFreshEntity");
 			boolean server = name.equals("ServerLevel_addFreshEntity");
+			if (worldgen) info.worldgenMethodStatic = (access & Opcodes.ACC_STATIC) != 0;
 			return new MethodVisitor(Opcodes.ASM9) {
 				@Override
 				public void visitMethodInsn(int opcode, String owner, String methodName,

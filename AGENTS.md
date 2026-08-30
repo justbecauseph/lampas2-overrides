@@ -119,9 +119,10 @@ fingerprint mismatch must instead log that the performance datapack remains disa
 
 For Mob Filter, dedicated-server startup must succeed and, once the Mob Filter target
 class is loaded by an entity-add or worldgen path, `MixinServiceMixin` must appear as applying with
-no injection failure. The common mixin is absent when Mob Filter is absent and applies whenever it
-is present; the pinned 0.28.0+26.2 artifact remains the bytecode contract reference. For the live
-regression, resume Chunky with the original C2ME/Lithium
+no injection failure. The common mixin is absent when Mob Filter is absent and applies only to
+version `0.28.0+26.2`; other versions are deliberately skipped until inspected. The pinned
+0.28.0+26.2 artifact is the bytecode contract reference. For the live regression, resume Chunky
+with the original C2ME/Lithium
 configuration through chunk `[-49, 82]` (approximately `X -776`, `Z 1320`) and confirm it reaches
 `FULL` without the old `Sync load chunk [-49, 82]` watchdog stall. Then let generation proceed
 materially beyond the prior failure window while checking watchdog, C2ME sync-load, Mob Filter and
@@ -225,9 +226,9 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   from a C2ME worldgen worker can run dismount collision resolution, which asks Lithium for chunks
   and can synchronously join the server thread on the same chunk whose `FEATURES` stage that worker
   owns. The compatibility mixin suppresses only that worldgen call; `ServerLevel_addFreshEntity`
-  keeps its normal removal path. The mixin is presence-gated rather than version-gated, and its
-  required redirect deliberately fails startup if a future Mob Filter jar moves or removes this
-  call site; inspect the new jar before accepting that change.
+  keeps its normal removal path. The mixin is gated to the inspected 0.28.0+26.2 version, and its
+  required redirect deliberately fails startup if that known jar moves or removes this call site.
+  Inspect any new Mob Filter jar before extending the gate.
 - **Visual Workbench dynamically creates replacement crafting-table blocks and copies the source block's bound tags into them.**
   Puzzles Lib's `copyBoundTags` assumes a target's tags are either empty or identical. ReplayMod
   playback and repeated client configuration reloads cause client tags to be reloaded in the same
@@ -336,7 +337,7 @@ customname/
   CustomNameMixinPlugin     applies only to Custom Name 0.4.4-26.2 (common-side, server-safe)
   mixin/                    forces spaceAllowed=true in playerNameArgumentToComponent's nameArgumentToComponent call
 mobfilter/
-  MobFilterMixinPlugin      applies whenever Mob Filter is present (common-side, server-safe)
+  MobFilterMixinPlugin      applies only to Mob Filter 0.28.0+26.2 (common-side, server-safe)
   mixin/                    suppresses only the worldgen Entity.remove call after Mob Filter rejects a spawn
 ```
 

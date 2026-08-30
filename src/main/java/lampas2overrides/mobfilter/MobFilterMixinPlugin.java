@@ -9,14 +9,19 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 import net.fabricmc.loader.api.FabricLoader;
 
-/** Applies the worldgen discard safety fix whenever Mob Filter is installed. */
+/** Applies the worldgen discard safety fix only to the inspected Mob Filter release. */
 public final class MobFilterMixinPlugin implements IMixinConfigPlugin {
+
+	static final String AFFECTED_VERSION = "0.28.0+26.2";
 
 	private boolean apply;
 
 	@Override
 	public void onLoad(String mixinPackage) {
-		apply = FabricLoader.getInstance().isModLoaded("mobfilter");
+		apply = FabricLoader.getInstance()
+			.getModContainer("mobfilter")
+			.map(container -> AFFECTED_VERSION.equals(container.getMetadata().getVersion().getFriendlyString()))
+			.orElse(false);
 	}
 
 	@Override

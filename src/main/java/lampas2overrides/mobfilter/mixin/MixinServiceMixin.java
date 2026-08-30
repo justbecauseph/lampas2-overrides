@@ -25,7 +25,7 @@ public final class MixinServiceMixin {
 		),
 		require = 1
 	)
-	private static void lampas2$skipWorldgenDiscard(Entity entity, Entity.RemovalReason reason) {
+	private void lampas2$skipWorldgenDiscard(Entity entity, Entity.RemovalReason reason) {
 		// The upstream callback still returns false immediately after this call site.
 	}
 }

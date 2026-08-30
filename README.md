@@ -42,11 +42,12 @@ and its existing `CallbackInfoReturnable#setReturnValue(false)`, so rejected wor
 absent. The `ServerLevel_addFreshEntity` callback is deliberately untouched; normal server-thread
 rejections retain their ordinary removal behavior.
 
-This compatibility mixin is common-side and is enabled whenever Mob Filter is installed. C2ME,
-Lithium, and Chunky are not activation requirements: Chunky exposed the issue through aggressive
-generation, but the unsafe side effect belongs to Mob Filter's worldgen veto. The mixin keeps a
-hard `require = 1` contract, so a Mob Filter release that changes this call site fails loudly at
-startup and requires a bytecode review before use.
+This compatibility mixin is common-side and is enabled only for the inspected Mob Filter version
+`0.28.0+26.2`. C2ME, Lithium, and Chunky are not activation requirements: Chunky exposed the issue
+through aggressive generation, but the unsafe side effect belongs to Mob Filter's worldgen veto.
+Other Mob Filter versions are deliberately skipped until their bytecode and behavior are reviewed.
+The mixin also keeps a hard `require = 1` contract, so a changed call site fails loudly during the
+known-version startup path.
 
 ## Jade nameplates and Custom Name
 
