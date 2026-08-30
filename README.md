@@ -9,7 +9,7 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Figura chat heads](#figura-chat-heads) | Figura + Chatting | Draws the Figura avatar's face in Chatting's chat heads instead of the vanilla skin |
 | [Lootr fast item frames](#lootr--fast-item-frames) | Lootr + Fast Item Frames | Converts Lootr item-frame entities into blocks while preserving per-player loot |
 | [Better Lib startup](#better-lib-startup) | Better Lib | Prevents Better Lib from reopening Fabric Loader's shared mod-jar filesystem |
-| [Underground Village loot](#underground-village-loot) | Underground Village | Repairs obsolete and absent-mod Stoneholm loot data |
+| [Underground Village fixes](#underground-village-fixes) | Underground Village 2.1.1 | Repairs obsolete/absent-mod loot tables and worldgen structure/pool data defects |
 | [Additional Lanterns chunk loading](#additional-lanterns-chunk-loading) | Additional Lanterns 1.1.2 | Prevents redstone neighbor checks from synchronously loading unloaded chunks |
 | [Mob Filter worldgen safety](#mob-filter-worldgen-safety) | Mob Filter | Prevents rejected worldgen mobs from recursively synchronously loading their generating chunk |
 | [Visual Workbench tag rebinding](#visual-workbench-tag-rebinding) | Visual Workbench + Puzzles Lib | Prevents replay loading and tag reload crashes from stale Visual Workbench tags |
@@ -164,13 +164,18 @@ Lampas2 Overrides cancels Additional Lanterns' `VanillaLanternEvents.handleLante
 when the target position's chunk is not currently loaded in `ServerChunkCache`. Loaded chunks retain
 the original behavior. The mixin is version-gated to Additional Lanterns 1.1.2.
 
-## Underground Village loot
+## Underground Village fixes
 
-Underground Village 2.1.1 bundles three Create integration loot tables that hard-reference Create
-items even when Create is absent, plus a cleric table using the removed `minecraft:set_nbt` loot
-function. Before registry-aware loot validation, this compatibility layer substitutes empty tables
-for the Create-only rooms when Create is not installed and upgrades the cleric potion entries to
-Minecraft 26.2's `minecraft:set_potion` format. Other Stoneholm loot tables are untouched.
+Underground Village 2.1.1 contains several upstream data bugs:
+
+1. **Loot table defects**: Bundles three Create integration loot tables that hard-reference Create items even when Create is absent, plus a cleric table using the removed `minecraft:set_nbt` function. Before registry-aware loot validation, this compatibility layer substitutes empty tables for Create-only rooms when Create is absent and upgrades cleric potion functions to `minecraft:set_potion`.
+2. **Worldgen structure & template pool defects**:
+   - `poi/v4/founten.nbt` was corrupted in commit `23b7f51f` ("Fix Pool") with invalid gzip CRC/ISIZE and malformed NBT tags; repaired using the clean parent structure.
+   - `poi/v4/sidebed_bedroom.nbt` and `abandoned_poi/v4/sidebed_bedroom.nbt` reference non-existent `stoneholm:iron_golm`; corrected to `stoneholm:iron_golem`.
+   - `poi/v4/tall_bedroom.nbt` references non-existent `stoneholm:villager`; corrected to `stoneholm:villagers`.
+   - `better_villagers_point_of_interest.json` and `better_villagers_abandoned_point_of_interest.json` reference non-existent `stoneholm:addons/better_villager/poi/...` (singular); corrected to `stoneholm:addons/better_villagers/poi/...` (plural).
+
+Worldgen data fixes are packaged in an always-enabled built-in datapack (`stoneholm_2_1_1_fixes`), version-gated to Underground Village 2.1.1 and protected by SHA-256 fingerprints of all six upstream target resources. Other Stoneholm structures and pools are untouched.
 
 ## Better Lib startup
 

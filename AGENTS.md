@@ -3,7 +3,7 @@
 This repo is a Fabric mod for Minecraft 26.2 holding compatibility fixes between mods that do not
 know about each other: the Figura ↔ ReplayMod avatar bridge, Figura avatars in Chatting's chat
 heads, Lootr item frames converted into Fast Item Frames blocks, Better Lib's Fabric ZIP filesystem
-startup fix, Underground Village's stale loot data,
+startup fix, Underground Village's stale loot data and 2.1.1 worldgen structure/pool defects,
 Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter 0.28.0+26.2 threaded-worldgen
 entity-discard deadlock, Visual Workbench tag reloads under
 Puzzles Lib, Name Tag Upgrade 26.2.0 mouse drag crashes, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, plus a version-gated Incendium Legacy 5.5.0 tick-function optimization. The first two
@@ -107,7 +107,10 @@ successful conversion removes the entity and leaves a block entity:
 For Better Lib, dedicated-server startup must pass its `registerJsonVillagers` call without
 `FileSystemAlreadyExistsException`, and `JsonVillagerLoaderMixin` must appear in `debug.log`.
 For Stoneholm, no parse errors should remain for `andesite_worker`, `brass_worker`,
-`copper_worker`, or `cleric`; the compatibility logger should name all four repairs.
+`copper_worker`, or `cleric`; the compatibility logger should name all four repairs. Dedicated-server
+startup must log `Enabled version-gated Underground Village 2.1.1 worldgen fixes`, and fresh world generation
+must load all Stoneholm structures (including `poi/v4/founten`, `sidebed_bedroom`, and `tall_bedroom`)
+and template pools without errors.
 
 For Incendium, dedicated-server startup must log
 `Enabled the version-gated Incendium 5.5.0 performance datapack`, and `/datapack list enabled` must
@@ -271,6 +274,14 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   max-name-length and blacklist enforcement must remain active. The patch intentionally affects `PREFIX`, `NICKNAME`, and
   `SUFFIX` because all three use the same `playerNameArgumentToComponent` path. Spaces are syntax, not a bypass.
   Do not move this fix into `jadecustomname`; Jade is only a display consumer and is unrelated to command parsing.
+- **Underground Village 2.1.1 bundles corrupted structure binary and mistyped pool references.**
+  `poi/v4/founten.nbt` suffered binary corruption in upstream commit `23b7f51f` ("Fix Pool"), causing invalid
+  gzip CRC/ISIZE and `NbtFormatException: Missing type on ListTag`. It is restored using the clean parent structure
+  from commit `023698f` (blob `88e8ca74fda1a3215dbb803a5da4501a63c5df66`).
+  `poi/v4/sidebed_bedroom.nbt` and `abandoned_poi/v4/sidebed_bedroom.nbt` contain `stoneholm:iron_golm` instead of `stoneholm:iron_golem`.
+  `poi/v4/tall_bedroom.nbt` contains `stoneholm:villager` instead of `stoneholm:villagers`.
+  `better_villagers_point_of_interest.json` and `better_villagers_abandoned_point_of_interest.json` reference `stoneholm:addons/better_villager/` (singular) instead of `stoneholm:addons/better_villagers/` (plural).
+  All six assets are replaced via an always-enabled built-in datapack (`stoneholm_2_1_1_fixes`), version-gated to Underground Village 2.1.1 and protected by SHA-256 fingerprints of all six upstream target resources.
 
 ## Structure
 
@@ -312,8 +323,12 @@ betterlib/
   BorrowedFileSystem         close-shield for Fabric Loader's shared mod-jar filesystem
   mixin/                     fixes Better Lib's ZIP open and stale job-site tag entries
 stoneholm/
-  StoneholmMixinPlugin      applies loot repairs only when Underground Village is present
-  mixin/                     suppresses absent-Create tables and upgrades legacy potion functions
+  StoneholmMixinPlugin      gated on Underground Village 2.1.1
+  StoneholmCompatibility    version and resource fingerprint gate
+  StoneholmDataFixes        ModInitializer registering the built-in worldgen pack
+  mixin/                    suppresses absent-Create tables and upgrades legacy potion functions
+resourcepacks/stoneholm_2_1_1_fixes/
+  data/stoneholm/           repaired NBT structures and Better Villagers template pools
 additionallanterns/
   AdditionalLanternsMixinPlugin applies only to the affected Additional Lanterns 1.1.2 release
   mixin/                     skips handleLanternRedstone on unloaded target chunks

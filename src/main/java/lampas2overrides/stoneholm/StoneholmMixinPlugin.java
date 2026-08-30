@@ -16,7 +16,10 @@ public final class StoneholmMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public void onLoad(String mixinPackage) {
-		apply = FabricLoader.getInstance().isModLoaded("underground_village");
+		apply = FabricLoader.getInstance()
+				.getModContainer("underground_village")
+				.map(container -> StoneholmCompatibility.supportsVersion(container.getMetadata().getVersion().getFriendlyString()))
+				.orElse(false);
 	}
 
 	@Override

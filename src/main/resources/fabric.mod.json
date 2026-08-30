@@ -18,7 +18,8 @@
 	"entrypoints": {
 		"main": [
 			"lampas2overrides.protocol.LampasProtocolServer",
-			"lampas2overrides.incendium.IncendiumOptimization"
+			"lampas2overrides.incendium.IncendiumOptimization",
+			"lampas2overrides.stoneholm.StoneholmDataFixes"
 		],
 		"client": [
 			"lampas2overrides.client.Lampas2OverridesClient",
