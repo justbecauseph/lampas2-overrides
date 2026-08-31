@@ -11,43 +11,58 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Better Lib startup](#better-lib-startup) | Better Lib | Prevents Better Lib from reopening Fabric Loader's shared mod-jar filesystem |
 | [Underground Village fixes](#underground-village-fixes) | Underground Village 2.1.1 | Repairs obsolete/absent-mod loot tables and worldgen structure/pool data defects |
 | [Additional Lanterns chunk loading](#additional-lanterns-chunk-loading) | Additional Lanterns 1.1.2 | Prevents redstone neighbor checks from synchronously loading unloaded chunks |
-| [Mob Filter worldgen safety](#mob-filter-worldgen-safety) | Mob Filter | Prevents rejected worldgen mobs from recursively synchronously loading their generating chunk |
+| [Mob Filter worldgen safety and dimension context](#mob-filter-worldgen-safety-and-dimension-context) | Mob Filter | Prevents C2ME worldgen deadlock on rejected mobs and provides dimension context for worldgen rules |
 | [Visual Workbench tag rebinding](#visual-workbench-tag-rebinding) | Visual Workbench + Puzzles Lib | Prevents replay loading and tag reload crashes from stale Visual Workbench tags |
 | [Name Tag Upgrade selection drag](#name-tag-upgrade-selection-drag) | Name Tag Upgrade 26.2.0 | Prevents a client crash when dragging selection left in a scrolled name field |
 | [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.0 | Removes a redundant 20 Hz entity-ID scan and throttles living-mob initialization |
 | [Gravestones death inscription and glow](#gravestones-death-inscription-and-glow) | Gravestones | Suppresses technical death grave text and renders a glowing outline only on your own graves |
 | [Jade nameplates and Custom Name](#jade-nameplates-and-custom-name) | Jade (+ Custom Name) | Suppresses vanilla in-world entity/player nameplates and syncs Custom Name player display names into Jade |
 
-## Mob Filter worldgen safety
+## Mob Filter worldgen safety and dimension context
 
-Mob Filter `0.28.0+26.2` rejects disallowed mobs from `WorldGenRegion#addFreshEntity` by first
-calling `Entity.remove(DISCARDED)` and then returning `false`. During threaded C2ME worldgen, that
-removal can enter `LivingEntity` dismount collision resolution, ask Lithium for a chunk, and
-synchronously join the server thread while the same chunk is still waiting for its C2ME
-`FEATURES` stage:
+Mob Filter `0.28.0+26.2` has two major defects during world generation:
 
-```text
-Mob Filter rejection
-  -> Entity.remove
-  -> dismount collision search
-  -> Lithium getChunk
-  -> server thread
-  -> same C2ME generation future
-  -> deadlock
-```
+1. **Unsafe `Entity.remove` worldgen discard (deadlock)**:
+   When rejecting disallowed mobs from `WorldGenRegion#addFreshEntity`, Mob Filter calls
+   `Entity.remove(DISCARDED)` before returning `false`. During threaded C2ME worldgen, that
+   removal can enter `LivingEntity` dismount collision resolution, ask Lithium for a chunk, and
+   synchronously join the server thread while the same chunk is still waiting for its C2ME
+   `FEATURES` stage:
 
-Lampas2 Overrides suppresses only that `Entity.remove(...)` call inside Mob Filter's
-`WorldGenRegion_addFreshEntity` callback. Mob Filter still performs its complete rule evaluation
-and its existing `CallbackInfoReturnable#setReturnValue(false)`, so rejected worldgen mobs remain
-absent. The `ServerLevel_addFreshEntity` callback is deliberately untouched; normal server-thread
-rejections retain their ordinary removal behavior.
+   ```text
+   Mob Filter rejection
+     -> Entity.remove
+     -> dismount collision search
+     -> Lithium getChunk
+     -> server thread
+     -> same C2ME generation future
+     -> deadlock
+   ```
 
-This compatibility mixin is common-side and is enabled only for the inspected Mob Filter version
+   Lampas2 Overrides suppresses only that `Entity.remove(...)` call inside Mob Filter's
+   `WorldGenRegion_addFreshEntity` callback. Mob Filter still performs its complete rule evaluation
+   and its existing `CallbackInfoReturnable#setReturnValue(false)`, so rejected worldgen mobs remain
+   absent. The `ServerLevel_addFreshEntity` callback is deliberately untouched; normal server-thread
+   rejections retain their ordinary removal behavior.
+
+2. **Missing worldgen dimension context**:
+   Mob Filter's `WorldgenThreadSpawnAttempt` cannot resolve the dimension on its own, returning
+   `null` from `getDimensionId()`. Its `DimensionCheck` treats `null` as matching every dimension rule.
+   Consequently, dimension-specific rules (such as disabling mob spawning in a custom dimension like
+   `lampas:aria`) match all worldgen spawns across every dimension, silently wiping out Overworld
+   village villagers, iron golems, and cats during structure placement.
+
+   Lampas2 Overrides wraps `WorldGenRegion_addFreshEntity` to capture the region level's dimension
+   (`worldGenRegion.getLevel().dimension().identifier()`) in a thread-local context
+   (`WorldgenDimensionContext`), and injects into `WorldgenThreadSpawnAttempt#getDimensionId` to return
+   that scoped dimension. This allows dimension-restricted rules to evaluate against the actual dimension
+   being generated without leaking across threads or tasks.
+
+These compatibility mixins are common-side and enabled only for the inspected Mob Filter version
 `0.28.0+26.2`. C2ME, Lithium, and Chunky are not activation requirements: Chunky exposed the issue
-through aggressive generation, but the unsafe side effect belongs to Mob Filter's worldgen veto.
+through aggressive generation, but the unsafe side effects belong to Mob Filter's worldgen logic.
 Other Mob Filter versions are deliberately skipped until their bytecode and behavior are reviewed.
-The mixin also keeps a hard `require = 1` contract, so a changed call site fails loudly during the
-known-version startup path.
+Both mixins keep a hard `require = 1` contract, failing loudly during startup if a call site changes.
 
 ## Jade nameplates and Custom Name
 

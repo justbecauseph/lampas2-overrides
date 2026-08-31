@@ -4,7 +4,8 @@
 	"compatibilityLevel": "JAVA_25",
 	"plugin": "lampas2overrides.mobfilter.MobFilterMixinPlugin",
 	"mixins": [
-		"MixinServiceMixin"
+		"MixinServiceMixin",
+		"WorldgenThreadSpawnAttemptMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
