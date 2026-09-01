@@ -18,7 +18,7 @@ import net.fabricmc.loader.api.FabricLoader;
  * space. The mixin patches only that one call-site argument; all other restriction checks
  * (blacklist, max length, permissions, name groups) remain entirely unchanged.
  *
- * <p>This is version-gated exactly like NameTagUpgradeMixinPlugin: any future version that
+ * <p>This is version-gated to a specific inspected version: any future version that
  * changes the affected method signature will simply skip the patch rather than
  * double-applying it.
  */

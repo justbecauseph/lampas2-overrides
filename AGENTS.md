@@ -6,8 +6,8 @@ heads, Lootr item frames converted into Fast Item Frames blocks, Better Lib's Fa
 startup fix, Underground Village's stale loot data and 2.1.1 worldgen structure/pool defects,
 Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter 0.28.0+26.2 threaded-worldgen
 entity-discard deadlock and missing dimension context, Visual Workbench tag reloads under
-Puzzles Lib, Name Tag Upgrade 26.2.0 mouse drag crashes, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, plus a version-gated Incendium Legacy 5.5.0 tick-function optimization. The first two
-features, Visual Workbench, Name Tag Upgrade, Gravestones, Jade nameplates, and Jade Custom Name are client-only; the Custom Name space fix is common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
+Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, plus a version-gated Incendium Legacy 5.5.0 tick-function optimization. The first two
+features, Visual Workbench, Gravestones, Jade nameplates, and Jade Custom Name are client-only; the Custom Name space fix is common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -61,7 +61,6 @@ disable an unrelated feature.
 | Additional Lanterns 1.1.2 | `../lampas-server-fabric/mods/additionallanterns-1.1.2-fabric-mc26.2.jar` |
 | Jade 26.2.11 | `../lampas-server-fabric/mods/Jade-mc26.2-Fabric-26.2.11.jar` |
 | Custom Name 0.4.4 | `../lampas-server-fabric/mods/customname-fabric-0.4.4-26.2.jar` |
-| Name Tag Upgrade 26.2.0 | `run/mods/NameTagUpgrade-v26.2.0-mc26.2.x-Fabric.jar` |
 | Gravestones 1.4.2 | `../lampas-server-fabric/mods/gravestones-1.4.2+26.2+A.jar` |
 | Incendium Legacy 5.5.0 | `../lampas-server-fabric/mods/Incendium_Legacy_26.2_v5.5.0.jar` |
 | Mob Filter 0.28.0+26.2 | `../lampas-server-fabric/mods/mobfilter-fabric-0.28.0+26.2.jar` |
@@ -244,11 +243,6 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   Rebinding tags is permitted only when the target block belongs to the `visualworkbench` namespace;
   Puzzles Lib's strict behavior remains intact for all other callers/targets. Do NOT broaden the
   patch to all `BlockConversionHelper` calls.
-- **`FormattableEditBox.findClickedPositionInText` permits negative mouse offsets when dragging left.**
-  In Name Tag Upgrade 26.2.0, a negative offset prevents `WidthLimitedCharSink` from advancing past
-  `displayPos` characters, resulting in `substring(displayPos, 0)` when `displayPos > 0`. Clamping the
-  first argument of `Math.min` to `0` leaves all formatting-aware cursor logic intact without needing
-  broader patches in `FormattedStringSplitter` or `WidthLimitedCharSink`.
 - **`TechnicalGravestoneBlockEntityRenderer` constructs sign text dynamically while the grave body is a block model.**
   Overriding `getSignText(TechnicalGravestoneBlockEntity)` to return a blank `SignText` suppresses player name,
   death date, and death time for all death graves without touching aesthetic gravestones (which use `AestheticGravestoneBlockEntityRenderer`).
@@ -341,9 +335,6 @@ visualworkbench/
   VisualWorkbenchMixinPlugin applies only when Visual Workbench + Puzzles Lib exist
   VisualWorkbenchTagFix     policy check and tag rebinding helper
   mixin/                    intercepts copyBoundTags for visualworkbench:* blocks
-nametagupgrade/
-  NameTagUpgradeMixinPlugin applies only to the affected Name Tag Upgrade 26.2.0 release
-  mixin/                    clamps mouse offset in FormattableEditBox#findClickedPositionInText
 gravestones/
   GravestonesMixinPlugin    applies whenever Gravestones is present
   OwnedGraveRenderState     duck interface carrying ownership and block state across render phases

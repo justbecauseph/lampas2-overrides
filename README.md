@@ -13,7 +13,6 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Additional Lanterns chunk loading](#additional-lanterns-chunk-loading) | Additional Lanterns 1.1.2 | Prevents redstone neighbor checks from synchronously loading unloaded chunks |
 | [Mob Filter worldgen safety and dimension context](#mob-filter-worldgen-safety-and-dimension-context) | Mob Filter | Prevents C2ME worldgen deadlock on rejected mobs and provides dimension context for worldgen rules |
 | [Visual Workbench tag rebinding](#visual-workbench-tag-rebinding) | Visual Workbench + Puzzles Lib | Prevents replay loading and tag reload crashes from stale Visual Workbench tags |
-| [Name Tag Upgrade selection drag](#name-tag-upgrade-selection-drag) | Name Tag Upgrade 26.2.0 | Prevents a client crash when dragging selection left in a scrolled name field |
 | [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.0 | Removes a redundant 20 Hz entity-ID scan and throttles living-mob initialization |
 | [Gravestones death inscription and glow](#gravestones-death-inscription-and-glow) | Gravestones | Suppresses technical death grave text and renders a glowing outline only on your own graves |
 | [Jade nameplates and Custom Name](#jade-nameplates-and-custom-name) | Jade (+ Custom Name) | Suppresses vanilla in-world entity/player nameplates and syncs Custom Name player display names into Jade |
@@ -119,20 +118,6 @@ Lampas2 Overrides implements a client-only override whenever Gravestones is pres
 - **Player skulls/heads on the grave remain untouched**, honoring Gravestones' `SHOW_HEADS` configuration.
 
 The mixin is client-only and is not restricted to a specific Gravestones version.
-
-## Name Tag Upgrade selection drag
-
-Name Tag Upgrade 26.2.0 crashes with a `StringIndexOutOfBoundsException` when dragging text selection
-past the left edge of a formatted text field whose content is horizontally scrolled (`displayPos > 0`).
-
-In `FormattableEditBox.findClickedPositionInText`, the mouse offset `mouseX - textX` is bounded only
-from above with `Math.min(..., innerWidth)`. Dragging to the left yields a negative offset, which
-causes `WidthLimitedCharSink` to fail its non-negative budget check before skipping characters up to
-`displayPos`. The unadvanced sink position `0` then reaches `content.substring(displayPos, 0)`.
-
-Lampas2 Overrides clamps the mouse offset to `Math.max(0, offset)` at the `Math.min` call site, ensuring
-the character sink advances through the scrolled prefix without altering Name Tag Upgrade's formatting
-and cursor calculation logic. The mixin is client-only and version-gated to Name Tag Upgrade 26.2.0.
 
 ## Visual Workbench tag rebinding
 
