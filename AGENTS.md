@@ -6,8 +6,8 @@ heads, Lootr item frames converted into Fast Item Frames blocks, Better Lib's Fa
 startup fix, Underground Village's stale loot data and 2.1.1 worldgen structure/pool defects,
 Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter 0.28.0+26.2 threaded-worldgen
 entity-discard deadlock and missing dimension context, Visual Workbench tag reloads under
-Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, plus a version-gated Incendium Legacy 5.5.0 tick-function optimization. The first two
-features, Visual Workbench, Gravestones, Jade nameplates, and Jade Custom Name are client-only; the Custom Name space fix is common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
+Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, version-gated Incendium Legacy 5.5.0 and 5.5.1 tick-function optimizations, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and POI tags (MVS, MNS, Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Better Lib). The first two
+features, Visual Workbench, Gravestones, Jade nameplates, and Jade Custom Name are client-only; the Custom Name space fix, Incendium datapacks, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -51,19 +51,25 @@ disable an unrelated feature.
 |---|---|
 | Figura 0.1.6+26.2 | `../figura-port/fabric/build/libs/figura-0.1.6+26.2.jar` — builds locally |
 | ReplayMod 26.2-2.6.27 | `C:\Users\markj\AppData\Roaming\PrismLauncher\instances\26.2\minecraft\mods\replaymod-26.2-2.6.27.jar` |
-| Chatting 3.1.0+26.2 | same `mods/` folder; sources at `../Chatting` (stonecutter — the `//? if` blocks mean the source you read may not be the 26.2 build, so trust the jar) |
+| Chatting 3.1.4+26.2 | same `mods/` folder; sources at `../Chatting` (stonecutter — the `//? if` blocks mean the source you read may not be the 26.2 build, so trust the jar) |
 | Lootr 1.24.39.121 | `../lampas-server-fabric/mods/lootr-fabric-26.2-1.24.39.121.jar`; sources at `../Lootr` |
-| Fast Item Frames 26.2.0 | `../lampas-server-fabric/mods/FastItemFrames-v26.2.0-mc26.2.x-Fabric.jar`; sources at `../fast-item-frames` |
+| Fast Item Frames 26.2.1 | `../lampas-server-fabric/mods/FastItemFrames-v26.2.1-mc26.2.x-Fabric.jar`; sources at `../fast-item-frames` |
 | Puzzles Lib 26.2.3 | `../lampas-server-fabric/mods/PuzzlesLib-v26.2.3-mc26.2.x-Fabric.jar` |
 | Fabric API 0.158.0+26.2 | `../lampas-server-fabric/mods/fabric-api-0.158.0+26.2.jar` |
-| Better Lib 2.1.0 | `../lampas-server-fabric/mods/better_lib-fabric-26.1-2.1.0.jar` |
+| Better Lib 2.1.1 | `../lampas-server-fabric/mods/better_lib-fabric-26.1-2.1.1.jar` |
 | Underground Village 2.1.1 | `../lampas-server-fabric/mods/underground_village-fabric-26.1-2.1.1.jar` |
 | Additional Lanterns 1.1.2 | `../lampas-server-fabric/mods/additionallanterns-1.1.2-fabric-mc26.2.jar` |
 | Jade 26.2.11 | `../lampas-server-fabric/mods/Jade-mc26.2-Fabric-26.2.11.jar` |
 | Custom Name 0.4.4 | `../lampas-server-fabric/mods/customname-fabric-0.4.4-26.2.jar` |
 | Gravestones 1.4.2 | `../lampas-server-fabric/mods/gravestones-1.4.2+26.2+A.jar` |
-| Incendium Legacy 5.5.0 | `../lampas-server-fabric/mods/Incendium_Legacy_26.2_v5.5.0.jar` |
+| Incendium Legacy 5.5.0 / 5.5.1 | `../lampas-server-fabric/mods/Incendium_Legacy_26.2_v5.5.0.jar` / `Incendium_26.2_v5.5.1.jar` |
 | Mob Filter 0.28.0+26.2 | `../lampas-server-fabric/mods/mobfilter-fabric-0.28.0+26.2.jar` |
+| Moog's Voyager Structures 5.0.11 / 5.0.14 | `../lampas-server-fabric/mods/MoogsVoyagerStructures-1.21-5.0.11.jar` (5.1.1 fixed upstream) |
+| Moog's Nether Structures 3.0.0 | `../lampas-server-fabric/mods/MoogsNetherStructures-1.21-3.0.0.jar` |
+| Formations Overworld 1.0.5+a | `../lampas-server-fabric/mods/formationsoverworld-1.0.5a-mc1.21+.jar` |
+| Grim Kingdoms 2.0.3 | `../lampas-server-fabric/mods/grim-kingdoms-lost-structures-ruins-2.0.3.jar` |
+| Pyrite 0.18.3+26.2 | `../lampas-server-fabric/mods/pyrite-0.18.3+26.2-fabric.jar` |
+| Easter's Delight 1.3.1 | `../lampas-server-fabric/mods/eastersdelight-fabric-26.2-1.3.1.jar` |
 | Figura sources | `../figura-port/common/src/main/java/org/figuramc/figura/` |
 | ReplayMod sources | `../ReplayMod/src/main/java/com/replaymod/` — preprocessed, read `//#if MC>=…` blocks carefully |
 | Minecraft 26.2 sources | `../figura-port/.mcsources/` — decompiled, authoritative |
@@ -112,7 +118,7 @@ must load all Stoneholm structures (including `poi/v4/founten`, `sidebed_bedroom
 and template pools without errors.
 
 For Incendium, dedicated-server startup must log
-`Enabled the version-gated Incendium 5.5.0 performance datapack`, and `/datapack list enabled` must
+`Enabled the version-gated Incendium <version> performance datapack` (for verified 5.5.0 or 5.5.1), and `/datapack list enabled` must
 include the Lampas2 Incendium pack. Test the ID rollover by setting `$current.id` in `in.eid` to
 `32767`, then spawning a new living mob.
 After at most five ticks, the new mob and all previously initialized mobs and players must have
@@ -139,8 +145,7 @@ village villagers, iron golems, and cats) generate normally.
    ```bash
    bun run lampasctl resolve
    bun run lampasctl validate
-   bun run lampasctl manifest
-   bun run lampasctl publish
+   bun run lampasctl manifest --portal https://dev.lampas.town
    ```
 3. Deploy the server via `python deploy_pack.py` in `../lampas-server-fabric` (which ingests `lampas-pipeline/manifest/server-manifest.json`).
 4. Client instances sync from `lampas-pipeline` manifests via the Lampas Launcher or `lampasctl install`.
@@ -220,9 +225,15 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   counter is 32767, reassign all existing owners, exclude the caller during that repair, and let
   `entity_id/check` initialize the caller once after reset. Non-living entities in the `other` tag
   do not call the ID allocator.
-- **The Incendium optimization is gated twice.** The initializer requires the exact 5.5.0 version
-  and fingerprints the three upstream functions it replaces before registering its always-enabled
-  built-in datapack. Update both gates only after auditing a new upstream jar.
+- **The Incendium optimization uses version profiles.** Each supported release (currently 5.5.0 and 5.5.1)
+  has its own profile declaring expected upstream function fingerprints and mapping to its dedicated built-in
+  optimization datapack. 5.5.1 preserves upstream's freezing delegate (`entity/chilling`) while removing the redundant
+  20 Hz entity-ID scan and throttling living mob initialization. Unknown versions or tampered functions disable
+  the datapack fail-closed.
+- **Resource patches support multi-version profiling via `ResourcePatchKey`.** When multiple releases of the
+  same mod require virtual patching (e.g. Moog's Voyager Structures 5.0.11 and 5.0.14), `ResourcePatchRegistry`
+  indexes patches by mod ID, exact version, and resource path. MVS 5.1.1 fixed `pack.mcmeta` upstream and requires
+  no patch.
 - **Mob Filter's worldgen rejection must not call `Entity.remove()` and needs active dimension context.**
   In 0.28.0+26.2, the `WorldGenRegion_addFreshEntity` callback has not admitted the entity to the world, so its existing
   `CallbackInfoReturnable#setReturnValue(false)` is sufficient to veto it. Removing a LivingEntity
@@ -294,7 +305,7 @@ chatheads/
   mixin/                  ChatHeads (detect, arm/disarm) and PlayerFaceExtractor (both draw paths)
 jadenameplates/
   JadeNameplatesMixinPlugin applies when Jade is present
-  mixin/                    cancels EntityRenderer#submitNameDisplay
+  mixin/                    suppresses submitNameTag inside EntityRenderer#submitNameDisplay
 jadecustomname/
   JadeCustomNameMixinPlugin applies when Jade + Custom Name exist
   JadeCustomNameResolver    resolves PlayerInfo tabListDisplayName with fallback
@@ -340,10 +351,19 @@ gravestones/
   OwnedGraveRenderState     duck interface carrying ownership and block state across render phases
   mixin/                    suppresses death grave text and submits model glowing outline
 incendium/
-  IncendiumOptimization     fingerprints Incendium and registers the built-in pack
-  IncendiumCompatibility    exact version and upstream-function fingerprint gate
+  IncendiumOptimization     fingerprints Incendium and registers version-specific built-in pack
+  IncendiumCompatibility    version profiles and upstream-function fingerprint gate
 resourcepacks/incendium_5_5_0_optimizations/
-  data/incendium/function/  clock and entity-ID overrides for verified Incendium 5.5.0 only
+  data/incendium/function/  clock and entity-ID overrides for verified Incendium 5.5.0
+resourcepacks/incendium_5_5_1_optimizations/
+  data/incendium/function/  clock and entity-ID overrides for verified Incendium 5.5.1
+resourcefix/
+  ResourcePatchKey          composite key (modId, version, resourcePath) for multi-version patches
+  ResourcePatchRegistry     registry of defective mod resources with SHA-256 fingerprints
+  ResourcePatchResolver     runtime virtual patch resolver
+  ResourcePatch             immutable patch rule record
+lampas2-overrides/resource-patches/
+  mvs/, mns/, etc.          replacement resource assets for supported broken versions
 customname/
   CustomNameMixinPlugin     applies only to Custom Name 0.4.4-26.2 (common-side, server-safe)
   mixin/                    forces spaceAllowed=true in playerNameArgumentToComponent's nameArgumentToComponent call

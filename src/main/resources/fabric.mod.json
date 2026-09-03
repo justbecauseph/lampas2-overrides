@@ -84,7 +84,7 @@
 		"better_lib": "*",
 		"underground_village": "*",
 		"additionallanterns": "*",
-		"incendium": "=5.5.0",
+		"incendium": ">=5.5.0 <=5.5.1",
 		"visualworkbench": "*",
 		"gravestones": "*",
 		"jade": "*",

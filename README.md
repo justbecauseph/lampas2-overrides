@@ -13,9 +13,11 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Additional Lanterns chunk loading](#additional-lanterns-chunk-loading) | Additional Lanterns 1.1.2 | Prevents redstone neighbor checks from synchronously loading unloaded chunks |
 | [Mob Filter worldgen safety and dimension context](#mob-filter-worldgen-safety-and-dimension-context) | Mob Filter | Prevents C2ME worldgen deadlock on rejected mobs and provides dimension context for worldgen rules |
 | [Visual Workbench tag rebinding](#visual-workbench-tag-rebinding) | Visual Workbench + Puzzles Lib | Prevents replay loading and tag reload crashes from stale Visual Workbench tags |
-| [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.0 | Removes a redundant 20 Hz entity-ID scan and throttles living-mob initialization |
+| [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.0, 5.5.1 | Removes a redundant 20 Hz entity-ID scan and throttles living-mob initialization |
 | [Gravestones death inscription and glow](#gravestones-death-inscription-and-glow) | Gravestones | Suppresses technical death grave text and renders a glowing outline only on your own graves |
 | [Jade nameplates and Custom Name](#jade-nameplates-and-custom-name) | Jade (+ Custom Name) | Suppresses vanilla in-world entity/player nameplates and syncs Custom Name player display names into Jade |
+| [Custom Name multi-word names](#custom-name-multi-word-names) | Custom Name 0.4.4-26.2 | Permits spaces in nickname, prefix, and suffix commands for non-operators |
+| [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | MVS, MNS, Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Better Lib | Transparently repairs malformed `pack.mcmeta` formats and POI tags at runtime |
 
 ## Mob Filter worldgen safety and dimension context
 
@@ -102,6 +104,22 @@ player display names instead of the plain client `Player#getDisplayName()`:
   `TextDisplay` passengers rather than vanilla nameplates. Keep `display_above_player.enabled = false`
   (the default) in `eclipsescustomname.json` so Jade handles all entity identity presentation.
 
+## Custom Name multi-word names
+
+In Custom Name 0.4.4-26.2, `CustomNameUtil#playerNameArgumentToComponent` passes `operatorsBypassRestrictions`
+directly as the `spaceAllowed` parameter to `nameArgumentToComponent`. When a player without operator permissions
+executes `/name nickname`, `/name prefix`, or `/name suffix`, `spaceAllowed` evaluates to `false`. The underlying
+component parser silently truncates the argument at the first ASCII space character:
+```text
+/name nickname The Administrator  ->  silently sets nickname to "The"
+/name prefix [Admin] The Boss     ->  silently sets prefix to "[Admin]"
+```
+
+Lampas2 Overrides applies a server-safe, common mixin to `CustomNameUtil` that sets `spaceAllowed = true` for
+`playerNameArgumentToComponent`. This allows non-operator players to set multi-word nicknames, prefixes, and suffixes
+while keeping name length limits, regex validation, and blacklist enforcement fully active.
+The mixin is common-side (runs on both dedicated servers and clients) and is version-gated to Custom Name `0.4.4-26.2`.
+
 ## Gravestones death inscription and glow
 
 Gravestones normally renders an inscription on technical player death graves showing the owner's
@@ -136,9 +154,9 @@ all other targets and callers. The mixin is client-only and gated on both `visua
 
 ## Incendium tick optimization
 
-Incendium Legacy 5.5.0 scans every living non-player entity each tick to repair missing or invalid
-entity IDs, even though the same clock initializes previously unseen mobs. Lampas2 Overrides installs
-an always-enabled built-in datapack that removes that redundant scan and runs only the unseen
+Incendium Legacy 5.5.0 and 5.5.1 scan every living non-player entity each tick to repair missing or
+invalid entity IDs, even though the same clock initializes previously unseen mobs. Lampas2 Overrides
+installs an always-enabled built-in datapack that removes that redundant scan and runs only the unseen
 living-mob initialization pass every five ticks (4 Hz). Existing ticking mobs, frozen-state updates,
 particles, player logic, altar items, and short-lived projectile initialization remain at 20 Hz.
 
@@ -146,10 +164,12 @@ The pack also makes the 15-bit ID rollover safe without relying on the removed v
 resets before assigning 32768, immediately reassigns every existing player and initialized mob, and
 then assigns the entity that triggered the rollover exactly once.
 
-This feature fails closed. It registers only when Fabric Loader reports Incendium version 5.5.0 and
-the original `clocks/main`, `entity_id/check`, and `entity_id/reset` functions match the verified
-SHA-256 fingerprints. A modified or updated Incendium jar is left untouched and produces a warning
-in the server log instead of receiving potentially stale function overrides.
+This feature fails closed using explicit version profiles:
+- **Incendium 5.5.0**: registers `incendium_5_5_0_optimizations` when verified against 5.5.0's exact SHA-256 fingerprints.
+- **Incendium 5.5.1**: registers `incendium_5_5_1_optimizations` when verified against 5.5.1's exact SHA-256 fingerprints. The 5.5.1 optimization semantically rebases on upstream's new `entity/chilling` call while removing the redundant ID check.
+
+A modified or unsupported Incendium release is left untouched and produces a warning in the server
+log instead of receiving potentially stale function overrides.
 
 ## Additional Lanterns chunk loading
 
@@ -179,7 +199,7 @@ Worldgen data fixes are packaged in an always-enabled built-in datapack (`stoneh
 
 ## Better Lib startup
 
-Better Lib 2.1.0 scans its bundled JSON villager definitions by opening its own jar as a ZIP
+Better Lib 2.1.0 and 2.1.1 scan bundled JSON villager definitions by opening their own jar as a ZIP
 filesystem. Fabric Loader 0.19.3 already has that filesystem open, so the second open throws
 `FileSystemAlreadyExistsException` and aborts the common mod entrypoint. This compatibility fix
 reuses the existing filesystem behind a close shield: Better Lib can scan its resources normally,
@@ -188,8 +208,44 @@ but its try-with-resources block cannot close Fabric Loader's shared filesystem 
 The mixin is common and therefore fixes both dedicated-server and client startup. It is gated on
 the `better_lib` mod id and is inert when Better Lib is absent. A second gated mixin also removes
 Better Lib's stale `andesite_worker` and `ore_trader` entries after job-site tags have been merged.
-Both demo professions are disabled in Better Lib 2.1.0, so leaving their generated tag entries in
+Both demo professions are disabled in Better Lib 2.1.0 and 2.1.1, so leaving their generated tag entries in
 place prevents Minecraft from resolving the tag while serving no gameplay content.
+
+## Virtual Resource & Datapack Patches
+
+Minecraft 26.2 enforces strict pack format metadata checks via `PackMetadataSection` and `PackFormat`.
+Several mods bundle data or built-in datapacks with malformed `pack.mcmeta` files (such as declaring
+format ranges without `supported_formats`, or specifying obsolete maximum format versions like 81 instead of 107)
+or malformed JSON files.
+
+Lampas2 Overrides implements a low-overhead runtime virtual patch system (`ResourcePatchResolver`) that intercepts
+mod resource streams. Each patch is strictly version-gated and SHA-256 fingerprinted: if an upstream mod updates
+or fixes the bug, the patch fails closed and leaves the upstream resource untouched.
+
+Patched mods and resources:
+
+1. **Moog's Voyager Structures (MVS 5.0.11 & 5.0.14)**:
+   - **Defect**: Upstream 5.0.11 and 5.0.14 declare `pack_format: 48` without `supported_formats` or declare `min_format: 48, max_format: 107.1` without `supported_formats`, causing Minecraft 26.2's `PackMetadataSection` parser to reject the pack.
+   - **Fix**: Virtually replaces `pack.mcmeta` with valid `supported_formats: [48, 107]` and `max_format: [107, 1]`.
+   - *Note*: MVS 5.1.1 fixed this upstream and requires no patch.
+2. **Moog's Nether Structures (MNS 3.0.0)**:
+   - **Defect**: Missing `supported_formats` in root `pack.mcmeta`.
+   - **Fix**: Virtually replaces `pack.mcmeta` with valid `supported_formats: [48, 107]`.
+3. **Formations Overworld (1.0.5+a)**:
+   - **Defect**: Missing `supported_formats` in root `pack.mcmeta`.
+   - **Fix**: Virtually replaces `pack.mcmeta` with valid `supported_formats: [48, 107]`.
+4. **Grim Kingdoms Lost Structures Ruins (2.0.3)**:
+   - **Defect**: Missing `supported_formats` in root `pack.mcmeta`.
+   - **Fix**: Virtually replaces `pack.mcmeta` with valid `supported_formats: [48, 107]`.
+5. **Pyrite (0.18.3+26.2)**:
+   - **Defect**: All four built-in datapacks (`pyrite_azalea`, `pyrite_crafting_tables`, `pyrite_mushrooms`, and `pyrite_oddities`) declare `max_format: 81` in `pack.mcmeta`. In MC 26.2 (which requires format up to 107), Minecraft flags the datapacks as incompatible or fails to load them.
+   - **Fix**: Replaces `pack.mcmeta` across all 4 built-in packs with `supported_formats: [48, 107]` and `max_format: 107`.
+6. **Easter's Delight (1.3.1)**:
+   - **Defect**: Built-in recipe override datapack `resourcepacks/farmersdelight_overrides/pack.mcmeta` is missing `supported_formats`.
+   - **Fix**: Replaces `pack.mcmeta` with valid `supported_formats: [48, 107]`.
+7. **Better Lib (2.1.1)**:
+   - **Defect**: Bundles `data/minecraft/tags/point_of_interest_type/acquirable_job_site.json` prefixed with illegal JSON comments (`//{`), causing strict JSON parsers to throw exceptions on tag reload.
+   - **Fix**: Virtually substitutes the clean, comment-free POI tag definition.
 
 ## Lootr ↔ Fast Item Frames
 

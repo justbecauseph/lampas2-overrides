@@ -38,12 +38,14 @@ public class ResourcePatchResolverTest {
 
 	@Test
 	void registryContainsAllFiveTargetPatches() {
-		assertEquals(10, ResourcePatchRegistry.getAllPatches().size());
+		assertEquals(11, ResourcePatchRegistry.getAllPatches().size());
 
 		assertNotNull(ResourcePatchRegistry.findPatch("better_lib",
 			"data/minecraft/tags/point_of_interest_type/acquirable_job_site.json"));
 		assertNotNull(ResourcePatchRegistry.findPatch("mns", "pack.mcmeta"));
-		assertNotNull(ResourcePatchRegistry.findPatch("mvs", "pack.mcmeta"));
+		assertNotNull(ResourcePatchRegistry.findPatch("mvs", "5.0.11", "pack.mcmeta"));
+		assertNotNull(ResourcePatchRegistry.findPatch("mvs", "5.0.14", "pack.mcmeta"));
+		assertNull(ResourcePatchRegistry.findPatch("mvs", "5.1.1", "pack.mcmeta"));
 		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "pack.mcmeta"));
 		assertNotNull(ResourcePatchRegistry.findPatch("mr_grim_kingdomsloststructuresruins", "pack.mcmeta"));
 	}
@@ -163,6 +165,96 @@ public class ResourcePatchResolverTest {
 		);
 
 		assertNull(patched, "Unrelated path in affected mod must not be patched");
+	}
+
+	@Test
+	void resolvesMultiVersionMvsPatchesCorrectly() throws IOException {
+		// MVS 5.0.11 with original hash
+		ModContainer mvs5011 = createMockModContainer("mvs", "5.0.11");
+		byte[] raw5011 = ("{\n" +
+			"    \"pack\": {\n" +
+			"        \"description\": \"MoogsVoyagerStructures\",\n" +
+			"        \"pack_format\": 48\n" +
+			"    }\n" +
+			"}").getBytes(StandardCharsets.UTF_8);
+
+		IoSupplier<InputStream> patched5011 = ResourcePatchResolver.resolve(
+			mvs5011,
+			"pack.mcmeta",
+			() -> new ByteArrayInputStream(raw5011)
+		);
+		assertNotNull(patched5011);
+		try (InputStream in = patched5011.get()) {
+			String result = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+			assertTrue(result.contains("\"supported_formats\""));
+		}
+
+		// MVS 5.0.14 with original hash
+		ModContainer mvs5014 = createMockModContainer("mvs", "5.0.14");
+		byte[] raw5014 = ("{\n" +
+			"    \"pack\": {\n" +
+			"        \"description\": \"MoogsVoyagerStructures\",\n" +
+			"        \"pack_format\": 48,\n" +
+			"        \"min_format\": 48,\n" +
+			"        \"max_format\": 107.1\n" +
+			"    }\n" +
+			"}").getBytes(StandardCharsets.UTF_8);
+
+		IoSupplier<InputStream> patched5014 = ResourcePatchResolver.resolve(
+			mvs5014,
+			"pack.mcmeta",
+			() -> new ByteArrayInputStream(raw5014)
+		);
+		assertNotNull(patched5014);
+		try (InputStream in = patched5014.get()) {
+			String result = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+			assertTrue(result.contains("\"supported_formats\""));
+		}
+
+		// MVS 5.1.1 (fixed upstream, not registered)
+		ModContainer mvs511 = createMockModContainer("mvs", "5.1.1");
+		byte[] raw511 = ("{\n" +
+			"    \"pack\": {\n" +
+			"        \"description\": \"MoogsVoyagerStructures\",\n" +
+			"        \"pack_format\": 48,\n" +
+			"        \"min_format\": 48,\n" +
+			"        \"max_format\": 107.1,\n" +
+			"        \"supported_formats\": [48, 107]\n" +
+			"    }\n" +
+			"}").getBytes(StandardCharsets.UTF_8);
+
+		IoSupplier<InputStream> patched511 = ResourcePatchResolver.resolve(
+			mvs511,
+			"pack.mcmeta",
+			() -> new ByteArrayInputStream(raw511)
+		);
+		assertNull(patched511, "Fixed upstream MVS 5.1.1 must not be patched");
+
+		// MVS 5.0.14 with tampered hash -> original returned
+		byte[] tampered5014 = ("{\n" +
+			"    \"pack\": {\n" +
+			"        \"description\": \"Tampered\",\n" +
+			"        \"pack_format\": 48\n" +
+			"    }\n" +
+			"}").getBytes(StandardCharsets.UTF_8);
+		IoSupplier<InputStream> tamperedResult = ResourcePatchResolver.resolve(
+			mvs5014,
+			"pack.mcmeta",
+			() -> new ByteArrayInputStream(tampered5014)
+		);
+		assertNotNull(tamperedResult);
+		try (InputStream in = tamperedResult.get()) {
+			assertArrayEquals(tampered5014, in.readAllBytes());
+		}
+
+		// Unknown MVS version
+		ModContainer mvsUnknown = createMockModContainer("mvs", "9.9.9");
+		IoSupplier<InputStream> unknownResult = ResourcePatchResolver.resolve(
+			mvsUnknown,
+			"pack.mcmeta",
+			() -> new ByteArrayInputStream(raw5014)
+		);
+		assertNull(unknownResult);
 	}
 
 	@Test

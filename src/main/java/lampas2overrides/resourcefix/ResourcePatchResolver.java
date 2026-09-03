@@ -45,17 +45,15 @@ public final class ResourcePatchResolver {
 		String modId = modContainer.getMetadata().getId();
 		String normalizedPath = normalizePath(rawPath);
 
-		ResourcePatch patch = ResourcePatchRegistry.findPatch(modId, normalizedPath);
-		if (patch == null) {
-			return null;
-		}
-
 		String actualVersion = modContainer.getMetadata().getVersion().getFriendlyString();
-		if (!patch.expectedVersion().equals(actualVersion)) {
-			String logKey = "ver_mismatch:" + modId + ":" + normalizedPath + ":" + actualVersion;
-			if (LOGGED_KEYS.add(logKey)) {
-				LOGGER.info("Skipping {} resource patch for {}: expected {}, found {}",
-					modId, normalizedPath, patch.expectedVersion(), actualVersion);
+		ResourcePatch patch = ResourcePatchRegistry.findPatch(modId, actualVersion, normalizedPath);
+		if (patch == null) {
+			if (ResourcePatchRegistry.hasPatchForResource(modId, normalizedPath)) {
+				String logKey = "ver_unregistered:" + modId + ":" + normalizedPath + ":" + actualVersion;
+				if (LOGGED_KEYS.add(logKey)) {
+					LOGGER.info("{} version {} is not registered for patching resource {}; using upstream resource",
+						modId, actualVersion, normalizedPath);
+				}
 			}
 			return null;
 		}

@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public final class ResourcePatchRegistry {
 
-	private static final Map<String, ResourcePatch> PATCHES = new HashMap<>();
+	private static final Map<ResourcePatchKey, ResourcePatch> PATCHES = new HashMap<>();
 
 	static {
 		// 1. Better Lib 2.1.1 - Malformed POI tags with comment prefix '//{'
@@ -40,7 +40,16 @@ public final class ResourcePatchRegistry {
 			"lampas2-overrides/resource-patches/mvs/5.0.11/pack.mcmeta"
 		));
 
-		// 4. Formations Overworld 1.0.5+a - Missing supported_formats in pack.mcmeta
+		// 4. Moogs Voyager Structures 5.0.14 - Missing supported_formats in pack.mcmeta
+		register(new ResourcePatch(
+			"mvs",
+			"5.0.14",
+			"pack.mcmeta",
+			"63edcfe8244ea844e2c98d429330e112b92a5b7ca906aac4fc61421458036dc1",
+			"lampas2-overrides/resource-patches/mvs/5.0.14/pack.mcmeta"
+		));
+
+		// 5. Formations Overworld 1.0.5+a - Missing supported_formats in pack.mcmeta
 		register(new ResourcePatch(
 			"formationsoverworld",
 			"1.0.5+a",
@@ -49,7 +58,7 @@ public final class ResourcePatchRegistry {
 			"lampas2-overrides/resource-patches/formationsoverworld/1.0.5+a/pack.mcmeta"
 		));
 
-		// 5. Grim Kingdoms Lost Structures Ruins 2.0.3 - Missing supported_formats in pack.mcmeta
+		// 6. Grim Kingdoms Lost Structures Ruins 2.0.3 - Missing supported_formats in pack.mcmeta
 		register(new ResourcePatch(
 			"mr_grim_kingdomsloststructuresruins",
 			"2.0.3",
@@ -58,7 +67,7 @@ public final class ResourcePatchRegistry {
 			"lampas2-overrides/resource-patches/mr_grim_kingdomsloststructuresruins/2.0.3/pack.mcmeta"
 		));
 
-		// 6. Pyrite 0.18.3+26.2 - Builtin datapack pack.mcmeta files with max format 81 instead of 107
+		// 7. Pyrite 0.18.3+26.2 - Builtin datapack pack.mcmeta files with max format 81 instead of 107
 		register(new ResourcePatch(
 			"pyrite",
 			"0.18.3+26.2",
@@ -88,7 +97,7 @@ public final class ResourcePatchRegistry {
 			"lampas2-overrides/resource-patches/pyrite/0.18.3+26.2/resourcepacks/pyrite_oddities/pack.mcmeta"
 		));
 
-		// 7. Easter's Delight 1.3.1 - Builtin recipe override pack.mcmeta missing supported_formats
+		// 8. Easter's Delight 1.3.1 - Builtin recipe override pack.mcmeta missing supported_formats
 		register(new ResourcePatch(
 			"eastersdelight",
 			"1.3.1",
@@ -99,21 +108,31 @@ public final class ResourcePatchRegistry {
 	}
 
 	private static void register(ResourcePatch patch) {
-		String key = makeKey(patch.modId(), patch.resourcePath());
+		ResourcePatchKey key = ResourcePatchKey.of(patch.modId(), patch.expectedVersion(), patch.resourcePath());
 		PATCHES.put(key, patch);
 	}
 
+	public static ResourcePatch findPatch(String modId, String version, String resourcePath) {
+		return PATCHES.get(ResourcePatchKey.of(modId, version, resourcePath));
+	}
+
 	public static ResourcePatch findPatch(String modId, String resourcePath) {
-		String normalized = ResourcePatchResolver.normalizePath(resourcePath);
-		return PATCHES.get(makeKey(modId, normalized));
+		String normMod = modId.toLowerCase();
+		String normPath = ResourcePatchResolver.normalizePath(resourcePath).toLowerCase();
+		for (Map.Entry<ResourcePatchKey, ResourcePatch> entry : PATCHES.entrySet()) {
+			if (entry.getKey().modId().equals(normMod) && entry.getKey().resourcePath().equals(normPath)) {
+				return entry.getValue();
+			}
+		}
+		return null;
 	}
 
-	public static Map<String, ResourcePatch> getAllPatches() {
+	public static boolean hasPatchForResource(String modId, String resourcePath) {
+		return findPatch(modId, resourcePath) != null;
+	}
+
+	public static Map<ResourcePatchKey, ResourcePatch> getAllPatches() {
 		return Collections.unmodifiableMap(PATCHES);
-	}
-
-	private static String makeKey(String modId, String normalizedPath) {
-		return modId.toLowerCase() + ":" + normalizedPath.toLowerCase();
 	}
 
 	private ResourcePatchRegistry() {

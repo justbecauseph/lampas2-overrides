@@ -14,13 +14,10 @@ import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 
 public final class IncendiumOptimization implements ModInitializer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger("Lampas2 Overrides/Incendium");
-	private static final Identifier PACK_ID = Identifier.fromNamespaceAndPath(
-			"lampas2-overrides", "incendium_5_5_0_optimizations");
 
 	@Override
 	public void onInitialize() {
@@ -32,36 +29,38 @@ public final class IncendiumOptimization implements ModInitializer {
 
 		ModContainer incendium = incendiumOptional.get();
 		String version = incendium.getMetadata().getVersion().getFriendlyString();
-		if (!IncendiumCompatibility.supportsVersion(version)) {
+		Optional<IncendiumCompatibility.Profile> profileOptional = IncendiumCompatibility.getProfile(version);
+		if (profileOptional.isEmpty()) {
 			LOGGER.warn("Incendium {} is not supported; the performance datapack will remain disabled",
 					version);
 			return;
 		}
 
-		if (!matchesExpectedResources(incendium)) {
-			LOGGER.warn("Incendium {} does not match the verified 5.5.0 functions; the performance datapack will remain disabled",
-					version);
+		IncendiumCompatibility.Profile profile = profileOptional.get();
+		if (!matchesExpectedResources(incendium, profile)) {
+			LOGGER.warn("Incendium {} does not match the verified {} functions; the performance datapack will remain disabled",
+					version, profile.version());
 			return;
 		}
 
 		ModContainer self = loader.getModContainer("lampas2-overrides").orElseThrow(
 				() -> new IllegalStateException("Unable to locate the lampas2-overrides mod container"));
 		boolean registered = ResourceLoader.registerBuiltinPack(
-				PACK_ID,
+				profile.packId(),
 				self,
-				Component.literal("Lampas2 Incendium 5.5.0 optimizations"),
+				Component.literal(profile.packName()),
 				PackActivationType.ALWAYS_ENABLED
 		);
 
 		if (registered) {
-			LOGGER.info("Enabled the version-gated Incendium 5.5.0 performance datapack");
+			LOGGER.info("Enabled the version-gated Incendium {} performance datapack", profile.version());
 		} else {
-			LOGGER.error("Failed to register the Incendium 5.5.0 performance datapack");
+			LOGGER.error("Failed to register the Incendium {} performance datapack", profile.version());
 		}
 	}
 
-	private static boolean matchesExpectedResources(ModContainer incendium) {
-		for (Map.Entry<String, String> expected : IncendiumCompatibility.EXPECTED_RESOURCES.entrySet()) {
+	private static boolean matchesExpectedResources(ModContainer incendium, IncendiumCompatibility.Profile profile) {
+		for (Map.Entry<String, String> expected : profile.expectedResources().entrySet()) {
 			Optional<Path> resource = incendium.findPath(expected.getKey());
 			if (resource.isEmpty()) {
 				LOGGER.warn("Incendium resource {} is missing", expected.getKey());

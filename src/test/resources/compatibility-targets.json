@@ -1,0 +1,248 @@
+{
+  "schema": 1,
+  "minecraft": "26.2",
+  "targets": {
+    "incendium": {
+      "name": "Incendium",
+      "type": "datapack_replacement",
+      "versions": {
+        "5.5.0": {
+          "status": "patched",
+          "pack_id": "lampas2-overrides:incendium_5_5_0_optimizations",
+          "resources": {
+            "data/incendium/function/clocks/main.mcfunction": "7f72f3a8df4688dc993a03a0860a2e51d226041a5f9886ab4745e7343780d5a0",
+            "data/incendium/function/technical/entity_id/check.mcfunction": "dbdbf31acb6d9274f63f218f2616e1f4883e0963909d40d362f00bf15f308c17",
+            "data/incendium/function/technical/entity_id/reset.mcfunction": "340591a2b5a74330f04c9c0dfc07aa497302ef16c0f498cb07d6d0abe8dd92d5"
+          }
+        },
+        "5.5.1": {
+          "status": "patched",
+          "modrinth_version_id": "vPwuqZ5y",
+          "pack_id": "lampas2-overrides:incendium_5_5_1_optimizations",
+          "resources": {
+            "data/incendium/function/clocks/main.mcfunction": "fe026903d2fae586c11320e263308c62b18eb9c0ae9fa11dcb1b7cabeba091dc",
+            "data/incendium/function/technical/entity_id/check.mcfunction": "dbdbf31acb6d9274f63f218f2616e1f4883e0963909d40d362f00bf15f308c17",
+            "data/incendium/function/technical/entity_id/reset.mcfunction": "340591a2b5a74330f04c9c0dfc07aa497302ef16c0f498cb07d6d0abe8dd92d5"
+          }
+        }
+      }
+    },
+    "better_lib": {
+      "name": "Better Library",
+      "type": "mixin_and_resource_patch",
+      "versions": {
+        "2.1.1": {
+          "status": "patched",
+          "resources": {
+            "data/minecraft/tags/point_of_interest_type/acquirable_job_site.json": "2f605b74d0e3e5a0044e809b0d01bce9f25012800080527d2229c2576942f06d"
+          }
+        }
+      }
+    },
+    "mns": {
+      "name": "Moog's Nether Structures",
+      "type": "resource_patch",
+      "versions": {
+        "3.0.0": {
+          "status": "patched",
+          "resources": {
+            "pack.mcmeta": "2f42633d021798b55c2c51ba36364ce59080c0025e75bcb24fdc32f47243e90b"
+          }
+        }
+      }
+    },
+    "mvs": {
+      "name": "Moog's Voyager Structures",
+      "type": "resource_patch",
+      "versions": {
+        "5.0.11": {
+          "status": "patched",
+          "resources": {
+            "pack.mcmeta": "60b4eafe19cd5b676b457256fa3548a650830553efbc6945b4b6178fe7e627b1"
+          }
+        },
+        "5.0.14": {
+          "status": "patched",
+          "resources": {
+            "pack.mcmeta": "63edcfe8244ea844e2c98d429330e112b92a5b7ca906aac4fc61421458036dc1"
+          }
+        },
+        "5.1.1": {
+          "status": "fixed-upstream",
+          "resources": {
+            "pack.mcmeta": "9e7b398f4774cf5e9ea0b37bbbeaef30a508584cc261fd01f8b0a1c30ef2d1db"
+          }
+        }
+      }
+    },
+    "formationsoverworld": {
+      "name": "Formations Overworld",
+      "type": "resource_patch",
+      "versions": {
+        "1.0.5+a": {
+          "status": "patched",
+          "resources": {
+            "pack.mcmeta": "ffa966eb7835cc4de1273945333236331eff33116e918869e4e29c881b39f940"
+          }
+        }
+      }
+    },
+    "mr_grim_kingdomsloststructuresruins": {
+      "name": "Grim Kingdoms Lost Structures Ruins",
+      "type": "resource_patch",
+      "versions": {
+        "2.0.3": {
+          "status": "patched",
+          "resources": {
+            "pack.mcmeta": "a43a389339936bfb6171776a5d41dba3acf4aab2087ad8ad1eb84c11d09018c4"
+          }
+        }
+      }
+    },
+    "pyrite": {
+      "name": "Pyrite",
+      "type": "resource_patch",
+      "versions": {
+        "0.18.3+26.2": {
+          "status": "patched",
+          "resources": {
+            "resourcepacks/pyrite_azalea/pack.mcmeta": "c8fb5ec87aece1041b99e9910d6f7e07b6dc96f3027b0ec8eae27b3463f90d0d",
+            "resourcepacks/pyrite_crafting_tables/pack.mcmeta": "31ce98a55a3b820c736e344379ca8e11cd778b6fb614cfdd1ba20bd6eff1bba0",
+            "resourcepacks/pyrite_mushrooms/pack.mcmeta": "a1dff9a4b637842f2df0c680dd15e765a2ba99f41aa722b1b8f88201314104d5",
+            "resourcepacks/pyrite_oddities/pack.mcmeta": "8876a1008cf065aeb81b74e3fae0a7439f098b22cc6dbc11058395f4f1558188"
+          }
+        }
+      }
+    },
+    "eastersdelight": {
+      "name": "Easter's Delight",
+      "type": "resource_patch",
+      "versions": {
+        "1.3.1": {
+          "status": "patched",
+          "resources": {
+            "resourcepacks/farmersdelight_overrides/pack.mcmeta": "f9a0ce7a98f832eb2f246c521c39c937a1ddef167b56718312584f340b14ed82"
+          }
+        }
+      }
+    },
+    "mobfilter": {
+      "name": "Mob Filter",
+      "type": "exact_mixin_gate",
+      "versions": {
+        "0.28.0+26.2": {
+          "status": "patched"
+        }
+      }
+    },
+    "additionallanterns": {
+      "name": "Additional Lanterns",
+      "type": "exact_mixin_gate",
+      "versions": {
+        "1.1.2": {
+          "status": "patched"
+        }
+      }
+    },
+    "customname": {
+      "name": "Custom Name",
+      "type": "exact_mixin_gate",
+      "versions": {
+        "0.4.4-26.2": {
+          "status": "patched"
+        }
+      }
+    },
+    "underground_village": {
+      "name": "Underground Village (Stoneholm)",
+      "type": "mixin_and_datapack_replacement",
+      "versions": {
+        "2.1.1": {
+          "status": "patched",
+          "pack_id": "lampas2-overrides:stoneholm_2_1_1_fixes"
+        }
+      }
+    },
+    "visualworkbench": {
+      "name": "Visual Workbench",
+      "type": "structural_mixin",
+      "versions": {
+        "26.2.1": {
+          "status": "verified"
+        }
+      }
+    },
+    "puzzleslib": {
+      "name": "Puzzles Lib",
+      "type": "structural_mixin",
+      "versions": {
+        "26.2.3": {
+          "status": "verified"
+        }
+      }
+    },
+    "gravestones": {
+      "name": "Gravestones",
+      "type": "structural_mixin",
+      "versions": {
+        "1.4.2+26.2+A": {
+          "status": "verified"
+        }
+      }
+    },
+    "jade": {
+      "name": "Jade",
+      "type": "structural_mixin",
+      "versions": {
+        "26.2.11": {
+          "status": "verified"
+        }
+      }
+    },
+    "chatting": {
+      "name": "Chatting",
+      "type": "structural_mixin",
+      "versions": {
+        "3.1.4": {
+          "status": "verified"
+        }
+      }
+    },
+    "lootr": {
+      "name": "Lootr",
+      "type": "bridge",
+      "versions": {
+        "1.24.39.121": {
+          "status": "verified"
+        }
+      }
+    },
+    "fastitemframes": {
+      "name": "Fast Item Frames",
+      "type": "bridge",
+      "versions": {
+        "26.2.1": {
+          "status": "verified"
+        }
+      }
+    },
+    "figura": {
+      "name": "Figura",
+      "type": "bridge",
+      "versions": {
+        "0.1.6-rc.1+26.2": {
+          "status": "verified"
+        }
+      }
+    },
+    "replaymod": {
+      "name": "ReplayMod",
+      "type": "bridge",
+      "versions": {
+        "26.2-2.6.27": {
+          "status": "verified"
+        }
+      }
+    }
+  }
+}
