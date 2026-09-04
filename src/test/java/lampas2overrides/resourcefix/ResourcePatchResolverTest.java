@@ -38,7 +38,7 @@ public class ResourcePatchResolverTest {
 
 	@Test
 	void registryContainsAllFiveTargetPatches() {
-		assertEquals(11, ResourcePatchRegistry.getAllPatches().size());
+		assertEquals(13, ResourcePatchRegistry.getAllPatches().size());
 
 		assertNotNull(ResourcePatchRegistry.findPatch("better_lib",
 			"data/minecraft/tags/point_of_interest_type/acquirable_job_site.json"));
@@ -47,6 +47,8 @@ public class ResourcePatchResolverTest {
 		assertNotNull(ResourcePatchRegistry.findPatch("mvs", "5.0.14", "pack.mcmeta"));
 		assertNull(ResourcePatchRegistry.findPatch("mvs", "5.1.1", "pack.mcmeta"));
 		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "pack.mcmeta"));
+		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "data/formationsoverworld/loot_table/stone_tower/smithing.json"));
+		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "data/formationsoverworld/loot_table/witch_tower/smithing.json"));
 		assertNotNull(ResourcePatchRegistry.findPatch("mr_grim_kingdomsloststructuresruins", "pack.mcmeta"));
 	}
 
@@ -79,6 +81,10 @@ public class ResourcePatchResolverTest {
 					assertFalse(json.get("replace").getAsBoolean());
 					assertTrue(json.has("values"), "Missing 'values' array");
 					assertEquals(0, json.getAsJsonArray("values").size(), "values array must be empty");
+				} else if (patch.resourcePath().endsWith("smithing.json")) {
+					assertFalse(content.contains("\"minecraft:chain\""), "smithing.json replacement must not contain unrenamed minecraft:chain");
+					assertTrue(content.contains("\"minecraft:iron_chain\""), "smithing.json replacement must contain minecraft:iron_chain");
+					assertTrue(json.has("pools"), "Missing 'pools' array in " + patch.replacementPath());
 				}
 			}
 		}
@@ -108,6 +114,25 @@ public class ResourcePatchResolverTest {
 			assertFalse(result.contains("//"));
 			assertTrue(json.has("values"));
 			assertEquals(0, json.getAsJsonArray("values").size());
+		}
+	}
+
+	@Test
+	void appliesFormationsOverworldLootTablePatch() throws IOException {
+		ModContainer mod = createMockModContainer("formationsoverworld", "1.0.5+a");
+		IoSupplier<InputStream> patchedSupplier = ResourcePatchResolver.resolve(
+			mod,
+			"data/formationsoverworld/loot_table/stone_tower/smithing.json",
+			null
+		);
+
+		assertNotNull(patchedSupplier, "Expected patched supplier for Formations Overworld stone_tower/smithing");
+		try (InputStream in = patchedSupplier.get()) {
+			String result = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+			assertFalse(result.contains("\"minecraft:chain\""), "Must not contain unrenamed minecraft:chain");
+			assertTrue(result.contains("\"minecraft:iron_chain\""), "Must contain minecraft:iron_chain");
+			JsonObject json = JsonParser.parseString(result).getAsJsonObject();
+			assertTrue(json.has("pools"));
 		}
 	}
 
@@ -269,6 +294,8 @@ public class ResourcePatchResolverTest {
 			{"MoogsNetherStructures-1.21-3.0.0.jar", "mns", "3.0.0", "pack.mcmeta"},
 			{"MoogsVoyagerStructures-1.21-5.0.11.jar", "mvs", "5.0.11", "pack.mcmeta"},
 			{"formationsoverworld-1.0.5a-mc1.21+.jar", "formationsoverworld", "1.0.5+a", "pack.mcmeta"},
+			{"formationsoverworld-1.0.5a-mc1.21+.jar", "formationsoverworld", "1.0.5+a", "data/formationsoverworld/loot_table/stone_tower/smithing.json"},
+			{"formationsoverworld-1.0.5a-mc1.21+.jar", "formationsoverworld", "1.0.5+a", "data/formationsoverworld/loot_table/witch_tower/smithing.json"},
 			{"grim-kingdoms-lost-structures-ruins-2.0.3.jar", "mr_grim_kingdomsloststructuresruins", "2.0.3", "pack.mcmeta"}
 		};
 

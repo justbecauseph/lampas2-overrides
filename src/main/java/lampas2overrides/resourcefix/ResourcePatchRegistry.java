@@ -49,13 +49,27 @@ public final class ResourcePatchRegistry {
 			"lampas2-overrides/resource-patches/mvs/5.0.14/pack.mcmeta"
 		));
 
-		// 5. Formations Overworld 1.0.5+a - Missing supported_formats in pack.mcmeta
+		// 5. Formations Overworld 1.0.5+a - Missing supported_formats in pack.mcmeta & 26.2 chain renaming
 		register(new ResourcePatch(
 			"formationsoverworld",
 			"1.0.5+a",
 			"pack.mcmeta",
 			"ffa966eb7835cc4de1273945333236331eff33116e918869e4e29c881b39f940",
 			"lampas2-overrides/resource-patches/formationsoverworld/1.0.5+a/pack.mcmeta"
+		));
+		register(new ResourcePatch(
+			"formationsoverworld",
+			"1.0.5+a",
+			"data/formationsoverworld/loot_table/stone_tower/smithing.json",
+			"380118821ec580c348da35a5983283499950e976099e96123e015cbe508346c0",
+			"lampas2-overrides/resource-patches/formationsoverworld/1.0.5+a/data/formationsoverworld/loot_table/stone_tower/smithing.json"
+		));
+		register(new ResourcePatch(
+			"formationsoverworld",
+			"1.0.5+a",
+			"data/formationsoverworld/loot_table/witch_tower/smithing.json",
+			"32c4bd2ea2c860a13ebde2ac05fe964bc2334914584cb68c14f4a994d9630d46",
+			"lampas2-overrides/resource-patches/formationsoverworld/1.0.5+a/data/formationsoverworld/loot_table/witch_tower/smithing.json"
 		));
 
 		// 6. Grim Kingdoms Lost Structures Ruins 2.0.3 - Missing supported_formats in pack.mcmeta

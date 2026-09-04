@@ -6,7 +6,7 @@ heads, Lootr item frames converted into Fast Item Frames blocks, Better Lib's Fa
 startup fix, Underground Village's stale loot data and 2.1.1 worldgen structure/pool defects,
 Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter 0.28.0+26.2 threaded-worldgen
 entity-discard deadlock and missing dimension context, Visual Workbench tag reloads under
-Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, version-gated Incendium Legacy 5.5.0 and 5.5.1 tick-function optimizations, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and POI tags (MVS, MNS, Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Better Lib). The first two
+Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, version-gated Incendium Legacy 5.5.0 and 5.5.1 tick-function optimizations, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files, POI tags, and loot tables (MVS, MNS, Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Better Lib). The first two
 features, Visual Workbench, Gravestones, Jade nameplates, and Jade Custom Name are client-only; the Custom Name space fix, Incendium datapacks, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
@@ -233,7 +233,8 @@ Zip-level and format work can be tested outside the game entirely; that is how `
 - **Resource patches support multi-version profiling via `ResourcePatchKey`.** When multiple releases of the
   same mod require virtual patching (e.g. Moog's Voyager Structures 5.0.11 and 5.0.14), `ResourcePatchRegistry`
   indexes patches by mod ID, exact version, and resource path. MVS 5.1.1 fixed `pack.mcmeta` upstream and requires
-  no patch.
+  no patch. Formations Overworld 1.0.5+a patches root `pack.mcmeta` and its `stone_tower` and `witch_tower` smithing
+  loot tables to rename pre-26.2 `minecraft:chain` to `minecraft:iron_chain`.
 - **Mob Filter's worldgen rejection must not call `Entity.remove()` and needs active dimension context.**
   In 0.28.0+26.2, the `WorldGenRegion_addFreshEntity` callback has not admitted the entity to the world, so its existing
   `CallbackInfoReturnable#setReturnValue(false)` is sufficient to veto it. Removing a LivingEntity

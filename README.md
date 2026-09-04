@@ -232,8 +232,8 @@ Patched mods and resources:
    - **Defect**: Missing `supported_formats` in root `pack.mcmeta`.
    - **Fix**: Virtually replaces `pack.mcmeta` with valid `supported_formats: [48, 107]`.
 3. **Formations Overworld (1.0.5+a)**:
-   - **Defect**: Missing `supported_formats` in root `pack.mcmeta`.
-   - **Fix**: Virtually replaces `pack.mcmeta` with valid `supported_formats: [48, 107]`.
+   - **Defect**: Missing `supported_formats` in root `pack.mcmeta`, and structure smithing loot tables (`stone_tower/smithing.json` and `witch_tower/smithing.json`) reference pre-26.2 `minecraft:chain` instead of `minecraft:iron_chain`, causing `DataResult.Error['Unknown registry key...']` loot table parse errors on 26.2.
+   - **Fix**: Virtually replaces `pack.mcmeta` with valid `supported_formats: [48, 107]` and replaces both smithing loot tables with `minecraft:iron_chain`.
 4. **Grim Kingdoms Lost Structures Ruins (2.0.3)**:
    - **Defect**: Missing `supported_formats` in root `pack.mcmeta`.
    - **Fix**: Virtually replaces `pack.mcmeta` with valid `supported_formats: [48, 107]`.
