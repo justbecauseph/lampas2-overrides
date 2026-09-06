@@ -19,6 +19,7 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Custom Name multi-word names](#custom-name-multi-word-names) | Custom Name 0.4.4-26.2 | Permits spaces in nickname, prefix, and suffix commands for non-operators |
 | [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | MVS, MNS, Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Better Lib | Transparently repairs malformed `pack.mcmeta` formats and POI tags at runtime |
 | [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.2.11-mc26.2 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
+| [Bee and spawner structure DFU validation](#bee-and-spawner-structure-dfu-validation) | Exact Trek and Stoneholm fixtures | Verifies repaired bee inventories and zombie spawner payloads survive structure loading |
 
 ## Mob Filter worldgen safety and dimension context
 
@@ -399,3 +400,7 @@ old Product/Sum schema exactly, then rebuilds the `cardinal_components` and `tri
 preserved `Items`/`cosmetic` data, residual legacy-map handling, and scalar fallback. It retains the
 vanilla tail object and fails closed on version, class-hash, or schema mismatch. Semantic and exact
 pack runtime validation remains required; the priority-1500 validation run produced zero DFU decode/schema errors, while separate attachment-position errors remain.
+
+## Bee and spawner structure DFU validation
+
+Phase 2B validates the exact Trek and Stoneholm runtime fixtures that previously produced bee and spawner decode failures. The complete fixture provenance, hashes, coordinates, and vanilla-reference comparisons are recorded in [docs/bee-spawner-dfu-validation.md](docs/bee-spawner-dfu-validation.md) and [docs/evidence/phase2b-bees-spawner.json](docs/evidence/phase2b-bees-spawner.json).

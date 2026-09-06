@@ -1,0 +1,363 @@
+{
+  "phase": "2B",
+  "scope": "exact runtime fixture acceptance",
+  "override_artifact_sha256": "e2f05414e9fdc5c16f7860670c14cef05e7b50f78789917afbc11d01b36ebbc8",
+  "trinkets_sha256": "e1b49012e3fe25e63812ef73dfd0f2e0891fd6aa88c7ef4e73d781fddc714f39",
+  "fixtures": [
+    {
+      "source_jar": "trek-B0.6.2.jar",
+      "source_jar_sha256": "5ea0837a4b1ef02cc702d7e7e49a245f4857591696183b9d2fe56c574cbfc022",
+      "resource": "data/trek/structure/overworld/common/strange_stone.nbt",
+      "resource_sha256": "e98f11ece76f19891f7beedfe67e4bf9b9d3b34922286b299197723018bd8a75",
+      "data_version": 3337,
+      "size": [
+        9,
+        10,
+        11
+      ],
+      "placement": [
+        600,
+        80,
+        0
+      ],
+      "beehives": [
+        {
+          "pos": [
+            602,
+            83,
+            9
+          ],
+          "timers": [
+            [
+              600,
+              378
+            ],
+            [
+              600,
+              368
+            ]
+          ],
+          "entity_ids": [
+            "minecraft:bee",
+            "minecraft:bee"
+          ]
+        },
+        {
+          "pos": [
+            606,
+            85,
+            1
+          ],
+          "timers": [
+            [
+              600,
+              455
+            ],
+            [
+              600,
+              443
+            ]
+          ],
+          "entity_ids": [
+            "minecraft:bee",
+            "minecraft:bee"
+          ]
+        }
+      ],
+      "comparison": "saved bees lists equal vanilla STRUCTURE-DFU reference; runtime-only keys x,y,z,keepPacked,components"
+    },
+    {
+      "source_jar": "underground_village-fabric-26.1-2.1.1.jar",
+      "source_jar_sha256": "deb59fde82d597413851054181fd8ea5f54b636a49d973660949337a3b55f420",
+      "resource": "data/stoneholm/structure/abandoned_poi/bell_01.nbt",
+      "resource_sha256": "75e056db785265875418e41e198bfb98639f24faf8078a29bcce2c951e46f7f3",
+      "data_version": 2586,
+      "size": [
+        9,
+        5,
+        9
+      ],
+      "placement": [
+        700,
+        80,
+        0
+      ],
+      "spawner": {
+        "pos": [
+          704,
+          82,
+          4
+        ],
+        "entity": "minecraft:zombie",
+        "weight": 1,
+        "spawn_count": 4
+      },
+      "comparison": "all vanilla STRUCTURE-DFU semantic keys equal; runtime-only keys x,y,z,keepPacked,components,stats,modified"
+    }
+  ],
+  "runtime": {
+    "server_exit_code": 0,
+    "all_templates_loaded": true,
+    "target_decode_or_serialization_errors": 0,
+    "block_query_output_count": 3,
+    "port_free_after_stop": true,
+    "full_log": "run/phase2b-runtime/logs/phase2b-exact-fixtures-final-console.log",
+    "tick_frozen_before_place": true
+  },
+  "saved_block_entities": {
+    "(602, 83, 9)": {
+      "bees": [
+        {
+          "entity_data": {
+            "AbsorptionAmount": 0.0,
+            "Age": 0,
+            "AngerTime": 0,
+            "ForcedAge": 0,
+            "HasNectar": 0,
+            "HasStung": 0,
+            "Health": 10.0,
+            "InLove": 0,
+            "Invulnerable": 0,
+            "PersistenceRequired": 0,
+            "attributes": [
+              {
+                "base": 16.0,
+                "id": "minecraft:follow_range",
+                "modifiers": [
+                  {
+                    "amount": 0.08239491515914953,
+                    "id": "minecraft:random_spawn_bonus",
+                    "operation": "add_multiplied_base"
+                  }
+                ]
+              },
+              {
+                "base": 0.30000001192092896,
+                "id": "minecraft:movement_speed"
+              }
+            ],
+            "id": "minecraft:bee"
+          },
+          "min_ticks_in_hive": 600,
+          "ticks_in_hive": 378
+        },
+        {
+          "entity_data": {
+            "AbsorptionAmount": 0.0,
+            "Age": 0,
+            "AngerTime": 0,
+            "ForcedAge": 0,
+            "HasNectar": 0,
+            "HasStung": 0,
+            "Health": 10.0,
+            "InLove": 0,
+            "Invulnerable": 0,
+            "PersistenceRequired": 0,
+            "attributes": [
+              {
+                "base": 16.0,
+                "id": "minecraft:follow_range",
+                "modifiers": [
+                  {
+                    "amount": 0.025376255388527398,
+                    "id": "minecraft:random_spawn_bonus",
+                    "operation": "add_multiplied_base"
+                  }
+                ]
+              },
+              {
+                "base": 0.30000001192092896,
+                "id": "minecraft:movement_speed"
+              }
+            ],
+            "id": "minecraft:bee"
+          },
+          "min_ticks_in_hive": 600,
+          "ticks_in_hive": 368
+        }
+      ],
+      "components": {},
+      "id": "minecraft:beehive",
+      "keepPacked": 0,
+      "x": 602,
+      "y": 83,
+      "z": 9
+    },
+    "(606, 85, 1)": {
+      "bees": [
+        {
+          "entity_data": {
+            "AbsorptionAmount": 0.0,
+            "Age": 0,
+            "AngerTime": 0,
+            "ForcedAge": 0,
+            "HasNectar": 0,
+            "HasStung": 0,
+            "Health": 10.0,
+            "InLove": 0,
+            "Invulnerable": 0,
+            "PersistenceRequired": 0,
+            "attributes": [
+              {
+                "base": 16.0,
+                "id": "minecraft:follow_range",
+                "modifiers": [
+                  {
+                    "amount": 0.010132172882191428,
+                    "id": "minecraft:random_spawn_bonus",
+                    "operation": "add_multiplied_base"
+                  }
+                ]
+              },
+              {
+                "base": 0.30000001192092896,
+                "id": "minecraft:movement_speed"
+              }
+            ],
+            "id": "minecraft:bee"
+          },
+          "min_ticks_in_hive": 600,
+          "ticks_in_hive": 455
+        },
+        {
+          "entity_data": {
+            "AbsorptionAmount": 0.0,
+            "Age": 0,
+            "AngerTime": 0,
+            "ForcedAge": 0,
+            "HasNectar": 0,
+            "HasStung": 0,
+            "Health": 10.0,
+            "InLove": 0,
+            "Invulnerable": 0,
+            "PersistenceRequired": 0,
+            "attributes": [
+              {
+                "base": 16.0,
+                "id": "minecraft:follow_range",
+                "modifiers": [
+                  {
+                    "amount": 0.04587339007672382,
+                    "id": "minecraft:random_spawn_bonus",
+                    "operation": "add_multiplied_base"
+                  }
+                ]
+              },
+              {
+                "base": 0.30000001192092896,
+                "id": "minecraft:movement_speed"
+              }
+            ],
+            "id": "minecraft:bee"
+          },
+          "min_ticks_in_hive": 600,
+          "ticks_in_hive": 443
+        }
+      ],
+      "components": {},
+      "id": "minecraft:beehive",
+      "keepPacked": 0,
+      "x": 606,
+      "y": 85,
+      "z": 1
+    },
+    "(704, 82, 4)": {
+      "Delay": 0,
+      "MaxNearbyEntities": 6,
+      "MaxSpawnDelay": 800,
+      "MinSpawnDelay": 200,
+      "RequiredPlayerRange": 16,
+      "SpawnCount": 4,
+      "SpawnData": {
+        "entity": {
+          "id": "minecraft:zombie"
+        }
+      },
+      "SpawnPotentials": [
+        {
+          "data": {
+            "entity": {
+              "id": "minecraft:zombie"
+            }
+          },
+          "weight": 1
+        }
+      ],
+      "SpawnRange": 4,
+      "components": {},
+      "id": "minecraft:mob_spawner",
+      "keepPacked": 0,
+      "modified": 0,
+      "stats": {},
+      "x": 704,
+      "y": 82,
+      "z": 4
+    }
+  },
+  "vanilla_reference_sha256": {
+    "trek_strange_stone.nbt": "3366494cc196b4b0a0c0e9eb1d4c6f3a1b2a05f5968ec5a015bc88da0e43295b",
+    "stoneholm_bell_01.nbt": "99bb191f997fe86ef1e3cae802bcb73b4075e5a128297ae07ed4d4d329ff5f9b"
+  },
+  "minecraft_server_jar_sha256": "183c0499c5f855570ee487dd38e141a53f0121f83a0b07a3bac2d8b6698823e8",
+  "runtime_log_sha256": "e27c7cb42b5d28948179ea44137c1b2382f78cc5d07a2b940d482e405053feb2",
+  "saved_region": "run/phase2a-server-smoke/phase2a-baseline3-world/dimensions/minecraft/overworld/region/r.1.0.mca",
+  "deployment": "none",
+  "source_patch": "none",
+  "original_log_provenance": {
+    "hives_world_positions": [
+      [
+        1266,
+        65,
+        -1399
+      ],
+      [
+        1270,
+        67,
+        -1407
+      ]
+    ],
+    "timer_pairs": [
+      [
+        600,
+        378
+      ],
+      [
+        600,
+        368
+      ],
+      [
+        600,
+        455
+      ],
+      [
+        600,
+        443
+      ]
+    ],
+    "placement_origin": [
+      1264,
+      62,
+      -1408
+    ],
+    "spawner_world_position": [
+      1232,
+      49,
+      -1909
+    ],
+    "spawner_payload": {
+      "SpawnData": {
+        "entity": {
+          "id": "minecraft:zombie"
+        }
+      },
+      "SpawnPotentials": [
+        {
+          "Entity": {
+            "id": "minecraft:zombie"
+          },
+          "Weight": 1
+        }
+      ]
+    }
+  }
+}
