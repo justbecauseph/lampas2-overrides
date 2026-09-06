@@ -119,6 +119,16 @@ public final class ResourcePatchRegistry {
 			"f9a0ce7a98f832eb2f246c521c39c937a1ddef167b56718312584f340b14ed82",
 			"lampas2-overrides/resource-patches/eastersdelight/1.3.1/resourcepacks/farmersdelight_overrides/pack.mcmeta"
 		));
+
+		// 9. Wilder Wild 4.2.11-mc26.2 - stone pool's radius 15 reaches chunk distance 2
+		// under FrozenLib's +1 sampling and four-neighbor exposure checks with C2ME's write radius 1.
+		register(new ResourcePatch(
+			"wilderwild",
+			"4.2.11-mc26.2",
+			"data/wilderwild/worldgen/configured_feature/stone_pool.json",
+			"59cf59a1c1e86f9627361e1dcec3250b81d535c6e84ff7c3b2950d9b90f2efe4",
+			"lampas2-overrides/resource-patches/wilderwild/4.2.11-mc26.2/data/wilderwild/worldgen/configured_feature/stone_pool.json"
+		));
 	}
 
 	private static void register(ResourcePatch patch) {

@@ -18,6 +18,7 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Jade nameplates and Custom Name](#jade-nameplates-and-custom-name) | Jade (+ Custom Name) | Suppresses vanilla in-world entity/player nameplates and syncs Custom Name player display names into Jade |
 | [Custom Name multi-word names](#custom-name-multi-word-names) | Custom Name 0.4.4-26.2 | Permits spaces in nickname, prefix, and suffix commands for non-operators |
 | [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | MVS, MNS, Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Better Lib | Transparently repairs malformed `pack.mcmeta` formats and POI tags at runtime |
+| [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.2.11-mc26.2 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
 
 ## Mob Filter worldgen safety and dimension context
 
@@ -170,6 +171,21 @@ This feature fails closed using explicit version profiles:
 
 A modified or unsupported Incendium release is left untouched and produces a warning in the server
 log instead of receiving potentially stale function overrides.
+
+## Wilder Wild stone pool
+
+Wilder Wild 4.2.11-mc26.2's `mesoglea_caves_stone_pool` uses FrozenLib 2.5.3's circular
+waterlogged vegetation feature with a sampled radius of 12–15, plus one block before the feature
+places it. FrozenLib then checks the four horizontal neighbors of each placed block. At a chunk
+edge, the upstream maximum reaches two chunks away, which C2ME 0.4.2-alpha.0.43 reports as an
+unsafe worldgen read.
+
+The virtual resource patch keeps the feature type, stone ground, depth, vertical range, minimum
+radius, and placement unchanged, and changes only `xz_radius.max_inclusive` from 15 to 14. The
+largest sampled radius is then 15 and the four-neighbor checks reach at most 16 blocks, which fits
+the active chunk and its one-chunk write radius even at positive, negative, edge, and corner
+coordinates. The patch is version and SHA-256 gated; an unknown Wilder Wild release or changed
+`stone_pool.json` remains untouched.
 
 ## Additional Lanterns chunk loading
 

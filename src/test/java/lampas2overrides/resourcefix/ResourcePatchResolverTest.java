@@ -37,8 +37,8 @@ public class ResourcePatchResolverTest {
 	}
 
 	@Test
-	void registryContainsAllFiveTargetPatches() {
-		assertEquals(13, ResourcePatchRegistry.getAllPatches().size());
+	void registryContainsAllTargetPatches() {
+		assertEquals(14, ResourcePatchRegistry.getAllPatches().size());
 
 		assertNotNull(ResourcePatchRegistry.findPatch("better_lib",
 			"data/minecraft/tags/point_of_interest_type/acquirable_job_site.json"));
@@ -50,6 +50,8 @@ public class ResourcePatchResolverTest {
 		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "data/formationsoverworld/loot_table/stone_tower/smithing.json"));
 		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "data/formationsoverworld/loot_table/witch_tower/smithing.json"));
 		assertNotNull(ResourcePatchRegistry.findPatch("mr_grim_kingdomsloststructuresruins", "pack.mcmeta"));
+		assertNotNull(ResourcePatchRegistry.findPatch("wilderwild",
+			"data/wilderwild/worldgen/configured_feature/stone_pool.json"));
 	}
 
 	@Test
@@ -85,6 +87,14 @@ public class ResourcePatchResolverTest {
 					assertFalse(content.contains("\"minecraft:chain\""), "smithing.json replacement must not contain unrenamed minecraft:chain");
 					assertTrue(content.contains("\"minecraft:iron_chain\""), "smithing.json replacement must contain minecraft:iron_chain");
 					assertTrue(json.has("pools"), "Missing 'pools' array in " + patch.replacementPath());
+				} else if (patch.resourcePath().endsWith("wilderwild/worldgen/configured_feature/stone_pool.json")) {
+					assertEquals("frozenlib:circular_waterlogged_vegetation_patch_less_borders",
+						json.get("type").getAsString());
+					JsonObject config = json.getAsJsonObject("config");
+					assertEquals(12, config.getAsJsonObject("xz_radius").get("min_inclusive").getAsInt());
+					assertEquals(14, config.getAsJsonObject("xz_radius").get("max_inclusive").getAsInt());
+					assertEquals(4, config.get("depth").getAsInt());
+					assertEquals(2, config.get("vertical_range").getAsInt());
 				}
 			}
 		}
@@ -133,6 +143,50 @@ public class ResourcePatchResolverTest {
 			assertTrue(result.contains("\"minecraft:iron_chain\""), "Must contain minecraft:iron_chain");
 			JsonObject json = JsonParser.parseString(result).getAsJsonObject();
 			assertTrue(json.has("pools"));
+		}
+	}
+
+	@Test
+	void appliesWilderWildStonePoolPatchWithExactVersionAndHash() throws IOException {
+		ModContainer mod = createMockModContainer("wilderwild", "4.2.11-mc26.2");
+		byte[] original = readFixtureResource(
+			"upstream/wilderwild/4.2.11-mc26.2/data/wilderwild/worldgen/configured_feature/stone_pool.json");
+		assertEquals("59cf59a1c1e86f9627361e1dcec3250b81d535c6e84ff7c3b2950d9b90f2efe4",
+			ResourcePatchResolver.sha256Hex(original));
+
+		IoSupplier<InputStream> patched = ResourcePatchResolver.resolve(
+			mod,
+			"data/wilderwild/worldgen/configured_feature/stone_pool.json",
+			() -> new ByteArrayInputStream(original)
+		);
+		assertNotNull(patched);
+		try (InputStream in = patched.get()) {
+			String result = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+			assertEquals(14, JsonParser.parseString(result).getAsJsonObject()
+				.getAsJsonObject("config").getAsJsonObject("xz_radius")
+				.get("max_inclusive").getAsInt());
+		}
+	}
+
+	@Test
+	void leavesWilderWildStonePoolUntouchedForUnknownVersionOrHash() throws IOException {
+		byte[] original = readFixtureResource(
+			"upstream/wilderwild/4.2.11-mc26.2/data/wilderwild/worldgen/configured_feature/stone_pool.json");
+		IoSupplier<InputStream> wrongVersion = ResourcePatchResolver.resolve(
+			createMockModContainer("wilderwild", "4.2.12-mc26.2"),
+			"data/wilderwild/worldgen/configured_feature/stone_pool.json",
+			() -> new ByteArrayInputStream(original));
+		assertNull(wrongVersion);
+
+		byte[] tampered = original.clone();
+		tampered[0] = (byte) (tampered[0] ^ 1);
+		IoSupplier<InputStream> wrongHash = ResourcePatchResolver.resolve(
+			createMockModContainer("wilderwild", "4.2.11-mc26.2"),
+			"data/wilderwild/worldgen/configured_feature/stone_pool.json",
+			() -> new ByteArrayInputStream(tampered));
+		assertNotNull(wrongHash);
+		try (InputStream in = wrongHash.get()) {
+			assertArrayEquals(tampered, in.readAllBytes());
 		}
 	}
 
@@ -296,7 +350,8 @@ public class ResourcePatchResolverTest {
 			{"formationsoverworld-1.0.5a-mc1.21+.jar", "formationsoverworld", "1.0.5+a", "pack.mcmeta"},
 			{"formationsoverworld-1.0.5a-mc1.21+.jar", "formationsoverworld", "1.0.5+a", "data/formationsoverworld/loot_table/stone_tower/smithing.json"},
 			{"formationsoverworld-1.0.5a-mc1.21+.jar", "formationsoverworld", "1.0.5+a", "data/formationsoverworld/loot_table/witch_tower/smithing.json"},
-			{"grim-kingdoms-lost-structures-ruins-2.0.3.jar", "mr_grim_kingdomsloststructuresruins", "2.0.3", "pack.mcmeta"}
+			{"grim-kingdoms-lost-structures-ruins-2.0.3.jar", "mr_grim_kingdomsloststructuresruins", "2.0.3", "pack.mcmeta"},
+			{"WilderWild-4.2.11-mc26.2.jar", "wilderwild", "4.2.11-mc26.2", "data/wilderwild/worldgen/configured_feature/stone_pool.json"}
 		};
 
 		for (String[] check : jarChecks) {
@@ -356,5 +411,17 @@ public class ResourcePatchResolverTest {
 				return null;
 			}
 		);
+	}
+
+	private static byte[] readFixtureResource(String resource) throws IOException {
+		try (InputStream input = ResourcePatchResolverTest.class.getClassLoader().getResourceAsStream(resource)) {
+			assertNotNull(input, "Missing test fixture: " + resource);
+			byte[] bytes = input.readAllBytes();
+			// The text fixture includes a trailing LF, while the upstream jar entry does not.
+			if (bytes.length > 0 && bytes[bytes.length - 1] == '\n') {
+				return java.util.Arrays.copyOf(bytes, bytes.length - 1);
+			}
+			return bytes;
+		}
 	}
 }

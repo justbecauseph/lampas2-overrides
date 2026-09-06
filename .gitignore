@@ -40,3 +40,6 @@ replay_*.log
 *.hprof
 *.jfr
 
+# local phase planning and evidence
+PLAN.md
+PROGRESS.md

@@ -363,6 +363,7 @@ resourcefix/
   ResourcePatchRegistry     registry of defective mod resources with SHA-256 fingerprints
   ResourcePatchResolver     runtime virtual patch resolver
   ResourcePatch             immutable patch rule record
+  Includes the version- and SHA-gated Wilder Wild 4.2.11 stone-pool radius repair
 lampas2-overrides/resource-patches/
   mvs/, mns/, etc.          replacement resource assets for supported broken versions
 customname/

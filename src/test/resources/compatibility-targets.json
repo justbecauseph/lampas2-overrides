@@ -128,6 +128,18 @@
         }
       }
     },
+    "wilderwild": {
+      "name": "Wilder Wild",
+      "type": "resource_patch",
+      "versions": {
+        "4.2.11-mc26.2": {
+          "status": "patched",
+          "resources": {
+            "data/wilderwild/worldgen/configured_feature/stone_pool.json": "59cf59a1c1e86f9627361e1dcec3250b81d535c6e84ff7c3b2950d9b90f2efe4"
+          }
+        }
+      }
+    },
     "mobfilter": {
       "name": "Mob Filter",
       "type": "exact_mixin_gate",
