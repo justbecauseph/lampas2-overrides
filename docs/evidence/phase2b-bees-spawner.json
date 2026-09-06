@@ -346,9 +346,7 @@
     ],
     "spawner_payload": {
       "SpawnData": {
-        "entity": {
-          "id": "minecraft:zombie"
-        }
+        "id": "minecraft:zombie"
       },
       "SpawnPotentials": [
         {
@@ -360,4 +358,4 @@
       ]
     }
   }
-}
+}\n
