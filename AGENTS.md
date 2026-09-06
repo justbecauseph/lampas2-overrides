@@ -396,3 +396,15 @@ remain on the logical server thread; its render-state and attack hooks remain on
    unverified.
 5. New behaviour and any new limitation written into `README.md` and, when it changes agent-facing
    architecture or verification knowledge, this file.
+
+## Structure DFU compatibility architecture
+
+The common-side Trinkets datafix repair is a narrowly gated MixinExtras return-value hook. It targets
+Minecraft 26.2 V1460 player/entity schema lambdas and repairs only the audited `trinkets_updated`
+4.1.0+26.2 V1460 class (SHA-256 recorded in the compatibility manifest). It preserves vanilla DFU
+ownership and fails closed on absent versions, hash mismatch, or unknown Product/Sum shape. This is
+common-side and must be present on dedicated servers as well as integrated clients.
+
+Verification requires pure shape/gate tests, the semantic DFU fixtures, and an exact deployed-pack
+runtime run. Build success alone is insufficient; until that runtime run passes, report the hook as
+pending. Re-evaluate bees, spawners, and block-attached entity reports after this schema repair.

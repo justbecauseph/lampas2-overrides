@@ -390,3 +390,12 @@ Neither Figura nor ReplayMod is a build dependency. The optional Lootr and Fast 
 uses compile-only artifacts for Lootr, Fast Item Frames, Puzzles Lib and Fabric API; none are bundled
 into this mod. See [CLAUDE.md](CLAUDE.md) for how the bridges are structured and how changes get
 verified.
+
+### Trinkets entity schema repair (common-side)
+
+The deployed `trinkets_updated` 4.1.0+26.2 V1460 schema wrapper could consume entity data before
+Minecraft 26.2's normal DFU migrated nested item stacks. The common-side repair matches the audited
+old Product/Sum schema exactly, then rebuilds the `cardinal_components` and `trinkets` fields with
+preserved `Items`/`cosmetic` data, residual legacy-map handling, and scalar fallback. It retains the
+vanilla tail object and fails closed on version, class-hash, or schema mismatch. Semantic and exact
+pack runtime validation remains required; the priority-1500 validation run produced zero DFU decode/schema errors, while separate attachment-position errors remain.

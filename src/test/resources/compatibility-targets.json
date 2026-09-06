@@ -240,6 +240,17 @@
         }
       }
     },
+    "trinkets_updated": {
+      "name": "Trinkets entity schema repair",
+      "type": "exact_mixin_gate",
+      "versions": {
+        "4.1.0+26.2": {
+          "minecraft": "26.2",
+          "class_sha256": "089c59253b7b9ab9f7f0a54c1f0dc7912379ad5bfa335c4acfcfbb91e17914f9",
+          "status": "isolated-and-tested"
+        }
+      }
+    },
     "figura": {
       "name": "Figura",
       "type": "bridge",

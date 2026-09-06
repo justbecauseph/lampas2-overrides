@@ -1,0 +1,47 @@
+{
+  "scope": "Grim Kingdoms Phase 2A patched disposable runtime smoke",
+  "runtime": {"minecraft": "26.2", "fabric_loader": "0.19.5", "bind": "127.0.0.1:25677", "world": "phase2a-baseline3-world"},
+  "patched": {
+    "label": "patched-trinkets-priority1500",
+    "override_sha256": "e2f05414e9fdc5c16f7860670c14cef05e7b50f78789917afbc11d01b36ebbc8",
+    "trinkets_sha256": "e1b49012e3fe25e63812ef73dfd0f2e0891fd6aa88c7ef4e73d781fddc714f39",
+    "trinkets_matches_deployed_original": true,
+    "server_exit_code": 0,
+    "boot_done": true,
+    "template_loads": 2,
+    "serialization_error_groups": 0,
+    "item_error_lines": 0,
+    "attribute_error_lines": 0,
+    "schema_shape_warnings": 0,
+    "mixin_or_injection_errors": 0,
+    "block_position_error_lines": 10,
+    "positive_template_lines": [
+      "Loaded template \"grim_kingdoms:plains/zweiberg_plains\" at 200, 80, 0",
+      "Loaded template \"grim_kingdoms:water/blackwater\" at 300, 80, 0"
+    ],
+    "semantic_lines": {
+      "wraith_lens": "minecraft:spyglass with entity_interaction_range and attack_speed attribute_modifiers, lore, custom_name and vanishing_curse enchantment preserved in zweiberg chest",
+      "potion": "minecraft:splash_potion potion_contents preserved in blackwater chest for infested and strong_healing entries",
+      "entity_query": "query returned arbitrary Rotten Flesh and Suspicious Stew drops; targeted dropped-item query was arbitrary",
+      "saved_frame_nbt": "evidence/phase2a-frame-items.json",
+      "saved_frame_semantics": "FastItemFrames block entities at (215,114,13) and (306,93,42) preserve targeted splash potion and Wraith Lens item components"
+    },
+    "console_log": "logs/patched-trinkets-priority1500-console.log",
+    "evidence_txt": "evidence-patched-trinkets-priority1500.txt"
+  },
+  "baseline": {
+    "override_sha256": "45c2d85e883e9c7db23304131997491ddd0e68aaf47294cf1551704007387a05",
+    "template_loads": 2,
+    "serialization_error_groups": 2,
+    "item_error_lines": 6,
+    "attribute_error_lines": 18,
+    "console_log": "logs/baseline3-console.log"
+  },
+  "diagnostic": {
+    "kind": "noV1460",
+    "override_sha256": "e1429f6c47b2051e120064b05fb1c09ef8033d487cd1a206486dac8dd5bd9ce8",
+    "trinkets_diagnostic_sha256": "303d4ab375b8bf51ab48dfed5bfb32245d22387cd7630e2fda39079656ad6cba",
+    "sole_change": "removed only datafixer.V1460Mixin from copied Trinkets mixin JSON; original restored",
+    "console_log": "logs/trinkets-v1460-disabled-console.log"
+  }
+}

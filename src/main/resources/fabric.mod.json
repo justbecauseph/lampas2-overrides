@@ -71,6 +71,9 @@
 		},
 		{
 			"config": "lampas2-overrides.resourcefix.mixins.json"
+		},
+		{
+			"config": "lampas2-overrides.trinketsdatafix.mixins.json"
 		}
 	],
 	"depends": {

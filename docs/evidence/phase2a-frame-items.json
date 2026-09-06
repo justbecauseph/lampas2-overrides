@@ -1,0 +1,43 @@
+{
+  "world": "phase2a-baseline3-world",
+  "dimension": "minecraft:overworld",
+  "source_region": "dimensions/minecraft/overworld/region/r.0.0.mca",
+  "inspection": "nbtlib read-only MCA chunk inspection after clean server shutdown",
+  "frames": [
+    {
+      "position": {"x": 215, "y": 114, "z": 13},
+      "block_entity_id": "fastitemframes:item_frame",
+      "item": {
+        "id": "minecraft:splash_potion",
+        "count": 1,
+        "components": {
+          "minecraft:potion_contents": {
+            "custom_color": 16262179,
+            "custom_effects": [{"amplifier": 1, "id": "minecraft:instant_health", "show_icon": false, "duration": 1, "show_particles": false}]
+          },
+          "minecraft:custom_name": {"italic": false, "text": "Splash Potion of Healing?"},
+          "minecraft:tooltip_display": {"hidden_components": ["minecraft:potion_contents"]}
+        }
+      },
+      "semantic_status": "preserved potion component, effect, custom name, and hidden tooltip component"
+    },
+    {
+      "position": {"x": 306, "y": 93, "z": 42},
+      "block_entity_id": "fastitemframes:item_frame",
+      "item": {
+        "id": "minecraft:spyglass",
+        "count": 1,
+        "components": {
+          "minecraft:attribute_modifiers": [
+            {"type": "minecraft:entity_interaction_range", "operation": "add_value", "amount": 2.5, "id": "minecraft:trinket_wraith_1", "slot": "offhand"},
+            {"type": "minecraft:attack_speed", "operation": "add_value", "amount": -0.15, "id": "minecraft:trinket_wraith_2", "slot": "offhand"}
+          ],
+          "minecraft:lore": [{"italic": false, "text": "You see further than you should.", "color": "gray"}],
+          "minecraft:custom_name": {"italic": false, "text": "Wraith Lens", "color": "light_purple"},
+          "minecraft:enchantments": {"minecraft:vanishing_curse": 1}
+        }
+      },
+      "semantic_status": "preserved both attribute modifiers, lore, custom name, and enchantment"
+    }
+  ]
+}
