@@ -1,0 +1,8 @@
+{
+  "required": true,
+  "package": "lampas2overrides.client.plasmovoice.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "plugin": "lampas2overrides.client.plasmovoice.PlasmoVoiceShutdownMixinPlugin",
+  "client": ["BaseVoiceClientMixin"],
+  "injectors": { "defaultRequire": 1 }
+}

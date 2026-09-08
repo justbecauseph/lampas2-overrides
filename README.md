@@ -21,6 +21,24 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.2.11-mc26.2 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
 | [Bee and spawner structure DFU validation](#bee-and-spawner-structure-dfu-validation) | Exact Trek and Stoneholm fixtures | Verifies repaired bee inventories and zombie spawner payloads survive structure loading |
 
+## Plasmo Voice client shutdown
+
+For Plasmo Voice **2.1.16**, a client-only compatibility hook requests microphone capture
+stop and UDP disconnection before Plasmo unregisters its listeners and unloads add-ons.
+The upstream UDP close method also shuts down its Netty event loop. This addresses the
+surviving non-daemon voice threads reported in the Minecraft shutdown watchdog crash.
+Other Plasmo versions and clients without Plasmo skip the hook; servers do not load it.
+
+The fix uses upstream cleanup APIs, preserves capture-stop event cancellation, and logs
+cleanup exceptions while allowing remaining cleanup and upstream shutdown to proceed.
+It does not forcibly terminate threads or wait on them from the render thread.
+
+Verified with unit tests and an isolated Fabric client using the exact installed Plasmo JAR:
+the mixin applied, an idle capture thread and started UDP event loop terminated, and the
+client exited normally. Full-pack multiplayer microphone use, add-on interaction, and
+disconnect/reconnect testing remain pending. See [verification evidence](docs/plasmo-shutdown.md).
+Upstream report: [plasmoapp/plasmo-voice#539](https://github.com/plasmoapp/plasmo-voice/issues/539).
+
 ## Mob Filter worldgen safety and dimension context
 
 Mob Filter `0.28.0+26.2` has two major defects during world generation:

@@ -397,6 +397,18 @@ remain on the logical server thread; its render-state and attack hooks remain on
 5. New behaviour and any new limitation written into `README.md` and, when it changes agent-facing
    architecture or verification knowledge, this file.
 
+## Plasmo Voice shutdown compatibility
+
+`client/plasmovoice` and `lampas2-overrides.plasmoshutdown.mixins.json` are client-only,
+gated to Plasmo Voice 2.1.16. The pinned Modrinth I0T9OQcy JAR is compile-only plus a test
+dependency, never bundled. `BaseVoiceClient.onShutdown()V` is injected at HEAD so capture
+stop and `removeClient(DISCONNECT)` occur before upstream unregisters listeners/unloads
+add-ons. UDP close owns Netty shutdown; capture owns its encoder/device cleanup. Do not
+replace this with global thread interruption, daemon conversion, or watchdog suppression.
+The isolated client probe proves both workers terminate but does not prove multiplayer
+or add-on behavior. Preserve cancellation semantics and inspect new versions before
+extending the gate. Evidence and reproduction are in `docs/plasmo-shutdown.md`.
+
 ## Structure DFU compatibility architecture
 
 The common-side Trinkets datafix repair is a narrowly gated MixinExtras return-value hook. It targets

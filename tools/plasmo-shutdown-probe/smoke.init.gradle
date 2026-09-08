@@ -1,0 +1,9 @@
+allprojects {
+ afterEvaluate {
+  loom.runs.client.runDir = 'build/plasmo-smoke'
+  tasks.register('plasmoProbeClasspath') {
+   doLast { file('build/plasmo-smoke-probe/classpath.txt').text = tasks.compileClientJava.classpath.asPath }
+  }
+  tasks.named('runClient') { jvmArgs '-Dmixin.debug.verbose=true' }
+ }
+}
