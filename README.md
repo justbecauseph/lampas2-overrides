@@ -404,3 +404,28 @@ pack runtime validation remains required; the priority-1500 validation run produ
 ## Bee and spawner structure DFU validation
 
 Phase 2B validates the exact Trek and Stoneholm runtime fixtures that previously produced bee and spawner decode failures. The complete fixture provenance, hashes, coordinates, and vanilla-reference comparisons are recorded in [docs/bee-spawner-dfu-validation.md](docs/bee-spawner-dfu-validation.md) and [docs/evidence/phase2b-bees-spawner.json](docs/evidence/phase2b-bees-spawner.json).
+
+## Grim Kingdoms 2.0.3 zero-level enchantments
+
+The virtual resource patcher repairs 10 audited Grim Kingdoms structure templates, removing
+32 zero-level enchantment entries from their item components. This includes the "way of the
+fisherman" rods and affected wooden hoes. Minecraft 26.2 requires serialized enchantment
+levels in 1..255. Positive levels, names, lore, attributes, inventory slots, entities, blocks,
+and DataVersion remain unchanged; vanilla STRUCTURE DFU still performs schema migration.
+
+Each replacement requires mod ID `mr_grim_kingdomsloststructuresruins`, version `2.0.3`,
+and the exact original resource SHA-256. Missing/unreadable or changed originals are not patched.
+The source JAR is never modified. Resource hashes and all removed NBT paths are recorded in
+`docs/evidence/grim-zero-enchantments.json`. Reproduce or verify against the audited JAR with
+Python and `nbtlib==2.0.4`:
+
+```text
+python tools/repair_grim_zero_enchantments.py <grim-kingdoms-2.0.3.jar>
+```
+
+Add `--write` to regenerate the replacement assets and evidence. Gradle tests independently
+read original and replacement fixtures with Minecraft NbtIo and compare complete NBT after
+only the recorded zero-level removals, alongside version/hash/missing-resource gate tests.
+Automated tests and packaging are verified; live structure placement remains unverified.
+This prevents malformed items in subsequently loaded templates; it does not restore items
+already lost from saved chests. Deployment is a separate step.

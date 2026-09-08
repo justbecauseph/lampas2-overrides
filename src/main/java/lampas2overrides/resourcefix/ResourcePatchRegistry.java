@@ -81,6 +81,68 @@ public final class ResourcePatchRegistry {
 			"lampas2-overrides/resource-patches/mr_grim_kingdomsloststructuresruins/2.0.3/pack.mcmeta"
 		));
 
+		// Grim Kingdoms 2.0.3 - zero-level enchantments in audited structure items.
+		register(new ResourcePatch(
+			"mr_grim_kingdomsloststructuresruins", "2.0.3",
+			"data/grim_kingdoms/structure/plains/glimmervault_fortress_plains.nbt",
+			"ceaad2f0e6d5b1075872c4a9ea117e51d8cd12542b6a913b67df486ab5795651",
+			"lampas2-overrides/resource-patches/mr_grim_kingdomsloststructuresruins/2.0.3/data/grim_kingdoms/structure/plains/glimmervault_fortress_plains.nbt"
+		));
+		register(new ResourcePatch(
+			"mr_grim_kingdomsloststructuresruins", "2.0.3",
+			"data/grim_kingdoms/structure/plains/sandfell_outpost.nbt",
+			"cbdeabe0a9b552f4b605c2686c3f52cd76d12844eb376627ecc10f769939396f",
+			"lampas2-overrides/resource-patches/mr_grim_kingdomsloststructuresruins/2.0.3/data/grim_kingdoms/structure/plains/sandfell_outpost.nbt"
+		));
+		register(new ResourcePatch(
+			"mr_grim_kingdomsloststructuresruins", "2.0.3",
+			"data/grim_kingdoms/structure/snowy/blackridge_watch.nbt",
+			"008469e97c9ef31779adc77bfec7e0c2c14d92559092f102650a3a62c0f82462",
+			"lampas2-overrides/resource-patches/mr_grim_kingdomsloststructuresruins/2.0.3/data/grim_kingdoms/structure/snowy/blackridge_watch.nbt"
+		));
+		register(new ResourcePatch(
+			"mr_grim_kingdomsloststructuresruins", "2.0.3",
+			"data/grim_kingdoms/structure/snowy/frozen_onion_fort2.nbt",
+			"26314ba4c97bb852b50867c8f215e101714a9168314663c984b2523fc1e90475",
+			"lampas2-overrides/resource-patches/mr_grim_kingdomsloststructuresruins/2.0.3/data/grim_kingdoms/structure/snowy/frozen_onion_fort2.nbt"
+		));
+		register(new ResourcePatch(
+			"mr_grim_kingdomsloststructuresruins", "2.0.3",
+			"data/grim_kingdoms/structure/snowy/glimmervault_fortress.nbt",
+			"dec9c010ddf102cde7a6f2188e248705b11776422cec5e149d98954b882c47f4",
+			"lampas2-overrides/resource-patches/mr_grim_kingdomsloststructuresruins/2.0.3/data/grim_kingdoms/structure/snowy/glimmervault_fortress.nbt"
+		));
+		register(new ResourcePatch(
+			"mr_grim_kingdomsloststructuresruins", "2.0.3",
+			"data/grim_kingdoms/structure/snowy/winterhold_citadel.nbt",
+			"8c6674cf35602fa52886a2725b5aca69451c0fc28d57fd8221b7a9ab67d1ef7e",
+			"lampas2-overrides/resource-patches/mr_grim_kingdomsloststructuresruins/2.0.3/data/grim_kingdoms/structure/snowy/winterhold_citadel.nbt"
+		));
+		register(new ResourcePatch(
+			"mr_grim_kingdomsloststructuresruins", "2.0.3",
+			"data/grim_kingdoms/structure/taiga/blackridge_watch_taiga.nbt",
+			"46ef7b657cec178141ecf98d00fc8e3f8f65bf0528cca492f7253507e6a20249",
+			"lampas2-overrides/resource-patches/mr_grim_kingdomsloststructuresruins/2.0.3/data/grim_kingdoms/structure/taiga/blackridge_watch_taiga.nbt"
+		));
+		register(new ResourcePatch(
+			"mr_grim_kingdomsloststructuresruins", "2.0.3",
+			"data/grim_kingdoms/structure/taiga/winterhold_citadel_taiga.nbt",
+			"2dc471af463c7df181e0851cfe65f8c85bbc698a7c240a4e6207e0edfe564617",
+			"lampas2-overrides/resource-patches/mr_grim_kingdomsloststructuresruins/2.0.3/data/grim_kingdoms/structure/taiga/winterhold_citadel_taiga.nbt"
+		));
+		register(new ResourcePatch(
+			"mr_grim_kingdomsloststructuresruins", "2.0.3",
+			"data/grim_kingdoms/structure/water/ship3.nbt",
+			"241a5a5172d04610627f889395668f456b350f4884d29078b50e80a30fb0afa7",
+			"lampas2-overrides/resource-patches/mr_grim_kingdomsloststructuresruins/2.0.3/data/grim_kingdoms/structure/water/ship3.nbt"
+		));
+		register(new ResourcePatch(
+			"mr_grim_kingdomsloststructuresruins", "2.0.3",
+			"data/grim_kingdoms/structure/water/ship9.nbt",
+			"d5e0b3fd913cc5cfc48c272346b9c43fb0e64d684f007fff5034023e1fab85aa",
+			"lampas2-overrides/resource-patches/mr_grim_kingdomsloststructuresruins/2.0.3/data/grim_kingdoms/structure/water/ship9.nbt"
+		));
+
 		// 7. Pyrite 0.18.3+26.2 - Builtin datapack pack.mcmeta files with max format 81 instead of 107
 		register(new ResourcePatch(
 			"pyrite",

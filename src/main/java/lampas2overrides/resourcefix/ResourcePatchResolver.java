@@ -71,6 +71,11 @@ public final class ResourcePatchResolver {
 			}
 		}
 
+		// Binary structure replacements must never bypass their provenance gate.
+		if (originalBytes == null && normalizedPath.endsWith(".nbt")) {
+			return null;
+		}
+
 		if (originalBytes != null) {
 			String actualSha256 = sha256Hex(originalBytes);
 			if (!patch.expectedSha256().equalsIgnoreCase(actualSha256)) {

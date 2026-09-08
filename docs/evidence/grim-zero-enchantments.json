@@ -1,0 +1,237 @@
+{
+  "mod": "mr_grim_kingdomsloststructuresruins",
+  "version": "2.0.3",
+  "jar_sha256": "d5f4af9dca99b6df9ad7db214df69d7ea63fb0e601eeabdcd73c304ddc9f7601",
+  "resources": [
+    {
+      "path": "data/grim_kingdoms/structure/plains/glimmervault_fortress_plains.nbt",
+      "sha256": "ceaad2f0e6d5b1075872c4a9ea117e51d8cd12542b6a913b67df486ab5795651",
+      "replacement_sha256": "2ef4e052522e64145dd7e1f680c535857b1c6af5f0724a4ac13a669d323a1eaa",
+      "removed": [
+        {
+          "path": "/blocks/80701/nbt/Items/8/components/minecraft:enchantments/levels/minecraft:wind_burst",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        },
+        {
+          "path": "/blocks/80701/nbt/Items/8/components/minecraft:enchantments/levels/minecraft:frost_walker",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        },
+        {
+          "path": "/blocks/80790/nbt/Items/1/components/minecraft:enchantments/levels/minecraft:bane_of_arthropods",
+          "item": "minecraft:wooden_hoe",
+          "level": 0
+        },
+        {
+          "path": "/blocks/80790/nbt/Items/1/components/minecraft:enchantments/levels/minecraft:wind_burst",
+          "item": "minecraft:wooden_hoe",
+          "level": 0
+        },
+        {
+          "path": "/blocks/80790/nbt/Items/1/components/minecraft:enchantments/levels/minecraft:smite",
+          "item": "minecraft:wooden_hoe",
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": "data/grim_kingdoms/structure/plains/sandfell_outpost.nbt",
+      "sha256": "cbdeabe0a9b552f4b605c2686c3f52cd76d12844eb376627ecc10f769939396f",
+      "replacement_sha256": "683ac87f73a587dd7cafd7fdd0ffbd7c162e3b04f286078b611f8996beef2c19",
+      "removed": [
+        {
+          "path": "/blocks/46813/nbt/Items/2/components/minecraft:enchantments/levels/minecraft:wind_burst",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        },
+        {
+          "path": "/blocks/46813/nbt/Items/2/components/minecraft:enchantments/levels/minecraft:frost_walker",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": "data/grim_kingdoms/structure/snowy/blackridge_watch.nbt",
+      "sha256": "008469e97c9ef31779adc77bfec7e0c2c14d92559092f102650a3a62c0f82462",
+      "replacement_sha256": "e1e8ad0d2f24cae37d1d78d6fc1a1c1d8a3e1d9c74d639f06f947169a2d723be",
+      "removed": [
+        {
+          "path": "/blocks/73114/nbt/Items/6/components/minecraft:enchantments/levels/minecraft:wind_burst",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        },
+        {
+          "path": "/blocks/73114/nbt/Items/6/components/minecraft:enchantments/levels/minecraft:frost_walker",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": "data/grim_kingdoms/structure/snowy/frozen_onion_fort2.nbt",
+      "sha256": "26314ba4c97bb852b50867c8f215e101714a9168314663c984b2523fc1e90475",
+      "replacement_sha256": "b502e81d504143ba3937a33a599eb8a637646dd8c0890f4206af66444c2499c1",
+      "removed": [
+        {
+          "path": "/blocks/28819/nbt/Items/3/components/minecraft:enchantments/levels/minecraft:bane_of_arthropods",
+          "item": "minecraft:stick",
+          "level": 0
+        },
+        {
+          "path": "/blocks/28819/nbt/Items/3/components/minecraft:enchantments/levels/minecraft:wind_burst",
+          "item": "minecraft:stick",
+          "level": 0
+        },
+        {
+          "path": "/blocks/28819/nbt/Items/3/components/minecraft:enchantments/levels/minecraft:smite",
+          "item": "minecraft:stick",
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": "data/grim_kingdoms/structure/snowy/glimmervault_fortress.nbt",
+      "sha256": "dec9c010ddf102cde7a6f2188e248705b11776422cec5e149d98954b882c47f4",
+      "replacement_sha256": "05175c6374786df6e73e7939958c3eb8214f2635c194edbed5a09c43ba44061d",
+      "removed": [
+        {
+          "path": "/blocks/80687/nbt/Items/8/components/minecraft:enchantments/levels/minecraft:wind_burst",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        },
+        {
+          "path": "/blocks/80687/nbt/Items/8/components/minecraft:enchantments/levels/minecraft:frost_walker",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        },
+        {
+          "path": "/blocks/80777/nbt/Items/1/components/minecraft:enchantments/levels/minecraft:bane_of_arthropods",
+          "item": "minecraft:wooden_hoe",
+          "level": 0
+        },
+        {
+          "path": "/blocks/80777/nbt/Items/1/components/minecraft:enchantments/levels/minecraft:wind_burst",
+          "item": "minecraft:wooden_hoe",
+          "level": 0
+        },
+        {
+          "path": "/blocks/80777/nbt/Items/1/components/minecraft:enchantments/levels/minecraft:smite",
+          "item": "minecraft:wooden_hoe",
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": "data/grim_kingdoms/structure/snowy/winterhold_citadel.nbt",
+      "sha256": "8c6674cf35602fa52886a2725b5aca69451c0fc28d57fd8221b7a9ab67d1ef7e",
+      "replacement_sha256": "c18df060a62ee9665ad0c51f477063b141ee636f5cb233aae3ed3f9d8c9bfa96",
+      "removed": [
+        {
+          "path": "/entities/9/nbt/Item/components/minecraft:enchantments/levels/minecraft:bane_of_arthropods",
+          "item": "minecraft:wooden_hoe",
+          "level": 0
+        },
+        {
+          "path": "/entities/9/nbt/Item/components/minecraft:enchantments/levels/minecraft:wind_burst",
+          "item": "minecraft:wooden_hoe",
+          "level": 0
+        },
+        {
+          "path": "/entities/9/nbt/Item/components/minecraft:enchantments/levels/minecraft:smite",
+          "item": "minecraft:wooden_hoe",
+          "level": 0
+        },
+        {
+          "path": "/entities/13/nbt/Item/components/minecraft:enchantments/levels/minecraft:wind_burst",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        },
+        {
+          "path": "/entities/13/nbt/Item/components/minecraft:enchantments/levels/minecraft:frost_walker",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        },
+        {
+          "path": "/blocks/96239/nbt/Items/1/components/minecraft:enchantments/levels/minecraft:wind_burst",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        },
+        {
+          "path": "/blocks/96239/nbt/Items/1/components/minecraft:enchantments/levels/minecraft:frost_walker",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": "data/grim_kingdoms/structure/taiga/blackridge_watch_taiga.nbt",
+      "sha256": "46ef7b657cec178141ecf98d00fc8e3f8f65bf0528cca492f7253507e6a20249",
+      "replacement_sha256": "0c304a41c27adecef5ccc200e5f412baba76ebe95ded7a594e76c9d397209882",
+      "removed": [
+        {
+          "path": "/blocks/73143/nbt/Items/7/components/minecraft:enchantments/levels/minecraft:wind_burst",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        },
+        {
+          "path": "/blocks/73143/nbt/Items/7/components/minecraft:enchantments/levels/minecraft:frost_walker",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": "data/grim_kingdoms/structure/taiga/winterhold_citadel_taiga.nbt",
+      "sha256": "2dc471af463c7df181e0851cfe65f8c85bbc698a7c240a4e6207e0edfe564617",
+      "replacement_sha256": "b83c2820c5f6739a3ef6369bc560f0609ffdab0917fd47cad207d04640b3ee92",
+      "removed": [
+        {
+          "path": "/entities/1/nbt/Item/components/minecraft:enchantments/levels/minecraft:wind_burst",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        },
+        {
+          "path": "/entities/1/nbt/Item/components/minecraft:enchantments/levels/minecraft:frost_walker",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": "data/grim_kingdoms/structure/water/ship3.nbt",
+      "sha256": "241a5a5172d04610627f889395668f456b350f4884d29078b50e80a30fb0afa7",
+      "replacement_sha256": "5ee35961ac15396fbf851e8c734ac1eabdd2df4edb310bf2c58fef129411e117",
+      "removed": [
+        {
+          "path": "/blocks/925/nbt/Items/1/components/minecraft:enchantments/levels/minecraft:wind_burst",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        },
+        {
+          "path": "/blocks/925/nbt/Items/1/components/minecraft:enchantments/levels/minecraft:frost_walker",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": "data/grim_kingdoms/structure/water/ship9.nbt",
+      "sha256": "d5e0b3fd913cc5cfc48c272346b9c43fb0e64d684f007fff5034023e1fab85aa",
+      "replacement_sha256": "d269ff200a94f2e2c4e426000e92c0ebfc1e5cd38368d40ca101e79c3e12e232",
+      "removed": [
+        {
+          "path": "/blocks/800/nbt/Items/0/components/minecraft:enchantments/levels/minecraft:wind_burst",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        },
+        {
+          "path": "/blocks/800/nbt/Items/0/components/minecraft:enchantments/levels/minecraft:frost_walker",
+          "item": "minecraft:fishing_rod",
+          "level": 0
+        }
+      ]
+    }
+  ]
+}

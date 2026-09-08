@@ -28,6 +28,11 @@ import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.server.packs.resources.IoSupplier;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtAccounter;
 
 public class ResourcePatchResolverTest {
 
@@ -38,7 +43,7 @@ public class ResourcePatchResolverTest {
 
 	@Test
 	void registryContainsAllTargetPatches() {
-		assertEquals(14, ResourcePatchRegistry.getAllPatches().size());
+		assertEquals(24, ResourcePatchRegistry.getAllPatches().size());
 
 		assertNotNull(ResourcePatchRegistry.findPatch("better_lib",
 			"data/minecraft/tags/point_of_interest_type/acquirable_job_site.json"));
@@ -61,6 +66,11 @@ public class ResourcePatchResolverTest {
 				assertNotNull(is, "Missing replacement resource file on classpath: " + patch.replacementPath());
 				byte[] bytes = is.readAllBytes();
 				assertTrue(bytes.length > 0, "Replacement file is empty: " + patch.replacementPath());
+
+				if (patch.resourcePath().endsWith(".nbt")) {
+					assertTrue(NbtIo.readCompressed(new ByteArrayInputStream(bytes), NbtAccounter.unlimitedHeap()).contains("blocks"));
+					continue;
+				}
 
 				String content = new String(bytes, StandardCharsets.UTF_8);
 				JsonObject json = JsonParser.parseString(content).getAsJsonObject();
@@ -373,6 +383,50 @@ public class ResourcePatchResolverTest {
 					assertEquals(patch.expectedSha256().toLowerCase(), sha256.toLowerCase(),
 						"Fingerprint mismatch against installed jar: " + check[0]);
 				}
+			}
+		}
+	}
+
+
+	@Test
+	void grimStructuresPreserveAllNbtExceptAuditedZeroLevels() throws IOException {
+		JsonObject evidence = JsonParser.parseString(Files.readString(Path.of("docs/evidence/grim-zero-enchantments.json"))).getAsJsonObject();
+		String modId = evidence.get("mod").getAsString();
+		for (var entry : evidence.getAsJsonArray("resources")) {
+			JsonObject resource = entry.getAsJsonObject();
+			String path = resource.get("path").getAsString();
+			ResourcePatch patch = ResourcePatchRegistry.findPatch(modId, "2.0.3", path);
+			assertNotNull(patch, path);
+			byte[] original = Files.readAllBytes(Path.of("src/test/resources/grim-originals").resolve(path));
+			assertEquals(resource.get("sha256").getAsString(), ResourcePatchResolver.sha256Hex(original));
+			assertEquals(patch.expectedSha256(), ResourcePatchResolver.sha256Hex(original));
+			CompoundTag expected = NbtIo.readCompressed(new ByteArrayInputStream(original), NbtAccounter.unlimitedHeap());
+			for (var change : resource.getAsJsonArray("removed")) {
+				String[] segments = change.getAsJsonObject().get("path").getAsString().substring(1).split("/");
+				Tag cursor = expected;
+				for (int i = 0; i < segments.length - 1; i++) {
+					cursor = cursor instanceof CompoundTag compound ? compound.get(segments[i]) : ((ListTag) cursor).get(Integer.parseInt(segments[i]));
+				}
+				CompoundTag levels = (CompoundTag) cursor;
+				String key = segments[segments.length - 1];
+				assertEquals(0, levels.getIntOr(key, -999));
+				levels.remove(key);
+			}
+			var mod = createMockModContainer(modId, "2.0.3");
+			var resolved = ResourcePatchResolver.resolve(mod, path, () -> new ByteArrayInputStream(original));
+			assertNotNull(resolved);
+			try (InputStream in = resolved.get()) {
+				assertEquals(expected, NbtIo.readCompressed(in, NbtAccounter.unlimitedHeap()), path);
+			}
+			assertNull(ResourcePatchResolver.resolve(createMockModContainer(modId, "2.0.4"), path, () -> new ByteArrayInputStream(original)));
+			assertNull(ResourcePatchResolver.resolve(createMockModContainer("unrelated", "2.0.3"), path, () -> new ByteArrayInputStream(original)));
+			assertNull(ResourcePatchResolver.resolve(mod, path, null));
+			assertNull(ResourcePatchResolver.resolve(mod, path, () -> null));
+			assertNull(ResourcePatchResolver.resolve(mod, path, () -> { throw new IOException("fixture read failure"); }));
+			byte[] mismatch = original.clone();
+			mismatch[mismatch.length - 1] ^= 1;
+			try (InputStream in = ResourcePatchResolver.resolve(mod, path, () -> new ByteArrayInputStream(mismatch)).get()) {
+				assertArrayEquals(mismatch, in.readAllBytes());
 			}
 		}
 	}

@@ -408,3 +408,14 @@ common-side and must be present on dedicated servers as well as integrated clien
 Verification requires pure shape/gate tests, the semantic DFU fixtures, and an exact deployed-pack
 runtime run. Build success alone is insufficient; until that runtime run passes, report the hook as
 pending. Re-evaluate bees, spawners, and block-attached entity reports after this schema repair.
+
+
+## Grim Kingdoms zero-level enchantment resources
+
+Grim Kingdoms 2.0.3 ships zero-level entries inside item component enchantment `levels` maps.
+These are a separate invalid-value defect from the repaired Trinkets schema issue. Ten exact
+resource/version/SHA-gated replacements remove only the 32 audited zero entries; do not
+pre-migrate DataVersion or bypass vanilla DFU. The resolver requires readable originals for
+binary NBT replacements. Provenance and paths are in `docs/evidence/grim-zero-enchantments.json`;
+`tools/repair_grim_zero_enchantments.py` reproduces/verifies assets using nbtlib 2.0.4.
+Full Minecraft NbtIo equality tests preserve all other fields. Live placement is unverified.
