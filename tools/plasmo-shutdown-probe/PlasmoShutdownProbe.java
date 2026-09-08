@@ -41,4 +41,3 @@ public class PlasmoShutdownProbe implements ClientModInitializer {
    } catch (Exception e) { throw new RuntimeException(e); }
  }
 }
-
