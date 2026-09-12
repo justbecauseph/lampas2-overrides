@@ -1,0 +1,36 @@
+allprojects {
+    afterEvaluate {
+        loom.runs.client.runDir = 'build/wind-smoke'
+
+        tasks.register('windProbeClasspath') {
+            doLast {
+                def auditedJars = [
+                    file('build/wind-smoke/mods/FrozenLib-2.5.3-mc26.2.jar'),
+                    file('build/wind-smoke/mods/WilderWild-4.2.11-mc26.2.jar')
+                ]
+                auditedJars.each { jar ->
+                    if (!jar.isFile()) {
+                        throw new GradleException("Missing audited wind probe jar: ${jar}")
+                    }
+                }
+                def classpath = tasks.compileClientJava.classpath.asPath
+                file('build/wind-smoke-probe/classpath.txt').text =
+                        classpath + File.pathSeparator + auditedJars.collect { it.absolutePath }.join(File.pathSeparator)
+            }
+        }
+
+        tasks.named('runClient') {
+            jvmArgs '-Dmixin.debug.verbose=true'
+            def mode = project.findProperty('windProbeMode') ?: 'patched'
+            if (!(mode in ['patched', 'baseline'])) {
+                throw new GradleException("windProbeMode must be patched or baseline, got ${mode}")
+            }
+            jvmArgs "-DwindProbe.expectPatched=${mode == 'patched'}"
+            if (mode == 'baseline') {
+                // Fabric Loader 0.19.3's documented debug property removes the dev mod from the
+                // candidate list, leaving the audited vendor jars and temporary probe active.
+                jvmArgs '-Dfabric.debug.disableModIds=lampas2-overrides'
+            }
+        }
+    }
+}

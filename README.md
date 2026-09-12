@@ -19,6 +19,7 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Custom Name multi-word names](#custom-name-multi-word-names) | Custom Name 0.4.4-26.2 | Permits spaces in nickname, prefix, and suffix commands for non-operators |
 | [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | MVS, MNS, Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Better Lib | Transparently repairs malformed `pack.mcmeta` formats and POI tags at runtime |
 | [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.2.11-mc26.2 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
+| [FrozenLib wind synchronization](#frozenlib-wind-synchronization) | FrozenLib 2.5.3-mc26.2 + Wilder Wild 4.2.11-mc26.2 | Keeps synced wind state detached during Netty decode and applies it on the client thread |
 | [Bee and spawner structure DFU validation](#bee-and-spawner-structure-dfu-validation) | Exact Trek and Stoneholm fixtures | Verifies repaired bee inventories and zombie spawner payloads survive structure loading |
 
 ## Plasmo Voice client shutdown
@@ -205,6 +206,21 @@ largest sampled radius is then 15 and the four-neighbor checks reach at most 16 
 the active chunk and its one-chunk write radius even at positive, negative, edge, and corner
 coordinates. The patch is version and SHA-256 gated; an unknown Wilder Wild release or changed
 `stone_pool.json` remains untouched.
+
+## FrozenLib wind synchronization
+
+FrozenLib 2.5.3-mc26.2 decodes the synced `WindManager` attachment on Netty and mutates its static
+client singleton during that decode. Wilder Wild 4.2.11-mc26.2 replaces its cloud extension during
+that path, leaving a brief missing extension window that can crash cloud rendering on the client.
+
+The client-only compatibility feature decodes into a detached `WindManager`, then hands that state to
+FrozenLib's original merge method when Fabric applies the attachment on the client thread. It also
+clears FrozenLib's `loadedExtensions` flag during reset so a new client level can load its extensions.
+The feature is enabled only for Minecraft 26.2, FrozenLib 2.5.3-mc26.2, Wilder Wild 4.2.11-mc26.2,
+the inspected WindManager and Wilder Wild extension class fingerprints, and the inspected Fabric Data
+Attachment API contract. A mismatch logs a warning and leaves upstream wind behavior untouched.
+See [wind-state evidence and verification](docs/wind-state.md) for the inspected artifacts,
+regression results, and remaining live gameplay checks.
 
 ## Additional Lanterns chunk loading
 

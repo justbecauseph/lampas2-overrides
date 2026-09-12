@@ -1,0 +1,13 @@
+{
+	"required": true,
+	"package": "lampas2overrides.client.frozenwind.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.client.frozenwind.FrozenWindMixinPlugin",
+	"client": [
+		"WindManagerMixin",
+		"AttachmentChangeMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

@@ -1,0 +1,53 @@
+{
+  "date": "2026-09-12",
+  "minecraft": "26.2",
+  "crashReport": "crash-2026-09-12_17.49.30-client.txt",
+  "artifacts": [
+    {
+      "modId": "frozenlib",
+      "version": "2.5.3-mc26.2",
+      "modrinthVersion": "Ak4sHFuc",
+      "sha256": "510bce30b1d7fdc869eccab3cd2ffd49609ec81c29b40f30da5d9d984f73338e",
+      "targetClass": "net/frozenblock/lib/wind/WindManager.class",
+      "targetClassSha256": "a8845939d7dbfb3f9fa1d102fe77c1236c9d63b226e3b655dba9295c681c26d3"
+    },
+    {
+      "modId": "wilderwild",
+      "version": "4.2.11-mc26.2",
+      "modrinthVersion": "TVkz6cZh",
+      "sha256": "dd1111aa5f9eecf95cef3e42c099df0726ef3089cb48064723e286612bd62957",
+      "targetClass": "net/frozenblock/wilderwild/wind/WWWindManagerExtension.class",
+      "targetClassSha256": "1e66dd8d15651c50dea4f1016f9de4ce614d2280e23d6babcc59df2d4df15d6b"
+    },
+    {
+      "modId": "fabric-data-attachment-api-v1",
+      "version": "2.2.19+515ac5339e",
+      "sha256": "d4669cb34e150e023018fca95ebdc0cbb3a829895df63f6f652d1ae8c62e2840",
+      "targetClass": "net/fabricmc/fabric/impl/attachment/sync/AttachmentChange.class",
+      "targetClassSha256": "f68661b4382a423b470cefe90967087bf96d6de701e6d120b3122133d9012d37"
+    }
+  ],
+  "provenCodeDefects": [
+    "reset clears extensions but retains loadedExtensions",
+    "stream decoder mutates the client singleton before client-thread attachment application",
+    "WW extension sync removes then adds while renderer can read the list"
+  ],
+  "incidentCausality": "Periodic synchronization race strongly supported; exact crashing interleaving not recorded.",
+  "verification": {
+    "tests": 89,
+    "failures": 0,
+    "errors": 0,
+    "baselineExitCode": 0,
+    "patchedExitCode": 0,
+    "baselineClientSeconds": 26,
+    "patchedClientSeconds": 29,
+    "loader": "0.19.3",
+    "fabricApi": "0.160.0+26.2",
+    "java": "25.0.4",
+    "os": "Windows",
+    "levelFixture": "Synthetic ClientLevel, never ticked or installed in Minecraft",
+    "fullPackGameplayVerified": false,
+    "deployed": false,
+    "jarSha256": "c58baa8f064fbbf5953ec11df875edb329ceb87eefb710af0c15e8d2135c9291"
+  }
+}

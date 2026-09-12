@@ -38,6 +38,7 @@ dependencies {
 	compileOnly "maven.modrinth:puzzles-lib:${project.puzzles_lib_version}"
 	compileOnly "maven.modrinth:pneumono_gravestones:${project.gravestones_version}"
 	compileOnly "maven.modrinth:gRn1FzwR:${project.mob_filter_version}"
+	compileOnly "maven.modrinth:frozenlib:${project.frozen_lib_version}"
 	// The upstream bytecode contract test reads MixinService.class at test runtime;
 	// this test-only dependency is never included in the published mod jar.
 	testRuntimeOnly "maven.modrinth:gRn1FzwR:${project.mob_filter_version}"

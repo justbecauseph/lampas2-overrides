@@ -140,6 +140,27 @@
         }
       }
     },
+    "frozenwind": {
+      "name": "FrozenLib wind synchronization",
+      "type": "exact_client_mixin_gate",
+      "versions": {
+        "frozenlib-2.5.3-mc26.2+wilderwild-4.2.11-mc26.2": {
+          "minecraft": "26.2",
+          "frozenlib_version": "2.5.3-mc26.2",
+          "wilderwild_version": "4.2.11-mc26.2",
+          "class_sha256": {
+            "net/frozenblock/lib/wind/WindManager.class": "a8845939d7dbfb3f9fa1d102fe77c1236c9d63b226e3b655dba9295c681c26d3",
+            "net/frozenblock/wilderwild/wind/WWWindManagerExtension.class": "1e66dd8d15651c50dea4f1016f9de4ce614d2280e23d6babcc59df2d4df15d6b"
+          },
+          "fabric_data_attachment_api": {
+            "module_version": "2.2.19+515ac5339e",
+            "class": "net/fabricmc/fabric/impl/attachment/sync/AttachmentChange.class",
+            "class_sha256": "f68661b4382a423b470cefe90967087bf96d6de701e6d120b3122133d9012d37"
+          },
+          "status": "implemented"
+        }
+      }
+    },
     "mobfilter": {
       "name": "Mob Filter",
       "type": "exact_mixin_gate",
