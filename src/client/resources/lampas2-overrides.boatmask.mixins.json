@@ -1,0 +1,8 @@
+{
+	"required": true,
+	"package": "lampas2overrides.client.boatmask.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.client.boatmask.BoatWaterMaskMixinPlugin",
+	"client": ["BoatRendererMixin"],
+	"injectors": { "defaultRequire": 1 }
+}

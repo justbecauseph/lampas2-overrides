@@ -1,0 +1,16 @@
+allprojects {
+    afterEvaluate {
+        loom.runs.client.runDir = 'build/boat-mask-smoke'
+
+        tasks.register('boatProbeClasspath') {
+            doLast {
+                file('build/boat-mask-smoke-probe/classpath.txt').text = tasks.compileClientJava.classpath.asPath
+            }
+        }
+
+        tasks.named('runClient') {
+            jvmArgs '-Dmixin.debug.verbose=true'
+            jvmArgs "-Dboat.probe.strict=${project.findProperty('boatProbeStrict') ?: 'false'}"
+        }
+    }
+}

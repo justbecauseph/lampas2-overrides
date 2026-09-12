@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "boat-water-mask-probe",
+  "version": "1.0.0",
+  "name": "Boat Water Mask Probe",
+  "environment": "client",
+  "entrypoints": { "client": ["BoatWaterMaskProbe"] },
+  "depends": { "fabricloader": ">=0.19.3", "minecraft": "26.2" }
+}

@@ -306,6 +306,15 @@ Zip-level and format work can be tested outside the game entirely; that is how `
 
 ## Structure
 
+The client-only `boatmask` feature repairs the audited FA/EMF water mask for 108 boat
+layers from Pyrite, Promenade, Wilder Wild, BetterEnd, and BetterNether. Keep plugin
+gates in `BoatWaterMaskProfiles` free of Minecraft model classes. Fingerprints of loaded
+artifacts may be cached; selected resource provenance must be checked on renderer
+construction so resource reloads reevaluate it. Preserve custom hulls, vanilla animated
+boats, and the explicit provider/layer allowlist. BetterX raft renderers and
+BloomingNature's custom renderer have different contracts. See
+`docs/boat-water-mask.md` for fingerprints, verification, and the probe shutdown caveat.
+
 ```
 compat/
   Reflection              nullable lookups; invocation failures throw BridgeException

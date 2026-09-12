@@ -21,6 +21,7 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.2.11-mc26.2 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
 | [FrozenLib wind synchronization](#frozenlib-wind-synchronization) | FrozenLib 2.5.3-mc26.2 + Wilder Wild 4.2.11-mc26.2 | Keeps synced wind state detached during Netty decode and applies it on the client thread |
 | [Bee and spawner structure DFU validation](#bee-and-spawner-structure-dfu-validation) | Exact Trek and Stoneholm fixtures | Verifies repaired bee inventories and zombie spawner payloads survive structure loading |
+| [Boat water-mask compatibility](#boat-water-mask-compatibility) | EMF 3.3.5 + audited boat providers | Restores the vanilla water mask for plain hulls when the selected Fresh Animations mask is incompatible |
 
 ## Plasmo Voice client shutdown
 
@@ -221,6 +222,23 @@ the inspected WindManager and Wilder Wild extension class fingerprints, and the 
 Attachment API contract. A mismatch logs a warning and leaves upstream wind behavior untouched.
 See [wind-state evidence and verification](docs/wind-state.md) for the inspected artifacts,
 regression results, and remaining live gameplay checks.
+
+## Boat water-mask compatibility
+
+EMF 3.3.5 can replace Minecraft's shared boat water-patch layer with the Fresh Animations
+`assets/minecraft/optifine/cem/boat_patch.jem` model. That model's animation expects `var.base_*`
+values supplied by Fresh Animations hull models. Plain hulls from the audited Pyrite 0.18.3+26.2,
+Promenade 5.6.0, Wilder Wild 4.2.11-mc26.2, BetterEnd 26.201.2, and BetterNether 26.201.2
+providers do not supply those values.
+
+The client-only compatibility hook runs at the end of each `BoatRenderer` construction. It checks
+the exact provider layer, provider version, EMF version, selected resource bytes, and EMF's actual
+`minecraft:optifine/cem/boat_patch.jem` root. It replaces the water patch with the vanilla
+`BoatModel.createWaterPatch()` geometry only when the hull root is ordinary vanilla geometry.
+Custom EMF hulls or animations, disabled or different resource packs, absent or mismatched versions,
+the BetterEnd/BetterNether `wover-item` companion mismatch, and unlisted boat layers remain
+untouched. The explicit provider list and verification limits are recorded in
+[docs/boat-water-mask.md](docs/boat-water-mask.md).
 
 ## Additional Lanterns chunk loading
 
