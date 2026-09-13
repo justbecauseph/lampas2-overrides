@@ -29,7 +29,7 @@
     },
     "better_lib": {
       "name": "Better Library",
-      "type": "resource_patch",
+      "type": "mixin_and_resource_patch",
       "versions": {
         "2.1.1": {
           "status": "patched",
@@ -38,7 +38,7 @@
           }
         },
         "2.1.2": {
-          "status": "fixed-upstream",
+          "status": "patched",
           "resources": {
             "data/minecraft/tags/point_of_interest_type/acquirable_job_site.json": "f74498097708215ee46031db7467ce3abed880ed8188eff156e81993d9787e31"
           }

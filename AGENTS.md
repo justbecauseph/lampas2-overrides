@@ -204,10 +204,14 @@ Zip-level and format work can be tested outside the game entirely; that is how `
 - **An emptied frame is not a deleted frame.** After a player takes their item, client rendering can
   show the converted frame as absent or empty. A Lootr refresh repopulates it, and its UUID and
   Lootr properties remain present. Confirm block-entity state before diagnosing this as data loss.
-- **Better Lib 2.1.2 fixed its ZIP filesystem startup and POI tag defects upstream.** Better Lib
+- **Better Lib 2.1.2 fixed its ZIP filesystem startup and POI tag defects upstream, but still registers a demo villager.** Better Lib
   2.1.2 reuses Fabric Loader's open filesystem via `FileSystems.getFileSystem(uri)` before attempting
   `newFileSystem`, and only closes the filesystem if newly created. It also replaced its malformed POI
-  tag comments with an empty values array, eliminating the need for the `betterlib` mixins.
+  tag comments with an empty values array. However, it still bundles `data/better_lib/villagers/andesite_worker.json`
+  and executes `registerJsonVillagers()`, registering `better_lib:andesite_worker` into `POINT_OF_INTEREST_TYPE`
+  and `VILLAGER_PROFESSION`. When Better Lib is installed on a dedicated server (e.g. required by Underground Village)
+  while connecting clients lack the mod, Fabric Registry Sync aborts with `RemapException`. The common `betterlib`
+  mixin cancels `CommonClass.registerJsonVillagers()`, preventing these demo entries from leaking into the registries.
 - **`VanillaLanternEvents.handleLanternRedstone` calls `Level#getBlockState` on every neighbor update.**
   At chunk boundaries, this causes `ServerChunkCache` to synchronously load or generate the adjacent
   unloaded chunk on the server thread. Checking `ServerChunkCache#hasChunk` before executing the

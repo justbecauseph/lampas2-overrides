@@ -21,6 +21,7 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [FrozenLib wind synchronization](#frozenlib-wind-synchronization) | FrozenLib 2.5.3-mc26.2 + Wilder Wild 4.2.11-mc26.2 | Keeps synced wind state detached during Netty decode and applies it on the client thread |
 | [Bee and spawner structure DFU validation](#bee-and-spawner-structure-dfu-validation) | Exact Trek and Stoneholm fixtures | Verifies repaired bee inventories and zombie spawner payloads survive structure loading |
 | [Boat water-mask compatibility](#boat-water-mask-compatibility) | EMF 3.3.5 + audited boat providers | Restores the vanilla water mask for plain hulls when the selected Fresh Animations mask is incompatible |
+| [Better Lib demo villager suppression](#better-lib-demo-villager-suppression) | Better Lib | Suppresses hardcoded demo villager registration that causes RemapException registry sync disconnects |
 
 ## Plasmo Voice client shutdown
 
