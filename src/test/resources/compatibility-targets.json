@@ -29,12 +29,18 @@
     },
     "better_lib": {
       "name": "Better Library",
-      "type": "mixin_and_resource_patch",
+      "type": "resource_patch",
       "versions": {
         "2.1.1": {
           "status": "patched",
           "resources": {
             "data/minecraft/tags/point_of_interest_type/acquirable_job_site.json": "2f605b74d0e3e5a0044e809b0d01bce9f25012800080527d2229c2576942f06d"
+          }
+        },
+        "2.1.2": {
+          "status": "fixed-upstream",
+          "resources": {
+            "data/minecraft/tags/point_of_interest_type/acquirable_job_site.json": "f74498097708215ee46031db7467ce3abed880ed8188eff156e81993d9787e31"
           }
         }
       }

@@ -2,8 +2,7 @@
 
 This repo is a Fabric mod for Minecraft 26.2 holding compatibility fixes between mods that do not
 know about each other: the Figura ↔ ReplayMod avatar bridge, Figura avatars in Chatting's chat
-heads, Lootr item frames converted into Fast Item Frames blocks, Better Lib's Fabric ZIP filesystem
-startup fix, Underground Village's stale loot data and 2.1.1 worldgen structure/pool defects,
+heads, Lootr item frames converted into Fast Item Frames blocks, Underground Village's stale loot data and 2.1.1 worldgen structure/pool defects,
 Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter 0.28.0+26.2 threaded-worldgen
 entity-discard deadlock and missing dimension context, Visual Workbench tag reloads under
 Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, FrozenLib 2.5.3-mc26.2 wind lifecycle synchronization with Wilder Wild 4.2.11-mc26.2, version-gated Incendium Legacy 5.5.0 and 5.5.1 tick-function optimizations, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files, POI tags, and loot tables (MVS, MNS, Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Better Lib). The first two
@@ -56,7 +55,7 @@ disable an unrelated feature.
 | Fast Item Frames 26.2.1 | `../lampas-server-fabric/mods/FastItemFrames-v26.2.1-mc26.2.x-Fabric.jar`; sources at `../fast-item-frames` |
 | Puzzles Lib 26.2.3 | `../lampas-server-fabric/mods/PuzzlesLib-v26.2.3-mc26.2.x-Fabric.jar` |
 | Fabric API 0.158.0+26.2 | `../lampas-server-fabric/mods/fabric-api-0.158.0+26.2.jar` |
-| Better Lib 2.1.1 | `../lampas-server-fabric/mods/better_lib-fabric-26.1-2.1.1.jar` |
+| Better Lib 2.1.2 | `../lampas-server-fabric/mods/better_lib-fabric-26.1-2.1.2.jar` (fixed upstream) |
 | Underground Village 2.1.1 | `../lampas-server-fabric/mods/underground_village-fabric-26.1-2.1.1.jar` |
 | Additional Lanterns 1.1.2 | `../lampas-server-fabric/mods/additionallanterns-1.1.2-fabric-mc26.2.jar` |
 | Jade 26.2.11 | `../lampas-server-fabric/mods/Jade-mc26.2-Fabric-26.2.11.jar` |
@@ -109,8 +108,6 @@ successful conversion removes the entity and leaves a block entity:
 /data get entity @e[type=lootr:item_frame,sort=nearest,limit=1] Pos
 ```
 
-For Better Lib, dedicated-server startup must pass its `registerJsonVillagers` call without
-`FileSystemAlreadyExistsException`, and `JsonVillagerLoaderMixin` must appear in `debug.log`.
 For Stoneholm, no parse errors should remain for `andesite_worker`, `brass_worker`,
 `copper_worker`, or `cleric`; the compatibility logger should name all four repairs. Dedicated-server
 startup must log `Enabled version-gated Underground Village 2.1.1 worldgen fixes`, and fresh world generation
@@ -207,15 +204,10 @@ Zip-level and format work can be tested outside the game entirely; that is how `
 - **An emptied frame is not a deleted frame.** After a player takes their item, client rendering can
   show the converted frame as absent or empty. A Lootr refresh repopulates it, and its UUID and
   Lootr properties remain present. Confirm block-entity state before diagnosing this as data loss.
-- **Better Lib borrows Fabric Loader's open ZIP filesystem.** The redirect returns a close-shield
-  only after `FileSystems.newFileSystem` reports that the filesystem already exists. The shield's
-  `close()` must remain a no-op; returning the shared filesystem directly lets Better Lib's
-  try-with-resources block close a filesystem owned by the loader.
-- **Better Lib's bundled villager professions are disabled demos.** Its `andesite_worker.json` is
-  entirely commented out and its `ModOreTrader.register()` call is commented out, but generated
-  data still adds both ids to `minecraft:acquirable_job_site`. `TagLoaderMixin` removes only entries
-  with those ids and Better Lib as their source after all tag resources have merged; do not replace
-  the whole tag or enable the demo professions.
+- **Better Lib 2.1.2 fixed its ZIP filesystem startup and POI tag defects upstream.** Better Lib
+  2.1.2 reuses Fabric Loader's open filesystem via `FileSystems.getFileSystem(uri)` before attempting
+  `newFileSystem`, and only closes the filesystem if newly created. It also replaced its malformed POI
+  tag comments with an empty values array, eliminating the need for the `betterlib` mixins.
 - **`VanillaLanternEvents.handleLanternRedstone` calls `Level#getBlockState` on every neighbor update.**
   At chunk boundaries, this causes `ServerChunkCache` to synchronously load or generate the adjacent
   unloaded chunk on the server thread. Checking `ServerChunkCache#hasChunk` before executing the
@@ -348,10 +340,6 @@ lootrfastframes/
   LootrFastItemFrameType      Lootr data type registered through ServiceLoader
   LootrFastItemFrameWrapper   resolves marked Fast Item Frames block entities for Lootr
   mixin/                      conversion, state persistence, interaction and client rendering hooks
-betterlib/
-  BetterLibMixinPlugin       applies the startup fix only when Better Lib is present
-  BorrowedFileSystem         close-shield for Fabric Loader's shared mod-jar filesystem
-  mixin/                     fixes Better Lib's ZIP open and stale job-site tag entries
 stoneholm/
   StoneholmMixinPlugin      gated on Underground Village 2.1.1
   StoneholmCompatibility    version and resource fingerprint gate

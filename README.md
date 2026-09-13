@@ -8,7 +8,6 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Figura in ReplayMod](#figura--replaymod) | Figura + ReplayMod | Makes Figura avatars survive into recordings, playback and video exports |
 | [Figura chat heads](#figura-chat-heads) | Figura + Chatting | Draws the Figura avatar's face in Chatting's chat heads instead of the vanilla skin |
 | [Lootr fast item frames](#lootr--fast-item-frames) | Lootr + Fast Item Frames | Converts Lootr item-frame entities into blocks while preserving per-player loot |
-| [Better Lib startup](#better-lib-startup) | Better Lib | Prevents Better Lib from reopening Fabric Loader's shared mod-jar filesystem |
 | [Underground Village fixes](#underground-village-fixes) | Underground Village 2.1.1 | Repairs obsolete/absent-mod loot tables and worldgen structure/pool data defects |
 | [Additional Lanterns chunk loading](#additional-lanterns-chunk-loading) | Additional Lanterns 1.1.2 | Prevents redstone neighbor checks from synchronously loading unloaded chunks |
 | [Mob Filter worldgen safety and dimension context](#mob-filter-worldgen-safety-and-dimension-context) | Mob Filter | Prevents C2ME worldgen deadlock on rejected mobs and provides dimension context for worldgen rules |
@@ -266,19 +265,17 @@ Underground Village 2.1.1 contains several upstream data bugs:
 
 Worldgen data fixes are packaged in an always-enabled built-in datapack (`stoneholm_2_1_1_fixes`), version-gated to Underground Village 2.1.1 and protected by SHA-256 fingerprints of all six upstream target resources. Other Stoneholm structures and pools are untouched.
 
-## Better Lib startup
+## Better Lib startup (Retired / Fixed Upstream)
 
-Better Lib 2.1.0 and 2.1.1 scan bundled JSON villager definitions by opening their own jar as a ZIP
-filesystem. Fabric Loader 0.19.3 already has that filesystem open, so the second open throws
-`FileSystemAlreadyExistsException` and aborts the common mod entrypoint. This compatibility fix
-reuses the existing filesystem behind a close shield: Better Lib can scan its resources normally,
-but its try-with-resources block cannot close Fabric Loader's shared filesystem afterward.
+Better Lib 2.1.0 and 2.1.1 scanned bundled JSON villager definitions by opening their own jar as a ZIP
+filesystem. Fabric Loader already had that filesystem open, so the second open threw
+`FileSystemAlreadyExistsException` and aborted mod initialization, while subsequent filesystem closure
+corrupted Fabric Loader's shared jar filesystem. Additionally, Better Lib's generated data added disabled
+demo professions to `minecraft:acquirable_job_site`.
 
-The mixin is common and therefore fixes both dedicated-server and client startup. It is gated on
-the `better_lib` mod id and is inert when Better Lib is absent. A second gated mixin also removes
-Better Lib's stale `andesite_worker` and `ore_trader` entries after job-site tags have been merged.
-Both demo professions are disabled in Better Lib 2.1.0 and 2.1.1, so leaving their generated tag entries in
-place prevents Minecraft from resolving the tag while serving no gameplay content.
+Better Lib **2.1.2** resolved both issues upstream by checking `FileSystems.getFileSystem(uri)` first,
+only closing filesystems it created itself, and cleaning up its POI tags. The `betterlib` mixins were
+therefore retired in Lampas2 Overrides.
 
 ## Virtual Resource & Datapack Patches
 
@@ -315,6 +312,7 @@ Patched mods and resources:
 7. **Better Lib (2.1.1)**:
    - **Defect**: Bundles `data/minecraft/tags/point_of_interest_type/acquirable_job_site.json` prefixed with illegal JSON comments (`//{`), causing strict JSON parsers to throw exceptions on tag reload.
    - **Fix**: Virtually substitutes the clean, comment-free POI tag definition.
+   - *Note*: Better Lib 2.1.2 fixed this upstream by replacing the malformed comments with valid JSON.
 
 ## Lootr ↔ Fast Item Frames
 
