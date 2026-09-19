@@ -359,6 +359,14 @@ public final class MobFilterWorldgenSafetyMixinTest {
 
 		@Override
 		public AnnotationVisitor visitArray(String name) {
+			if (name.equals("at")) {
+				return new AnnotationVisitor(Opcodes.ASM9) {
+					@Override
+					public AnnotationVisitor visitAnnotation(String ignored, String descriptor) {
+						return RedirectAnnotationVisitor.this.visitAnnotation("at", descriptor);
+					}
+				};
+			}
 			if (name.equals("method")) {
 				return new AnnotationVisitor(Opcodes.ASM9) {
 					@Override
@@ -671,4 +679,3 @@ public final class MobFilterWorldgenSafetyMixinTest {
 		return MobFilterWorldgenSafetyMixinTest.class.getClassLoader().getResourceAsStream(name);
 	}
 }
-

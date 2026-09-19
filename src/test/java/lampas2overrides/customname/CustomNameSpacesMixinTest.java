@@ -213,6 +213,15 @@ public class CustomNameSpacesMixinTest {
 						return new AnnotationVisitor(Opcodes.ASM9) {
 							@Override
 							public AnnotationVisitor visitArray(String annName) {
+								if ("at".equals(annName)) {
+									AnnotationVisitor owner = this;
+									return new AnnotationVisitor(Opcodes.ASM9) {
+										@Override
+										public AnnotationVisitor visitAnnotation(String n, String descriptor) {
+											return owner.visitAnnotation("at", descriptor);
+										}
+									};
+								}
 								if ("method".equals(annName)) {
 									return new AnnotationVisitor(Opcodes.ASM9) {
 										@Override
