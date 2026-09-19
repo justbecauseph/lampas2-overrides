@@ -51,7 +51,7 @@ disable an unrelated feature.
 | Figura 0.1.6+26.2 | `../figura-port/fabric/build/libs/figura-0.1.6+26.2.jar` — builds locally |
 | ReplayMod 26.2-2.6.27 | `C:\Users\markj\AppData\Roaming\PrismLauncher\instances\26.2\minecraft\mods\replaymod-26.2-2.6.27.jar` |
 | Chatting 3.1.4+26.2 | same `mods/` folder; sources at `../Chatting` (stonecutter — the `//? if` blocks mean the source you read may not be the 26.2 build, so trust the jar) |
-| Lootr 1.24.39.121 | `../lampas-server-fabric/mods/lootr-fabric-26.2-1.24.39.121.jar`; sources at `../Lootr` |
+| Lootr 1.24.39.122 | `../lampas-server-fabric/mods/lootr-fabric-26.2-1.24.39.122.jar`; sources at `../Lootr` |
 | Fast Item Frames 26.2.1 | `../lampas-server-fabric/mods/FastItemFrames-v26.2.1-mc26.2.x-Fabric.jar`; sources at `../fast-item-frames` |
 | Puzzles Lib 26.2.3 | `../lampas-server-fabric/mods/PuzzlesLib-v26.2.3-mc26.2.x-Fabric.jar` |
 | Fabric API 0.158.0+26.2 | `../lampas-server-fabric/mods/fabric-api-0.158.0+26.2.jar` |
@@ -204,6 +204,12 @@ Zip-level and format work can be tested outside the game entirely; that is how `
 - **An emptied frame is not a deleted frame.** After a player takes their item, client rendering can
   show the converted frame as absent or empty. A Lootr refresh repopulates it, and its UUID and
   Lootr properties remain present. Confirm block-entity state before diagnosing this as data loss.
+- **Converted frames must implement Lootr's tick scheduling offset contract.** Lootr 1.24.39.122
+  added the abstract `ILootrContainerInstance#getRandomOffset()` member. The bridge delegates it to
+  the converted frame's existing `SimpleLootrInstance`, which lazily chooses and then preserves the
+  same `0..19` offset for that live instance. Lootr uses the value for tick scheduling; it is not
+  serialized by the helper. Missing this implementation crashes when Lootr's tick path calls the
+  new interface member on a converted frame.
 - **Better Lib 2.1.2 fixed its ZIP filesystem startup and POI tag defects upstream, but still registers a demo villager.** Better Lib
   2.1.2 reuses Fabric Loader's open filesystem via `FileSystems.getFileSystem(uri)` before attempting
   `newFileSystem`, and only closes the filesystem if newly created. It also replaced its malformed POI

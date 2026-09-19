@@ -245,6 +245,12 @@ public abstract class ItemFrameBlockEntityMixin implements LootrFastItemFrame, I
 		return 0.4;
 	}
 
+	/** Keeps Lootr's per-instance tick scheduling offset stable after entity conversion. */
+	@Override
+	public int getRandomOffset() {
+		return lampas2$lootrInstance.getRandomOffset();
+	}
+
 	@Override
 	public double[] getParticleXBounds() {
 		return new double[]{0.15, 0.85};

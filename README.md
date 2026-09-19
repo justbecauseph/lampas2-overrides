@@ -353,6 +353,10 @@ Live testing confirmed conversion, per-player looting and Lootr refresh behavior
 takes their item, the converted frame renders empty for that player; refreshing it through Lootr
 repopulates it, and its Lootr identity and properties remain intact.
 
+The bridge is compiled against Lootr 1.24.39.122. Converted frames delegate Lootr's random
+tick-scheduling offset to their existing per-instance state, so the value remains stable while the
+frame instance is live.
+
 ## Figura chat heads
 
 Chatting draws a chat head from the player's skin texture, so someone wearing a Figura avatar shows
