@@ -71,6 +71,14 @@ public final class ResourcePatchRegistry {
 			"32c4bd2ea2c860a13ebde2ac05fe964bc2334914584cb68c14f4a994d9630d46",
 			"lampas2-overrides/resource-patches/formationsoverworld/1.0.5+a/data/formationsoverworld/loot_table/witch_tower/smithing.json"
 		));
+		// 1.0.5+c - The loot tables are already 26.2-compatible; only pack.mcmeta needs the format range.
+		register(new ResourcePatch(
+			"formationsoverworld",
+			"1.0.5+c",
+			"pack.mcmeta",
+			"ffa966eb7835cc4de1273945333236331eff33116e918869e4e29c881b39f940",
+			"lampas2-overrides/resource-patches/formationsoverworld/1.0.5+c/pack.mcmeta"
+		));
 
 		// 6. Grim Kingdoms Lost Structures Ruins 2.0.3 - Missing supported_formats in pack.mcmeta
 		register(new ResourcePatch(

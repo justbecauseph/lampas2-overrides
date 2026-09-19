@@ -230,7 +230,9 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   same mod require virtual patching (e.g. Moog's Voyager Structures 5.0.11 and 5.0.14), `ResourcePatchRegistry`
   indexes patches by mod ID, exact version, and resource path. MVS 5.1.1 fixed `pack.mcmeta` upstream and requires
   no patch. Formations Overworld 1.0.5+a patches root `pack.mcmeta` and its `stone_tower` and `witch_tower` smithing
-  loot tables to rename pre-26.2 `minecraft:chain` to `minecraft:iron_chain`.
+  loot tables to rename pre-26.2 `minecraft:chain` to `minecraft:iron_chain`; 1.0.5+c requires only the root metadata
+  patch because its audited loot tables contain no exact chain item reference. Candidate provenance is recorded in
+  `docs/evidence/formations-overworld-1.0.5c.json`.
 - **FrozenLib wind attachment decoding must stay detached from the client singleton until application.**
   FrozenLib 2.5.3-mc26.2's `WindManager.applyFromStreamCodec` mutates the static client singleton while
   Fabric decodes `AttachmentChange` on Netty. Wilder Wild 4.2.11-mc26.2 replaces its extension instead

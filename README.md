@@ -298,9 +298,10 @@ Patched mods and resources:
 2. **Moog's Nether Structures (MNS 3.0.0)**:
    - **Defect**: Missing `supported_formats` in root `pack.mcmeta`.
    - **Fix**: Virtually replaces `pack.mcmeta` with valid `supported_formats: [48, 107]`.
-3. **Formations Overworld (1.0.5+a)**:
-   - **Defect**: Missing `supported_formats` in root `pack.mcmeta`, and structure smithing loot tables (`stone_tower/smithing.json` and `witch_tower/smithing.json`) reference pre-26.2 `minecraft:chain` instead of `minecraft:iron_chain`, causing `DataResult.Error['Unknown registry key...']` loot table parse errors on 26.2.
-   - **Fix**: Virtually replaces `pack.mcmeta` with valid `supported_formats: [48, 107]` and replaces both smithing loot tables with `minecraft:iron_chain`.
+3. **Formations Overworld (1.0.5+a and 1.0.5+c)**:
+   - **Defect**: Version `1.0.5+a` is missing `supported_formats` in root `pack.mcmeta`, and its structure smithing loot tables (`stone_tower/smithing.json` and `witch_tower/smithing.json`) reference pre-26.2 `minecraft:chain` instead of `minecraft:iron_chain`, causing `DataResult.Error['Unknown registry key...']` loot table parse errors on 26.2. Version `1.0.5+c` still needs the root metadata format range; its audited loot tables contain no exact `minecraft:chain` item reference.
+   - **Fix**: Version `1.0.5+a` virtually replaces `pack.mcmeta` with valid `supported_formats: [48, 107]` and replaces both smithing loot tables with `minecraft:iron_chain`. Version `1.0.5+c` receives only the `pack.mcmeta` replacement because its audited loot tables contain no exact `minecraft:chain` item reference.
+   - **Evidence**: Candidate artifact identity and resource hashes are recorded in [`docs/evidence/formations-overworld-1.0.5c.json`](docs/evidence/formations-overworld-1.0.5c.json).
 4. **Grim Kingdoms Lost Structures Ruins (2.0.3)**:
    - **Defect**: Missing `supported_formats` in root `pack.mcmeta`.
    - **Fix**: Virtually replaces `pack.mcmeta` with valid `supported_formats: [48, 107]`.

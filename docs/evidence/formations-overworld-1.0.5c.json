@@ -1,0 +1,88 @@
+{
+  "mod": "formationsoverworld",
+  "version": "1.0.5+c",
+  "modrinthVersion": "jRPqlunS",
+  "jar": "formationsoverworld-1.0.5c-mc1.21+.jar",
+  "jarSha256": "8ac52001fd43b70bdb72209198152ae44137b476cf9124618f3c7106b95524ba",
+  "resources": [
+    {
+      "path": "pack.mcmeta",
+      "sha256": "ffa966eb7835cc4de1273945333236331eff33116e918869e4e29c881b39f940",
+      "override": "lampas2-overrides/resource-patches/formationsoverworld/1.0.5+c/pack.mcmeta"
+    },
+    {
+      "path": "data/formationsoverworld/loot_table/stone_tower/smithing.json",
+      "sha256": "6669af8ebac35f024c5b584ca1660440ca90529c198d372862e113c54cad0e69",
+      "override": null
+    },
+    {
+      "path": "data/formationsoverworld/loot_table/witch_tower/smithing.json",
+      "sha256": "fef366f26552dc94eb336a653d7a6ac1e27ecadf8a7e66a58b489ff835f7105e",
+      "override": null
+    }
+  ],
+  "lootTableAudit": {
+    "candidateLootTablesInspected": 35,
+    "exactMinecraftChainItemReferences": 0,
+    "scope": "All candidate loot tables were checked for an exact minecraft:chain item reference; no 1.0.5+c loot-table override is registered."
+  },
+  "source": "Modrinth version jRPqlunS",
+  "runtimeEvidence": {
+    "productionServer": {
+      "minecraft": "26.2",
+      "fabricLoader": "0.19.3",
+      "fabricApi": "0.160.0+26.2",
+      "formationsVersion": "1.0.4",
+      "candidateJarSha256": "8ac52001fd43b70bdb72209198152ae44137b476cf9124618f3c7106b95524ba",
+      "builtOverrideJarSha256": "04eed6fa1b30832fc8042f0cd98bacf5498d2fbdb5e09dfbe8953b1660a16849",
+      "dependencies": {
+        "corelib": "1.1.24+a",
+        "configlib": "1.1.8"
+      },
+      "preservedEvidence": [
+        {
+          "path": "build/formations-1.0.5c-prod-server/server-latest-preserved.log",
+          "sha256": "ba0933b52ed50735afd73305b65fc3c11702ef2a1bd9ca98595c99ce2b879fc5"
+        }
+      ],
+      "observations": [
+        "Metadata patch applied.",
+        "Both audited smithing paths explicitly remained upstream-owned.",
+        "Server reached Done, an explicit reload completed successfully, and 1585 recipes and 1688 advancements reloaded.",
+        "An isolated client joined, and normal stop saved all dimensions."
+      ],
+      "result": "pass"
+    },
+    "productionIsolatedClient": {
+      "fabricLoader": "0.19.5",
+      "modSet": "production server mod set plus the temporary client probe mod",
+      "gameDirectory": "separate gameDir using read-only shared libraries, assets, and natives from the installed game",
+      "preservedEvidence": [
+        {
+          "path": "build/formations-1.0.5c-prod-client/client-latest.log",
+          "sha256": "5b4c5caf10429c88fbd9e8002c3027e604696520957ebb82cb9959e7c89fdcdd"
+        },
+        {
+          "path": "build/formations-1.0.5c-prod-client/formations-client-probe.txt",
+          "sha256": "027806cd85e07d7ba08a22e37677a28165b870550ac9440f8e94a0732de82815"
+        }
+      ],
+      "observations": [
+        "Connected to the isolated server.",
+        "Metadata patch applied.",
+        "Resource reload completed.",
+        "Completed 40 in-world client ticks and exited normally with status 0."
+      ],
+      "result": "pass"
+    },
+    "knownNoise": [
+      "Expected offline-authentication and Realms 401 messages.",
+      "Windows OSHI and Perflib counter lookup errors.",
+      "The minimal server fixture reports an unrelated missing Fast Item Frames tag."
+    ],
+    "boundaries": [
+      "This proves isolated server resource and loot loading and client multiplayer common-side loading.",
+      "This does not prove structure generation or broader gameplay behavior."
+    ]
+  }
+}

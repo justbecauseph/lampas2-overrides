@@ -43,7 +43,7 @@ public class ResourcePatchResolverTest {
 
 	@Test
 	void registryContainsAllTargetPatches() {
-		assertEquals(24, ResourcePatchRegistry.getAllPatches().size());
+		assertEquals(25, ResourcePatchRegistry.getAllPatches().size());
 
 		assertNotNull(ResourcePatchRegistry.findPatch("better_lib",
 			"data/minecraft/tags/point_of_interest_type/acquirable_job_site.json"));
@@ -51,9 +51,12 @@ public class ResourcePatchResolverTest {
 		assertNotNull(ResourcePatchRegistry.findPatch("mvs", "5.0.11", "pack.mcmeta"));
 		assertNotNull(ResourcePatchRegistry.findPatch("mvs", "5.0.14", "pack.mcmeta"));
 		assertNull(ResourcePatchRegistry.findPatch("mvs", "5.1.1", "pack.mcmeta"));
-		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "pack.mcmeta"));
-		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "data/formationsoverworld/loot_table/stone_tower/smithing.json"));
-		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "data/formationsoverworld/loot_table/witch_tower/smithing.json"));
+		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+a", "pack.mcmeta"));
+		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+a", "data/formationsoverworld/loot_table/stone_tower/smithing.json"));
+		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+a", "data/formationsoverworld/loot_table/witch_tower/smithing.json"));
+		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", "pack.mcmeta"));
+		assertNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", "data/formationsoverworld/loot_table/stone_tower/smithing.json"));
+		assertNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", "data/formationsoverworld/loot_table/witch_tower/smithing.json"));
 		assertNotNull(ResourcePatchRegistry.findPatch("mr_grim_kingdomsloststructuresruins", "pack.mcmeta"));
 		assertNotNull(ResourcePatchRegistry.findPatch("wilderwild",
 			"data/wilderwild/worldgen/configured_feature/stone_pool.json"));
@@ -153,6 +156,52 @@ public class ResourcePatchResolverTest {
 			assertTrue(result.contains("\"minecraft:iron_chain\""), "Must contain minecraft:iron_chain");
 			JsonObject json = JsonParser.parseString(result).getAsJsonObject();
 			assertTrue(json.has("pools"));
+		}
+	}
+
+	@Test
+	void appliesFormationsOverworldMetadataPatchForBothVersions() throws IOException {
+		byte[] original = formationsOverworldOriginalPackMetadata();
+		assertEquals("ffa966eb7835cc4de1273945333236331eff33116e918869e4e29c881b39f940",
+			ResourcePatchResolver.sha256Hex(original));
+
+		for (String version : new String[] {"1.0.5+a", "1.0.5+c"}) {
+			IoSupplier<InputStream> patched = ResourcePatchResolver.resolve(
+				createMockModContainer("formationsoverworld", version),
+				"pack.mcmeta",
+				() -> new ByteArrayInputStream(original)
+			);
+			assertNotNull(patched, "Expected metadata patch for Formations Overworld " + version);
+			try (InputStream in = patched.get()) {
+				JsonObject pack = JsonParser.parseString(new String(in.readAllBytes(), StandardCharsets.UTF_8))
+					.getAsJsonObject().getAsJsonObject("pack");
+				assertEquals(48, pack.get("pack_format").getAsInt());
+				assertEquals(48, pack.getAsJsonArray("supported_formats").get(0).getAsInt());
+				assertEquals(107, pack.getAsJsonArray("supported_formats").get(1).getAsInt());
+				assertEquals("Formations Overworld's resources", pack.get("description").getAsString());
+			}
+		}
+	}
+
+	@Test
+	void leavesFormationsOverworldLootTablesUpstreamForVersion1_0_5c() throws IOException {
+		String[] paths = {
+			"data/formationsoverworld/loot_table/stone_tower/smithing.json",
+			"data/formationsoverworld/loot_table/witch_tower/smithing.json"
+		};
+		for (String path : paths) {
+			byte[] oldVersionBytes = readFixtureResource("upstream/formationsoverworld/1.0.5+a/" + path);
+			assertNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", path),
+				"1.0.5+c must not register a loot-table patch for " + path);
+			assertNull(ResourcePatchResolver.resolve(
+				createMockModContainer("formationsoverworld", "1.0.5+c"),
+				path,
+				() -> new ByteArrayInputStream(oldVersionBytes)
+			), "The upstream-owned 1.0.5+c loot path must not be replaced: " + path);
+			String expectedSha = path.contains("stone_tower")
+				? "380118821ec580c348da35a5983283499950e976099e96123e015cbe508346c0"
+				: "32c4bd2ea2c860a13ebde2ac05fe964bc2334914584cb68c14f4a994d9630d46";
+			assertEquals(expectedSha, ResourcePatchResolver.sha256Hex(oldVersionBytes));
 		}
 	}
 
@@ -358,6 +407,7 @@ public class ResourcePatchResolverTest {
 			{"MoogsNetherStructures-1.21-3.0.0.jar", "mns", "3.0.0", "pack.mcmeta"},
 			{"MoogsVoyagerStructures-1.21-5.0.11.jar", "mvs", "5.0.11", "pack.mcmeta"},
 			{"formationsoverworld-1.0.5a-mc1.21+.jar", "formationsoverworld", "1.0.5+a", "pack.mcmeta"},
+			{"formationsoverworld-1.0.5c-mc1.21+.jar", "formationsoverworld", "1.0.5+c", "pack.mcmeta"},
 			{"formationsoverworld-1.0.5a-mc1.21+.jar", "formationsoverworld", "1.0.5+a", "data/formationsoverworld/loot_table/stone_tower/smithing.json"},
 			{"formationsoverworld-1.0.5a-mc1.21+.jar", "formationsoverworld", "1.0.5+a", "data/formationsoverworld/loot_table/witch_tower/smithing.json"},
 			{"grim-kingdoms-lost-structures-ruins-2.0.3.jar", "mr_grim_kingdomsloststructuresruins", "2.0.3", "pack.mcmeta"},
@@ -370,7 +420,7 @@ public class ResourcePatchResolverTest {
 				continue;
 			}
 
-			ResourcePatch patch = ResourcePatchRegistry.findPatch(check[1], check[3]);
+			ResourcePatch patch = ResourcePatchRegistry.findPatch(check[1], check[2], check[3]);
 			assertNotNull(patch, "Patch rule missing for " + check[1] + " : " + check[3]);
 			assertEquals(check[2], patch.expectedVersion());
 
@@ -478,4 +528,14 @@ public class ResourcePatchResolverTest {
 			return bytes;
 		}
 	}
+
+	private static byte[] formationsOverworldOriginalPackMetadata() {
+		return ("{\n" +
+			"    \"pack\": {\n" +
+			"        \"description\": \"Formations Overworld's resources\",\n" +
+			"        \"pack_format\": 48\n" +
+			"    }\n" +
+			"}\n").getBytes(StandardCharsets.UTF_8);
+	}
+
 }

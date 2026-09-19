@@ -40,6 +40,17 @@ public class CompatibilityManifestTest {
 		assertTrue(incendium.has("5.5.0"));
 		assertTrue(incendium.has("5.5.1"));
 
+		// Formations Overworld 1.0.5+c is metadata-only; its loot tables are upstream-owned.
+		JsonObject formations = targets.getAsJsonObject("formationsoverworld").getAsJsonObject("versions");
+		assertTrue(formations.has("1.0.5+a"));
+		assertTrue(formations.has("1.0.5+c"));
+		JsonObject formationsC = formations.getAsJsonObject("1.0.5+c");
+		JsonObject formationsCResources = formationsC.getAsJsonObject("resources");
+		assertEquals("patched", formationsC.get("status").getAsString());
+		assertEquals(1, formationsCResources.size());
+		assertEquals("ffa966eb7835cc4de1273945333236331eff33116e918869e4e29c881b39f940",
+			formationsCResources.get("pack.mcmeta").getAsString());
+
 		// Verify all registered ResourcePatch entries exist in manifest
 		for (Map.Entry<ResourcePatchKey, ResourcePatch> entry : ResourcePatchRegistry.getAllPatches().entrySet()) {
 			ResourcePatch patch = entry.getValue();
