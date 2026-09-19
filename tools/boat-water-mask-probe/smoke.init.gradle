@@ -11,6 +11,8 @@ allprojects {
         tasks.named('runClient') {
             jvmArgs '-Dmixin.debug.verbose=true'
             jvmArgs "-Dboat.probe.strict=${project.findProperty('boatProbeStrict') ?: 'false'}"
+            jvmArgs "-Dboat.probe.emf.version=${project.findProperty('boatProbeEmfVersion') ?: ''}"
+            jvmArgs "-Dboat.probe.emf.sha256=${project.findProperty('boatProbeEmfSha256') ?: ''}"
         }
     }
 }

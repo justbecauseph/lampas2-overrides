@@ -12,6 +12,7 @@ import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import net.fabricmc.loader.api.FabricLoader;
@@ -22,12 +23,16 @@ import net.fabricmc.loader.api.metadata.ModOrigin;
 public final class BoatWaterMaskProfiles {
 
 	public static final String EMF_MOD_ID = "entity_model_features";
-	public static final String EXPECTED_EMF_VERSION = "3.3.5";
-	public static final String EXPECTED_EMF_ARTIFACT_SHA256 =
-		"72b2d489d03bf2ea07b5693ef26cd03572a42dda181e095aed85b3ab39cce549";
 	public static final String EXPECTED_PYRITE_ARTIFACT_SHA256 =
 		"6c378632fcadd0501a41bd4af90aec58b8cf03a065f69cd9837160c97ed81831";
 
+	private static final Map<String, EmfArtifactProfile> EMF_ARTIFACT_PROFILES = Map.of(
+		"3.3.5", new EmfArtifactProfile(
+			"3.3.5",
+			"72b2d489d03bf2ea07b5693ef26cd03572a42dda181e095aed85b3ab39cce549"),
+		"3.3.8", new EmfArtifactProfile(
+			"3.3.8",
+			"714686cefe56a7e46fa1e13ecdeddcb55ddfbb9715ae5b1ffd7573c1928d9fdd"));
 	private static final Map<String, ProviderProfile> PROVIDERS = providers();
 	private static final Map<ModContainer, ArtifactResult> ARTIFACT_RESULTS =
 		Collections.synchronizedMap(new IdentityHashMap<>());
@@ -35,33 +40,79 @@ public final class BoatWaterMaskProfiles {
 	private BoatWaterMaskProfiles() {
 	}
 
-	public static boolean supportedEmfVersion(String version) {
-		return EXPECTED_EMF_VERSION.equals(version);
+	public static Optional<EmfArtifactProfile> emfArtifactProfile(String version) {
+		return Optional.ofNullable(EMF_ARTIFACT_PROFILES.get(version));
 	}
 
-	public static boolean matchesArtifact(ModContainer container, String expectedSha256) {
+	public static boolean supportedEmfVersion(String version) {
+		return emfArtifactProfile(version).isPresent();
+	}
+
+	public static boolean matchesEmfProfile(String version, String artifactSha256) {
+		return emfArtifactProfile(version)
+			.map(profile -> artifactSha256 != null && profile.artifactSha256().equalsIgnoreCase(artifactSha256))
+			.orElse(false);
+	}
+
+	public static boolean matchesEmfArtifact(ModContainer container) {
+		if (container == null) {
+			return false;
+		}
+		try {
+			String version = container.getMetadata().getVersion().getFriendlyString();
+			return matchesEmfArtifact(container, version);
+		} catch (RuntimeException exception) {
+			return false;
+		}
+	}
+
+	public static boolean matchesEmfArtifact(ModContainer container, String metadataVersion) {
+		if (container == null || metadataVersion == null) {
+			return false;
+		}
+		EmfArtifactProfile profile = EMF_ARTIFACT_PROFILES.get(metadataVersion);
+		if (profile == null) {
+			return false;
+		}
+		try {
+			if (!profile.version().equals(container.getMetadata().getVersion().getFriendlyString())) {
+				return false;
+			}
+		} catch (RuntimeException exception) {
+			return false;
+		}
+		String actualSha256 = artifactSha256(container);
+		return actualSha256 != null && matchesEmfProfile(metadataVersion, actualSha256);
+	}
+
+	private static boolean matchesArtifactHash(ModContainer container, String expectedSha256) {
 		if (container == null || expectedSha256 == null) {
 			return false;
 		}
+		String actualSha256 = artifactSha256(container);
+		return actualSha256 != null && expectedSha256.equalsIgnoreCase(actualSha256);
+	}
+
+	private static String artifactSha256(ModContainer container) {
 		synchronized (ARTIFACT_RESULTS) {
 			ArtifactResult cached = ARTIFACT_RESULTS.get(container);
-			if (cached != null && cached.expectedSha256().equalsIgnoreCase(expectedSha256)) {
-				return cached.matches();
+			if (cached != null) {
+				return cached.sha256();
 			}
 
-			boolean matches = false;
+			String sha256 = null;
 			try {
 				Path artifact = artifactPath(container);
 				if (artifact != null) {
 					try (InputStream input = Files.newInputStream(artifact)) {
-						matches = expectedSha256.equalsIgnoreCase(sha256Hex(input));
+						sha256 = sha256Hex(input);
 					}
 				}
 			} catch (IOException | RuntimeException exception) {
-				matches = false;
+				sha256 = null;
 			}
-			ARTIFACT_RESULTS.put(container, new ArtifactResult(expectedSha256, matches));
-			return matches;
+			ARTIFACT_RESULTS.put(container, new ArtifactResult(sha256));
+			return sha256;
 		}
 	}
 
@@ -96,7 +147,7 @@ public final class BoatWaterMaskProfiles {
 		ProviderProfile profile = PROVIDERS.get(modId);
 		return profile != null && loader.getModContainer(modId)
 			.map(container -> profile.expectedVersion().equals(container.getMetadata().getVersion().getFriendlyString())
-				&& (profile.artifactSha256() == null || matchesArtifact(container, profile.artifactSha256())))
+				&& (profile.artifactSha256() == null || matchesArtifactHash(container, profile.artifactSha256())))
 			.orElse(false);
 	}
 
@@ -201,6 +252,9 @@ public final class BoatWaterMaskProfiles {
 	) {
 	}
 
-	private record ArtifactResult(String expectedSha256, boolean matches) {
+	public record EmfArtifactProfile(String version, String artifactSha256) {
+	}
+
+	private record ArtifactResult(String sha256) {
 	}
 }

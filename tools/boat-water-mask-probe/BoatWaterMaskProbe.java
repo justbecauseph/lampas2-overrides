@@ -11,6 +11,8 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.resources.Identifier;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWWindowCloseCallback;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,11 +83,15 @@ public final class BoatWaterMaskProbe implements ClientModInitializer {
             new Stage("ON-2", true),
             new Stage("OFF-2", false)
     );
+    private static final long SHUTDOWN_POOL_WAIT_MILLIS = 75_000L;
 
     private final boolean strict = Boolean.parseBoolean(System.getProperty("boat.probe.strict", "true"));
+    private final String emfProbeVersion = System.getProperty("boat.probe.emf.version", "");
+    private final String emfProbeSha256 = System.getProperty("boat.probe.emf.sha256", "");
     private Minecraft client;
     private int stageIndex;
     private boolean hadCheckFailures;
+    private boolean resultWritten;
     private final List<String> resultLines = new ArrayList<>();
 
     @Override
@@ -93,7 +99,12 @@ public final class BoatWaterMaskProbe implements ClientModInitializer {
         ClientLifecycleEvents.CLIENT_STARTED.register(mc -> {
             client = mc;
             stageIndex = 0;
+            installWindowCloseGuard();
             System.out.println("BOAT_PROBE_STARTED strict=" + strict + " runDir=" + mc.gameDirectory);
+            String inputLine = "BOAT_PROBE_INPUT emfVersion=" + safe(emfProbeVersion)
+                    + " emfSha256=" + safe(emfProbeSha256);
+            resultLines.add(inputLine);
+            System.out.println(inputLine);
             mc.execute(this::startStage);
         });
     }
@@ -159,7 +170,7 @@ public final class BoatWaterMaskProbe implements ClientModInitializer {
                 client.execute(this::startStage);
             } else {
                 writeResult(hadCheckFailures ? "CHECK_FAILURES" : "PASS");
-                client.stop();
+                waitForObservedPoolThreadsAndStop();
             }
         } catch (Throwable problem) {
             failAndStop(stage.name + " inspection", problem);
@@ -431,8 +442,86 @@ public final class BoatWaterMaskProbe implements ClientModInitializer {
         resultLines.add(message);
         writeResult("FAIL");
         if (client != null) {
-            client.stop();
+            stopAfterResult();
         }
+    }
+
+    private void installWindowCloseGuard() {
+        client.getWindow().setWindowCloseCallback(() -> {
+            if (!resultWritten) {
+                GLFW.glfwSetWindowShouldClose(client.getWindow().handle(), false);
+                String stage = stageIndex < STAGES.size() ? STAGES.get(stageIndex).name : "complete";
+                System.out.println("BOAT_PROBE_WINDOW_CLOSE_IGNORED stage=" + stage);
+            }
+        });
+    }
+
+    private void stopAfterResult() {
+        resultWritten = true;
+        long window = client.getWindow().handle();
+        GLFWWindowCloseCallback callback = GLFW.glfwSetWindowCloseCallback(window, null);
+        if (callback != null) {
+            callback.free();
+        }
+        GLFW.glfwSetWindowShouldClose(window, false);
+        client.stop();
+    }
+
+    private void waitForObservedPoolThreadsAndStop() {
+        List<Long> observedIds = nonDaemonPoolThreads().stream()
+                .map(Thread::threadId)
+                .toList();
+        System.out.println("BOAT_PROBE_SHUTDOWN_WAIT observed=" + poolThreadLabels(observedIds)
+                + " timeoutMs=" + SHUTDOWN_POOL_WAIT_MILLIS);
+
+        Thread waiter = new Thread(() -> {
+            long started = System.nanoTime();
+            long deadline = started + SHUTDOWN_POOL_WAIT_MILLIS * 1_000_000L;
+            List<Long> remaining = observedIds;
+            while (!remaining.isEmpty() && System.nanoTime() < deadline) {
+                try {
+                    Thread.sleep(250L);
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+                remaining = remainingPoolThreadIds(observedIds);
+            }
+            long waitedMillis = (System.nanoTime() - started) / 1_000_000L;
+            List<Long> finalRemaining = remaining;
+            client.execute(() -> {
+                System.out.println("BOAT_PROBE_SHUTDOWN_READY remaining="
+                        + poolThreadLabels(finalRemaining) + " waitedMs=" + waitedMillis
+                        + " timedOut=" + !finalRemaining.isEmpty());
+                stopAfterResult();
+            });
+        }, "boat-probe-shutdown-waiter");
+        waiter.setDaemon(true);
+        waiter.start();
+    }
+
+    private static List<Thread> nonDaemonPoolThreads() {
+        return Thread.getAllStackTraces().keySet().stream()
+                .filter(Thread::isAlive)
+                .filter(thread -> !thread.isDaemon())
+                .filter(thread -> thread.getName().matches("pool-\\d+-thread-\\d+"))
+                .sorted(Comparator.comparing(Thread::getName))
+                .toList();
+    }
+
+    private static List<Long> remainingPoolThreadIds(List<Long> observedIds) {
+        return nonDaemonPoolThreads().stream()
+                .map(Thread::threadId)
+                .filter(observedIds::contains)
+                .toList();
+    }
+
+    private static String poolThreadLabels(List<Long> threadIds) {
+        return nonDaemonPoolThreads().stream()
+                .filter(thread -> threadIds.contains(thread.threadId()))
+                .map(thread -> thread.getName() + "#" + thread.threadId())
+                .toList()
+                .toString();
     }
 
     private static Object fieldValue(Object owner, String name) throws ReflectiveOperationException {

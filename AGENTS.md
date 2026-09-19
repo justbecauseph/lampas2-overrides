@@ -306,12 +306,23 @@ Zip-level and format work can be tested outside the game entirely; that is how `
 
 The client-only `boatmask` feature repairs the audited FA/EMF water mask for 108 boat
 layers from Pyrite, Promenade, Wilder Wild, BetterEnd, and BetterNether. Keep plugin
-gates in `BoatWaterMaskProfiles` free of Minecraft model classes. Fingerprints of loaded
-artifacts may be cached; selected resource provenance must be checked on renderer
-construction so resource reloads reevaluate it. Preserve custom hulls, vanilla animated
-boats, and the explicit provider/layer allowlist. BetterX raft renderers and
-BloomingNature's custom renderer have different contracts. See
-`docs/boat-water-mask.md` for fingerprints, verification, and the probe shutdown caveat.
+gates in `BoatWaterMaskProfiles` free of Minecraft model classes. EMF artifact policy is
+an immutable exact version-to-hash map for 3.3.5 and 3.3.8; never accept a digest
+independently of its metadata version. Fingerprints of loaded artifacts may be cached;
+selected resource provenance must be checked on renderer construction so resource reloads
+reevaluate it. Preserve custom hulls, vanilla animated boats, and the explicit
+provider/layer allowlist. BetterX raft renderers and BloomingNature's custom renderer
+have different contracts. See `docs/boat-water-mask.md` for fingerprints, verification,
+and the probe shutdown caveat.
+
+The boat probe runner requires explicit EMF artifact path, metadata version, and SHA-256
+inputs. It verifies the JAR before creating a fixture and discovers the installed Biolith
+artifact rather than relying on a release filename. A probe reset moves the prior fixture
+under the ignored build history directory so result files and logs remain available for
+review. The probe's temporary GLFW close guard, bounded wait for already observed
+non-daemon pool threads, and fixture-only FrozenLib `packDownloading` setting exist only
+for deterministic probe shutdown; they are not compatibility behavior and must not be
+copied into production code.
 
 ```
 compat/

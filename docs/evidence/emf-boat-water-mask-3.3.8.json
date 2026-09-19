@@ -1,0 +1,172 @@
+{
+  "mod": "entity_model_features",
+  "modrinthVersion": "uqpavrXj",
+  "profiles": [
+    {
+      "version": "3.3.5",
+      "artifactSha256": "72b2d489d03bf2ea07b5693ef26cd03572a42dda181e095aed85b3ab39cce549"
+    },
+    {
+      "version": "3.3.8",
+      "artifactSha256": "714686cefe56a7e46fa1e13ecdeddcb55ddfbb9715ae5b1ffd7573c1928d9fdd"
+    }
+  ],
+  "candidate": {
+    "loaderMetadataVersion": "3.3.8",
+    "jarSha256": "714686cefe56a7e46fa1e13ecdeddcb55ddfbb9715ae5b1ffd7573c1928d9fdd",
+    "publicContracts": [
+      "EMFModelPartRoot.getRoot()",
+      "EMFModelPartRoot.containsCustomModel",
+      "EMFModelPartRoot.containsCustomAnims",
+      "EMFModelPartRoot.directoryContext",
+      "EMFDirectoryHandler.getFinalFileLocation()"
+    ],
+    "boatPatchLookup": "boat_patch and fallback selection retained"
+  },
+  "overrideArtifacts": {
+    "baselineJarSha256": "04eed6fa1b30832fc8042f0cd98bacf5498d2fbdb5e09dfbe8953b1660a16849",
+    "candidateJarSha256": "9109f6f79da4397e12ffe79271a7e57bb9ac2470290c5d7971ad3bee5358ce5e"
+  },
+  "runtime": {
+    "date": "2026-09-20",
+    "minecraft": "26.2",
+    "fabricLoader": "0.19.5",
+    "fabricApi": "0.160.0+26.2",
+    "entityTextureFeatures": "7.2.1",
+    "providerVersions": {
+      "pyrite": "0.18.3+26.2",
+      "promenade": "5.6.0",
+      "wilderwild": "4.2.11-mc26.2",
+      "betterend": "26.201.2",
+      "betternether": "26.201.2"
+    },
+    "selectedResource": {
+      "path": "minecraft:optifine/cem/boat_patch.jem",
+      "sha256": "4d924242a3787ca708b0165961078bcf91bd455d0bb881a10b9a28a0a3fa725b",
+      "sourcePack": "FA+All_Extensions-v1.9.2.zip"
+    },
+    "observedMaskCounts": {
+      "pyrite": 52,
+      "promenade": 6,
+      "wilderwild": 10,
+      "betterend": 18,
+      "betternether": 22,
+      "total": 108
+    }
+  },
+  "strictProbes": {
+    "stages": [
+      "ON-1 PASS",
+      "OFF PASS",
+      "ON-2 PASS",
+      "OFF-2 PASS"
+    ],
+    "runs": {
+      "3.3.5": {
+        "emfArtifactSha256": "72b2d489d03bf2ea07b5693ef26cd03572a42dda181e095aed85b3ab39cce549",
+        "resultSha256": "6de427e938f2861ec4a8f21b132238e5a44915c963c5fc7fbcf105eb3e3e9e7b",
+        "logSha256": "a5f3fbd354b29af6724e04ea67b4b3df7688540d375f45102482141464b6afdd",
+        "inputSha256": "41eb8a3705579f5bbb83edf89d6ac17c0c2d8c0665569050f697e96ba9f73fdd",
+        "exitCode": 0,
+        "result": "PASS"
+      },
+      "3.3.8": {
+        "emfArtifactSha256": "714686cefe56a7e46fa1e13ecdeddcb55ddfbb9715ae5b1ffd7573c1928d9fdd",
+        "resultSha256": "9781039dea46d4be7539912d030f55494bf630f6ce964d1ecda3c5a904a77ccf",
+        "logSha256": "852bf378630f050738a78d907ff63067288105c9e2eba302b321ae61f6648ea1",
+        "inputSha256": "774cf2d2e917ce263c860eac684802c4caa408d6aa6859cd16d16285a04d336a",
+        "exitCode": 0,
+        "result": "PASS"
+      }
+    }
+  },
+  "visualMatrix": {
+    "emfVersion": "3.3.8",
+    "resolution": "1280x720",
+    "screenshotsPerRun": 4,
+    "harnessSourceSha256": "4622609237365b61d002f62d4fed1df068404825737c4bb32876c2ded8012b3e",
+    "harnessJarSha256": "be50b73cabe7a174eb64235c033cfa6a143461a6355b9f1ce479e58d2f22c158",
+    "shaderOn": {
+      "shaderPack": "lampas-photon-aria.zip",
+      "pipeline": "Iris",
+      "shaderSha256": "1e80200850ee1264b8c973d6cc82310ea6ec110003df1a24cd1951daab509e75",
+      "invalidOrFallbackPipelineMessages": false,
+      "nonfatalGtaoOptionWarnings": true
+    },
+    "invalidPackOrFallbackMessages": false,
+    "fixtureAssertions": {
+      "countPerRun": 1,
+      "runtimeBoatVisualOverride": {
+        "originKind": "PATH",
+        "regularFile": true,
+        "pathCount": 1,
+        "matchingSha256": true
+      }
+    },
+    "runs": [
+      {
+        "id": "baseline-off-20260920-054052",
+        "override": "baseline",
+        "shader": "off",
+        "manifestSha256": "79e28fffb4d66031fc1e5a74c20a92e926aab1aeab0a9f376ae46c2b28686041",
+        "logSha256": "4ad9626688916be1ae0d49bce9a3290fb6d08eae4f4ce1d0c9f9f0c0141e05b5",
+        "fixtureAssertionCount": 1,
+        "runtimeBoatVisualOverride": "PATH regular-file origin with matching SHA-256",
+        "result": "PASS",
+        "exitCode": 0
+      },
+      {
+        "id": "baseline-on-20260920-054325",
+        "override": "baseline",
+        "shader": "on",
+        "manifestSha256": "412d790095b0d2c01fbbcfff6a7df8c28eabcce49e747c289fa0ce46a4bd5771",
+        "logSha256": "fc0c2331cf3eff1c272822add59d94e4e4731117d10bd5c31d893b001afa5b34",
+        "fixtureAssertionCount": 1,
+        "runtimeBoatVisualOverride": "PATH regular-file origin with matching SHA-256",
+        "result": "PASS",
+        "exitCode": 0
+      },
+      {
+        "id": "patched-off-20260920-053557",
+        "override": "candidate",
+        "shader": "off",
+        "manifestSha256": "21bcf55b0a0fa6789308c83eb8c5bfad49a49beede1c07518ec06b0f3d5fecc0",
+        "logSha256": "aa6631471b6cdcfd9e330b5ff4d54fff60930a2f50b09f752e4571d92132a1a5",
+        "fixtureAssertionCount": 1,
+        "runtimeBoatVisualOverride": "PATH regular-file origin with matching SHA-256",
+        "result": "PASS",
+        "exitCode": 0
+      },
+      {
+        "id": "patched-on-20260920-053836",
+        "override": "candidate",
+        "shader": "on",
+        "manifestSha256": "f401b0287bc94dc8c1554e6d36c6734ce8fd363e988a72e0fc8fac2c892dd41d",
+        "logSha256": "aa701fd8d2befd93de0613408ab4ef8f22423b1ea8cdccc5bba4ac2e29830c5a",
+        "fixtureAssertionCount": 1,
+        "runtimeBoatVisualOverride": "PATH regular-file origin with matching SHA-256",
+        "result": "PASS",
+        "exitCode": 0
+      }
+    ],
+    "manualReview": [
+      "Baseline catalogs show rectangular water transparency around provider boats.",
+      "Patched catalogs restore continuous water around provider boats.",
+      "Vanilla boats, BetterX rafts, and BloomingNature custom renderers remain visible.",
+      "Mounted rowing and turning covered vanilla oak only; provider boats were not covered.",
+      "Both resource reload cycles completed.",
+      "A post-reload detached-oar artifact appears in both baseline and candidate and is not proof of a regression."
+    ]
+  },
+  "harnessSafeguards": [
+    "FrozenLib packDownloading disabled in the isolated fixture config",
+    "Temporary GLFW close guard held through final result writing",
+    "Bounded wait for observed non-daemon pool threads before releasing the guard and stopping the client"
+  ],
+  "boundaries": [
+    "This metadata records isolated client model, reload, renderer, and visual evidence.",
+    "Shader-on logs confirm lampas-photon-aria.zip through the Iris pipeline without invalid or fallback pipeline messages.",
+    "No pack staging, deployment, or live installed-instance behavior is established by these runs.",
+    "Runtime logs, screenshots, and fixture directories remain under ignored build paths and are not committed."
+  ]
+}

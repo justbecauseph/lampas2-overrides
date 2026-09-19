@@ -34,8 +34,6 @@ public final class BoatWaterMaskCompatibility {
 	public static final String MASK_FINAL_FILE_LOCATION = "minecraft:optifine/cem/boat_patch.jem";
 	public static final String EXPECTED_MASK_SHA256 =
 		"4d924242a3787ca708b0165961078bcf91bd455d0bb881a10b9a28a0a3fa725b";
-	public static final String EXPECTED_EMF_VERSION = BoatWaterMaskProfiles.EXPECTED_EMF_VERSION;
-	public static final String EXPECTED_EMF_ARTIFACT_SHA256 = BoatWaterMaskProfiles.EXPECTED_EMF_ARTIFACT_SHA256;
 	public static final String EXPECTED_PYRITE_ARTIFACT_SHA256 = BoatWaterMaskProfiles.EXPECTED_PYRITE_ARTIFACT_SHA256;
 
 	private BoatWaterMaskCompatibility() {
@@ -45,8 +43,15 @@ public final class BoatWaterMaskCompatibility {
 		return BoatWaterMaskProfiles.supportedEmfVersion(version);
 	}
 
-	public static boolean matchesArtifact(net.fabricmc.loader.api.ModContainer container, String expectedSha256) {
-		return BoatWaterMaskProfiles.matchesArtifact(container, expectedSha256);
+	public static boolean matchesEmfArtifact(net.fabricmc.loader.api.ModContainer container) {
+		return BoatWaterMaskProfiles.matchesEmfArtifact(container);
+	}
+
+	public static boolean matchesEmfArtifact(
+		net.fabricmc.loader.api.ModContainer container,
+		String metadataVersion
+	) {
+		return BoatWaterMaskProfiles.matchesEmfArtifact(container, metadataVersion);
 	}
 
 	public static boolean supportedProviderVersion(String modId, String version) {

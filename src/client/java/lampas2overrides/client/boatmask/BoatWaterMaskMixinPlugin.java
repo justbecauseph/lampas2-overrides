@@ -18,10 +18,7 @@ public final class BoatWaterMaskMixinPlugin implements IMixinConfigPlugin {
 	public void onLoad(String mixinPackage) {
 		FabricLoader loader = FabricLoader.getInstance();
 		apply = loader.getModContainer(BoatWaterMaskProfiles.EMF_MOD_ID)
-			.map(container -> BoatWaterMaskProfiles.supportedEmfVersion(
-				container.getMetadata().getVersion().getFriendlyString())
-				&& BoatWaterMaskProfiles.matchesArtifact(
-					container, BoatWaterMaskProfiles.EXPECTED_EMF_ARTIFACT_SHA256))
+			.map(BoatWaterMaskProfiles::matchesEmfArtifact)
 			.orElse(false)
 			&& BoatWaterMaskProfiles.hasSupportedProvider(loader);
 	}

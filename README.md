@@ -20,7 +20,7 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.2.11-mc26.2 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
 | [FrozenLib wind synchronization](#frozenlib-wind-synchronization) | FrozenLib 2.5.3-mc26.2 + Wilder Wild 4.2.11-mc26.2 | Keeps synced wind state detached during Netty decode and applies it on the client thread |
 | [Bee and spawner structure DFU validation](#bee-and-spawner-structure-dfu-validation) | Exact Trek and Stoneholm fixtures | Verifies repaired bee inventories and zombie spawner payloads survive structure loading |
-| [Boat water-mask compatibility](#boat-water-mask-compatibility) | EMF 3.3.5 + audited boat providers | Restores the vanilla water mask for plain hulls when the selected Fresh Animations mask is incompatible |
+| [Boat water-mask compatibility](#boat-water-mask-compatibility) | EMF 3.3.5 or 3.3.8 + audited boat providers | Restores the vanilla water mask for plain hulls when the selected Fresh Animations mask is incompatible |
 | [Better Lib demo villager suppression](#better-lib-demo-villager-suppression) | Better Lib | Suppresses hardcoded demo villager registration that causes RemapException registry sync disconnects |
 
 ## Plasmo Voice client shutdown
@@ -225,7 +225,7 @@ regression results, and remaining live gameplay checks.
 
 ## Boat water-mask compatibility
 
-EMF 3.3.5 can replace Minecraft's shared boat water-patch layer with the Fresh Animations
+EMF 3.3.5 and 3.3.8 can replace Minecraft's shared boat water-patch layer with the Fresh Animations
 `assets/minecraft/optifine/cem/boat_patch.jem` model. That model's animation expects `var.base_*`
 values supplied by Fresh Animations hull models. Plain hulls from the audited Pyrite 0.18.3+26.2,
 Promenade 5.6.0, Wilder Wild 4.2.11-mc26.2, BetterEnd 26.201.2, and BetterNether 26.201.2
@@ -238,7 +238,28 @@ the exact provider layer, provider version, EMF version, selected resource bytes
 Custom EMF hulls or animations, disabled or different resource packs, absent or mismatched versions,
 the BetterEnd/BetterNether `wover-item` companion mismatch, and unlisted boat layers remain
 untouched. The explicit provider list and verification limits are recorded in
-[docs/boat-water-mask.md](docs/boat-water-mask.md).
+[docs/boat-water-mask.md](docs/boat-water-mask.md). The exact EMF profile pairs are recorded in
+[the focused 3.3.8 evidence](docs/evidence/emf-boat-water-mask-3.3.8.json).
+
+The isolated probe requires explicit artifact identity. For example:
+
+```powershell
+./tools/boat-water-mask-probe/run.ps1 -Strict `
+  -EmfArtifactPath C:/path/entity_model_features-3.3.8-26.2-fabric.jar `
+  -EmfVersion 3.3.8 `
+  -EmfSha256 714686cefe56a7e46fa1e13ecdeddcb55ddfbb9715ae5b1ffd7573c1928d9fdd
+```
+
+The runner verifies the selected JAR's metadata and SHA-256 before creating the fixture,
+preserves previous fixture evidence, discovers the installed Biolith artifact, and uses
+fixture-only FrozenLib and shutdown guards. The guards do not affect the installed client.
+The accepted isolated validation covers four strict reload stages plus baseline and patched
+shader-off and shader-on visual runs; see the focused evidence for result, log, input,
+override, harness, and shader hashes. This evidence does not establish pack staging,
+deployment, or behavior in the live installed instance.
+Manual review found rectangular baseline water transparency and continuous candidate water;
+shader-on logs had nonfatal GTAO option warnings but no invalid-pack or fallback messages.
+Mounted rowing and turning covered vanilla oak only.
 
 ## Additional Lanterns chunk loading
 

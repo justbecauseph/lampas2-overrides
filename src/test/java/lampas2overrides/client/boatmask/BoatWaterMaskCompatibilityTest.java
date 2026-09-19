@@ -34,6 +34,7 @@ import net.minecraft.resources.Identifier;
 class BoatWaterMaskCompatibilityTest {
 
 	private static final String EMF_VERSION = "3.3.5";
+	private static final String EMF_VERSION_NEW = "3.3.8";
 	private static final BoatWaterMaskCompatibility.EmfRootInfo VANILLA_HULL =
 		new BoatWaterMaskCompatibility.EmfRootInfo(false, false, false, null, true);
 	private static final BoatWaterMaskCompatibility.EmfRootInfo ACTIVE_WATER_ROOT =
@@ -41,6 +42,27 @@ class BoatWaterMaskCompatibilityTest {
 			true, true, true, BoatWaterMaskCompatibility.MASK_FINAL_FILE_LOCATION, true);
 	private static final BoatWaterMaskCompatibility.ResourceProof ACTIVE_RESOURCE =
 		new BoatWaterMaskCompatibility.ResourceProof(true, true, EMF_VERSION);
+	private static final BoatWaterMaskCompatibility.ResourceProof ACTIVE_RESOURCE_NEW =
+		new BoatWaterMaskCompatibility.ResourceProof(true, true, EMF_VERSION_NEW);
+
+	@Test
+	void acceptsBothExactEmfProfilesAndRejectsCrossedOrUnknownPairs() {
+		assertEquals(
+			"72b2d489d03bf2ea07b5693ef26cd03572a42dda181e095aed85b3ab39cce549",
+			BoatWaterMaskProfiles.emfArtifactProfile(EMF_VERSION).orElseThrow().artifactSha256());
+		assertEquals(
+			"714686cefe56a7e46fa1e13ecdeddcb55ddfbb9715ae5b1ffd7573c1928d9fdd",
+			BoatWaterMaskProfiles.emfArtifactProfile(EMF_VERSION_NEW).orElseThrow().artifactSha256());
+		assertTrue(BoatWaterMaskProfiles.matchesEmfProfile(EMF_VERSION,
+			"72b2d489d03bf2ea07b5693ef26cd03572a42dda181e095aed85b3ab39cce549"));
+		assertTrue(BoatWaterMaskProfiles.matchesEmfProfile(EMF_VERSION_NEW,
+			"714686cefe56a7e46fa1e13ecdeddcb55ddfbb9715ae5b1ffd7573c1928d9fdd"));
+		assertFalse(BoatWaterMaskProfiles.matchesEmfProfile(EMF_VERSION,
+			"714686cefe56a7e46fa1e13ecdeddcb55ddfbb9715ae5b1ffd7573c1928d9fdd"));
+		assertFalse(BoatWaterMaskProfiles.matchesEmfProfile(EMF_VERSION_NEW,
+			"72b2d489d03bf2ea07b5693ef26cd03572a42dda181e095aed85b3ab39cce549"));
+		assertFalse(BoatWaterMaskProfiles.matchesEmfProfile("3.3.6", "72b2d489d03bf2ea07b5693ef26cd03572a42dda181e095aed85b3ab39cce549"));
+	}
 
 	@Test
 	void acceptsEveryAuditedProviderLayer() {
@@ -84,6 +106,8 @@ class BoatWaterMaskCompatibilityTest {
 			new BoatWaterMaskCompatibility.EmfRootInfo(true, false, true, null, true), ACTIVE_WATER_ROOT, ACTIVE_RESOURCE));
 		assertFalse(eligible("pyrite", "0.18.3+26.2", layer("pyrite", "boat/cyan_stained"),
 			new BoatWaterMaskCompatibility.EmfRootInfo(false, false, false, null, false), ACTIVE_WATER_ROOT, ACTIVE_RESOURCE));
+		assertTrue(eligible("pyrite", "0.18.3+26.2", layer("pyrite", "boat/cyan_stained"),
+			VANILLA_HULL, ACTIVE_WATER_ROOT, ACTIVE_RESOURCE_NEW));
 	}
 
 	@Test
@@ -121,14 +145,23 @@ class BoatWaterMaskCompatibilityTest {
 	void hashesOnlyTheActualPathOriginArtifact(@TempDir Path tempDirectory) throws IOException {
 		Path artifact = tempDirectory.resolve("entity_model_features.jar");
 		Files.writeString(artifact, "abc", StandardCharsets.UTF_8);
-		ModContainer container = pathOriginContainer(artifact, ModOrigin.Kind.PATH);
+		ModContainer container = pathOriginContainer(artifact, ModOrigin.Kind.PATH, EMF_VERSION);
 
-		assertTrue(BoatWaterMaskCompatibility.matchesArtifact(
-			container, "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"));
-		assertFalse(BoatWaterMaskCompatibility.matchesArtifact(container, "tampered"));
-		assertFalse(BoatWaterMaskCompatibility.matchesArtifact(
-			pathOriginContainer(artifact, ModOrigin.Kind.UNKNOWN),
-			"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"));
+		assertFalse(BoatWaterMaskCompatibility.matchesEmfArtifact(container));
+		assertFalse(BoatWaterMaskCompatibility.matchesEmfArtifact(container, EMF_VERSION_NEW));
+		assertFalse(BoatWaterMaskCompatibility.matchesEmfArtifact(
+			pathOriginContainer(artifact, ModOrigin.Kind.PATH, EMF_VERSION_NEW), EMF_VERSION));
+		assertFalse(BoatWaterMaskCompatibility.matchesEmfArtifact(
+			pathOriginContainer(artifact, ModOrigin.Kind.PATH, EMF_VERSION_NEW)));
+		assertFalse(BoatWaterMaskCompatibility.matchesEmfArtifact(
+			pathOriginContainer(artifact, ModOrigin.Kind.UNKNOWN, EMF_VERSION)));
+		assertFalse(BoatWaterMaskCompatibility.matchesEmfArtifact(
+			pathOriginContainer(List.of(artifact, artifact), ModOrigin.Kind.PATH, EMF_VERSION)));
+		assertFalse(BoatWaterMaskCompatibility.matchesEmfArtifact(
+			pathOriginContainer(tempDirectory, ModOrigin.Kind.PATH, EMF_VERSION)));
+		assertFalse(BoatWaterMaskCompatibility.matchesEmfArtifact(
+			pathOriginContainer(tempDirectory.resolve("missing.jar"), ModOrigin.Kind.PATH, EMF_VERSION)));
+		assertFalse(BoatWaterMaskCompatibility.matchesEmfArtifact(null));
 	}
 
 	@Test
@@ -184,19 +217,33 @@ class BoatWaterMaskCompatibilityTest {
 		return new ModelLayerLocation(Identifier.fromNamespaceAndPath(namespace, path), "main");
 	}
 
-	private static ModContainer pathOriginContainer(Path path, ModOrigin.Kind kind) {
+	private static ModContainer pathOriginContainer(Path path, ModOrigin.Kind kind, String version) {
+		return pathOriginContainer(List.of(path), kind, version);
+	}
+
+	private static ModContainer pathOriginContainer(List<Path> paths, ModOrigin.Kind kind, String version) {
 		ModOrigin origin = (ModOrigin) Proxy.newProxyInstance(
 			ModOrigin.class.getClassLoader(),
 			new Class<?>[] {ModOrigin.class},
 			(proxy, method, args) -> switch (method.getName()) {
 				case "getKind" -> kind;
-				case "getPaths" -> List.of(path);
+				case "getPaths" -> paths;
 				default -> null;
 			});
+		ModMetadata metadata = proxy(ModMetadata.class, (proxy, method, args) -> {
+			if ("getVersion".equals(method.getName())) {
+				return Version.parse(version);
+			}
+			return defaultValue(method.getReturnType());
+		});
 		return (ModContainer) Proxy.newProxyInstance(
 			ModContainer.class.getClassLoader(),
 			new Class<?>[] {ModContainer.class},
-			(proxy, method, args) -> "getOrigin".equals(method.getName()) ? origin : null);
+			(proxy, method, args) -> switch (method.getName()) {
+				case "getOrigin" -> origin;
+				case "getMetadata" -> metadata;
+				default -> null;
+			});
 	}
 
 	private static FabricLoader loader(Map<String, ModContainer> mods) {
