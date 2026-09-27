@@ -1,0 +1,24 @@
+allprojects {
+    afterEvaluate {
+        def runDir = project.findProperty('windObservationRunDir')
+        def classpathOutput = project.findProperty('windObservationClasspathFile')
+        if (!runDir || !classpathOutput) {
+            throw new GradleException('windObservationRunDir and windObservationClasspathFile are required')
+        }
+        loom.runs.client.runDir = runDir
+
+        tasks.register('windObservationClasspath') {
+            doLast {
+                def output = file(classpathOutput)
+                output.parentFile.mkdirs()
+                output.text = tasks.compileClientJava.classpath.asPath
+            }
+        }
+
+        tasks.named('runClient') {
+            jvmArgs '-Dmixin.debug.verbose=true'
+            // Run only the temporary observation entrypoint and explicitly attested vendor inputs.
+            jvmArgs '-Dfabric.debug.disableModIds=lampas2-overrides'
+        }
+    }
+}

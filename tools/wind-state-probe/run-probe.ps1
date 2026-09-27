@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
-    [ValidateSet('patched', 'baseline')]
-    [string]$Mode = 'patched'
+    [ValidateSet('baseline')]
+    [string]$Mode = 'baseline'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -11,9 +11,11 @@ $probeRoot = Join-Path $repo 'build\wind-smoke-probe'
 $mods = Join-Path $smokeRoot 'mods'
 $classes = Join-Path $probeRoot 'classes'
 $initScript = Join-Path $PSScriptRoot 'wind-smoke.init.gradle'
-$probeSources = Get-ChildItem -LiteralPath $PSScriptRoot -Filter '*.java' -File |
-    Sort-Object Name |
-    Select-Object -ExpandProperty FullName
+$probeSources = @(
+    (Join-Path $PSScriptRoot 'WindStateProbe.java'),
+    (Join-Path $PSScriptRoot 'WindProbeExecutors.java'),
+    (Join-Path $PSScriptRoot 'CapeUtilProbeMixin.java')
+)
 $probeJar = Join-Path $mods 'wind-state-probe.jar'
 
 New-Item -ItemType Directory -Force -Path $mods, $classes | Out-Null

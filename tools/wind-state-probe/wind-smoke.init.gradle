@@ -21,16 +21,13 @@ allprojects {
 
         tasks.named('runClient') {
             jvmArgs '-Dmixin.debug.verbose=true'
-            def mode = project.findProperty('windProbeMode') ?: 'patched'
-            if (!(mode in ['patched', 'baseline'])) {
-                throw new GradleException("windProbeMode must be patched or baseline, got ${mode}")
+            def mode = project.findProperty('windProbeMode') ?: 'baseline'
+            if (mode != 'baseline') {
+                throw new GradleException("The historical wind probe is baseline-only; production patch mode was retired")
             }
-            jvmArgs "-DwindProbe.expectPatched=${mode == 'patched'}"
-            if (mode == 'baseline') {
-                // Fabric Loader 0.19.3's documented debug property removes the dev mod from the
-                // candidate list, leaving the audited vendor jars and temporary probe active.
-                jvmArgs '-Dfabric.debug.disableModIds=lampas2-overrides'
-            }
+            jvmArgs '-DwindProbe.expectPatched=false'
+            // Run only the audited vendor jars and temporary probe.
+            jvmArgs '-Dfabric.debug.disableModIds=lampas2-overrides'
         }
     }
 }

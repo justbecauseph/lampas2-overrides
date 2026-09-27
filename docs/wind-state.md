@@ -1,5 +1,9 @@
 # FrozenLib wind state and Wilder Wild cloud crash
 
+The client wind shim documented in the older sections below was retired for
+the latest supported FrozenLib 3.0 and Wilder Wild 4.3 pair. Those sections
+remain as evidence for the former 2.5.3/4.2.11 artifacts.
+
 ## Report and inspected artifacts
 
 The Lampas client report `crash-2026-09-12_17.49.30-client.txt` records an
@@ -116,3 +120,64 @@ review passed after the module metadata gate was added.
 Full-pack reconnects, dimension changes, resource reloads, and rendered cloud
 behavior require live gameplay validation. This change has not been staged to
 the pipeline or deployed.
+
+## FrozenLib 3.0 and Wilder Wild 4.3 candidate (2026-09-27)
+
+The next supported pair has different extension and reset behavior. The exact
+Modrinth candidates are FrozenLib `dAbWrFf4` (metadata `3.0`, JAR SHA-256
+`508093763f014ee25430045153a619383eea697d9b7853b72b097f700ec0a51e`)
+and Wilder Wild `jO1Bwxn3` (metadata `4.3`, JAR SHA-256
+`9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c`).
+Their inspected `WindManager.class` and `WWWindManagerExtension.class` SHA-256
+values are `8d5f13c0e9600017495beacd1e0103dd5bda65eafcbc2fcf57a99bcecd208cf5`
+and `319392b0baa832a638f9e4cbbf6fa9f421fc7bd6c23b88b546f61bac096a37eb`.
+The pack's Fabric API `0.161.0+26.2` JAR SHA-256 is
+`e5b858ceb13290c274e31cb888ff5a1a40cb91067e7ffab0b5b775aec51e216a`;
+its Data Attachment API module is `2.2.19+515ac5339e` with the same inspected
+`AttachmentChange.class` SHA-256 as the older profile.
+
+The unpatched isolated client probe ran with exactly these three input JARs
+and exited normally. `reset()` cleared both the extension list and
+`loadedExtensions`; `getOrCreate` then rehydrated one Wilder Wild extension.
+Two worker-thread stream decodes each returned `WindManager.INSTANCE` and
+changed its wind values and Wilder Wild cloud coordinates before attachment
+application. Wilder Wild 4.3 retained the extension object and list identity
+while applying each cloud update in place. The 2.5.3 reset repair and the
+missing-extension replacement repair are no longer indicated for this pair.
+Worker decode still mutates the singleton; this isolated probe does not show
+whether that residual race matters during connected gameplay. The initial
+result and logs are under the ignored `build/wind-state-probe/frozen3-wilder43/`
+fixture. A fresh baseline after retiring the shim, using the baseline-only
+probe source and a new fixture, repeated these observations and exited 0. Its
+result SHA-256 is `c14da59bbaf9540afade2930a1cc0b553cebce6fa0d903af4b1ffa1ed4edc45a`;
+the input attestation SHA-256 is
+`3afb39cc92c9e13932c41771ba4d330c87b7211f82de5ee41e796c8adbff1d7b`.
+The retained fixture is `build/wind-state-probe/frozen3-wilder43-retired-baseline/`.
+
+FrozenLib 3.0 with Wilder Wild 4.2.11 is an incompatible pair. An isolated
+three-JAR fixture exited 1 during startup: `WilderWildMixinPlugin.onLoad`
+raised `NoClassDefFoundError: net/frozenblock/lib/config/api/instance/Config`.
+The probe entrypoint did not run. Its console log and attestation are under
+`build/wind-state-probe/frozen3-wilder4211-negative/`. This startup failure
+does not establish how the pair would behave after additional dependencies.
+The mixed pair is not a supported deployment target.
+
+The production `frozenwind` mixin and its old exact gate were removed rather
+than extended to 3.0/4.3. This decision is limited to the original cloud
+extension failure: an isolated synthetic client probe is not a multiplayer,
+reconnect, dimension-change, or rendered-cloud test. If a new wind failure is
+reported, collect the exact installed artifacts and a runtime trace before
+adding another override.
+
+The fresh first-boot fixture logged FrozenLib errors while looking up several
+Wilder Wild and FrozenLib config entries; JSON5 config files were present by
+the end of the run. The client reached the menu and exited normally. The
+effect of those startup errors on gameplay has not been checked and is separate
+from the retired wind repair.
+
+After removal, `gradlew.bat test --no-daemon` passed 101 tests with zero
+failures, errors, or skips; `gradlew.bat build --no-daemon` and `git diff --check`
+passed. The built override JAR SHA-256 is
+`4962f4f2c29554c91849feb209a0399e073c4c850ae73bc881c2a9e9e0698672`;
+it contains no `frozenwind` class or mixin config. Independent deletion review
+found no dangling production references.
