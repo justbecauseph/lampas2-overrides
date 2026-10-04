@@ -199,6 +199,14 @@ public final class ResourcePatchRegistry {
 			"59cf59a1c1e86f9627361e1dcec3250b81d535c6e84ff7c3b2950d9b90f2efe4",
 			"lampas2-overrides/resource-patches/wilderwild/4.2.11-mc26.2/data/wilderwild/worldgen/configured_feature/stone_pool.json"
 		));
+		// 4.3 keeps the same radius-15 resource bytes and needs the same radius-14 repair.
+		register(new ResourcePatch(
+			"wilderwild",
+			"4.3",
+			"data/wilderwild/worldgen/configured_feature/stone_pool.json",
+			"59cf59a1c1e86f9627361e1dcec3250b81d535c6e84ff7c3b2950d9b90f2efe4",
+			"lampas2-overrides/resource-patches/wilderwild/4.2.11-mc26.2/data/wilderwild/worldgen/configured_feature/stone_pool.json"
+		));
 	}
 
 	private static void register(ResourcePatch patch) {

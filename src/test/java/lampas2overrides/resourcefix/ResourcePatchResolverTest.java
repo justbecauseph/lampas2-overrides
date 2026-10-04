@@ -43,7 +43,7 @@ public class ResourcePatchResolverTest {
 
 	@Test
 	void registryContainsAllTargetPatches() {
-		assertEquals(25, ResourcePatchRegistry.getAllPatches().size());
+		assertEquals(26, ResourcePatchRegistry.getAllPatches().size());
 
 		assertNotNull(ResourcePatchRegistry.findPatch("better_lib",
 			"data/minecraft/tags/point_of_interest_type/acquirable_job_site.json"));
@@ -59,6 +59,10 @@ public class ResourcePatchResolverTest {
 		assertNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", "data/formationsoverworld/loot_table/witch_tower/smithing.json"));
 		assertNotNull(ResourcePatchRegistry.findPatch("mr_grim_kingdomsloststructuresruins", "pack.mcmeta"));
 		assertNotNull(ResourcePatchRegistry.findPatch("wilderwild",
+			"data/wilderwild/worldgen/configured_feature/stone_pool.json"));
+		assertNotNull(ResourcePatchRegistry.findPatch("wilderwild", "4.3",
+			"data/wilderwild/worldgen/configured_feature/stone_pool.json"));
+		assertNull(ResourcePatchRegistry.findPatch("wilderwild", "4.3-mc26.2",
 			"data/wilderwild/worldgen/configured_feature/stone_pool.json"));
 	}
 
@@ -228,6 +232,34 @@ public class ResourcePatchResolverTest {
 	}
 
 	@Test
+	void appliesWilderWild43StonePoolPatchWithExactVersionAndHash() throws IOException {
+		String path = "data/wilderwild/worldgen/configured_feature/stone_pool.json";
+		byte[] original = readFixtureResource("upstream/wilderwild/4.3/" + path);
+		byte[] previousRelease = readFixtureResource("upstream/wilderwild/4.2.11-mc26.2/" + path);
+		assertArrayEquals(previousRelease, original, "Wilder Wild 4.3 retains the audited 4.2.11 resource bytes");
+		assertEquals("59cf59a1c1e86f9627361e1dcec3250b81d535c6e84ff7c3b2950d9b90f2efe4",
+			ResourcePatchResolver.sha256Hex(original));
+
+		ResourcePatch patch = ResourcePatchRegistry.findPatch("wilderwild", "4.3", path);
+		assertNotNull(patch);
+		assertEquals("4.3", patch.expectedVersion());
+		assertEquals("lampas2-overrides/resource-patches/wilderwild/4.2.11-mc26.2/data/wilderwild/worldgen/configured_feature/stone_pool.json",
+			patch.replacementPath());
+		IoSupplier<InputStream> patched = ResourcePatchResolver.resolve(
+			createMockModContainer("wilderwild", "4.3"),
+			path,
+			() -> new ByteArrayInputStream(original)
+		);
+		assertNotNull(patched);
+		try (InputStream in = patched.get()) {
+			String result = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+			assertEquals(14, JsonParser.parseString(result).getAsJsonObject()
+				.getAsJsonObject("config").getAsJsonObject("xz_radius")
+				.get("max_inclusive").getAsInt());
+		}
+	}
+
+	@Test
 	void leavesWilderWildStonePoolUntouchedForUnknownVersionOrHash() throws IOException {
 		byte[] original = readFixtureResource(
 			"upstream/wilderwild/4.2.11-mc26.2/data/wilderwild/worldgen/configured_feature/stone_pool.json");
@@ -246,6 +278,31 @@ public class ResourcePatchResolverTest {
 		assertNotNull(wrongHash);
 		try (InputStream in = wrongHash.get()) {
 			assertArrayEquals(tampered, in.readAllBytes());
+		}
+	}
+
+	@Test
+	void leavesWilderWild43StonePoolUntouchedForUnknownVersionOrHash() throws IOException {
+		String path = "data/wilderwild/worldgen/configured_feature/stone_pool.json";
+		byte[] original = readFixtureResource("upstream/wilderwild/4.3/" + path);
+		for (String unknownVersion : new String[] {"4.3.1", "4.3-mc26.2"}) {
+			assertNull(ResourcePatchResolver.resolve(
+				createMockModContainer("wilderwild", unknownVersion),
+				path,
+				() -> new ByteArrayInputStream(original)
+			), "Unknown Wilder Wild version must remain unpatched: " + unknownVersion);
+		}
+
+		byte[] tampered = original.clone();
+		tampered[0] = (byte) (tampered[0] ^ 1);
+		IoSupplier<InputStream> wrongHash = ResourcePatchResolver.resolve(
+			createMockModContainer("wilderwild", "4.3"),
+			path,
+			() -> new ByteArrayInputStream(tampered)
+		);
+		assertNotNull(wrongHash);
+		try (InputStream in = wrongHash.get()) {
+			assertArrayEquals(tampered, in.readAllBytes(), "A changed resource must pass through unchanged");
 		}
 	}
 
@@ -411,7 +468,9 @@ public class ResourcePatchResolverTest {
 			{"formationsoverworld-1.0.5a-mc1.21+.jar", "formationsoverworld", "1.0.5+a", "data/formationsoverworld/loot_table/stone_tower/smithing.json"},
 			{"formationsoverworld-1.0.5a-mc1.21+.jar", "formationsoverworld", "1.0.5+a", "data/formationsoverworld/loot_table/witch_tower/smithing.json"},
 			{"grim-kingdoms-lost-structures-ruins-2.0.3.jar", "mr_grim_kingdomsloststructuresruins", "2.0.3", "pack.mcmeta"},
-			{"WilderWild-4.2.11-mc26.2.jar", "wilderwild", "4.2.11-mc26.2", "data/wilderwild/worldgen/configured_feature/stone_pool.json"}
+			{"WilderWild-4.2.11-mc26.2.jar", "wilderwild", "4.2.11-mc26.2", "data/wilderwild/worldgen/configured_feature/stone_pool.json"},
+			{"WilderWild-4.3-mc26.2-fabric.jar", "wilderwild", "4.3", "data/wilderwild/worldgen/configured_feature/stone_pool.json",
+				"9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c"}
 		};
 
 		for (String[] check : jarChecks) {
@@ -423,8 +482,22 @@ public class ResourcePatchResolverTest {
 			ResourcePatch patch = ResourcePatchRegistry.findPatch(check[1], check[2], check[3]);
 			assertNotNull(patch, "Patch rule missing for " + check[1] + " : " + check[3]);
 			assertEquals(check[2], patch.expectedVersion());
+			if (check.length > 4) {
+				assertEquals(check[4], ResourcePatchResolver.sha256Hex(Files.readAllBytes(jarPath)),
+					"JAR fingerprint mismatch against installed artifact: " + check[0]);
+			}
 
 			try (ZipFile zf = new ZipFile(jarPath.toFile())) {
+				if (check.length > 4) {
+					ZipEntry metadataEntry = zf.getEntry("fabric.mod.json");
+					assertNotNull(metadataEntry, "fabric.mod.json not found in " + check[0]);
+					try (InputStream metadataStream = zf.getInputStream(metadataEntry)) {
+						JsonObject metadata = JsonParser.parseString(
+							new String(metadataStream.readAllBytes(), StandardCharsets.UTF_8)).getAsJsonObject();
+						assertEquals(check[1], metadata.get("id").getAsString());
+						assertEquals(check[2], metadata.get("version").getAsString());
+					}
+				}
 				ZipEntry entry = zf.getEntry(check[3]);
 				assertNotNull(entry, "Entry " + check[3] + " not found in " + check[0]);
 				try (InputStream is = zf.getInputStream(entry)) {

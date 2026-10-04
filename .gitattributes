@@ -7,5 +7,6 @@
 # These are Windows script files and should use crlf
 *.bat           text eol=crlf
 
-# Preserve the exact deployed upstream bytes used by the Wilder Wild SHA fixture.
+# Preserve the exact deployed upstream bytes used by the Wilder Wild SHA fixtures.
 /src/test/resources/upstream/wilderwild/4.2.11-mc26.2/data/wilderwild/worldgen/configured_feature/stone_pool.json -text
+/src/test/resources/upstream/wilderwild/4.3/data/wilderwild/worldgen/configured_feature/stone_pool.json -text
