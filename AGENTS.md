@@ -4,9 +4,10 @@ This repo is a Fabric mod for Minecraft 26.2 holding compatibility fixes between
 know about each other: the Figura ↔ ReplayMod avatar bridge, Figura avatars in Chatting's chat
 heads, Lootr item frames converted into Fast Item Frames blocks, Underground Village's stale loot data and 2.1.1 worldgen structure/pool defects,
 Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-activated threaded-worldgen
-entity-discard deadlock and missing dimension context, Visual Workbench tag reloads under
+entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
+Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
 Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, version-gated Incendium Legacy 5.5.0 and 5.5.1 tick-function optimizations, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files, POI tags, and loot tables (MVS, MNS, Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Better Lib). The first two
-features, Visual Workbench, Gravestones, Jade nameplates, and Jade Custom Name are client-only; the Custom Name space fix, Incendium datapacks, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
+features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, and Beautiful item models are client-only; the Custom Name space fix, Incendium datapacks, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -377,6 +378,10 @@ gravestones/
   GravestonesMixinPlugin    applies whenever Gravestones is present
   OwnedGraveRenderState     duck interface carrying ownership and block state across render phases
   mixin/                    suppresses death grave text and submits model glowing outline
+beautifulitems/
+  BeautifulItemsProfiles     independent exact mod ID/version/full-JAR-SHA profiles for both targets
+  BeautifulItemsMixinPlugin  gates each target without linking Minecraft client model classes
+  mixin/                     clears each target's REGISTERED_MODELS at the exact reload initializer HEAD
 incendium/
   IncendiumOptimization     fingerprints Incendium and registers version-specific built-in pack
   IncendiumCompatibility    version profiles and upstream-function fingerprint gate
@@ -457,3 +462,27 @@ pre-migrate DataVersion or bypass vanilla DFU. The resolver requires readable or
 binary NBT replacements. Provenance and paths are in `docs/evidence/grim-zero-enchantments.json`;
 `tools/repair_grim_zero_enchantments.py` reproduces/verifies assets using nbtlib 2.0.4.
 Full Minecraft NbtIo equality tests preserve all other fields. Live placement is unverified.
+
+## Beautiful item-model reload compatibility
+
+Beautiful Enchanted Books `6.0.0` and Beautiful Potions `2.0.1` create new Fabric
+`ExtraModelKey` instances during each `initialize(Set, ModelLoadingPlugin.Context)` call but keep
+the first key per item in their static `REGISTERED_MODELS` maps. The model resolver no longer
+recognizes those old keys after a resource reload. Each client mixin clears only its target's map at
+the HEAD of that exact overload, before upstream registers the current reload's keys.
+
+`BeautifulItemsProfiles` binds each target independently to its mod ID, exact metadata version, and
+full origin JAR SHA-256. It accepts only one readable regular path origin; absent mods, unexpected
+versions or hashes, non-path origins, unreadable files, and multiple origin paths fail closed. The
+Mixin plugin and profile helper contain no Minecraft client model references, and the optional mods
+are not build or runtime dependencies. `defaultRequire` stays `1` so a moved initializer stops
+startup when the exact supported artifact is selected.
+
+Gate, client-config, and injection contracts pass focused tests, and both installed class descriptors
+and registration bytecode were checked with `javap`. The exact-artifact isolated client probe
+reproduced the unpatched reload failure and verified repeated reload, selected-model removal,
+empty input, restoration, and controlled particle-sprite selection with the fix. The resolver uses
+synthetic stacks without world registry synchronization; full-pack behavior and visible inventory
+rendering remain unverified. See
+`docs/beautiful-items-reload.md` and `docs/evidence/beautiful-items-reload.json`; the probe runner is
+`tools/beautiful-items-probe/run.py`.

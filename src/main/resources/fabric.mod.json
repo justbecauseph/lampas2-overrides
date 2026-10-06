@@ -3,7 +3,7 @@
 	"id": "lampas2-overrides",
 	"version": "${version}",
 	"name": "Lampas2 Overrides",
-	"description": "Compatibility fixes for Figura, ReplayMod, Chatting, Lootr, Fast Item Frames, Better Lib, Underground Village, Additional Lanterns, Mob Filter, Incendium, Visual Workbench, Gravestones, Jade, Custom Name, and optional boat water masks.",
+	"description": "Compatibility fixes for Figura, ReplayMod, Chatting, Lootr, Fast Item Frames, Better Lib, Underground Village, Additional Lanterns, Mob Filter, Incendium, Visual Workbench, Gravestones, Jade, Custom Name, optional boat water masks, and optional beautiful item models.",
 	"authors": [
 		"justbecauseph"
 	],
@@ -29,6 +29,10 @@
 	"mixins": [
 		{
 			"config": "lampas2-overrides.boatmask.mixins.json",
+			"environment": "client"
+		},
+		{
+			"config": "lampas2-overrides.beautifulitems.mixins.json",
 			"environment": "client"
 		},
 		{
@@ -90,6 +94,8 @@
 		"java": ">=25"
 	},
 	"suggests": {
+		"beb": "*",
+		"beautiful_potions": "*",
 		"lootr": "*",
 		"fastitemframes": "*",
 		"better_lib": "*",

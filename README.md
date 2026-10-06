@@ -21,6 +21,7 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Bee and spawner structure DFU validation](#bee-and-spawner-structure-dfu-validation) | Exact Trek and Stoneholm fixtures | Verifies repaired bee inventories and zombie spawner payloads survive structure loading |
 | [Boat water-mask compatibility](#boat-water-mask-compatibility) | EMF 3.3.5 or 3.3.8 + audited boat providers | Restores the vanilla water mask for plain hulls when the selected Fresh Animations mask is incompatible |
 | [Better Lib demo villager suppression](#better-lib-demo-villager-suppression) | Better Lib | Suppresses hardcoded demo villager registration that causes RemapException registry sync disconnects |
+| [Beautiful item-model reloads](#beautiful-item-model-reloads) | Beautiful Enchanted Books 6.0.0 and/or Beautiful Potions 2.0.1 | Clears stale extra-model keys so each resource reload uses the keys registered for that reload |
 
 ## Plasmo Voice client shutdown
 
@@ -39,6 +40,30 @@ the mixin applied, an idle capture thread and started UDP event loop terminated,
 client exited normally. Full-pack multiplayer microphone use, add-on interaction, and
 disconnect/reconnect testing remain pending. See [verification evidence](docs/plasmo-shutdown.md).
 Upstream report: [plasmoapp/plasmo-voice#539](https://github.com/plasmoapp/plasmo-voice/issues/539).
+
+## Beautiful item-model reloads
+
+Beautiful Enchanted Books **6.0.0** and Beautiful Potions **2.0.1** keep their Fabric extra-model
+keys in a static `REGISTERED_MODELS` map. Each resource reload creates new keys, while
+`putIfAbsent` leaves the map pointing at keys from the earlier reload. Model resolution then asks
+for a key that the current `ModelManager` does not know and receives `null`.
+
+The client-only mixins clear that map at the start of each mod's exact
+`initialize(Set, ModelLoadingPlugin.Context)` overload. Each mixin has an independent gate requiring
+the matching mod ID, exact metadata version, and full installed-JAR SHA-256. Missing, unreadable,
+multi-path, or changed artifacts leave only that target's mixin disabled.
+
+Exact-artifact isolated client probes reproduce and repair the reload failure. Without the override,
+the initial load resolved all 695 book and 828 potion keys, then a resource reload resolved none of
+them. With the override, two successive reloads resolved all 695 and 828 keys. A resource-pack check
+removed the selected Sharpness and Swiftness extra models as expected, and removing that pack restored
+all keys. Blocking all matching models cleared both maps to zero, then restoration repopulated them.
+Controlled item-resolver checks preserved the custom book/potion particle sprites after reload and
+restoration. Both mixins appeared in the client log and both clients exited normally.
+
+The resolver uses synthetic stacks without world registry synchronization. Full-pack behavior and visible
+inventory rendering remain unverified. See [reload compatibility evidence](docs/beautiful-items-reload.md),
+the [probe runner](tools/beautiful-items-probe/run.py), and [recorded probe data](docs/evidence/beautiful-items-reload.json).
 
 ## Mob Filter worldgen safety and dimension context
 

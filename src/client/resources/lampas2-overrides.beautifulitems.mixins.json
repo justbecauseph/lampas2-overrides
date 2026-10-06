@@ -1,0 +1,8 @@
+{
+	"required": true,
+	"package": "lampas2overrides.client.beautifulitems.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.client.beautifulitems.BeautifulItemsMixinPlugin",
+	"client": ["BeautifulEnchantedBooksFabricMixin", "BeautifulPotionsFabricMixin"],
+	"injectors": { "defaultRequire": 1 }
+}

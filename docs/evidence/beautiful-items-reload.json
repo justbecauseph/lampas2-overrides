@@ -1,0 +1,396 @@
+{
+  "schema_version": 1,
+  "feature": "Beautiful item-model resource reload compatibility",
+  "date": "2026-10-06",
+  "runtime": {
+    "minecraft": "26.2",
+    "client_jar_sha256": "40896ee9f1e2bec3c934daac7e93d41e9e3d9c2f8ae0ca366d52ffbfd1afa290",
+    "fabric_loader": "0.19.5",
+    "sponge_mixin": {
+      "version": "0.17.4+mixin.0.8.7",
+      "sha256": "1f0ae44db7295f8626f33b1dc0ad7f043d8954a8d6847247875fcc5dfcecc934"
+    }
+  },
+  "targets": {
+    "beb": {
+      "filename": "BEB-Fabric-26.1.2-6.0.0.jar",
+      "sha256": "08819eb4b0773d389b850dad7cc0c2134a1fcb5d3693d28e03cc8c309181fa8f",
+      "size_bytes": 1617542,
+      "mod_id": "beb",
+      "mod_version": "6.0.0"
+    },
+    "potions": {
+      "filename": "BTP-Fabric-26.1.2-2.0.1.jar",
+      "sha256": "53d132f68b9c97105699e3de3542ad9f3ef5ec4e4df5e147f00e5f8510e33a82",
+      "size_bytes": 1860484,
+      "mod_id": "beautiful_potions",
+      "mod_version": "2.0.1"
+    },
+    "fabric_api": {
+      "filename": "fabric-api-0.161.0+26.2.jar",
+      "sha256": "e5b858ceb13290c274e31cb888ff5a1a40cb91067e7ffab0b5b775aec51e216a",
+      "size_bytes": 2566123,
+      "mod_id": "fabric-api",
+      "mod_version": "0.161.0+26.2"
+    }
+  },
+  "runs": [
+    {
+      "run_id": "20261006T053439Z-d7e9ca4b9b",
+      "mode": "baseline",
+      "status": "PASS",
+      "client_exit_code_verified_by_runner": 0,
+      "raw_evidence_path": "build/beautiful-items-probe/20261006T053439Z-d7e9ca4b9b",
+      "fingerprints": {
+        "inputs.json": "47ccf1307c37ba3ad74a8317485b3dcbb769122ce7f3cc7e0c2221429c4c286d",
+        "launch-arguments.json": "4c1e341b2f18708aeb7aa729ae7baf05625c35eb2e82fb3241f836b6b91ab17a",
+        "result.txt": "d1e20868d385e68c80ebb8e9c00e4b1b9f378660d5ccb214f51188cd6f01bf05",
+        "client-process.log": "4d92c15a1566021cf6fbb4525a59766945825327aa6821d0a4e7147c17f4fcfd"
+      },
+      "initial_wait_ticks": 29,
+      "fixture_mods": [
+        {
+          "filename": "beautiful-items-probe.jar",
+          "sha256": "791b7481b358e8009bcd82ce5604525538ffdd13a154f77dac0d63bd5737396e",
+          "mod_id": "beautiful-items-probe",
+          "mod_version": "1.0.0"
+        },
+        {
+          "filename": "BEB-Fabric-26.1.2-6.0.0.jar",
+          "sha256": "08819eb4b0773d389b850dad7cc0c2134a1fcb5d3693d28e03cc8c309181fa8f",
+          "mod_id": "beb",
+          "mod_version": "6.0.0"
+        },
+        {
+          "filename": "BTP-Fabric-26.1.2-2.0.1.jar",
+          "sha256": "53d132f68b9c97105699e3de3542ad9f3ef5ec4e4df5e147f00e5f8510e33a82",
+          "mod_id": "beautiful_potions",
+          "mod_version": "2.0.1"
+        },
+        {
+          "filename": "fabric-api-0.161.0+26.2.jar",
+          "sha256": "e5b858ceb13290c274e31cb888ff5a1a40cb91067e7ffab0b5b775aec51e216a",
+          "mod_id": "fabric-api",
+          "mod_version": "0.161.0+26.2"
+        }
+      ],
+      "models": {
+        "beb": {
+          "initial": {
+            "models": 695,
+            "hits": 695,
+            "misses": 0,
+            "selected_key_present": true
+          },
+          "reload1": {
+            "models": 695,
+            "hits": 0,
+            "misses": 695,
+            "selected_key_present": true
+          },
+          "reload2": {
+            "models": 695,
+            "hits": 0,
+            "misses": 695,
+            "selected_key_present": true
+          },
+          "filtered": {
+            "models": 695,
+            "hits": 0,
+            "misses": 695,
+            "selected_key_present": true
+          },
+          "empty": {
+            "models": 695,
+            "hits": 0,
+            "misses": 695,
+            "selected_key_present": true
+          },
+          "restored": {
+            "models": 695,
+            "hits": 0,
+            "misses": 695,
+            "selected_key_present": true
+          }
+        },
+        "potions": {
+          "initial": {
+            "models": 828,
+            "hits": 828,
+            "misses": 0,
+            "selected_key_present": true
+          },
+          "reload1": {
+            "models": 828,
+            "hits": 0,
+            "misses": 828,
+            "selected_key_present": true
+          },
+          "reload2": {
+            "models": 828,
+            "hits": 0,
+            "misses": 828,
+            "selected_key_present": true
+          },
+          "filtered": {
+            "models": 828,
+            "hits": 0,
+            "misses": 828,
+            "selected_key_present": true
+          },
+          "empty": {
+            "models": 828,
+            "hits": 0,
+            "misses": 828,
+            "selected_key_present": true
+          },
+          "restored": {
+            "models": 828,
+            "hits": 0,
+            "misses": 828,
+            "selected_key_present": true
+          }
+        }
+      },
+      "resolver": {
+        "resolver.fixtureItem.minecraft:enchanted_book.components": "bound-empty-map",
+        "resolver.fixtureItem.minecraft:enchanted_book.worldSynchronization": "none",
+        "resolver.fixtureItem.minecraft:potion.components": "bound-empty-map",
+        "resolver.fixtureItem.minecraft:potion.worldSynchronization": "none",
+        "resolver.initial.sharpnessHolder": "synthetic:minecraft:sharpness",
+        "resolver.initial.sharpnessHolderComponents": "empty",
+        "resolver.initial.fixtureStackInputs": "ITEM_MODEL=minecraft:enchanted_book,minecraft:potion;STORED_ENCHANTMENTS=synthetic:sharpness;POTION_CONTENTS=swiftness",
+        "resolver.initial.worldSynchronization": "none; isolated title-screen fixture",
+        "resolver.initial.bebParticleSprite": "minecraft:item/enchanted_book/sharpness",
+        "resolver.initial.potionsParticleSprite": "minecraft:item/potion/swiftness/normal",
+        "resolver.initial.expectedBebParticleSprite": "minecraft:item/enchanted_book/sharpness",
+        "resolver.initial.expectedPotionsParticleSprite": "minecraft:item/potion/swiftness/normal",
+        "resolver.reload1.sharpnessHolder": "synthetic:minecraft:sharpness",
+        "resolver.reload1.sharpnessHolderComponents": "empty",
+        "resolver.reload1.fixtureStackInputs": "ITEM_MODEL=minecraft:enchanted_book,minecraft:potion;STORED_ENCHANTMENTS=synthetic:sharpness;POTION_CONTENTS=swiftness",
+        "resolver.reload1.worldSynchronization": "none; isolated title-screen fixture",
+        "resolver.reload1.bebParticleSprite": "minecraft:item/enchanted_book",
+        "resolver.reload1.potionsParticleSprite": "minecraft:item/potion_overlay",
+        "resolver.reload1.expectedBebParticleSprite": "minecraft:item/enchanted_book",
+        "resolver.reload1.expectedPotionsParticleSprite": "minecraft:item/potion_overlay",
+        "resolver.reload2.sharpnessHolder": "synthetic:minecraft:sharpness",
+        "resolver.reload2.sharpnessHolderComponents": "empty",
+        "resolver.reload2.fixtureStackInputs": "ITEM_MODEL=minecraft:enchanted_book,minecraft:potion;STORED_ENCHANTMENTS=synthetic:sharpness;POTION_CONTENTS=swiftness",
+        "resolver.reload2.worldSynchronization": "none; isolated title-screen fixture",
+        "resolver.reload2.bebParticleSprite": "minecraft:item/enchanted_book",
+        "resolver.reload2.potionsParticleSprite": "minecraft:item/potion_overlay",
+        "resolver.reload2.expectedBebParticleSprite": "minecraft:item/enchanted_book",
+        "resolver.reload2.expectedPotionsParticleSprite": "minecraft:item/potion_overlay",
+        "resolver.filtered.sharpnessHolder": "synthetic:minecraft:sharpness",
+        "resolver.filtered.sharpnessHolderComponents": "empty",
+        "resolver.filtered.fixtureStackInputs": "ITEM_MODEL=minecraft:enchanted_book,minecraft:potion;STORED_ENCHANTMENTS=synthetic:sharpness;POTION_CONTENTS=swiftness",
+        "resolver.filtered.worldSynchronization": "none; isolated title-screen fixture",
+        "resolver.filtered.bebParticleSprite": "minecraft:item/enchanted_book",
+        "resolver.filtered.potionsParticleSprite": "minecraft:item/potion_overlay",
+        "resolver.filtered.expectedBebParticleSprite": "minecraft:item/enchanted_book",
+        "resolver.filtered.expectedPotionsParticleSprite": "minecraft:item/potion_overlay",
+        "resolver.empty.skipped": "all item model resources are blocked; no baked particle material exists",
+        "resolver.restored.sharpnessHolder": "synthetic:minecraft:sharpness",
+        "resolver.restored.sharpnessHolderComponents": "empty",
+        "resolver.restored.fixtureStackInputs": "ITEM_MODEL=minecraft:enchanted_book,minecraft:potion;STORED_ENCHANTMENTS=synthetic:sharpness;POTION_CONTENTS=swiftness",
+        "resolver.restored.worldSynchronization": "none; isolated title-screen fixture",
+        "resolver.restored.bebParticleSprite": "minecraft:item/enchanted_book",
+        "resolver.restored.potionsParticleSprite": "minecraft:item/potion_overlay",
+        "resolver.restored.expectedBebParticleSprite": "minecraft:item/enchanted_book",
+        "resolver.restored.expectedPotionsParticleSprite": "minecraft:item/potion_overlay"
+      }
+    },
+    {
+      "run_id": "20261006T053345Z-310cfe8b18",
+      "mode": "patched",
+      "status": "PASS",
+      "client_exit_code_verified_by_runner": 0,
+      "raw_evidence_path": "build/beautiful-items-probe/20261006T053345Z-310cfe8b18",
+      "fingerprints": {
+        "inputs.json": "60381d63040b18087f5645e1d7735864def28a82c6e1fa08964f481f08f9fe46",
+        "launch-arguments.json": "5d51160fafb95945b9a2cee158a4aad9ecae424b660eb144b40f938b107e31a6",
+        "result.txt": "abda5ee2f655afc5adccee0d9b2c406a81b7598916dd5f28df068e65fe133bb8",
+        "client-process.log": "ec47c14801279df028c698648a4c4b7aa25ee9bd58472a6e4cae0c294a2ae918"
+      },
+      "initial_wait_ticks": 28,
+      "fixture_mods": [
+        {
+          "filename": "beautiful-items-probe.jar",
+          "sha256": "9b2263af1119ce6d95ec5c32984d117aefeaa016d29caab3d3326cd310194124",
+          "mod_id": "beautiful-items-probe",
+          "mod_version": "1.0.0"
+        },
+        {
+          "filename": "BEB-Fabric-26.1.2-6.0.0.jar",
+          "sha256": "08819eb4b0773d389b850dad7cc0c2134a1fcb5d3693d28e03cc8c309181fa8f",
+          "mod_id": "beb",
+          "mod_version": "6.0.0"
+        },
+        {
+          "filename": "BTP-Fabric-26.1.2-2.0.1.jar",
+          "sha256": "53d132f68b9c97105699e3de3542ad9f3ef5ec4e4df5e147f00e5f8510e33a82",
+          "mod_id": "beautiful_potions",
+          "mod_version": "2.0.1"
+        },
+        {
+          "filename": "fabric-api-0.161.0+26.2.jar",
+          "sha256": "e5b858ceb13290c274e31cb888ff5a1a40cb91067e7ffab0b5b775aec51e216a",
+          "mod_id": "fabric-api",
+          "mod_version": "0.161.0+26.2"
+        },
+        {
+          "filename": "lampas2-overrides-1.0.0.jar",
+          "sha256": "581569dd77d722b7d7bfbc87853edaf9df96e10536405721c3869d6dd9f413e4",
+          "mod_id": "lampas2-overrides",
+          "mod_version": "1.0.0"
+        }
+      ],
+      "models": {
+        "beb": {
+          "initial": {
+            "models": 695,
+            "hits": 695,
+            "misses": 0,
+            "selected_key_present": true
+          },
+          "reload1": {
+            "models": 695,
+            "hits": 695,
+            "misses": 0,
+            "selected_key_present": true
+          },
+          "reload2": {
+            "models": 695,
+            "hits": 695,
+            "misses": 0,
+            "selected_key_present": true
+          },
+          "filtered": {
+            "models": 694,
+            "hits": 694,
+            "misses": 0,
+            "selected_key_present": false
+          },
+          "empty": {
+            "models": 0,
+            "hits": 0,
+            "misses": 0,
+            "selected_key_present": false
+          },
+          "restored": {
+            "models": 695,
+            "hits": 695,
+            "misses": 0,
+            "selected_key_present": true
+          }
+        },
+        "potions": {
+          "initial": {
+            "models": 828,
+            "hits": 828,
+            "misses": 0,
+            "selected_key_present": true
+          },
+          "reload1": {
+            "models": 828,
+            "hits": 828,
+            "misses": 0,
+            "selected_key_present": true
+          },
+          "reload2": {
+            "models": 828,
+            "hits": 828,
+            "misses": 0,
+            "selected_key_present": true
+          },
+          "filtered": {
+            "models": 827,
+            "hits": 827,
+            "misses": 0,
+            "selected_key_present": false
+          },
+          "empty": {
+            "models": 0,
+            "hits": 0,
+            "misses": 0,
+            "selected_key_present": false
+          },
+          "restored": {
+            "models": 828,
+            "hits": 828,
+            "misses": 0,
+            "selected_key_present": true
+          }
+        }
+      },
+      "resolver": {
+        "resolver.fixtureItem.minecraft:enchanted_book.components": "bound-empty-map",
+        "resolver.fixtureItem.minecraft:enchanted_book.worldSynchronization": "none",
+        "resolver.fixtureItem.minecraft:potion.components": "bound-empty-map",
+        "resolver.fixtureItem.minecraft:potion.worldSynchronization": "none",
+        "resolver.initial.sharpnessHolder": "synthetic:minecraft:sharpness",
+        "resolver.initial.sharpnessHolderComponents": "empty",
+        "resolver.initial.fixtureStackInputs": "ITEM_MODEL=minecraft:enchanted_book,minecraft:potion;STORED_ENCHANTMENTS=synthetic:sharpness;POTION_CONTENTS=swiftness",
+        "resolver.initial.worldSynchronization": "none; isolated title-screen fixture",
+        "resolver.initial.bebParticleSprite": "minecraft:item/enchanted_book/sharpness",
+        "resolver.initial.potionsParticleSprite": "minecraft:item/potion/swiftness/normal",
+        "resolver.initial.expectedBebParticleSprite": "minecraft:item/enchanted_book/sharpness",
+        "resolver.initial.expectedPotionsParticleSprite": "minecraft:item/potion/swiftness/normal",
+        "resolver.reload1.sharpnessHolder": "synthetic:minecraft:sharpness",
+        "resolver.reload1.sharpnessHolderComponents": "empty",
+        "resolver.reload1.fixtureStackInputs": "ITEM_MODEL=minecraft:enchanted_book,minecraft:potion;STORED_ENCHANTMENTS=synthetic:sharpness;POTION_CONTENTS=swiftness",
+        "resolver.reload1.worldSynchronization": "none; isolated title-screen fixture",
+        "resolver.reload1.bebParticleSprite": "minecraft:item/enchanted_book/sharpness",
+        "resolver.reload1.potionsParticleSprite": "minecraft:item/potion/swiftness/normal",
+        "resolver.reload1.expectedBebParticleSprite": "minecraft:item/enchanted_book/sharpness",
+        "resolver.reload1.expectedPotionsParticleSprite": "minecraft:item/potion/swiftness/normal",
+        "resolver.reload2.sharpnessHolder": "synthetic:minecraft:sharpness",
+        "resolver.reload2.sharpnessHolderComponents": "empty",
+        "resolver.reload2.fixtureStackInputs": "ITEM_MODEL=minecraft:enchanted_book,minecraft:potion;STORED_ENCHANTMENTS=synthetic:sharpness;POTION_CONTENTS=swiftness",
+        "resolver.reload2.worldSynchronization": "none; isolated title-screen fixture",
+        "resolver.reload2.bebParticleSprite": "minecraft:item/enchanted_book/sharpness",
+        "resolver.reload2.potionsParticleSprite": "minecraft:item/potion/swiftness/normal",
+        "resolver.reload2.expectedBebParticleSprite": "minecraft:item/enchanted_book/sharpness",
+        "resolver.reload2.expectedPotionsParticleSprite": "minecraft:item/potion/swiftness/normal",
+        "resolver.filtered.sharpnessHolder": "synthetic:minecraft:sharpness",
+        "resolver.filtered.sharpnessHolderComponents": "empty",
+        "resolver.filtered.fixtureStackInputs": "ITEM_MODEL=minecraft:enchanted_book,minecraft:potion;STORED_ENCHANTMENTS=synthetic:sharpness;POTION_CONTENTS=swiftness",
+        "resolver.filtered.worldSynchronization": "none; isolated title-screen fixture",
+        "resolver.filtered.bebParticleSprite": "minecraft:item/enchanted_book",
+        "resolver.filtered.potionsParticleSprite": "minecraft:item/potion_overlay",
+        "resolver.filtered.expectedBebParticleSprite": "minecraft:item/enchanted_book",
+        "resolver.filtered.expectedPotionsParticleSprite": "minecraft:item/potion_overlay",
+        "resolver.empty.skipped": "all item model resources are blocked; no baked particle material exists",
+        "resolver.restored.sharpnessHolder": "synthetic:minecraft:sharpness",
+        "resolver.restored.sharpnessHolderComponents": "empty",
+        "resolver.restored.fixtureStackInputs": "ITEM_MODEL=minecraft:enchanted_book,minecraft:potion;STORED_ENCHANTMENTS=synthetic:sharpness;POTION_CONTENTS=swiftness",
+        "resolver.restored.worldSynchronization": "none; isolated title-screen fixture",
+        "resolver.restored.bebParticleSprite": "minecraft:item/enchanted_book/sharpness",
+        "resolver.restored.potionsParticleSprite": "minecraft:item/potion/swiftness/normal",
+        "resolver.restored.expectedBebParticleSprite": "minecraft:item/enchanted_book/sharpness",
+        "resolver.restored.expectedPotionsParticleSprite": "minecraft:item/potion/swiftness/normal"
+      },
+      "override_sha256": "581569dd77d722b7d7bfbc87853edaf9df96e10536405721c3869d6dd9f413e4",
+      "mixin_application": [
+        "[13:33:53] [Render thread/INFO]: Mixing BeautifulEnchantedBooksFabricMixin from lampas2-overrides.beautifulitems.mixins.json into com.cerbon.beb.fabric.BeautifulEnchantedBooksFabric",
+        "[13:33:53] [Render thread/INFO]: Mixing BeautifulPotionsFabricMixin from lampas2-overrides.beautifulitems.mixins.json into com.cerbon.beautiful_potions.fabric.BeautifulPotionsFabric"
+      ],
+      "transformed_class_sha256": {
+        "com/cerbon/beb/fabric/BeautifulEnchantedBooksFabric.class": "9d54e69d0710ff368b8de61a58491a78e547d04ffd3efd20b04a949c2ea1bd50",
+        "com/cerbon/beautiful_potions/fabric/BeautifulPotionsFabric.class": "4e27fc39251920cc8ee7b1fa61b1dcf1cad95d066af5f711cab405e0be5c8780"
+      }
+    }
+  ],
+  "reproduction": {
+    "runner": "tools/beautiful-items-probe/run.py",
+    "probe": "tools/beautiful-items-probe/BeautifulItemsProbe.java",
+    "readme": "tools/beautiful-items-probe/README.md"
+  },
+  "verification_limits": [
+    "Isolated production client; full-pack gameplay and live installed instance are unverified.",
+    "Resolver particle-sprite selection does not establish visible inventory, held-item, or shader rendering.",
+    "Controlled stacks use empty fixture item prototypes with explicit ITEM_MODEL and enchantment/potion contents; Sharpness holder is synthetic and no world registry synchronization occurs.",
+    "The empty stage blocks all item models and deliberately omits particle-sprite checks.",
+    "Vendor JARs were preserved; no install, pack staging, deployment, or server restart."
+  ]
+}
