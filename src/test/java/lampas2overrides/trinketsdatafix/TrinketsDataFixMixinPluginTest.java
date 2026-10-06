@@ -8,6 +8,16 @@ final class TrinketsDataFixMixinPluginTest {
 
 	@Test void acceptsAuditedVersionsAndHash() {
 		assertTrue(TrinketsDataFixMixinPlugin.matches("26.2", "4.1.0+26.2", SHA));
+		assertEquals(TrinketsSchemaRepair.Profile.V4_1_0,
+			TrinketsDataFixMixinPlugin.profileFor("26.2", "4.1.0+26.2", SHA));
+	}
+
+	@Test void acceptsCurrentArtifactOnlyWithItsOwnExactHash() {
+		assertTrue(TrinketsDataFixMixinPlugin.matches("26.2", "4.1.1+26.2",
+			TrinketsDataFixMixinPlugin.CURRENT_CLASS_SHA256));
+		assertEquals(TrinketsSchemaRepair.Profile.V4_1_1,
+			TrinketsDataFixMixinPlugin.profileFor("26.2", "4.1.1+26.2",
+				TrinketsDataFixMixinPlugin.CURRENT_CLASS_SHA256));
 	}
 
 	@Test void rejectsAbsentOrNullInputs() {
@@ -20,6 +30,10 @@ final class TrinketsDataFixMixinPluginTest {
 		assertFalse(TrinketsDataFixMixinPlugin.matches("26.20", "4.1.0+26.2", SHA));
 		assertFalse(TrinketsDataFixMixinPlugin.matches("26.2-pre", "4.1.0+26.2", SHA));
 		assertFalse(TrinketsDataFixMixinPlugin.matches("26.2", "4.1.1+26.2", SHA));
+		assertFalse(TrinketsDataFixMixinPlugin.matches("26.2", "4.1.0+26.2",
+			TrinketsDataFixMixinPlugin.CURRENT_CLASS_SHA256));
+		assertFalse(TrinketsDataFixMixinPlugin.matches("26.2", "4.1.1+26.2", SHA));
+		assertFalse(TrinketsDataFixMixinPlugin.matches("26.2", "4.1.1+26.2", "deadbeef"));
 		assertFalse(TrinketsDataFixMixinPlugin.matches("26.2", "4.1.0+26.2", "deadbeef"));
 	}
 
@@ -29,5 +43,7 @@ final class TrinketsDataFixMixinPluginTest {
 			java.nio.charset.StandardCharsets.UTF_8);
 		assertTrue(manifest.contains("\"4.1.0+26.2\""));
 		assertTrue(manifest.contains(TrinketsDataFixMixinPlugin.EXPECTED_CLASS_SHA256));
+		assertTrue(manifest.contains("\"4.1.1+26.2\""));
+		assertTrue(manifest.contains(TrinketsDataFixMixinPlugin.CURRENT_CLASS_SHA256));
 	}
 }

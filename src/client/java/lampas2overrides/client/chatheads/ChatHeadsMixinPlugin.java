@@ -22,7 +22,11 @@ public final class ChatHeadsMixinPlugin implements IMixinConfigPlugin {
 	@Override
 	public void onLoad(String mixinPackage) {
 		FabricLoader loader = FabricLoader.getInstance();
-		apply = loader.isModLoaded("figura") && loader.isModLoaded("chatting");
+		apply = shouldApply(loader.isModLoaded("figura"), loader.isModLoaded("chatting"));
+	}
+
+	static boolean shouldApply(boolean figuraLoaded, boolean chattingLoaded) {
+		return figuraLoaded && chattingLoaded;
 	}
 
 	@Override

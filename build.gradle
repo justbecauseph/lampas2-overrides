@@ -41,6 +41,8 @@ dependencies {
 	// The upstream bytecode contract test reads MixinService.class at test runtime;
 	// this test-only dependency is never included in the published mod jar.
 	testRuntimeOnly "maven.modrinth:gRn1FzwR:${project.mob_filter_version}"
+	// Reflect the audited current schema in regression tests without bundling Trinkets.
+	testRuntimeOnly "maven.modrinth:XaT8sLP6:YH8OYfzQ"
 	// ASM inspects the compiled mixin contract without loading optional mod classes.
 	testImplementation "org.ow2.asm:asm:9.10.1"
 	compileOnly "maven.modrinth:plasmo-voice:${project.plasmo_voice_version}"

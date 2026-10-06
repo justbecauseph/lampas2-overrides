@@ -14,12 +14,12 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Visual Workbench tag rebinding](#visual-workbench-tag-rebinding) | Visual Workbench + Puzzles Lib | Prevents replay loading and tag reload crashes from stale Visual Workbench tags |
 | [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.0, 5.5.1 | Removes a redundant 20 Hz entity-ID scan and throttles living-mob initialization |
 | [Gravestones death inscription and glow](#gravestones-death-inscription-and-glow) | Gravestones | Suppresses technical death grave text and renders a glowing outline only on your own graves |
-| [Jade nameplates and Custom Name](#jade-nameplates-and-custom-name) | Jade (+ Custom Name) | Suppresses vanilla in-world entity/player nameplates and syncs Custom Name player display names into Jade |
+| [Jade nameplates and Custom Name](#jade-nameplates-and-custom-name) | Client Jade; server TAB name sync | Suppresses vanilla in-world entity/player nameplates and shows server-synced player display names in Jade |
 | [Custom Name multi-word names](#custom-name-multi-word-names) | Custom Name 0.4.4-26.2 | Permits spaces in nickname, prefix, and suffix commands for non-operators |
 | [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | MVS, MNS, Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Better Lib | Transparently repairs malformed `pack.mcmeta` formats and POI tags at runtime |
 | [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.2.11-mc26.2 or 4.3 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
 | [Bee and spawner structure DFU validation](#bee-and-spawner-structure-dfu-validation) | Exact Trek and Stoneholm fixtures | Verifies repaired bee inventories and zombie spawner payloads survive structure loading |
-| [Boat water-mask compatibility](#boat-water-mask-compatibility) | EMF 3.3.5 or 3.3.8 + audited boat providers | Restores the vanilla water mask for plain hulls when the selected Fresh Animations mask is incompatible |
+| [Boat water-mask compatibility](#boat-water-mask-compatibility) | EMF 3.3.5, 3.3.8 or 3.3.11 + audited boat providers | Restores the vanilla water mask for plain hulls when the selected Fresh Animations mask is incompatible |
 | [Better Lib demo villager suppression](#better-lib-demo-villager-suppression) | Better Lib | Suppresses hardcoded demo villager registration that causes RemapException registry sync disconnects |
 | [Beautiful item-model reloads](#beautiful-item-model-reloads) | Beautiful Enchanted Books 6.0.0 and/or Beautiful Potions 2.0.1 | Clears stale extra-model keys so each resource reload uses the keys registered for that reload |
 
@@ -138,9 +138,9 @@ than floating vanilla world nameplates:
   does not rely on entity nameplates and continues to render uninterrupted.
 - **Fail-safe**: When Jade is not installed, the mixin is disabled and vanilla nameplates render normally.
 
-### 2. Jade ↔ Custom Name bridge (gated on `jade` + `eclipsescustomname`)
-When both Jade and Custom Name are present, Jade resolves player titles using Custom Name's synced
-player display names instead of the plain client `Player#getDisplayName()`:
+### 2. Jade ↔ Custom Name bridge (gated on client `jade`)
+Jade resolves player titles using the server-synced TAB display name. Custom Name runs on the
+server; the client bridge needs only Jade and the standard player-info packet:
 - **Data flow**:
   ```text
   Custom Name (server)
@@ -258,10 +258,10 @@ missing-extension failure was observed in this probe. See the
 
 ## Boat water-mask compatibility
 
-EMF 3.3.5 and 3.3.8 can replace Minecraft's shared boat water-patch layer with the Fresh Animations
+EMF 3.3.5, 3.3.8 and 3.3.11 can replace Minecraft's shared boat water-patch layer with the Fresh Animations
 `assets/minecraft/optifine/cem/boat_patch.jem` model. That model's animation expects `var.base_*`
 values supplied by Fresh Animations hull models. Plain hulls from the audited Pyrite 0.18.3+26.2,
-Promenade 5.6.0, Wilder Wild 4.2.11-mc26.2, BetterEnd 26.201.2, and BetterNether 26.201.2
+Promenade 5.6.0, Wilder Wild 4.2.11-mc26.2 or the exact audited 4.3 artifact, BetterEnd 26.201.2, and BetterNether 26.201.2
 providers do not supply those values.
 
 The client-only compatibility hook runs at the end of each `BoatRenderer` construction. It checks
@@ -272,27 +272,31 @@ Custom EMF hulls or animations, disabled or different resource packs, absent or 
 the BetterEnd/BetterNether `wover-item` companion mismatch, and unlisted boat layers remain
 untouched. The explicit provider list and verification limits are recorded in
 [docs/boat-water-mask.md](docs/boat-water-mask.md). The exact EMF profile pairs are recorded in
-[the focused 3.3.8 evidence](docs/evidence/emf-boat-water-mask-3.3.8.json).
+[the focused 3.3.8 evidence](docs/evidence/emf-boat-water-mask-3.3.8.json) and the current-pipeline
+probe evidence linked from the feature document.
 
-The isolated probe requires explicit artifact identity. For example:
+The isolated probe verifies artifact identities from the audited pipeline inventory:
 
 ```powershell
-./tools/boat-water-mask-probe/run.ps1 -Strict `
-  -EmfArtifactPath C:/path/entity_model_features-3.3.8-26.2-fabric.jar `
-  -EmfVersion 3.3.8 `
-  -EmfSha256 714686cefe56a7e46fa1e13ecdeddcb55ddfbb9715ae5b1ffd7573c1928d9fdd
+./tools/boat-water-mask-probe/run.ps1 -Mode baseline -Strict `
+  -InventoryPath build/pipeline-validation-2026-10-06/inventory.json
+./tools/boat-water-mask-probe/run.ps1 -Mode patched -Strict `
+  -InventoryPath build/pipeline-validation-2026-10-06/inventory.json `
+  -OverrideArtifactPath build/libs/lampas2-overrides-1.0.0.jar
 ```
 
-The runner verifies the selected JAR's metadata and SHA-256 before creating the fixture,
-preserves previous fixture evidence, discovers the installed Biolith artifact, and uses
+The runner verifies selected JAR metadata and SHA-256 before creating each fresh fixture,
+preserves prior run evidence, discovers Biolith through the inventory, and uses
 fixture-only FrozenLib and shutdown guards. The guards do not affect the installed client.
-The accepted isolated validation covers four strict reload stages plus baseline and patched
+The earlier EMF 3.3.8 isolated validation covers four strict reload stages plus baseline and patched
 shader-off and shader-on visual runs; see the focused evidence for result, log, input,
 override, harness, and shader hashes. This evidence does not establish pack staging,
 deployment, or behavior in the live installed instance.
 Manual review found rectangular baseline water transparency and continuous candidate water;
 shader-on logs had nonfatal GTAO option warnings but no invalid-pack or fallback messages.
 Mounted rowing and turning covered vanilla oak only.
+Current EMF 3.3.11 coverage is checked separately against the pipeline artifact hashes; earlier
+visual and movement observations do not establish rendering for this newer artifact.
 
 ## Additional Lanterns chunk loading
 
@@ -386,7 +390,7 @@ Live testing confirmed conversion, per-player looting and Lootr refresh behavior
 takes their item, the converted frame renders empty for that player; refreshing it through Lootr
 repopulates it, and its Lootr identity and properties remain intact.
 
-The bridge is compiled against Lootr 1.24.39.122. Converted frames delegate Lootr's random
+The bridge is compiled against Lootr 1.24.41.124 and Puzzles Lib 26.2.4. Converted frames delegate Lootr's random
 tick-scheduling offset to their existing per-instance state, so the value remains stable while the
 frame instance is live.
 
@@ -398,9 +402,14 @@ already substitutes its avatars for skin faces in the tab list and the permissio
 `Avatar#renderPortrait`; this extends the same treatment to chat, so a chat head matches the face
 Figura draws everywhere else.
 
-Both of Chatting's drawing paths are covered: its default path goes through vanilla
-`PlayerFaceExtractor#extractRenderState`, while its *improved heads* option blits the face itself
-via a method Chatting adds to that same class. Players without an avatar keep their skin face.
+The bridge intercepts `ChatHeads.draw` and its `drawFace` calls, using the `PlayerInfo` supplied
+for that draw. This covers Chatting's cached texture and skin fallback paths. Shadow and main
+face calls share one scope, which ends even if drawing throws. Players without an avatar keep
+their skin face.
+
+Activation requires Figura and Chatting. There is no Chatting version or artifact-hash gate.
+The required draw descriptors were inspected in Chatting 3.2.2; a changed target causes a clear
+mixin failure at startup. Authenticated avatar rendering still requires a live client check.
 
 Chatting's sender detector is also enhanced with `ChatPlayerResolver` to associate multi-word,
 formatted, or custom TAB display names (e.g. from CustomName or server prefixes such as
@@ -504,12 +513,12 @@ verified.
 
 ### Trinkets entity schema repair (common-side)
 
-The deployed `trinkets_updated` 4.1.0+26.2 V1460 schema wrapper could consume entity data before
-Minecraft 26.2's normal DFU migrated nested item stacks. The common-side repair matches the audited
-old Product/Sum schema exactly, then rebuilds the `cardinal_components` and `trinkets` fields with
-preserved `Items`/`cosmetic` data, residual legacy-map handling, and scalar fallback. It retains the
-vanilla tail object and fails closed on version, class-hash, or schema mismatch. Semantic and exact
-pack runtime validation remains required; the priority-1500 validation run produced zero DFU decode/schema errors, while separate attachment-position errors remain.
+The `trinkets_updated` V1460 schema repair has separate exact profiles for 4.1.0+26.2 and
+4.1.1+26.2. The latter's upstream shape differs and still drops modern flat slot inventories and
+unrelated Cardinal components during typed round trips. The repair preserves grouped legacy
+slots, flat `Items`/`cosmetic` slots, unknown data, and sibling components while retaining the
+vanilla tail responsible for item migration. It fails closed on version, class-hash, or schema
+mismatch. See [the repair evidence and verification limits](docs/trinkets-dfu-repair.md).
 
 ## Bee and spawner structure DFU validation
 

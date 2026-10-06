@@ -1,0 +1,247 @@
+{
+  "date": "2026-10-06",
+  "target": {
+    "minecraft": "26.2",
+    "mod_id": "trinkets_updated",
+    "version": "4.1.1+26.2",
+    "artifact_sha256": "2365e8a19b5f62c812e95ac5fc23ee163bc753a5d9ec38f517f72da269eb0c4b",
+    "v1460_class": "eu/pb4/trinkets/mixin/datafixer/V1460Mixin.class",
+    "v1460_class_sha256": "07f35c1ac7a56705c9671b7703b3c58dddbdc419c0fb00edf89b13e757810265"
+  },
+  "audit": {
+    "source": "build/pipeline-validation-2026-10-06/resource-audit.md",
+    "upstream_contract": "Exact class bytecode builds DSL.and(cardinal field, root trinkets field, vanilla tail); data uses legacy grouped slots or flat Items/cosmetic slots.",
+    "reproduced_unpatched_effects": [
+      "Current root trinkets inventory becomes an empty compound during typed read/write when __version is present.",
+      "The Cardinal trinkets value can consume and drop sibling components."
+    ]
+  },
+  "repair": {
+    "profiles": {
+      "4.1.0+26.2": {
+        "class_sha256": "089c59253b7b9ab9f7f0a54c1f0dc7912379ad5bfa335c4acfcfbb91e17914f9",
+        "template": "Legacy allWithRemainder wrapper"
+      },
+      "4.1.1+26.2": {
+        "class_sha256": "07f35c1ac7a56705c9671b7703b3c58dddbdc419c0fb00edf89b13e757810265",
+        "template": "Current DSL.and wrapper"
+      }
+    },
+    "preserves": [
+      "The vanilla V1460 tail and root remainder ownership",
+      "Vanilla Item, Inventory, ArmorItems, and HandItems migrations",
+      "Current flat Trinkets Items and cosmetic migrations",
+      "Legacy grouped root and Cardinal Trinkets item migrations",
+      "Current slot metadata, unknown NBT-compatible values, empty values, and Cardinal sibling components"
+    ],
+    "unknown_template_policy": "Return the original template unchanged"
+  },
+  "verification": {
+    "coordinated_gradle_build": {
+      "status": "passed",
+      "log": "build/current-pipeline-fixes-2026-10-06/gradle-build-final.log",
+      "production_jar_sha256": "7efacfbb125d93ab9eb17de2d796c61feaf3d04547cd62294f1ba0f5ad319a71"
+    },
+    "focused_trinkets_tests": {
+      "status": "passed",
+      "test_count": 16,
+      "log": "build/current-pipeline-fixes-2026-10-06/trinkets-tests-2.log",
+      "coverage": [
+        "Exact test-runtime Trinkets artifact metadata and V1460 class hash",
+        "Exact reflected attachTrinketFixer schema template",
+        "Reproduction of unpatched current root and Cardinal sibling data loss",
+        "Marker DataFix migrations through the exact V1460 template",
+        "No-rewrite typed read/write preservation of current data",
+        "Fail-closed artifact version/hash pairs and template shapes",
+        "Retained 4.1.0 legacy migration coverage"
+      ]
+    },
+    "production_jar_probe": {
+      "runner": "tools/trinkets-dfu-probe/run.ps1",
+      "status": "passed",
+      "jdk": "25.0.4",
+      "production_jar_sha256": "7efacfbb125d93ab9eb17de2d796c61feaf3d04547cd62294f1ba0f5ad319a71",
+      "trinkets_jar_sha256": "2365e8a19b5f62c812e95ac5fc23ee163bc753a5d9ec38f517f72da269eb0c4b",
+      "output": "PASS: exact Trinkets 4.1.1 V1460 class, production helper, modern/legacy item migration, Cardinal siblings, metadata, scalar/empty remainder, and no-rewrite round trip",
+      "scope": "Verifies the supplied production JAR and exact Trinkets JAR, invokes the upstream schema attachment, and runs an isolated DataFixer marker migration without starting Minecraft."
+    },
+    "full_minecraft_mixin_and_structure_smoke": {
+      "mixin_and_controlled_dfu_fixture": "passed",
+      "structure_loading_or_live_saved_world": "not exercised"
+    },
+    "pipeline_copy_or_deployment": {
+      "copy_only": "performed with SHA-256 verification",
+      "sha256": "7efacfbb125d93ab9eb17de2d796c61feaf3d04547cd62294f1ba0f5ad319a71",
+      "deployment": "not performed"
+    },
+    "full_minecraft_mixin_and_dfu_fixture": {
+      "result": "PASS",
+      "environment": "SERVER",
+      "entrypoint": "Fabric preLaunch",
+      "minecraft": "26.2",
+      "sourceDataVersion": 1460,
+      "targetDataVersion": 4903,
+      "fixtureOps": "JsonOps",
+      "gameSchema": "net.minecraft.util.datafix.schemas.V1460",
+      "fullMinecraftDataFixer": true,
+      "productionSha256": "7efacfbb125d93ab9eb17de2d796c61feaf3d04547cd62294f1ba0f5ad319a71",
+      "runs": {
+        "baseline": {
+          "directory": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\baseline",
+          "exitCode": 0,
+          "noWorldOrServerProperties": true,
+          "origins": [
+            {
+              "id": "fabric-api",
+              "version": "0.161.0+26.2",
+              "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\baseline\\mods\\fabric-api-0.161.0+26.2.jar",
+              "sha256": "e5b858ceb13290c274e31cb888ff5a1a40cb91067e7ffab0b5b775aec51e216a"
+            },
+            {
+              "id": "trinkets_updated",
+              "version": "4.1.1+26.2",
+              "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\baseline\\mods\\trinkets-4.1.1+26.2.jar",
+              "sha256": "2365e8a19b5f62c812e95ac5fc23ee163bc753a5d9ec38f517f72da269eb0c4b"
+            }
+          ],
+          "cases": [
+            {
+              "type": "PLAYER",
+              "typedRoundTripExact": null,
+              "upstreamLossReproduced": true,
+              "fullMigrationMatchesItemAndVanillaControls": null
+            },
+            {
+              "type": "ENTITY",
+              "typedRoundTripExact": null,
+              "upstreamLossReproduced": true,
+              "fullMigrationMatchesItemAndVanillaControls": null
+            }
+          ],
+          "evidence": {
+            "inputs.json": {
+              "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\baseline\\inputs.json",
+              "sha256": "498408ff5a1a60c58d2490f8b5849c8592716f9ab9ba2a9bd1b462e8eeeb6042"
+            },
+            "process.log": {
+              "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\baseline\\process.log",
+              "sha256": "5b7a34a7a1068f4f717bda8cb624eef9c63d175ecd4fd3ab22c12955d6acec34"
+            },
+            "trinkets-runtime-result.json": {
+              "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\baseline\\trinkets-runtime-result.json",
+              "sha256": "4a03fc71c041b347ab1c41dfaf984aa5736d62e7308f7396520d29d674544bb2"
+            },
+            "exit.json": {
+              "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\baseline\\exit.json",
+              "sha256": "47b8b6b49d4695fe6e036bd916538aff4f46773e212ca0d429db80f3963e2cfe"
+            },
+            "command.json": {
+              "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\baseline\\command.json",
+              "sha256": "9cd2b551d718d326c993bf8175255a056b0433f184cecec817865776eaf8be9d"
+            }
+          }
+        },
+        "patched": {
+          "directory": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\patched",
+          "exitCode": 0,
+          "noWorldOrServerProperties": true,
+          "origins": [
+            {
+              "id": "fabric-api",
+              "version": "0.161.0+26.2",
+              "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\patched\\mods\\fabric-api-0.161.0+26.2.jar",
+              "sha256": "e5b858ceb13290c274e31cb888ff5a1a40cb91067e7ffab0b5b775aec51e216a"
+            },
+            {
+              "id": "trinkets_updated",
+              "version": "4.1.1+26.2",
+              "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\patched\\mods\\trinkets-4.1.1+26.2.jar",
+              "sha256": "2365e8a19b5f62c812e95ac5fc23ee163bc753a5d9ec38f517f72da269eb0c4b"
+            },
+            {
+              "id": "lampas2-overrides",
+              "version": "1.0.0",
+              "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\patched\\mods\\lampas2-overrides-1.0.0.jar",
+              "sha256": "7efacfbb125d93ab9eb17de2d796c61feaf3d04547cd62294f1ba0f5ad319a71"
+            }
+          ],
+          "cases": [
+            {
+              "type": "PLAYER",
+              "typedRoundTripExact": true,
+              "upstreamLossReproduced": null,
+              "fullMigrationMatchesItemAndVanillaControls": true
+            },
+            {
+              "type": "ENTITY",
+              "typedRoundTripExact": true,
+              "upstreamLossReproduced": null,
+              "fullMigrationMatchesItemAndVanillaControls": true
+            }
+          ],
+          "evidence": {
+            "inputs.json": {
+              "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\patched\\inputs.json",
+              "sha256": "aaffdd5b4cdb7055ee69b8d8f4dcd7e079079bfd74b688977d8df64e4ae7a939"
+            },
+            "process.log": {
+              "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\patched\\process.log",
+              "sha256": "6d3fe4cd80e046e09fc5443b1c4f66e198cdffbeeb3b4518d4fd1d2e658f675a"
+            },
+            "trinkets-runtime-result.json": {
+              "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\patched\\trinkets-runtime-result.json",
+              "sha256": "09b5e1e395f6044ea5032cbc2f137785e65c173e74167d516263a50aabc63586"
+            },
+            "exit.json": {
+              "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\patched\\exit.json",
+              "sha256": "47b8b6b49d4695fe6e036bd916538aff4f46773e212ca0d429db80f3963e2cfe"
+            },
+            "command.json": {
+              "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\patched\\command.json",
+              "sha256": "0b98b9b6a615de2022037934968289a43908ed1710dceb2f90f9e17560b048b0"
+            }
+          }
+        }
+      },
+      "limits": [
+        "Exits through System.exit after proof before Minecraft server Main. No ModInitializer execution, world, saved NBT files, listening server, or gameplay.",
+        "Two synthetic PLAYER/ENTITY fixtures test modern flat slots and legacy Cardinal slots; this is not full saved-world migration acceptance."
+      ],
+      "mixinReturnOrder": {
+        "6": [
+          "37: invokestatic  #1029               // Method modifyReturnValue$znp000$trinkets_updated$attachTrinketFixer:(Lcom/mojang/datafixers/types/templates/TypeTemplate;)Lcom/mojang/datafixers/types/templates/TypeTemplate;",
+          "42: invokestatic  #1033               // Method \"modifyReturnValue$znc000$lampas2-overrides$lampas2$repairEntity\":(Lcom/mojang/datafixers/types/templates/TypeTemplate;Lcom/mojang/datafixers/schemas/Schema;Ljava/util/Map;)Lcom/mojang/datafixers/types/templates/TypeTemplate;"
+        ],
+        "2": [
+          "174: invokestatic  #1029               // Method modifyReturnValue$znp000$trinkets_updated$attachTrinketFixer:(Lcom/mojang/datafixers/types/templates/TypeTemplate;)Lcom/mojang/datafixers/types/templates/TypeTemplate;",
+          "178: invokestatic  #1074               // Method \"modifyReturnValue$znc000$lampas2-overrides$lampas2$repairPlayer\":(Lcom/mojang/datafixers/types/templates/TypeTemplate;Lcom/mojang/datafixers/schemas/Schema;)Lcom/mojang/datafixers/types/templates/TypeTemplate;"
+        ]
+      },
+      "patchedAssertions": [
+        "PLAYER and ENTITY V1460 typed read/write equality against full original fixtures",
+        "Full Minecraft DFU DataVersion1460->4903",
+        "All vanilla fields equal independent no-Trinkets-data control",
+        "Flat Items/cosmetic and grouped Cardinal Items equal direct ITEM_STACK DFU controls",
+        "Root unknown data, __version, scalars, empty maps/lists, hidden_slots, slot metadata and Cardinal sibling components retained"
+      ],
+      "transformedClass": {
+        "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\patched\\.mixin.out\\class\\net\\minecraft\\util\\datafix\\schemas\\V1460.class",
+        "sha256": "6e136bbbc7f29b1e0b0d05624c2b658bff8aca95b0bd316c4f724a2f3ab84203"
+      },
+      "bytecodeEvidence": {
+        "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\patched\\V1460.transformed.javap.txt",
+        "sha256": "a688aff4688e5b161f86983b55c2df51026fc1fd56ee964cade059b93b10e368"
+      },
+      "harness": {
+        "TrinketsRuntimeProbe.java": "1e57cc43357612008dd305ba66bb29c5793b68b7e434abf8b0f7fd79e702f3ce",
+        "run.py": "565fe1873699df93778aa104dd75d4e8014f8aebb4b3e3bfe46d88ebf6a2ea23",
+        "trinkets-runtime-probe.jar": "9faa8ce2352619cb5ac664c0a43854b0fa43cd8514ce30b8d5583cbc074cfd84"
+      }
+    }
+  },
+  "limits": [
+    "The marker DataFix helper and unit tests are complemented by actual woven V1460 PLAYER/ENTITY fixtures in a headless Fabric SERVER environment.",
+    "A disposable dedicated-server structure migration and deployed-pack verification remain separate acceptance checks.",
+    "JSON null values are not representable as Minecraft NBT compound entries and are excluded from the schema fixtures."
+  ]
+}

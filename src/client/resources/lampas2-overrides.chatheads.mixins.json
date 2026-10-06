@@ -5,7 +5,7 @@
 	"plugin": "lampas2overrides.client.chatheads.ChatHeadsMixinPlugin",
 	"client": [
 		"ChatHeadsMixin",
-		"PlayerFaceExtractorMixin"
+		"ChatHeadDrawMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

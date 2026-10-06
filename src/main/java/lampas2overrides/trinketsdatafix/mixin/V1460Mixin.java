@@ -6,6 +6,7 @@ import net.minecraft.util.datafix.schemas.V1460;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import lampas2overrides.trinketsdatafix.TrinketsDataFixMixinPlugin;
 import lampas2overrides.trinketsdatafix.TrinketsSchemaRepair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,15 +16,12 @@ import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.util.datafix.fixes.References;
 
 /**
- * Removes the extra root remainder introduced by Trinkets' V1460 schema patch.
+ * Repairs the exact audited V1460 template selected by the version and bytecode gate.
  *
- * <p>The deployed Trinkets patch wraps the vanilla result with
- * {@code allWithRemainder(cardinal, optional(optionalFields(trinkets)), original)}.  The
- * nested {@code optionalFields(trinkets)} template already contains a remainder, and
- * the vanilla result contains its own remainder.  The duplicate root remainder
- * therefore consumes the entity remainder before the vanilla entity template
- * can migrate item stacks.  This only accepts the exact Product shape emitted
- * by that Trinkets build; an unknown shape is returned unchanged.</p>
+ * <p>Trinkets 4.1.0 and 4.1.1 emit different wrappers, so each has an independent
+ * exact template contract. Unknown shapes are returned unchanged. The repair keeps
+ * the vanilla tail in place, types only the audited item lists, and retains unknown
+ * values through nested remainder branches.</p>
  */
 // Run after Trinkets' priority-1000 return modifier so the complete wrapper is available.
 @Mixin(value = V1460.class, priority = 1500, remap = false)
@@ -42,7 +40,8 @@ abstract class V1460Mixin {
 	}
 
 	@Unique private static TypeTemplate lampas2$repair(TypeTemplate result, TypeTemplate itemStack) {
-		TypeTemplate repaired = TrinketsSchemaRepair.repair(result, itemStack);
+		TypeTemplate repaired = TrinketsSchemaRepair.repair(result, itemStack,
+			TrinketsDataFixMixinPlugin.activeProfile());
 		if (repaired == result && lampas2$UNKNOWN_SHAPE_LOGGED.compareAndSet(false, true)) {
 			lampas2$LOGGER.warn("Trinkets V1460 schema shape did not match the audited repair contract; leaving it unchanged");
 		}

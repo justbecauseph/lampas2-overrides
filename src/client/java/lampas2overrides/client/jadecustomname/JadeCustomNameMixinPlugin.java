@@ -9,9 +9,7 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
 import net.fabricmc.loader.api.FabricLoader;
 
-/**
- * Applies the Jade ↔ Custom Name bridge mixin only when both Jade and Custom Name are installed.
- */
+/** Applies the synced player-name consumer when Jade is present. */
 public final class JadeCustomNameMixinPlugin implements IMixinConfigPlugin {
 
 	private boolean apply;
@@ -19,7 +17,11 @@ public final class JadeCustomNameMixinPlugin implements IMixinConfigPlugin {
 	@Override
 	public void onLoad(String mixinPackage) {
 		FabricLoader loader = FabricLoader.getInstance();
-		apply = loader.isModLoaded("jade") && loader.isModLoaded("eclipsescustomname");
+		apply = shouldApply(loader.isModLoaded("jade"));
+	}
+
+	static boolean shouldApply(boolean jadeLoaded) {
+		return jadeLoaded;
 	}
 
 	@Override

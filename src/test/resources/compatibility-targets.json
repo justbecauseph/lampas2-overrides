@@ -236,6 +236,11 @@
       "versions": {
         "26.2.3": {
           "status": "verified"
+        },
+        "26.2.4": {
+          "status": "bytecode-and-compile-reviewed",
+          "artifact_sha256": "f084097eb65928136ac12512249822696e81695929ad859a93d1a8fba0d94765",
+          "verification_limit": "Relevant bridge and tag-copy classes match 26.2.3; reload and current-pack gameplay remain separate acceptance checks."
         }
       }
     },
@@ -262,7 +267,14 @@
       "type": "structural_mixin",
       "versions": {
         "3.1.4": {
-          "status": "verified"
+          "status": "historical-path-reviewed",
+          "verification_limit": "Prior PlayerFaceExtractor integration was reviewed for this release; the current required draw contract was inspected in 3.2.2."
+        },
+        "3.2.2": {
+          "status": "isolated-mixin-load-tested",
+          "artifact_sha256": "af1561983aca38ae0fdd8d2173fa56b0e18d7bedf3e07329ce1825f6b3859ac6",
+          "activation_policy": "Presence of Figura and Chatting; no Chatting version or artifact gate.",
+          "verification_limit": "The exact draw contract and mixin application passed with current Figura and no client Custom Name. Other versions also activate; authenticated avatar rendering remains a live-client check."
         }
       }
     },
@@ -272,6 +284,11 @@
       "versions": {
         "1.24.39.122": {
           "status": "verified"
+        },
+        "1.24.41.124": {
+          "status": "bytecode-and-compile-reviewed",
+          "artifact_sha256": "6669f8415aa4280eae0959d6e8cac0bb0dab02dbfd3efd6a153c1fad02e80a6b",
+          "verification_limit": "All 51 packaged bridge member references resolve and inspected interaction contracts match; current-version conversion, looting and refresh remain live acceptance checks."
         }
       }
     },
@@ -292,6 +309,13 @@
           "minecraft": "26.2",
           "class_sha256": "089c59253b7b9ab9f7f0a54c1f0dc7912379ad5bfa335c4acfcfbb91e17914f9",
           "status": "isolated-and-tested"
+        },
+        "4.1.1+26.2": {
+          "minecraft": "26.2",
+          "class_sha256": "07f35c1ac7a56705c9671b7703b3c58dddbdc419c0fb00edf89b13e757810265",
+          "artifact_sha256": "2365e8a19b5f62c812e95ac5fc23ee163bc753a5d9ec38f517f72da269eb0c4b",
+          "status": "server-runtime-dfu-fixture-tested",
+          "verification_limit": "Actual woven V1460 PLAYER/ENTITY preservation and Minecraft DFU 1460 to 4903 passed against item and vanilla controls. Live saved-world migration remains unverified."
         }
       }
     },

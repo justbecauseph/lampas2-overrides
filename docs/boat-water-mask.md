@@ -1,6 +1,6 @@
 # Boat water-mask compatibility
 
-EMF `3.3.5` and `3.3.8` use the same compatibility repair. Either exact artifact can replace Minecraft's shared boat water-patch layer with the selected
+EMF `3.3.5`, `3.3.8`, and `3.3.11` use the same compatibility repair. Each exact artifact can replace Minecraft's shared boat water-patch layer with the selected
 Fresh Animations `boat_patch.jem` from the audited `FA+All_Extensions-v1.9.2` pack. That
 model uses `var.base_*` animation values from
 Fresh Animations hull models. A plain hull from an audited provider can therefore leave
@@ -22,7 +22,7 @@ The audited provider profiles are:
   `white_stained`, and `yellow_stained`.
 - Promenade `5.6.0`: `boat/{sakura,maple,palm}` and
   `chest_boat/{sakura,maple,palm}`.
-- Wilder Wild `4.2.11-mc26.2`: `boat/{baobab,willow,cypress,palm,maple}` and
+- Wilder Wild `4.2.11-mc26.2` and the separately audited `4.3`: `boat/{baobab,willow,cypress,palm,maple}` and
   `chest_boat/{baobab,willow,cypress,palm,maple}`.
 - BetterEnd `26.201.2` with `wover-item` `26.201.2`: `boat/<name>_boat` and
   `chest_boat/<name>_chest_boat` for `dragon_tree`, `helix_tree`, `jellyshroom`,
@@ -46,11 +46,15 @@ Activation requires one of these immutable EMF version and artifact profiles:
 |---|---|
 | `3.3.5` | `72b2d489d03bf2ea07b5693ef26cd03572a42dda181e095aed85b3ab39cce549` |
 | `3.3.8` | `714686cefe56a7e46fa1e13ecdeddcb55ddfbb9715ae5b1ffd7573c1928d9fdd` |
+| `3.3.11` | `26b13c2ee755932e74f80ecf6baf16a25582568ae7482cf472751abb98e7b14a` |
 
 The mixin plugin selects the hash from the metadata version and rejects swapped, unknown, absent,
 unreadable, multi-path, and wrong-hash artifacts. Pyrite additionally
 requires artifact SHA-256
-`6c378632fcadd0501a41bd4af90aec58b8cf03a065f69cd9837160c97ed81831`. The artifact result
+`6c378632fcadd0501a41bd4af90aec58b8cf03a065f69cd9837160c97ed81831`. Wilder Wild `4.3`
+additionally requires artifact SHA-256
+`9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c`; its profile is independent
+of the retained `4.2.11-mc26.2` profile. The artifact result
 is cached per loaded mod container, while selected resources are checked on each renderer
 construction so a resource reload cannot reuse an old pack decision.
 
@@ -66,13 +70,71 @@ JUnit tests cover every provider's positive layer allowlist, entity-style and ra
 version and resource failures, custom-root gate inputs, artifact path and hash checks, and
 geometry equality with the vanilla water patch. The isolated client probe checks the reflective
 EMF roots, actual selected resource provenance, constructor behavior across resource reloads,
-and the resulting renderer model state. The accepted visual matrix below covers the selected
-shader-off and shader-on client views.
+and the resulting renderer model state. The historical visual matrix below covers the selected
+EMF `3.3.5`/`3.3.8` shader-off and shader-on client views.
+
+## Verification — 2026-10-06
+
+The current pipeline inventory selects EMF `3.3.11`, ETF `7.2.5`, Wilder Wild `4.3`,
+FrozenLib `3.0.1`, Fabric API `0.161.0+26.2`, and Architectury `21.1.11`.
+The new runner reads that inventory and verifies full SHA-256 and Fabric metadata for every
+copied mod, and full SHA-256 for the three selected FA packs. A missing inventory path for
+FA Player falls back to its installed filename and still requires the inventory's exact digest.
+Each run is retained in a fresh `build/boat-mask-probe/<run-id>/` directory.
+
+The unpatched baseline uses no overrides artifact or development output. Runtime checks require
+one exact PATH origin, metadata version, and matching full-JAR digest for every fixture mod.
+With FA Extensions enabled, all 108 supported provider hulls remained plain while their shared
+water masks were EMF models with non-vanilla geometry. With Extensions disabled, their masks
+returned to vanilla geometry. The baseline completed ON-1, OFF, ON-2 and OFF-2 with PASS
+and normal process exit `0`. This reproduces the incompatible model condition on the current
+artifacts; an absent version gate alone was not used to establish a defect.
+
+The patched probe used exactly one production JAR, SHA-256
+`7efacfbb125d93ab9eb17de2d796c61feaf3d04547cd62294f1ba0f5ad319a71`. All four strict stages
+completed with PASS and process exit `0`. Every supported mask matched vanilla geometry:
+Pyrite 52, Promenade 6, Wilder Wild 10, BetterEnd 18 and BetterNether 22. Recorded hull
+geometry signature prefixes matched the baseline for all 134 inspected renderers, and the 26 control
+and excluded renderer snapshots remained identical. Vanilla oak retained its EMF hull and mask
+with Extensions enabled. The boat mixin's application and each exact runtime PATH origin and
+digest were verified. Both fixture configs retained `pack_downloading.disabled` after launch.
+The ten focused JUnit tests, three runner identity rejection cases, four existing FrozenLib
+fixture-config helper cases, Python syntax check and scoped `git diff --check` passed.
+Input identities, result/log hashes, root contracts, bytecode contracts and the comparison are
+recorded in [`docs/evidence/boat-water-mask-3.3.11.json`](evidence/boat-water-mask-3.3.11.json).
+
+`javap` confirmed EMF `3.3.11` retains `EMFModelPartRoot#getRoot`, the public custom-model,
+custom-animation and directory fields, and `EMFDirectoryHandler#getFinalFileLocation`.
+Wilder Wild `4.3` registers all ten audited `main` layers and constructs `BoatRenderer` with
+the same two-argument descriptor for each of them. The production renderer hook and its
+resource, hull and geometry conditions are unchanged.
+
+Reproduce the current baseline and then test one built production JAR:
+
+```powershell
+./tools/boat-water-mask-probe/run.ps1 -Mode baseline -Strict `
+  -InventoryPath build/pipeline-validation-2026-10-06/inventory.json
+./tools/boat-water-mask-probe/run.ps1 -Mode patched -Strict `
+  -InventoryPath build/pipeline-validation-2026-10-06/inventory.json `
+  -OverrideArtifactPath build/libs/lampas2-overrides-1.0.0.jar
+```
+
+The runner launches installed Minecraft and Fabric Loader through plain `KnotClient`; it does
+not run Gradle or include development class/resource directories. Patched mode requires exactly
+one selected production overrides JAR and verifies its runtime origin and hash plus the boat
+mixin's application log. Baseline mode rejects any overrides mod. Both modes require every
+stage PASS, a result artifact and process exit `0`. The existing bounded shutdown guard remains
+fixture-only. The runner disables FrozenLib pack downloading only in the fresh fixture.
+
+The current structural probe does not launch a world, row provider boats, capture screenshots,
+or activate a shader. Current gameplay, visual rendering, shader behavior and live installed-client
+acceptance remain unverified. The older visual evidence below does not establish those results
+for EMF `3.3.11` or Wilder Wild `4.3`.
 
 ## Verification — 2026-09-20
 
 `gradlew.bat test --no-daemon` and `gradlew.bat build --no-daemon` passed;
-the current checkout reports 107 tests with no failures or errors. Independent source
+that run reported 107 tests with no failures or errors. Independent source
 review found no remaining production blockers.
 
 The isolated strict probes used Minecraft 26.2, Fabric Loader 0.19.5, the installed boat
@@ -97,19 +159,22 @@ observed at completion before releasing the guard and stopping the client. The f
 also disables FrozenLib `packDownloading` under its own `config/` directory. These are
 harness-only controls and do not change the installed instance or production behavior.
 
-Reproduce with explicit artifact identity, for example:
+The original runner used explicit artifact identity. The current inventory runner can select a
+historical EMF artifact with all three explicit identity inputs, for example:
 
 ```powershell
-./tools/boat-water-mask-probe/run.ps1 -Strict `
+./tools/boat-water-mask-probe/run.ps1 -Mode patched -Strict `
+  -InventoryPath C:/path/historical-inventory.json `
+  -OverrideArtifactPath C:/path/lampas2-overrides-1.0.0.jar `
   -EmfArtifactPath C:/path/entity_model_features-3.3.8-26.2-fabric.jar `
   -EmfVersion 3.3.8 `
   -EmfSha256 714686cefe56a7e46fa1e13ecdeddcb55ddfbb9715ae5b1ffd7573c1928d9fdd
 ```
 
-The runner verifies the JAR hash and Fabric metadata before constructing the fixture,
-discovers the installed Biolith JAR instead of assuming an alpha filename, and preserves
+The original runner verified the JAR hash and Fabric metadata before constructing the fixture,
+discovered the installed Biolith JAR instead of assuming an alpha filename, and preserved
 the previous fixture under `build/boat-mask-smoke-history/` before a reset. It also
-requires every stage and the result artifact when Gradle exits normally. The fixture is
+required every stage and the result artifact when Gradle exited normally. That fixture was
 confined to `build/boat-mask-smoke`. The fixture-only FrozenLib rewrite cases can be
 checked independently with `powershell.exe -NoProfile -File
 tools/boat-water-mask-probe/test-frozenlib-config.ps1`.

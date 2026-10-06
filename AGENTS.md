@@ -49,13 +49,13 @@ disable an unrelated feature.
 
 | What | Where |
 |---|---|
-| Figura 0.1.6+26.2 | `../figura-port/fabric/build/libs/figura-0.1.6+26.2.jar` — builds locally |
+| Figura 0.1.6-rc.1+26.2-968705ec | `../lampas-pipeline/pack/custom/figura-0.1.6-rc.1+26.2.jar` — pipeline artifact; sources at `../figura-port` |
 | ReplayMod 26.2-2.6.27 | `C:\Users\markj\AppData\Roaming\PrismLauncher\instances\26.2\minecraft\mods\replaymod-26.2-2.6.27.jar` |
-| Chatting 3.1.4+26.2 | same `mods/` folder; sources at `../Chatting` (stonecutter — the `//? if` blocks mean the source you read may not be the 26.2 build, so trust the jar) |
-| Lootr 1.24.39.122 | `../lampas-server-fabric/mods/lootr-fabric-26.2-1.24.39.122.jar`; sources at `../Lootr` |
+| Chatting 3.2.2+26.2 | `../lampas-pipeline/.lampas/cache/modrinth/8pJYUDNi/OgYV2xUV/chatting-3.2.2+26.2.jar`; sources at `../Chatting` (stonecutter — trust the built jar) |
+| Lootr 1.24.41.124 | `../lampas-pipeline/.lampas/cache/modrinth/EltpO5cN/HegkPUoM/lootr-fabric-26.2-1.24.41.124.jar`; sources at `../Lootr` |
 | Fast Item Frames 26.2.1 | `../lampas-server-fabric/mods/FastItemFrames-v26.2.1-mc26.2.x-Fabric.jar`; sources at `../fast-item-frames` |
-| Puzzles Lib 26.2.3 | `../lampas-server-fabric/mods/PuzzlesLib-v26.2.3-mc26.2.x-Fabric.jar` |
-| Fabric API 0.158.0+26.2 | `../lampas-server-fabric/mods/fabric-api-0.158.0+26.2.jar` |
+| Puzzles Lib 26.2.4 | `../lampas-pipeline/.lampas/cache/modrinth/QAGBst4M/aNOJuoCM/PuzzlesLib-v26.2.4-mc26.2.x-Fabric.jar` |
+| Fabric API 0.161.0+26.2 | `../lampas-pipeline/.lampas/cache/modrinth/P7dR8mSH/ewUK83HI/fabric-api-0.161.0+26.2.jar` |
 | Better Lib 2.1.2 | `../lampas-server-fabric/mods/better_lib-fabric-26.1-2.1.2.jar` (fixed upstream) |
 | Underground Village 2.1.1 | `../lampas-server-fabric/mods/underground_village-fabric-26.1-2.1.1.jar` |
 | Additional Lanterns 1.1.2 | `../lampas-server-fabric/mods/additionallanterns-1.1.2-fabric-mc26.2.jar` |
@@ -175,11 +175,12 @@ Zip-level and format work can be tested outside the game entirely; that is how `
 - **Video export never enters `Minecraft#runTick`**, which is why the bridge counts ticks with its
   own `Minecraft#tick` mixin rather than Fabric's lifecycle event, and drives animations from
   `VideoRenderer#updateForNextFrame`.
-- **Chatting draws chat heads two ways.** Its default path calls vanilla
-  `PlayerFaceExtractor#extractRenderState` (every shorter overload funnels into the eight-argument
-  one); its *improved heads* option calls `chatting$draw`, which it adds to that same class and
-  which blits the face itself without touching the vanilla extractor. Hooking one covers half the
-  users.
+- **Chatting 3.2.2 draws cached heads directly.** `ChatHeads.draw` passes the owner `PlayerInfo`
+  through `drawHead` into `drawFace`; both cached textures and skin fallbacks use that boundary.
+  The previous `PlayerFaceExtractor` hooks miss cached heads and must not be restored as the
+  main route. Scope state to the full draw with cleanup in `finally`; shadow and main calls must
+  draw the avatar once. Gate only on Figura and Chatting presence, with no Chatting version or
+  artifact-hash gate. Keep required descriptor checks fail-loud when the upstream contract moves.
 - **Injecting into another mod's `@Unique` method needs a higher `priority`**, since the method only
   exists once that mod's mixin has been applied — Mixin applies higher priority values later. Pair
   it with `require = 0` when the feature is cosmetic: losing a path beats refusing to start.
@@ -289,6 +290,8 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   Custom Name syncs formatted player display names over `ClientboundPlayerInfoUpdatePacket.UPDATE_DISPLAY_NAME`,
   populating `PlayerInfo#getTabListDisplayName()`. `ObjectNameProviderMixin` redirects `Entity#getDisplayName()`
   inside `ObjectNameProvider#getEntityName` to `JadeCustomNameResolver` so Jade shows the synced player display name.
+  Custom Name is server-only in the pipeline. Activate this client mixin when Jade is present,
+  without requiring local `eclipsescustomname`; missing TAB names use the vanilla fallback.
 - **Custom Name 0.4.4-26.2 passes `operatorsBypassRestrictions` directly as `spaceAllowed` inside `CustomNameUtil#playerNameArgumentToComponent`.**
   When restrictions are not bypassed, `spaceAllowed` is `false` and `nameArgumentToComponent` truncates the argument at the
   first ASCII space — so `/name nickname The Admin` silently becomes `The`. The Lampas compatibility mixin changes only
@@ -310,7 +313,7 @@ Zip-level and format work can be tested outside the game entirely; that is how `
 The client-only `boatmask` feature repairs the audited FA/EMF water mask for 108 boat
 layers from Pyrite, Promenade, Wilder Wild, BetterEnd, and BetterNether. Keep plugin
 gates in `BoatWaterMaskProfiles` free of Minecraft model classes. EMF artifact policy is
-an immutable exact version-to-hash map for 3.3.5 and 3.3.8; never accept a digest
+an immutable exact version-to-hash map for 3.3.5, 3.3.8 and 3.3.11; never accept a digest
 independently of its metadata version. Fingerprints of loaded artifacts may be cached;
 selected resource provenance must be checked on renderer construction so resource reloads
 reevaluate it. Preserve custom hulls, vanilla animated boats, and the explicit
@@ -318,11 +321,11 @@ provider/layer allowlist. BetterX raft renderers and BloomingNature's custom ren
 have different contracts. See `docs/boat-water-mask.md` for fingerprints, verification,
 and the probe shutdown caveat.
 
-The boat probe runner requires explicit EMF artifact path, metadata version, and SHA-256
-inputs. It verifies the JAR before creating a fixture and discovers the installed Biolith
-artifact rather than relying on a release filename. A probe reset moves the prior fixture
-under the ignored build history directory so result files and logs remain available for
-review. The probe's temporary GLFW close guard, bounded wait for already observed
+The boat probe runner requires an audited inventory with artifact path, metadata version,
+and SHA-256. Explicit EMF overrides must supply all three identity inputs together.
+It verifies every selected JAR before creating a fresh fixture and discovers Biolith through
+the inventory rather than relying on a release filename. Each run retains its result files
+and logs under the ignored build directory. The probe's temporary GLFW close guard, bounded wait for already observed
 non-daemon pool threads, and fixture-only FrozenLib `packDownloading` setting exist only
 for deterministic probe shutdown; they are not compatibility behavior and must not be
 copied into production code.
@@ -331,15 +334,15 @@ copied into production code.
 compat/
   Reflection              nullable lookups; invocation failures throw BridgeException
 chatheads/
-  ChatHeadAvatars         entry point; arms on Chatting's head lookup, draws on the face hooks
+  ChatHeadAvatars         entry point; scopes owner/avatar state to Chatting's complete draw
   ChatPlayerResolver      resolves multi-word and custom TAB display names to PlayerInfo
   FiguraPortraits         Figura's portrait members, resolved by name
-  mixin/                  ChatHeads (detect, arm/disarm) and PlayerFaceExtractor (both draw paths)
+  mixin/                  ChatHeads sender detection and required draw/drawFace hooks
 jadenameplates/
   JadeNameplatesMixinPlugin applies when Jade is present
   mixin/                    suppresses submitNameTag inside EntityRenderer#submitNameDisplay
 jadecustomname/
-  JadeCustomNameMixinPlugin applies when Jade + Custom Name exist
+  JadeCustomNameMixinPlugin applies when client Jade exists; Custom Name runs on the server
   JadeCustomNameResolver    resolves PlayerInfo tabListDisplayName with fallback
   mixin/                    redirects Entity#getDisplayName in ObjectNameProvider
 figurareplay/
@@ -444,7 +447,10 @@ extending the gate. Evidence and reproduction are in `docs/plasmo-shutdown.md`.
 
 The common-side Trinkets datafix repair is a narrowly gated MixinExtras return-value hook. It targets
 Minecraft 26.2 V1460 player/entity schema lambdas and repairs only the audited `trinkets_updated`
-4.1.0+26.2 V1460 class (SHA-256 recorded in the compatibility manifest). It preserves vanilla DFU
+4.1.0+26.2 and 4.1.1+26.2 V1460 classes through independent exact version/class-hash profiles
+(SHA-256 recorded in the compatibility manifest). Each profile must match its own schema shape.
+The 4.1.1 shape needs flat-slot and unknown-entry preservation and Cardinal sibling retention;
+merely extending the 4.1.0 gate does not repair it. It preserves vanilla DFU
 ownership and fails closed on absent versions, hash mismatch, or unknown Product/Sum shape. This is
 common-side and must be present on dedicated servers as well as integrated clients.
 

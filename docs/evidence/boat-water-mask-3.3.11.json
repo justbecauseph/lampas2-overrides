@@ -1,0 +1,611 @@
+{
+  "date": "2026-10-06",
+  "minecraft": "26.2",
+  "feature": "FA/EMF shared boat water mask",
+  "profile": {
+    "emf_version": "3.3.11",
+    "emf_sha256": "26b13c2ee755932e74f80ecf6baf16a25582568ae7482cf472751abb98e7b14a",
+    "wilderwild_version": "4.3",
+    "wilderwild_sha256": "9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c",
+    "mask_resource": "minecraft:optifine/cem/boat_patch.jem",
+    "mask_sha256": "4d924242a3787ca708b0165961078bcf91bd455d0bb881a10b9a28a0a3fa725b"
+  },
+  "production_jar_sha256": "7efacfbb125d93ab9eb17de2d796c61feaf3d04547cd62294f1ba0f5ad319a71",
+  "baseline": {
+    "run_id": "20261006T061925Z-baseline-c7af9589",
+    "mode": "baseline",
+    "result": "PASS",
+    "process_exit_code": 0,
+    "fixture_override_count": 0,
+    "inputs": {
+      "run_id": "20261006T061925Z-baseline-c7af9589",
+      "mode": "baseline",
+      "inventory": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\pipeline-validation-2026-10-06\\inventory.json",
+      "inventory_sha256": "f347c472964b58509c9810e752c13bc152a0473a2abd7975d000ec20018fccc2",
+      "minecraft": "26.2",
+      "client": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\versions\\26.2\\26.2-client.jar",
+      "client_sha256": "40896ee9f1e2bec3c934daac7e93d41e9e3d9c2f8ae0ca366d52ffbfd1afa290",
+      "loader": {
+        "loader": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\net\\fabricmc\\fabric-loader\\0.19.5\\fabric-loader-0.19.5.jar",
+        "loader_sha256": "93044e4dd46de5d8136701292f05e868da096d2c9fddb4793e4fdbcc63efc695",
+        "mixin": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\net\\fabricmc\\sponge-mixin\\0.17.4+mixin.0.8.7\\sponge-mixin-0.17.4+mixin.0.8.7.jar",
+        "mixin_version": "0.17.4+mixin.0.8.7",
+        "mixin_sha256": "1f0ae44db7295f8626f33b1dc0ad7f043d8954a8d6847247875fcc5dfcecc934"
+      },
+      "fixtureOverrideCount": 0,
+      "artifacts": [
+        {
+          "id": "fabric-api",
+          "version": "0.161.0+26.2",
+          "sha256": "e5b858ceb13290c274e31cb888ff5a1a40cb91067e7ffab0b5b775aec51e216a",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\P7dR8mSH\\ewUK83HI\\fabric-api-0.161.0+26.2.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\fabric-api-0.161.0+26.2.jar"
+        },
+        {
+          "id": "entity_model_features",
+          "version": "3.3.11",
+          "sha256": "26b13c2ee755932e74f80ecf6baf16a25582568ae7482cf472751abb98e7b14a",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\4I1XuqiY\\tgEvvPhr\\entity_model_features-3.3.11-26.2-fabric.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\entity_model_features-3.3.11-26.2-fabric.jar"
+        },
+        {
+          "id": "entity_texture_features",
+          "version": "7.2.5",
+          "sha256": "ac66cf294fbd2b1eb1576bdc2396cb096abcd54d9f8f39ecb1973abbc4e00488",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\BVzZfTc1\\b9RlCI9F\\entity_texture_features-7.2.5-26.2-fabric.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\entity_texture_features-7.2.5-26.2-fabric.jar"
+        },
+        {
+          "id": "pyrite",
+          "version": "0.18.3+26.2",
+          "sha256": "6c378632fcadd0501a41bd4af90aec58b8cf03a065f69cd9837160c97ed81831",
+          "source": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\mods\\pyrite-0.18.3+26.2-fabric.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\pyrite-0.18.3+26.2-fabric.jar"
+        },
+        {
+          "id": "promenade",
+          "version": "5.6.0",
+          "sha256": "5d30b280c1f317c0a2fc192e6b17414a1d6b5f05bded3b8e00ad344609ebddb3",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\GuE5FpvB\\ldF03LkA\\promenade-5.6.0.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\promenade-5.6.0.jar"
+        },
+        {
+          "id": "wilderwild",
+          "version": "4.3",
+          "sha256": "9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\AtHRJSUW\\jO1Bwxn3\\WilderWild-4.3-mc26.2-fabric.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\WilderWild-4.3-mc26.2-fabric.jar"
+        },
+        {
+          "id": "frozenlib",
+          "version": "3.0.1",
+          "sha256": "ef165a43e97b16b593d89b46733de12db38b09d47b8b9714d5043efb42666a2b",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\9KawNmQc\\C7hjRazM\\FrozenLib-3.0.1-mc26.2-fabric.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\FrozenLib-3.0.1-mc26.2-fabric.jar"
+        },
+        {
+          "id": "betterend",
+          "version": "26.201.2",
+          "sha256": "97dac860402e781ee50a5e10e1c3d299f9c84873e7426f53fab76918c1559425",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\gc8OEnCC\\VD4qwVUF\\better-end-26.201.2.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\better-end-26.201.2.jar"
+        },
+        {
+          "id": "betternether",
+          "version": "26.201.2",
+          "sha256": "ab8b71f3ff49dd5676351d336dc76bdb10ea39ca2101fc963f676bf1988f1a3a",
+          "source": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\mods\\better-nether-26.201.2.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\better-nether-26.201.2.jar"
+        },
+        {
+          "id": "bclib",
+          "version": "26.201.2",
+          "sha256": "797bb8dbde0c28265d08cc31581587e2c6eb2f344a20cde1654fb819cda1193d",
+          "source": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\mods\\bclib-26.201.2.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\bclib-26.201.2.jar"
+        },
+        {
+          "id": "wover",
+          "version": "26.201.2",
+          "sha256": "e042ec2011d1613eaf9e7fc3e27179f31b1a1be704b4271d035589a69914b8a1",
+          "source": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\mods\\worldweaver-26.201.2.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\worldweaver-26.201.2.jar"
+        },
+        {
+          "id": "wunderlib",
+          "version": "26.201.0",
+          "sha256": "3502fb627f45944da34747933deccf1d5318fd2415d337becd04d25524d16d80",
+          "source": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\mods\\wunderlib-26.201.0.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\wunderlib-26.201.0.jar"
+        },
+        {
+          "id": "biolith",
+          "version": "3.7.0-beta.1",
+          "sha256": "4311d6005d4c08b2cecae9ed2b4a7e1731d313a2e759b738b6469ba8a0df40a9",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\iGEl6Crx\\qSLRk6dS\\biolith-fabric-3.7.0-beta.1.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\biolith-fabric-3.7.0-beta.1.jar"
+        },
+        {
+          "id": "bloomingnature",
+          "version": "1.1.10",
+          "sha256": "e5abbb21723e3f1458b10c275e4aae8c396c4b8e881dcbccc86da5d3f234b01f",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\pack\\custom\\letsdo-bloomingnature-fabric-1.1.10.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\letsdo-bloomingnature-fabric-1.1.10.jar"
+        },
+        {
+          "id": "architectury",
+          "version": "21.1.11",
+          "sha256": "a82d81e14a3766a5afbb3ea2bd82e748962d5f1a8ce690f8b6e23f64f0afd47f",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\lhGA9TYQ\\w3CUWoxd\\architectury-fabric-21.1.11.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\architectury-fabric-21.1.11.jar"
+        },
+        {
+          "key": "fresh-animations-extensions",
+          "sha256": "027acba5f64c9d1bf5ccb8daecb7fc756961bfeee866434a0ee5f7809a48d326",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\YAVTU8mK\\R5ZGSF8A\\FA+All_Extensions-v1.9.2.zip",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\resourcepacks\\FA+All_Extensions-v1.9.2.zip"
+        },
+        {
+          "key": "fresh-animations",
+          "sha256": "cf9f17a2977e171b33cb0b598bc4357dd0383e09c10d5f768ff17c12d0a028ee",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\50dA9Sha\\RGIzA5em\\FreshAnimations_v1.10.5.zip",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\resourcepacks\\FreshAnimations_v1.10.5.zip"
+        },
+        {
+          "key": "fa-player-extension",
+          "sha256": "9ee3ae5b2fe5cd980e4041429dc66d88243f5f2420e2814e5361c746ad937f33",
+          "source": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\resourcepacks\\FA+Player-v1.1.zip",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\resourcepacks\\FA+Player-v1.1.zip"
+        }
+      ],
+      "probe_sha256": "7433b6d166c5da5c98120ad96ecbbf3bde2ed0e9665b75ea9209ac7406caa7ab",
+      "fa_mask_sha256": "4d924242a3787ca708b0165961078bcf91bd455d0bb881a10b9a28a0a3fa725b",
+      "probe_source_sha256": "62d86d4ff073b0a308c973d184dac85fabc43492875d3370c91c979f42426c02",
+      "runner_sha256": "2fd92152e6bbf359a73a28814fa497b0800c1ce6e61e3c6b95d62eb5a5d86a2c",
+      "harnessFrozenLibPackDownloading": "pack_downloading.disabled"
+    },
+    "files": {
+      "build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\inputs.json": {
+        "sha256": "3d3faaade93e908f1541343aecb0b5046fb4ef5b272a29626fbf46a66dcfdf6a",
+        "size_bytes": 9916
+      },
+      "build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\launch-arguments.json": {
+        "sha256": "6410053dc5504c297290b07c662084274ca16d3181966d901af2384d9f091292",
+        "size_bytes": 15169
+      },
+      "build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\runtime-artifacts.tsv": {
+        "sha256": "8b63943fd4d22d0a3326711d3ada3f3b267bda90440d7430d81e1ca4a9c0e2a6",
+        "size_bytes": 3491
+      },
+      "build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\client-process.log": {
+        "sha256": "cffadc1bfb192c6a658843e6cfebed62c1c1d7e1a42d9f08429d577a25961c7c",
+        "size_bytes": 575587
+      },
+      "build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\process-exit.json": {
+        "sha256": "302c5fcf0227d427ee240abdbd2a948557ea7ab09699f9c3bdeb0f98b67375ce",
+        "size_bytes": 18
+      },
+      "build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\boat-water-mask-probe-result.txt": {
+        "sha256": "6850f525232948ae8e0eab508ff193a9707c0f4382ef4f7c1db9f05c9a996d7b",
+        "size_bytes": 161886
+      },
+      "build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\compile\\BoatWaterMaskProbe.java": {
+        "sha256": "62d86d4ff073b0a308c973d184dac85fabc43492875d3370c91c979f42426c02",
+        "size_bytes": 36559
+      }
+    },
+    "runtime_artifacts": [
+      "BOAT_PROBE_ARTIFACT id=fabric-api version=0.161.0+26.2 sha256=e5b858ceb13290c274e31cb888ff5a1a40cb91067e7ffab0b5b775aec51e216a origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\fabric-api-0.161.0+26.2.jar",
+      "BOAT_PROBE_ARTIFACT id=entity_model_features version=3.3.11 sha256=26b13c2ee755932e74f80ecf6baf16a25582568ae7482cf472751abb98e7b14a origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\entity_model_features-3.3.11-26.2-fabric.jar",
+      "BOAT_PROBE_ARTIFACT id=entity_texture_features version=7.2.5 sha256=ac66cf294fbd2b1eb1576bdc2396cb096abcd54d9f8f39ecb1973abbc4e00488 origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\entity_texture_features-7.2.5-26.2-fabric.jar",
+      "BOAT_PROBE_ARTIFACT id=pyrite version=0.18.3+26.2 sha256=6c378632fcadd0501a41bd4af90aec58b8cf03a065f69cd9837160c97ed81831 origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\pyrite-0.18.3+26.2-fabric.jar",
+      "BOAT_PROBE_ARTIFACT id=promenade version=5.6.0 sha256=5d30b280c1f317c0a2fc192e6b17414a1d6b5f05bded3b8e00ad344609ebddb3 origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\promenade-5.6.0.jar",
+      "BOAT_PROBE_ARTIFACT id=wilderwild version=4.3 sha256=9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\WilderWild-4.3-mc26.2-fabric.jar",
+      "BOAT_PROBE_ARTIFACT id=frozenlib version=3.0.1 sha256=ef165a43e97b16b593d89b46733de12db38b09d47b8b9714d5043efb42666a2b origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\FrozenLib-3.0.1-mc26.2-fabric.jar",
+      "BOAT_PROBE_ARTIFACT id=betterend version=26.201.2 sha256=97dac860402e781ee50a5e10e1c3d299f9c84873e7426f53fab76918c1559425 origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\better-end-26.201.2.jar",
+      "BOAT_PROBE_ARTIFACT id=betternether version=26.201.2 sha256=ab8b71f3ff49dd5676351d336dc76bdb10ea39ca2101fc963f676bf1988f1a3a origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\better-nether-26.201.2.jar",
+      "BOAT_PROBE_ARTIFACT id=bclib version=26.201.2 sha256=797bb8dbde0c28265d08cc31581587e2c6eb2f344a20cde1654fb819cda1193d origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\bclib-26.201.2.jar",
+      "BOAT_PROBE_ARTIFACT id=wover version=26.201.2 sha256=e042ec2011d1613eaf9e7fc3e27179f31b1a1be704b4271d035589a69914b8a1 origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\worldweaver-26.201.2.jar",
+      "BOAT_PROBE_ARTIFACT id=wunderlib version=26.201.0 sha256=3502fb627f45944da34747933deccf1d5318fd2415d337becd04d25524d16d80 origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\wunderlib-26.201.0.jar",
+      "BOAT_PROBE_ARTIFACT id=biolith version=3.7.0-beta.1 sha256=4311d6005d4c08b2cecae9ed2b4a7e1731d313a2e759b738b6469ba8a0df40a9 origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\biolith-fabric-3.7.0-beta.1.jar",
+      "BOAT_PROBE_ARTIFACT id=bloomingnature version=1.1.10 sha256=e5abbb21723e3f1458b10c275e4aae8c396c4b8e881dcbccc86da5d3f234b01f origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\letsdo-bloomingnature-fabric-1.1.10.jar",
+      "BOAT_PROBE_ARTIFACT id=architectury version=21.1.11 sha256=a82d81e14a3766a5afbb3ea2bd82e748962d5f1a8ce690f8b6e23f64f0afd47f origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T061925Z-baseline-c7af9589\\fixture\\mods\\architectury-fabric-21.1.11.jar"
+    ],
+    "stage_checks": [
+      "BOAT_PROBE_CHECK stage=ON-1 PASS",
+      "BOAT_PROBE_CHECK stage=OFF PASS",
+      "BOAT_PROBE_CHECK stage=ON-2 PASS",
+      "BOAT_PROBE_CHECK stage=OFF-2 PASS"
+    ],
+    "resource_proofs": [
+      "BOAT_PROBE_RESOURCES stage=ON-1 optifine/cem/boat.jem=[file/FA+All_Extensions-v1.9.2.zip#5f93338a7f68ec3d8a75b8aba5f39a2172e51b3686da26572d81164df55ef4ea] effective=file/FA+All_Extensions-v1.9.2.zip#5f93338a7f68ec3d8a75b8aba5f39a2172e51b3686da26572d81164df55ef4ea optifine/cem/boat_patch.jem=[file/FA+All_Extensions-v1.9.2.zip#4d924242a3787ca708b0165961078bcf91bd455d0bb881a10b9a28a0a3fa725b] effective=file/FA+All_Extensions-v1.9.2.zip#4d924242a3787ca708b0165961078bcf91bd455d0bb881a10b9a28a0a3fa725b optifine/cem/chest_boat.jem=[file/FA+All_Extensions-v1.9.2.zip#83362a0b772d41b1b8e5b3afc842be9e6a16ff7418c3c7a60bc88e68d3f078ca] effective=file/FA+All_Extensions-v1.9.2.zip#83362a0b772d41b1b8e5b3afc842be9e6a16ff7418c3c7a60bc88e68d3f078ca",
+      "BOAT_PROBE_RESOURCES stage=OFF optifine/cem/boat.jem=[] effective=none optifine/cem/boat_patch.jem=[] effective=none optifine/cem/chest_boat.jem=[] effective=none",
+      "BOAT_PROBE_RESOURCES stage=ON-2 optifine/cem/boat.jem=[file/FA+All_Extensions-v1.9.2.zip#5f93338a7f68ec3d8a75b8aba5f39a2172e51b3686da26572d81164df55ef4ea] effective=file/FA+All_Extensions-v1.9.2.zip#5f93338a7f68ec3d8a75b8aba5f39a2172e51b3686da26572d81164df55ef4ea optifine/cem/boat_patch.jem=[file/FA+All_Extensions-v1.9.2.zip#4d924242a3787ca708b0165961078bcf91bd455d0bb881a10b9a28a0a3fa725b] effective=file/FA+All_Extensions-v1.9.2.zip#4d924242a3787ca708b0165961078bcf91bd455d0bb881a10b9a28a0a3fa725b optifine/cem/chest_boat.jem=[file/FA+All_Extensions-v1.9.2.zip#83362a0b772d41b1b8e5b3afc842be9e6a16ff7418c3c7a60bc88e68d3f078ca] effective=file/FA+All_Extensions-v1.9.2.zip#83362a0b772d41b1b8e5b3afc842be9e6a16ff7418c3c7a60bc88e68d3f078ca",
+      "BOAT_PROBE_RESOURCES stage=OFF-2 optifine/cem/boat.jem=[] effective=none optifine/cem/boat_patch.jem=[] effective=none optifine/cem/chest_boat.jem=[] effective=none"
+    ],
+    "root_contract_counts": {
+      "ON-1": 108,
+      "OFF": 108,
+      "ON-2": 108,
+      "OFF-2": 108
+    }
+  },
+  "patched": {
+    "run_id": "20261006T062204Z-patched-ab146954",
+    "mode": "patched",
+    "result": "PASS",
+    "process_exit_code": 0,
+    "fixture_override_count": 1,
+    "inputs": {
+      "run_id": "20261006T062204Z-patched-ab146954",
+      "mode": "patched",
+      "inventory": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\pipeline-validation-2026-10-06\\inventory.json",
+      "inventory_sha256": "f347c472964b58509c9810e752c13bc152a0473a2abd7975d000ec20018fccc2",
+      "minecraft": "26.2",
+      "client": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\versions\\26.2\\26.2-client.jar",
+      "client_sha256": "40896ee9f1e2bec3c934daac7e93d41e9e3d9c2f8ae0ca366d52ffbfd1afa290",
+      "loader": {
+        "loader": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\net\\fabricmc\\fabric-loader\\0.19.5\\fabric-loader-0.19.5.jar",
+        "loader_sha256": "93044e4dd46de5d8136701292f05e868da096d2c9fddb4793e4fdbcc63efc695",
+        "mixin": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\net\\fabricmc\\sponge-mixin\\0.17.4+mixin.0.8.7\\sponge-mixin-0.17.4+mixin.0.8.7.jar",
+        "mixin_version": "0.17.4+mixin.0.8.7",
+        "mixin_sha256": "1f0ae44db7295f8626f33b1dc0ad7f043d8954a8d6847247875fcc5dfcecc934"
+      },
+      "fixtureOverrideCount": 1,
+      "artifacts": [
+        {
+          "id": "fabric-api",
+          "version": "0.161.0+26.2",
+          "sha256": "e5b858ceb13290c274e31cb888ff5a1a40cb91067e7ffab0b5b775aec51e216a",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\P7dR8mSH\\ewUK83HI\\fabric-api-0.161.0+26.2.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\fabric-api-0.161.0+26.2.jar"
+        },
+        {
+          "id": "entity_model_features",
+          "version": "3.3.11",
+          "sha256": "26b13c2ee755932e74f80ecf6baf16a25582568ae7482cf472751abb98e7b14a",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\4I1XuqiY\\tgEvvPhr\\entity_model_features-3.3.11-26.2-fabric.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\entity_model_features-3.3.11-26.2-fabric.jar"
+        },
+        {
+          "id": "entity_texture_features",
+          "version": "7.2.5",
+          "sha256": "ac66cf294fbd2b1eb1576bdc2396cb096abcd54d9f8f39ecb1973abbc4e00488",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\BVzZfTc1\\b9RlCI9F\\entity_texture_features-7.2.5-26.2-fabric.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\entity_texture_features-7.2.5-26.2-fabric.jar"
+        },
+        {
+          "id": "pyrite",
+          "version": "0.18.3+26.2",
+          "sha256": "6c378632fcadd0501a41bd4af90aec58b8cf03a065f69cd9837160c97ed81831",
+          "source": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\mods\\pyrite-0.18.3+26.2-fabric.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\pyrite-0.18.3+26.2-fabric.jar"
+        },
+        {
+          "id": "promenade",
+          "version": "5.6.0",
+          "sha256": "5d30b280c1f317c0a2fc192e6b17414a1d6b5f05bded3b8e00ad344609ebddb3",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\GuE5FpvB\\ldF03LkA\\promenade-5.6.0.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\promenade-5.6.0.jar"
+        },
+        {
+          "id": "wilderwild",
+          "version": "4.3",
+          "sha256": "9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\AtHRJSUW\\jO1Bwxn3\\WilderWild-4.3-mc26.2-fabric.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\WilderWild-4.3-mc26.2-fabric.jar"
+        },
+        {
+          "id": "frozenlib",
+          "version": "3.0.1",
+          "sha256": "ef165a43e97b16b593d89b46733de12db38b09d47b8b9714d5043efb42666a2b",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\9KawNmQc\\C7hjRazM\\FrozenLib-3.0.1-mc26.2-fabric.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\FrozenLib-3.0.1-mc26.2-fabric.jar"
+        },
+        {
+          "id": "betterend",
+          "version": "26.201.2",
+          "sha256": "97dac860402e781ee50a5e10e1c3d299f9c84873e7426f53fab76918c1559425",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\gc8OEnCC\\VD4qwVUF\\better-end-26.201.2.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\better-end-26.201.2.jar"
+        },
+        {
+          "id": "betternether",
+          "version": "26.201.2",
+          "sha256": "ab8b71f3ff49dd5676351d336dc76bdb10ea39ca2101fc963f676bf1988f1a3a",
+          "source": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\mods\\better-nether-26.201.2.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\better-nether-26.201.2.jar"
+        },
+        {
+          "id": "bclib",
+          "version": "26.201.2",
+          "sha256": "797bb8dbde0c28265d08cc31581587e2c6eb2f344a20cde1654fb819cda1193d",
+          "source": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\mods\\bclib-26.201.2.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\bclib-26.201.2.jar"
+        },
+        {
+          "id": "wover",
+          "version": "26.201.2",
+          "sha256": "e042ec2011d1613eaf9e7fc3e27179f31b1a1be704b4271d035589a69914b8a1",
+          "source": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\mods\\worldweaver-26.201.2.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\worldweaver-26.201.2.jar"
+        },
+        {
+          "id": "wunderlib",
+          "version": "26.201.0",
+          "sha256": "3502fb627f45944da34747933deccf1d5318fd2415d337becd04d25524d16d80",
+          "source": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\mods\\wunderlib-26.201.0.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\wunderlib-26.201.0.jar"
+        },
+        {
+          "id": "biolith",
+          "version": "3.7.0-beta.1",
+          "sha256": "4311d6005d4c08b2cecae9ed2b4a7e1731d313a2e759b738b6469ba8a0df40a9",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\iGEl6Crx\\qSLRk6dS\\biolith-fabric-3.7.0-beta.1.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\biolith-fabric-3.7.0-beta.1.jar"
+        },
+        {
+          "id": "bloomingnature",
+          "version": "1.1.10",
+          "sha256": "e5abbb21723e3f1458b10c275e4aae8c396c4b8e881dcbccc86da5d3f234b01f",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\pack\\custom\\letsdo-bloomingnature-fabric-1.1.10.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\letsdo-bloomingnature-fabric-1.1.10.jar"
+        },
+        {
+          "id": "architectury",
+          "version": "21.1.11",
+          "sha256": "a82d81e14a3766a5afbb3ea2bd82e748962d5f1a8ce690f8b6e23f64f0afd47f",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\lhGA9TYQ\\w3CUWoxd\\architectury-fabric-21.1.11.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\architectury-fabric-21.1.11.jar"
+        },
+        {
+          "id": "lampas2-overrides",
+          "version": "1.0.0",
+          "sha256": "7efacfbb125d93ab9eb17de2d796c61feaf3d04547cd62294f1ba0f5ad319a71",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\libs\\lampas2-overrides-1.0.0.jar",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\lampas2-overrides-1.0.0.jar"
+        },
+        {
+          "key": "fresh-animations-extensions",
+          "sha256": "027acba5f64c9d1bf5ccb8daecb7fc756961bfeee866434a0ee5f7809a48d326",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\YAVTU8mK\\R5ZGSF8A\\FA+All_Extensions-v1.9.2.zip",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\resourcepacks\\FA+All_Extensions-v1.9.2.zip"
+        },
+        {
+          "key": "fresh-animations",
+          "sha256": "cf9f17a2977e171b33cb0b598bc4357dd0383e09c10d5f768ff17c12d0a028ee",
+          "source": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\50dA9Sha\\RGIzA5em\\FreshAnimations_v1.10.5.zip",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\resourcepacks\\FreshAnimations_v1.10.5.zip"
+        },
+        {
+          "key": "fa-player-extension",
+          "sha256": "9ee3ae5b2fe5cd980e4041429dc66d88243f5f2420e2814e5361c746ad937f33",
+          "source": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\resourcepacks\\FA+Player-v1.1.zip",
+          "fixture": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\resourcepacks\\FA+Player-v1.1.zip"
+        }
+      ],
+      "probe_sha256": "0fd3894cc880b8b944695f0041d2366e1e57d4b6ff9f7297f578612354e9d459",
+      "fa_mask_sha256": "4d924242a3787ca708b0165961078bcf91bd455d0bb881a10b9a28a0a3fa725b",
+      "probe_source_sha256": "62d86d4ff073b0a308c973d184dac85fabc43492875d3370c91c979f42426c02",
+      "runner_sha256": "2fd92152e6bbf359a73a28814fa497b0800c1ce6e61e3c6b95d62eb5a5d86a2c",
+      "harnessFrozenLibPackDownloading": "pack_downloading.disabled"
+    },
+    "files": {
+      "build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\inputs.json": {
+        "sha256": "0efe1072ec61c77be8241c1885d72a24c9cc7e81dd356d330d41a3d6677f3109",
+        "size_bytes": 10344
+      },
+      "build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\launch-arguments.json": {
+        "sha256": "b65c04ffdd5e8602cd28adbf6e2eff5aa182761271ba1f60a91dd07676991858",
+        "size_bytes": 15166
+      },
+      "build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\runtime-artifacts.tsv": {
+        "sha256": "d29d6cda2d92381dcc420234611edf4f878cf828c00b533e142cccec952aa228",
+        "size_bytes": 3709
+      },
+      "build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\client-process.log": {
+        "sha256": "f243dd06ea1dd09aaef2a2b037fc681157cbac533363d0ad73d07c50aeb530b2",
+        "size_bytes": 562754
+      },
+      "build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\process-exit.json": {
+        "sha256": "302c5fcf0227d427ee240abdbd2a948557ea7ab09699f9c3bdeb0f98b67375ce",
+        "size_bytes": 18
+      },
+      "build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\boat-water-mask-probe-result.txt": {
+        "sha256": "f925510a3897caef550196c75a7c6c2b64382d0f885ed2a8584e3df9e0176e99",
+        "size_bytes": 143152
+      },
+      "build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\compile\\BoatWaterMaskProbe.java": {
+        "sha256": "62d86d4ff073b0a308c973d184dac85fabc43492875d3370c91c979f42426c02",
+        "size_bytes": 36559
+      }
+    },
+    "runtime_artifacts": [
+      "BOAT_PROBE_ARTIFACT id=fabric-api version=0.161.0+26.2 sha256=e5b858ceb13290c274e31cb888ff5a1a40cb91067e7ffab0b5b775aec51e216a origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\fabric-api-0.161.0+26.2.jar",
+      "BOAT_PROBE_ARTIFACT id=entity_model_features version=3.3.11 sha256=26b13c2ee755932e74f80ecf6baf16a25582568ae7482cf472751abb98e7b14a origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\entity_model_features-3.3.11-26.2-fabric.jar",
+      "BOAT_PROBE_ARTIFACT id=entity_texture_features version=7.2.5 sha256=ac66cf294fbd2b1eb1576bdc2396cb096abcd54d9f8f39ecb1973abbc4e00488 origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\entity_texture_features-7.2.5-26.2-fabric.jar",
+      "BOAT_PROBE_ARTIFACT id=pyrite version=0.18.3+26.2 sha256=6c378632fcadd0501a41bd4af90aec58b8cf03a065f69cd9837160c97ed81831 origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\pyrite-0.18.3+26.2-fabric.jar",
+      "BOAT_PROBE_ARTIFACT id=promenade version=5.6.0 sha256=5d30b280c1f317c0a2fc192e6b17414a1d6b5f05bded3b8e00ad344609ebddb3 origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\promenade-5.6.0.jar",
+      "BOAT_PROBE_ARTIFACT id=wilderwild version=4.3 sha256=9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\WilderWild-4.3-mc26.2-fabric.jar",
+      "BOAT_PROBE_ARTIFACT id=frozenlib version=3.0.1 sha256=ef165a43e97b16b593d89b46733de12db38b09d47b8b9714d5043efb42666a2b origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\FrozenLib-3.0.1-mc26.2-fabric.jar",
+      "BOAT_PROBE_ARTIFACT id=betterend version=26.201.2 sha256=97dac860402e781ee50a5e10e1c3d299f9c84873e7426f53fab76918c1559425 origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\better-end-26.201.2.jar",
+      "BOAT_PROBE_ARTIFACT id=betternether version=26.201.2 sha256=ab8b71f3ff49dd5676351d336dc76bdb10ea39ca2101fc963f676bf1988f1a3a origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\better-nether-26.201.2.jar",
+      "BOAT_PROBE_ARTIFACT id=bclib version=26.201.2 sha256=797bb8dbde0c28265d08cc31581587e2c6eb2f344a20cde1654fb819cda1193d origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\bclib-26.201.2.jar",
+      "BOAT_PROBE_ARTIFACT id=wover version=26.201.2 sha256=e042ec2011d1613eaf9e7fc3e27179f31b1a1be704b4271d035589a69914b8a1 origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\worldweaver-26.201.2.jar",
+      "BOAT_PROBE_ARTIFACT id=wunderlib version=26.201.0 sha256=3502fb627f45944da34747933deccf1d5318fd2415d337becd04d25524d16d80 origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\wunderlib-26.201.0.jar",
+      "BOAT_PROBE_ARTIFACT id=biolith version=3.7.0-beta.1 sha256=4311d6005d4c08b2cecae9ed2b4a7e1731d313a2e759b738b6469ba8a0df40a9 origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\biolith-fabric-3.7.0-beta.1.jar",
+      "BOAT_PROBE_ARTIFACT id=bloomingnature version=1.1.10 sha256=e5abbb21723e3f1458b10c275e4aae8c396c4b8e881dcbccc86da5d3f234b01f origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\letsdo-bloomingnature-fabric-1.1.10.jar",
+      "BOAT_PROBE_ARTIFACT id=architectury version=21.1.11 sha256=a82d81e14a3766a5afbb3ea2bd82e748962d5f1a8ce690f8b6e23f64f0afd47f origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\architectury-fabric-21.1.11.jar",
+      "BOAT_PROBE_ARTIFACT id=lampas2-overrides version=1.0.0 sha256=7efacfbb125d93ab9eb17de2d796c61feaf3d04547cd62294f1ba0f5ad319a71 origin=PATH path=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\boat-mask-probe\\20261006T062204Z-patched-ab146954\\fixture\\mods\\lampas2-overrides-1.0.0.jar"
+    ],
+    "stage_checks": [
+      "BOAT_PROBE_CHECK stage=ON-1 PASS",
+      "BOAT_PROBE_CHECK stage=OFF PASS",
+      "BOAT_PROBE_CHECK stage=ON-2 PASS",
+      "BOAT_PROBE_CHECK stage=OFF-2 PASS"
+    ],
+    "resource_proofs": [
+      "BOAT_PROBE_RESOURCES stage=ON-1 optifine/cem/boat.jem=[file/FA+All_Extensions-v1.9.2.zip#5f93338a7f68ec3d8a75b8aba5f39a2172e51b3686da26572d81164df55ef4ea] effective=file/FA+All_Extensions-v1.9.2.zip#5f93338a7f68ec3d8a75b8aba5f39a2172e51b3686da26572d81164df55ef4ea optifine/cem/boat_patch.jem=[file/FA+All_Extensions-v1.9.2.zip#4d924242a3787ca708b0165961078bcf91bd455d0bb881a10b9a28a0a3fa725b] effective=file/FA+All_Extensions-v1.9.2.zip#4d924242a3787ca708b0165961078bcf91bd455d0bb881a10b9a28a0a3fa725b optifine/cem/chest_boat.jem=[file/FA+All_Extensions-v1.9.2.zip#83362a0b772d41b1b8e5b3afc842be9e6a16ff7418c3c7a60bc88e68d3f078ca] effective=file/FA+All_Extensions-v1.9.2.zip#83362a0b772d41b1b8e5b3afc842be9e6a16ff7418c3c7a60bc88e68d3f078ca",
+      "BOAT_PROBE_RESOURCES stage=OFF optifine/cem/boat.jem=[] effective=none optifine/cem/boat_patch.jem=[] effective=none optifine/cem/chest_boat.jem=[] effective=none",
+      "BOAT_PROBE_RESOURCES stage=ON-2 optifine/cem/boat.jem=[file/FA+All_Extensions-v1.9.2.zip#5f93338a7f68ec3d8a75b8aba5f39a2172e51b3686da26572d81164df55ef4ea] effective=file/FA+All_Extensions-v1.9.2.zip#5f93338a7f68ec3d8a75b8aba5f39a2172e51b3686da26572d81164df55ef4ea optifine/cem/boat_patch.jem=[file/FA+All_Extensions-v1.9.2.zip#4d924242a3787ca708b0165961078bcf91bd455d0bb881a10b9a28a0a3fa725b] effective=file/FA+All_Extensions-v1.9.2.zip#4d924242a3787ca708b0165961078bcf91bd455d0bb881a10b9a28a0a3fa725b optifine/cem/chest_boat.jem=[file/FA+All_Extensions-v1.9.2.zip#83362a0b772d41b1b8e5b3afc842be9e6a16ff7418c3c7a60bc88e68d3f078ca] effective=file/FA+All_Extensions-v1.9.2.zip#83362a0b772d41b1b8e5b3afc842be9e6a16ff7418c3c7a60bc88e68d3f078ca",
+      "BOAT_PROBE_RESOURCES stage=OFF-2 optifine/cem/boat.jem=[] effective=none optifine/cem/boat_patch.jem=[] effective=none optifine/cem/chest_boat.jem=[] effective=none"
+    ],
+    "root_contract_counts": {
+      "ON-1": 108,
+      "OFF": 108,
+      "ON-2": 108,
+      "OFF-2": 108
+    }
+  },
+  "comparison": {
+    "ON-1": {
+      "renderers": 134,
+      "supported_mask_counts": {
+        "pyrite": 52,
+        "promenade": 6,
+        "wilderwild": 10,
+        "betterend": 18,
+        "betternether": 22
+      },
+      "supported_masks": 108,
+      "baseline_custom_animated_masks": 108,
+      "patched_vanilla_geometry_masks": 108,
+      "matching_recorded_hull_signature_prefixes": 134,
+      "hull_signature_prefix_hex_length": 8,
+      "identical_excluded_renderer_snapshots": 26
+    },
+    "OFF": {
+      "renderers": 134,
+      "supported_mask_counts": {
+        "pyrite": 52,
+        "promenade": 6,
+        "wilderwild": 10,
+        "betterend": 18,
+        "betternether": 22
+      },
+      "supported_masks": 108,
+      "baseline_custom_animated_masks": 0,
+      "patched_vanilla_geometry_masks": 108,
+      "matching_recorded_hull_signature_prefixes": 134,
+      "hull_signature_prefix_hex_length": 8,
+      "identical_excluded_renderer_snapshots": 26
+    },
+    "ON-2": {
+      "renderers": 134,
+      "supported_mask_counts": {
+        "pyrite": 52,
+        "promenade": 6,
+        "wilderwild": 10,
+        "betterend": 18,
+        "betternether": 22
+      },
+      "supported_masks": 108,
+      "baseline_custom_animated_masks": 108,
+      "patched_vanilla_geometry_masks": 108,
+      "matching_recorded_hull_signature_prefixes": 134,
+      "hull_signature_prefix_hex_length": 8,
+      "identical_excluded_renderer_snapshots": 26
+    },
+    "OFF-2": {
+      "renderers": 134,
+      "supported_mask_counts": {
+        "pyrite": 52,
+        "promenade": 6,
+        "wilderwild": 10,
+        "betterend": 18,
+        "betternether": 22
+      },
+      "supported_masks": 108,
+      "baseline_custom_animated_masks": 0,
+      "patched_vanilla_geometry_masks": 108,
+      "matching_recorded_hull_signature_prefixes": 134,
+      "hull_signature_prefix_hex_length": 8,
+      "identical_excluded_renderer_snapshots": 26
+    }
+  },
+  "bytecode_contracts": {
+    "emf": [
+      "EMFModelPartRoot.getRoot()Ltraben/entity_model_features/models/parts/EMFModelPartRoot;",
+      "EMFModelPartRoot.containsCustomModel:Z",
+      "EMFModelPartRoot.containsCustomAnims:Z",
+      "EMFModelPartRoot.directoryContext:Ltraben/entity_model_features/utils/EMFDirectoryHandler;",
+      "EMFDirectoryHandler.getFinalFileLocation()Ljava/lang/String;"
+    ],
+    "wilderwild": "Ten audited main layer paths and ten direct BoatRenderer(Context, ModelLayerLocation) constructors",
+    "frozenlib": "registerBoats delegates to BoatModel.createBoatModel and BoatModel.createChestBoatModel",
+    "javap_files": {
+      "build\\pipeline-validation-2026-10-06\\boat.emf3.3.11-model-loader.javap.txt": {
+        "sha256": "56262fe1254fbec02d948f1d3f84a890af6478bece0a9870e639f4a6d07f5fc9",
+        "size_bytes": 1655
+      },
+      "build\\pipeline-validation-2026-10-06\\boat.emf3.3.11-root.javap.txt": {
+        "sha256": "de2e9ef81e328c39b8c10c54e81c255c4794a1dd7397a73a57e4bbf131885aa1",
+        "size_bytes": 12507
+      },
+      "build\\pipeline-validation-2026-10-06\\boat.frozenlib3.0.1-download-setting.javap.txt": {
+        "sha256": "458bb8382e9280fc8e8f9feed763f5d595dbb7fffec022a5477e67b77f0d5743",
+        "size_bytes": 7779
+      },
+      "build\\pipeline-validation-2026-10-06\\boat.frozenlib3.0.1-model-layers.javap.txt": {
+        "sha256": "775719c9e0be4cbb8b8c4d862f6d378864f9e82255f60a86314dc71764823329",
+        "size_bytes": 3877
+      },
+      "build\\pipeline-validation-2026-10-06\\boat.wilderwild4.3-client.javap.txt": {
+        "sha256": "f7d185ed38f388dfd5aa34f1d3d31634b89e98b8a64d1b45ef74f107b904ba87",
+        "size_bytes": 3268
+      },
+      "build\\pipeline-validation-2026-10-06\\boat.wilderwild4.3-entities.javap.txt": {
+        "sha256": "c9dd442982ed12081b7db2427e98b9fcb332578723d778786ac81cc80678e73b",
+        "size_bytes": 56742
+      },
+      "build\\pipeline-validation-2026-10-06\\boat.wilderwild4.3-fabric-client.javap.txt": {
+        "sha256": "4db15ff0c1f67b17624288d32489b822b4f294161cc72815c65266e11349ef21",
+        "size_bytes": 903
+      },
+      "build\\pipeline-validation-2026-10-06\\boat.wilderwild4.3-layers.javap.txt": {
+        "sha256": "c2504000834630724726e6879d93660188a2a6307feaa71b398a6091c48a823b",
+        "size_bytes": 62181
+      },
+      "build\\pipeline-validation-2026-10-06\\boat.wilderwild4.3-renderers.javap.txt": {
+        "sha256": "b3b8d090cd4c4e67db7a50fb36368aa7eeed9aa1e683b7910df09b0ca8832506",
+        "size_bytes": 9998
+      }
+    }
+  },
+  "verification": {
+    "boat_junit": {
+      "name": "lampas2overrides.client.boatmask.BoatWaterMaskCompatibilityTest",
+      "tests": "10",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-06T06:20:17.604Z",
+      "hostname": "YUUKA",
+      "time": "0.152"
+    },
+    "boat_junit_report_sha256": "dcf7ac9e8f66a1c83b8b4d5ab1eaba5a6e2687095f9a78c4553d03ffc2060850",
+    "runner_negative_identity_checks": {
+      "incomplete_identity": {
+        "exit_code": 1,
+        "error": "FAIL: Explicit EMF input requires artifact, version and SHA-256 together"
+      },
+      "wrong_hash": {
+        "exit_code": 1,
+        "error": "FAIL: Inventory artifact hash mismatch: C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\4I1XuqiY\\tgEvvPhr\\entity_model_features-3.3.11-26.2-fabric.jar; actual=26b13c2ee755932e74f80ecf6baf16a25582568ae7482cf472751abb98e7b14a"
+      },
+      "wrong_metadata_version": {
+        "exit_code": 1,
+        "error": "FAIL: Inventory Fabric identity mismatch: C:\\Users\\markj\\source\\repos\\lampas-pipeline\\.lampas\\cache\\modrinth\\4I1XuqiY\\tgEvvPhr\\entity_model_features-3.3.11-26.2-fabric.jar"
+      }
+    },
+    "frozenlib_config_helper_cases_passed": 4,
+    "production_mixin_log": [
+      "[14:23:38] [Render thread/INFO]: Mixing BoatRendererMixin from lampas2-overrides.boatmask.mixins.json into net.minecraft.client.renderer.entity.BoatRenderer"
+    ]
+  },
+  "limits": [
+    "Structural client model and reload behavior only; no world loaded",
+    "Current provider movement, mounted rowing, screenshots, shaders and live installed instance unverified",
+    "Historical EMF3.3.5/3.3.8 visual matrix is not current3.3.11 acceptance"
+  ]
+}

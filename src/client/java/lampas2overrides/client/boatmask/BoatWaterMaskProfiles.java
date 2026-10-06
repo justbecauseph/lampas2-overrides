@@ -25,6 +25,8 @@ public final class BoatWaterMaskProfiles {
 	public static final String EMF_MOD_ID = "entity_model_features";
 	public static final String EXPECTED_PYRITE_ARTIFACT_SHA256 =
 		"6c378632fcadd0501a41bd4af90aec58b8cf03a065f69cd9837160c97ed81831";
+	public static final String EXPECTED_WILDER_WILD_4_3_ARTIFACT_SHA256 =
+		"9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c";
 
 	private static final Map<String, EmfArtifactProfile> EMF_ARTIFACT_PROFILES = Map.of(
 		"3.3.5", new EmfArtifactProfile(
@@ -32,8 +34,11 @@ public final class BoatWaterMaskProfiles {
 			"72b2d489d03bf2ea07b5693ef26cd03572a42dda181e095aed85b3ab39cce549"),
 		"3.3.8", new EmfArtifactProfile(
 			"3.3.8",
-			"714686cefe56a7e46fa1e13ecdeddcb55ddfbb9715ae5b1ffd7573c1928d9fdd"));
-	private static final Map<String, ProviderProfile> PROVIDERS = providers();
+			"714686cefe56a7e46fa1e13ecdeddcb55ddfbb9715ae5b1ffd7573c1928d9fdd"),
+		"3.3.11", new EmfArtifactProfile(
+			"3.3.11",
+			"26b13c2ee755932e74f80ecf6baf16a25582568ae7482cf472751abb98e7b14a"));
+	private static final Map<ProviderKey, ProviderProfile> PROVIDERS = providers();
 	private static final Map<ModContainer, ArtifactResult> ARTIFACT_RESULTS =
 		Collections.synchronizedMap(new IdentityHashMap<>());
 
@@ -130,8 +135,13 @@ public final class BoatWaterMaskProfiles {
 	}
 
 	public static boolean supportedProviderVersion(String modId, String version) {
-		ProviderProfile profile = PROVIDERS.get(modId);
-		return profile != null && profile.expectedVersion().equals(version);
+		return providerProfile(modId, version) != null;
+	}
+
+	public static boolean matchesProviderProfile(String modId, String version, String artifactSha256) {
+		ProviderProfile profile = providerProfile(modId, version);
+		return profile != null && (profile.artifactSha256() == null
+			|| profile.artifactSha256().equalsIgnoreCase(artifactSha256));
 	}
 
 	public static boolean hasSupportedProvider(FabricLoader loader) {
@@ -144,15 +154,17 @@ public final class BoatWaterMaskProfiles {
 	}
 
 	public static boolean installedProviderMatches(FabricLoader loader, String modId) {
-		ProviderProfile profile = PROVIDERS.get(modId);
-		return profile != null && loader.getModContainer(modId)
-			.map(container -> profile.expectedVersion().equals(container.getMetadata().getVersion().getFriendlyString())
-				&& (profile.artifactSha256() == null || matchesArtifactHash(container, profile.artifactSha256())))
+		return loader.getModContainer(modId)
+			.map(container -> {
+				ProviderProfile profile = providerProfile(modId, container.getMetadata().getVersion().getFriendlyString());
+				return profile != null
+					&& (profile.artifactSha256() == null || matchesArtifactHash(container, profile.artifactSha256()));
+			})
 			.orElse(false);
 	}
 
 	public static boolean isAuditedLayer(String modId, String version, String layer, String modelNamespace, String modelPath) {
-		ProviderProfile profile = PROVIDERS.get(modId);
+		ProviderProfile profile = providerProfile(modId, version);
 		return profile != null
 			&& profile.expectedVersion().equals(version)
 			&& "main".equals(layer)
@@ -161,8 +173,14 @@ public final class BoatWaterMaskProfiles {
 	}
 
 	public static boolean requiredModsMatch(FabricLoader loader, String modId) {
-		ProviderProfile profile = PROVIDERS.get(modId);
-		return profile != null && requiredModsMatch(loader, profile);
+		return loader.getModContainer(modId).map(container -> {
+			ProviderProfile profile = providerProfile(modId, container.getMetadata().getVersion().getFriendlyString());
+			return profile != null && requiredModsMatch(loader, profile);
+		}).orElse(false);
+	}
+
+	private static ProviderProfile providerProfile(String modId, String version) {
+		return PROVIDERS.get(new ProviderKey(modId, version));
 	}
 
 	private static boolean requiredModsMatch(FabricLoader loader, ProviderProfile profile) {
@@ -193,9 +211,9 @@ public final class BoatWaterMaskProfiles {
 		return HexFormat.of().formatHex(digest.digest());
 	}
 
-	private static Map<String, ProviderProfile> providers() {
-		Map<String, ProviderProfile> profiles = new LinkedHashMap<>();
-		profiles.put("pyrite", new ProviderProfile("pyrite", "0.18.3+26.2", Map.of(), EXPECTED_PYRITE_ARTIFACT_SHA256, Set.of(
+	private static Map<ProviderKey, ProviderProfile> providers() {
+		Map<ProviderKey, ProviderProfile> profiles = new LinkedHashMap<>();
+		addProvider(profiles, new ProviderProfile("pyrite", "0.18.3+26.2", Map.of(), EXPECTED_PYRITE_ARTIFACT_SHA256, Set.of(
 			"boat/azalea", "boat/black_stained", "boat/blue_stained", "boat/brown_mushroom",
 			"boat/brown_stained", "boat/cyan_stained", "boat/dragon_stained", "boat/glow_stained",
 			"boat/gray_stained", "boat/green_stained", "boat/honey_stained", "boat/light_blue_stained",
@@ -211,18 +229,27 @@ public final class BoatWaterMaskProfiles {
 			"chest_boat/pink_stained", "chest_boat/poisonous_stained", "chest_boat/purple_stained",
 			"chest_boat/red_mushroom", "chest_boat/red_stained", "chest_boat/rose_stained",
 			"chest_boat/star_stained", "chest_boat/white_stained", "chest_boat/yellow_stained")));
-		profiles.put("promenade", new ProviderProfile("promenade", "5.6.0", Map.of(), null, boatPairPaths("sakura", "maple", "palm")));
-		profiles.put("wilderwild", new ProviderProfile("wilderwild", "4.2.11-mc26.2", Map.of(), null,
+		addProvider(profiles, new ProviderProfile("promenade", "5.6.0", Map.of(), null, boatPairPaths("sakura", "maple", "palm")));
+		addProvider(profiles, new ProviderProfile("wilderwild", "4.2.11-mc26.2", Map.of(), null,
 			boatPairPaths("baobab", "willow", "cypress", "palm", "maple")));
-		profiles.put("betterend", new ProviderProfile("betterend", "26.201.2",
+		addProvider(profiles, new ProviderProfile("wilderwild", "4.3", Map.of(), EXPECTED_WILDER_WILD_4_3_ARTIFACT_SHA256,
+			boatPairPaths("baobab", "willow", "cypress", "palm", "maple")));
+		addProvider(profiles, new ProviderProfile("betterend", "26.201.2",
 			Map.of("wover-item", "26.201.2"), null, fullItemBoatPairPaths(
 				"dragon_tree", "helix_tree", "jellyshroom", "lacugrove", "lucernia", "mossy_glowshroom",
 				"pythadendron", "tenanea", "umbrella_tree")));
-		profiles.put("betternether", new ProviderProfile("betternether", "26.201.2",
+		addProvider(profiles, new ProviderProfile("betternether", "26.201.2",
 			Map.of("wover-item", "26.201.2"), null, fullItemBoatPairPaths(
 				"anchor_tree", "crimson", "gloomwood", "mushroom_fir", "nether_mushroom", "nether_sakura",
 				"rubeus", "stalagnate", "warped", "wart", "willow")));
 		return Map.copyOf(profiles);
+	}
+
+	private static void addProvider(Map<ProviderKey, ProviderProfile> profiles, ProviderProfile profile) {
+		profiles.put(new ProviderKey(profile.modId(), profile.expectedVersion()), profile);
+	}
+
+	private record ProviderKey(String modId, String version) {
 	}
 
 	private static Set<String> boatPairPaths(String... names) {

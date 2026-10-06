@@ -1,5 +1,8 @@
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.api.metadata.ModOrigin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.object.boat.BoatModel;
@@ -88,6 +91,7 @@ public final class BoatWaterMaskProbe implements ClientModInitializer {
     private final boolean strict = Boolean.parseBoolean(System.getProperty("boat.probe.strict", "true"));
     private final String emfProbeVersion = System.getProperty("boat.probe.emf.version", "");
     private final String emfProbeSha256 = System.getProperty("boat.probe.emf.sha256", "");
+    private final boolean baseline = "baseline".equals(System.getProperty("boat.probe.mode", "patched"));
     private Minecraft client;
     private int stageIndex;
     private boolean hadCheckFailures;
@@ -105,8 +109,59 @@ public final class BoatWaterMaskProbe implements ClientModInitializer {
                     + " emfSha256=" + safe(emfProbeSha256);
             resultLines.add(inputLine);
             System.out.println(inputLine);
-            mc.execute(this::startStage);
+            mc.execute(() -> {
+                try {
+                    inspectRuntimeArtifacts();
+                    startStage();
+                } catch (Throwable error) {
+                    failAndStop("runtime provenance", error);
+                }
+            });
         });
+    }
+
+    private void inspectRuntimeArtifacts() throws IOException {
+        FabricLoader loader = FabricLoader.getInstance();
+        Optional<ModContainer> override = loader.getModContainer("lampas2-overrides");
+        if (baseline && override.isPresent()) {
+            throw new IllegalStateException("baseline must contain no lampas2-overrides mod");
+        }
+        if (!baseline && override.isEmpty()) {
+            throw new IllegalStateException("patched probe requires the selected production JAR");
+        }
+        Path manifest = Path.of(System.getProperty("boat.probe.artifacts"));
+        for (String line : Files.readAllLines(manifest, StandardCharsets.UTF_8)) {
+            String[] input = line.split("\\t", 4);
+            if (input.length != 4) {
+                throw new IllegalStateException("invalid artifact manifest line");
+            }
+            ModContainer container = loader.getModContainer(input[0]).orElseThrow();
+            ModOrigin origin = container.getOrigin();
+            if (origin.getKind() != ModOrigin.Kind.PATH || origin.getPaths().size() != 1) {
+                throw new IllegalStateException("expected one PATH origin for " + input[0]);
+            }
+            Path actual = origin.getPaths().getFirst().toRealPath();
+            Path expected = Path.of(input[3]).toRealPath();
+            if (!actual.equals(expected) || !Files.isRegularFile(actual)
+                    || !container.getMetadata().getVersion().getFriendlyString().equals(input[1])) {
+                throw new IllegalStateException("runtime artifact identity mismatch for " + input[0]);
+            }
+            String hash;
+            try (InputStream stream = Files.newInputStream(actual)) {
+                hash = sha256(stream);
+            }
+            if (!hash.equals(input[2])) {
+                throw new IllegalStateException("runtime artifact SHA-256 mismatch for " + input[0]);
+            }
+            String evidence = "BOAT_PROBE_ARTIFACT id=" + input[0] + " version=" + input[1]
+                    + " sha256=" + hash + " origin=PATH path=" + actual;
+            resultLines.add(evidence);
+            System.out.println(evidence);
+        }
+        String evidence = "BOAT_PROBE_OVERRIDE mode=" + (baseline ? "baseline" : "patched")
+                + " count=" + (override.isPresent() ? 1 : 0);
+        resultLines.add(evidence);
+        System.out.println(evidence);
     }
 
     private void startStage() {
@@ -213,6 +268,17 @@ public final class BoatWaterMaskProbe implements ClientModInitializer {
                     body.emf, water.emf, water.root != null && vanillaPatchGeometry(water.root),
                     body.rootClass, water.rootClass, body.emfName, water.emfName,
                     geometrySignature(body.root), geometrySignature(water.root)));
+            if (patch != null && EXPECTED_PROVIDER_NAMESPACES.contains(key.getNamespace())) {
+                String contract = "BOAT_PROBE_ROOT stage=" + STAGES.get(stageIndex).name + " id=" + id
+                        + " hull=" + body.contract + " water=" + water.contract;
+                resultLines.add(contract);
+                System.out.println(contract);
+                if (baseline && STAGES.get(stageIndex).faEnabled
+                        && !water.contract.equals("custom=true,anims=true,selected=minecraft:optifine/cem/boat_patch.jem")) {
+                    throw new IllegalStateException("baseline does not have audited custom water root for " + id
+                            + ": " + water.contract);
+                }
+            }
         }
         snapshots.sort(Comparator.comparing(s -> s.id));
         return snapshots;
@@ -231,8 +297,8 @@ public final class BoatWaterMaskProbe implements ClientModInitializer {
         if (stage.faEnabled) {
             Snapshot cyanBoat = byId.get("pyrite:cyan_stained_boat");
             Snapshot cyanChestBoat = byId.get("pyrite:cyan_stained_chest_boat");
-            require(errors, cyanBoat, "pyrite cyan ordinary", false, false, true);
-            require(errors, cyanChestBoat, "pyrite cyan chest", false, false, true);
+            require(errors, cyanBoat, "pyrite cyan ordinary", false, baseline, !baseline);
+            require(errors, cyanChestBoat, "pyrite cyan chest", false, baseline, !baseline);
 
             Snapshot oakBoat = byId.get("minecraft:oak_boat");
             Snapshot oakChestBoat = byId.get("minecraft:oak_chest_boat");
@@ -248,7 +314,7 @@ public final class BoatWaterMaskProbe implements ClientModInitializer {
                 if (!snapshot.hasPatch || !snapshot.id.startsWith("pyrite:")) {
                     continue;
                 }
-                require(errors, snapshot, snapshot.id + " Pyrite mask", false, false, true);
+                require(errors, snapshot, snapshot.id + " Pyrite mask", false, baseline, !baseline);
             }
             checkProviderMaskCounts(errors, snapshots);
             checkOtherProviderMasks(errors, snapshots);
@@ -298,12 +364,12 @@ public final class BoatWaterMaskProbe implements ClientModInitializer {
         }
     }
 
-    private static void checkOtherProviderMasks(List<String> errors, List<Snapshot> snapshots) {
+    private void checkOtherProviderMasks(List<String> errors, List<Snapshot> snapshots) {
         for (Snapshot snapshot : snapshots) {
             if (!snapshot.hasPatch || !EXPECTED_PROVIDER_NAMESPACES.contains(namespace(snapshot.id))) {
                 continue;
             }
-            require(errors, snapshot, snapshot.id + " provider mask", false, false, true);
+            require(errors, snapshot, snapshot.id + " provider mask", false, baseline, !baseline);
         }
     }
 
@@ -541,13 +607,14 @@ public final class BoatWaterMaskProbe implements ClientModInitializer {
 
     private static RootInfo rootInfo(Object model) throws ReflectiveOperationException {
         if (model == null) {
-            return new RootInfo(null, false, "", "");
+            return new RootInfo(null, false, "", "", "absent");
         }
         Method rootMethod = model.getClass().getMethod("root");
         Object root = rootMethod.invoke(model);
         boolean emf = false;
         Object emfRoot = null;
         String emfName = "";
+        String contract = "plain";
         try {
             Class<?> emfModel = Class.forName("traben.entity_model_features.models.IEMFModel");
             if (emfModel.isInstance(model)) {
@@ -556,13 +623,19 @@ public final class BoatWaterMaskProbe implements ClientModInitializer {
                 if (emfRoot != null) {
                     Field modelName = findField(emfRoot.getClass(), "modelName");
                     emfName = String.valueOf(modelName.get(emfRoot));
+                    Object directory = findField(emfRoot.getClass(), "directoryContext").get(emfRoot);
+                    String location = directory == null ? "none" : String.valueOf(
+                            directory.getClass().getMethod("getFinalFileLocation").invoke(directory));
+                    contract = "custom=" + findField(emfRoot.getClass(), "containsCustomModel").getBoolean(emfRoot)
+                            + ",anims=" + findField(emfRoot.getClass(), "containsCustomAnims").getBoolean(emfRoot)
+                            + ",selected=" + location;
                 }
             }
         } catch (ClassNotFoundException ignored) {
             // EMF is an optional fixture; vanilla-only runs remain useful.
         }
         String rootClass = root == null ? "" : root.getClass().getName();
-        return new RootInfo(root, emf, rootClass, emfName);
+        return new RootInfo(root, emf, rootClass, emfName, contract);
     }
 
     private static boolean vanillaPatchGeometry(Object root) {
@@ -695,7 +768,7 @@ public final class BoatWaterMaskProbe implements ClientModInitializer {
 
     private record Stage(String name, boolean faEnabled) {}
 
-    private record RootInfo(Object root, boolean emf, String rootClass, String emfName) {}
+    private record RootInfo(Object root, boolean emf, String rootClass, String emfName, String contract) {}
 
     private record Snapshot(String id, String rendererClass, boolean hasPatch, boolean bodyEmf,
                             boolean patchEmf, boolean patchVanillaGeometry, String bodyRootClass,

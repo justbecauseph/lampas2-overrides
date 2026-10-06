@@ -35,6 +35,7 @@ class BoatWaterMaskCompatibilityTest {
 
 	private static final String EMF_VERSION = "3.3.5";
 	private static final String EMF_VERSION_NEW = "3.3.8";
+	private static final String EMF_VERSION_CURRENT = "3.3.11";
 	private static final BoatWaterMaskCompatibility.EmfRootInfo VANILLA_HULL =
 		new BoatWaterMaskCompatibility.EmfRootInfo(false, false, false, null, true);
 	private static final BoatWaterMaskCompatibility.EmfRootInfo ACTIVE_WATER_ROOT =
@@ -44,24 +45,25 @@ class BoatWaterMaskCompatibilityTest {
 		new BoatWaterMaskCompatibility.ResourceProof(true, true, EMF_VERSION);
 	private static final BoatWaterMaskCompatibility.ResourceProof ACTIVE_RESOURCE_NEW =
 		new BoatWaterMaskCompatibility.ResourceProof(true, true, EMF_VERSION_NEW);
+	private static final BoatWaterMaskCompatibility.ResourceProof ACTIVE_RESOURCE_CURRENT =
+		new BoatWaterMaskCompatibility.ResourceProof(true, true, EMF_VERSION_CURRENT);
 
 	@Test
-	void acceptsBothExactEmfProfilesAndRejectsCrossedOrUnknownPairs() {
-		assertEquals(
-			"72b2d489d03bf2ea07b5693ef26cd03572a42dda181e095aed85b3ab39cce549",
-			BoatWaterMaskProfiles.emfArtifactProfile(EMF_VERSION).orElseThrow().artifactSha256());
-		assertEquals(
-			"714686cefe56a7e46fa1e13ecdeddcb55ddfbb9715ae5b1ffd7573c1928d9fdd",
-			BoatWaterMaskProfiles.emfArtifactProfile(EMF_VERSION_NEW).orElseThrow().artifactSha256());
-		assertTrue(BoatWaterMaskProfiles.matchesEmfProfile(EMF_VERSION,
-			"72b2d489d03bf2ea07b5693ef26cd03572a42dda181e095aed85b3ab39cce549"));
-		assertTrue(BoatWaterMaskProfiles.matchesEmfProfile(EMF_VERSION_NEW,
-			"714686cefe56a7e46fa1e13ecdeddcb55ddfbb9715ae5b1ffd7573c1928d9fdd"));
-		assertFalse(BoatWaterMaskProfiles.matchesEmfProfile(EMF_VERSION,
-			"714686cefe56a7e46fa1e13ecdeddcb55ddfbb9715ae5b1ffd7573c1928d9fdd"));
-		assertFalse(BoatWaterMaskProfiles.matchesEmfProfile(EMF_VERSION_NEW,
-			"72b2d489d03bf2ea07b5693ef26cd03572a42dda181e095aed85b3ab39cce549"));
-		assertFalse(BoatWaterMaskProfiles.matchesEmfProfile("3.3.6", "72b2d489d03bf2ea07b5693ef26cd03572a42dda181e095aed85b3ab39cce549"));
+	void acceptsExactEmfProfilesAndRejectsEveryCrossedOrUnknownPair() {
+		Map<String, String> profiles = Map.of(
+			EMF_VERSION, "72b2d489d03bf2ea07b5693ef26cd03572a42dda181e095aed85b3ab39cce549",
+			EMF_VERSION_NEW, "714686cefe56a7e46fa1e13ecdeddcb55ddfbb9715ae5b1ffd7573c1928d9fdd",
+			EMF_VERSION_CURRENT, "26b13c2ee755932e74f80ecf6baf16a25582568ae7482cf472751abb98e7b14a");
+		for (Map.Entry<String, String> version : profiles.entrySet()) {
+			assertEquals(version.getValue(), BoatWaterMaskProfiles.emfArtifactProfile(version.getKey())
+				.orElseThrow().artifactSha256());
+			for (Map.Entry<String, String> artifact : profiles.entrySet()) {
+				assertEquals(version.getKey().equals(artifact.getKey()),
+					BoatWaterMaskProfiles.matchesEmfProfile(version.getKey(), artifact.getValue()));
+			}
+			assertFalse(BoatWaterMaskProfiles.matchesEmfProfile(version.getKey(), null));
+			assertFalse(BoatWaterMaskProfiles.matchesEmfProfile("3.3.12", version.getValue()));
+		}
 	}
 
 	@Test
@@ -74,6 +76,7 @@ class BoatWaterMaskCompatibilityTest {
 			"red_mushroom", "red_stained", "rose_stained", "star_stained", "white_stained", "yellow_stained"}, false);
 		assertLayers("promenade", "5.6.0", new String[] {"sakura", "maple", "palm"}, false);
 		assertLayers("wilderwild", "4.2.11-mc26.2", new String[] {"baobab", "willow", "cypress", "palm", "maple"}, false);
+		assertLayers("wilderwild", "4.3", new String[] {"baobab", "willow", "cypress", "palm", "maple"}, false);
 		assertLayers("betterend", "26.201.2", new String[] {
 			"dragon_tree", "helix_tree", "jellyshroom", "lacugrove", "lucernia", "mossy_glowshroom",
 			"pythadendron", "tenanea", "umbrella_tree"}, true);
@@ -108,6 +111,8 @@ class BoatWaterMaskCompatibilityTest {
 			new BoatWaterMaskCompatibility.EmfRootInfo(false, false, false, null, false), ACTIVE_WATER_ROOT, ACTIVE_RESOURCE));
 		assertTrue(eligible("pyrite", "0.18.3+26.2", layer("pyrite", "boat/cyan_stained"),
 			VANILLA_HULL, ACTIVE_WATER_ROOT, ACTIVE_RESOURCE_NEW));
+		assertTrue(eligible("wilderwild", "4.3", layer("wilderwild", "boat/baobab"),
+			VANILLA_HULL, ACTIVE_WATER_ROOT, ACTIVE_RESOURCE_CURRENT));
 	}
 
 	@Test
@@ -182,6 +187,27 @@ class BoatWaterMaskCompatibilityTest {
 		assertFalse(BoatWaterMaskProfiles.requiredModsMatch(loader(Map.of(
 			"betterend", metadataContainer("betterend", "26.201.2"),
 			"wover-item", metadataContainer("wover-item", "26.201.1"))), "betterend"));
+	}
+
+	@Test
+	void currentWilderWildRequiresItsOwnExactVersionAndArtifact(@TempDir Path directory) throws IOException {
+		String currentHash = "9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c";
+		assertTrue(BoatWaterMaskProfiles.matchesProviderProfile("wilderwild", "4.3", currentHash));
+		assertFalse(BoatWaterMaskProfiles.matchesProviderProfile("wilderwild", "4.3", null));
+		assertFalse(BoatWaterMaskProfiles.matchesProviderProfile("wilderwild", "4.3",
+			BoatWaterMaskProfiles.EXPECTED_PYRITE_ARTIFACT_SHA256));
+		assertFalse(BoatWaterMaskProfiles.matchesProviderProfile("wilderwild", "4.3.1", currentHash));
+		assertFalse(BoatWaterMaskProfiles.matchesProviderProfile("promenade", "4.3", currentHash));
+		assertFalse(BoatWaterMaskProfiles.isAuditedLayer("wilderwild", "4.3", "main", "wilderwild", "boat/unknown"));
+		assertFalse(BoatWaterMaskProfiles.isAuditedLayer("wilderwild", "4.3", "alt", "wilderwild", "boat/baobab"));
+		Path fakeArtifact = directory.resolve("WilderWild.jar");
+		Files.writeString(fakeArtifact, "different bytes", StandardCharsets.UTF_8);
+		assertFalse(BoatWaterMaskProfiles.installedProviderMatches(loader(Map.of(
+			"wilderwild", pathOriginContainer(fakeArtifact, ModOrigin.Kind.PATH, "4.3"))), "wilderwild"));
+		assertFalse(BoatWaterMaskProfiles.installedProviderMatches(loader(Map.of(
+			"wilderwild", pathOriginContainer(fakeArtifact, ModOrigin.Kind.UNKNOWN, "4.3"))), "wilderwild"));
+		assertFalse(BoatWaterMaskProfiles.installedProviderMatches(loader(Map.of(
+			"wilderwild", metadataContainer("wilderwild", "4.3"))), "wilderwild"));
 	}
 
 	@Test

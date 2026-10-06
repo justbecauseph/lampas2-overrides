@@ -1,16 +1,21 @@
 package lampas2overrides.client.jadecustomname;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import com.mojang.authlib.GameProfile;
+
+import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.network.chat.Component;
 
 public class JadeCustomNameBridgeTest {
@@ -28,13 +33,38 @@ public class JadeCustomNameBridgeTest {
 	}
 
 	@Test
+	void gateRequiresJadeOnly() {
+		assertTrue(JadeCustomNameMixinPlugin.shouldApply(true));
+		assertFalse(JadeCustomNameMixinPlugin.shouldApply(false));
+	}
+
+	@Test
 	void testResolverNullEntity() {
 		assertNull(JadeCustomNameResolver.resolvePlayerDisplayName(null, player -> null));
 	}
 
 	@Test
 	void testResolverFallbackWhenPlayerInfoMissing() {
-		// When entity is null or lookup returns null, falls back safely
+		Component fallback = Component.literal("Vanilla Player Name");
+		assertSame(fallback, JadeCustomNameResolver.resolveTabListDisplayName(null, fallback));
 		assertNull(JadeCustomNameResolver.resolvePlayerDisplayName(null, player -> null));
+	}
+
+	@Test
+	void resolverUsesServerSyncedTabNameWithoutClientCustomName() {
+		PlayerInfo info = new PlayerInfo(new GameProfile(UUID.randomUUID(), "ActualPlayer"), false);
+		Component synced = Component.literal("Server Custom Name");
+		Component fallback = Component.literal("ActualPlayer");
+		info.setTabListDisplayName(synced);
+
+		assertSame(synced, JadeCustomNameResolver.resolveTabListDisplayName(info, fallback));
+	}
+
+	@Test
+	void resolverFallsBackWhenSyncedTabNameIsNull() {
+		PlayerInfo info = new PlayerInfo(new GameProfile(UUID.randomUUID(), "ActualPlayer"), false);
+		Component fallback = Component.literal("ActualPlayer");
+
+		assertSame(fallback, JadeCustomNameResolver.resolveTabListDisplayName(info, fallback));
 	}
 }

@@ -1,0 +1,206 @@
+{
+  "date": "2026-10-06",
+  "source_head_before_fixes": "ea5f77505adfedac0ec03443b25a957fff431672",
+  "pack_version": "2.2.19",
+  "lock_updated": "2026-10-06T05:05:13.168Z",
+  "minecraft": "26.2",
+  "loader": {
+    "type": "fabric",
+    "version": "0.19.5"
+  },
+  "scope": "Exact pipeline artifact audit before the repairs in this change.",
+  "targets": [
+    {
+      "key": "additionallanterns",
+      "mod_id": "additionallanterns",
+      "version": "1.1.2",
+      "side": "both",
+      "filename": "additionallanterns-1.1.2-fabric-mc26.2.jar",
+      "lock_sha256": "6a05239546f320bffcfd957427f5f778347809dd2ed137f8f89b10a8c8d53cc3"
+    },
+    {
+      "key": "beautiful-enchanted-books-mod-edition",
+      "mod_id": "beb",
+      "version": "6.0.0",
+      "side": "both",
+      "filename": "BEB-Fabric-26.1.2-6.0.0.jar",
+      "lock_sha256": "08819eb4b0773d389b850dad7cc0c2134a1fcb5d3693d28e03cc8c309181fa8f"
+    },
+    {
+      "key": "beautiful-potions-mod-edition",
+      "mod_id": "beautiful_potions",
+      "version": "2.0.1",
+      "side": "both",
+      "filename": "BTP-Fabric-26.1.2-2.0.1.jar",
+      "lock_sha256": "53d132f68b9c97105699e3de3542ad9f3ef5ec4e4df5e147f00e5f8510e33a82"
+    },
+    {
+      "key": "better_lib",
+      "mod_id": "better_lib",
+      "version": "2.1.2",
+      "side": "server",
+      "filename": "better_lib-fabric-26.1-2.1.2.jar",
+      "lock_sha256": "88b958cd67a97e5c1d6d035977828e6e336bd4a58faa3a2ce2003c6d6284936e"
+    },
+    {
+      "key": "chatting",
+      "mod_id": "chatting",
+      "version": "3.2.2",
+      "side": "client",
+      "filename": "chatting-3.2.2+26.2.jar",
+      "lock_sha256": "af1561983aca38ae0fdd8d2173fa56b0e18d7bedf3e07329ce1825f6b3859ac6"
+    },
+    {
+      "key": "entity-model-features",
+      "mod_id": "entity_model_features",
+      "version": "3.3.11",
+      "side": "client",
+      "filename": "entity_model_features-3.3.11-26.2-fabric.jar",
+      "lock_sha256": "26b13c2ee755932e74f80ecf6baf16a25582568ae7482cf472751abb98e7b14a"
+    },
+    {
+      "key": "fabric-custom-names",
+      "mod_id": "eclipsescustomname",
+      "version": "0.4.4-26.2",
+      "side": "server",
+      "filename": "customname-fabric-0.4.4-26.2.jar",
+      "lock_sha256": "d70aff259e65ca2a9c8ca9d4b3734b6f9089e93141ba2283e06e23bbe0e3bb04"
+    },
+    {
+      "key": "fastitemframes",
+      "mod_id": "fastitemframes",
+      "version": "26.2.1",
+      "side": "both",
+      "filename": "FastItemFrames-v26.2.1-mc26.2.x-Fabric.jar",
+      "lock_sha256": "b324bb47f622a53228fb3ddeb0e8f9c208583179abd3ade46f5090b5ecc04767"
+    },
+    {
+      "key": "jade",
+      "mod_id": "jade",
+      "version": "26.2.11+fabric",
+      "side": "both",
+      "filename": "Jade-mc26.2-Fabric-26.2.11.jar",
+      "lock_sha256": "ffe5d2e83a531c3fbe75ad54095e6a9eafc73a38d5827b4c90bedb4b03618b87"
+    },
+    {
+      "key": "lootr",
+      "mod_id": "lootr",
+      "version": "1.24.41.124",
+      "side": "both",
+      "filename": "lootr-fabric-26.2-1.24.41.124.jar",
+      "lock_sha256": "6669f8415aa4280eae0959d6e8cac0bb0dab02dbfd3efd6a153c1fad02e80a6b"
+    },
+    {
+      "key": "mobfilter",
+      "mod_id": "mobfilter",
+      "version": "0.28.1+26.2",
+      "side": "server",
+      "filename": "mobfilter-fabric-0.28.1+26.2.jar",
+      "lock_sha256": "633c9f2d9e990c82c8007743ab690d32f07be5d84f7136e253790bf2661b2e14"
+    },
+    {
+      "key": "plasmovoice",
+      "mod_id": "plasmovoice",
+      "version": "2.2.0-beta.1",
+      "side": "both",
+      "filename": "plasmovoice-fabric-26.2-2.2.0-beta.1.jar",
+      "lock_sha256": "c5fa9ec9af1776b1fe56de3cb6c765ee7515c6cb707c41446383e28b89bdccca"
+    },
+    {
+      "key": "puzzleslib",
+      "mod_id": "puzzleslib",
+      "version": "26.2.4",
+      "side": "both",
+      "filename": "PuzzlesLib-v26.2.4-mc26.2.x-Fabric.jar",
+      "lock_sha256": "f084097eb65928136ac12512249822696e81695929ad859a93d1a8fba0d94765"
+    },
+    {
+      "key": "trinkets-updated",
+      "mod_id": "trinkets_updated",
+      "version": "4.1.1+26.2",
+      "side": "both",
+      "filename": "trinkets-4.1.1+26.2.jar",
+      "lock_sha256": "2365e8a19b5f62c812e95ac5fc23ee163bc753a5d9ec38f517f72da269eb0c4b"
+    },
+    {
+      "key": "wilderwild",
+      "mod_id": "wilderwild",
+      "version": "4.3",
+      "side": "both",
+      "filename": "WilderWild-4.3-mc26.2-fabric.jar",
+      "lock_sha256": "9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c"
+    },
+    {
+      "key": "figura-0-1-6-rc-1",
+      "mod_id": "figura",
+      "version": "0.1.6-rc.1+26.2-968705ec",
+      "side": "client",
+      "filename": "figura-0.1.6-rc.1+26.2.jar",
+      "lock_sha256": "e568627118b6541412f5631b6bed21c6631f53cc586322f3cb62dbbc34e9fd8d"
+    }
+  ],
+  "checks": {
+    "descriptor_lock_manifest_consistency": {
+      "passed": true,
+      "issues": []
+    },
+    "exact_local_bytes": {
+      "verified_artifacts": 271,
+      "total_artifacts": 275,
+      "missing_non_override_targets": [
+        "complementary-reimagined",
+        "complementary-unbound",
+        "photon-shader",
+        "fa-player-extension"
+      ],
+      "all_override_target_bytes_verified": true
+    },
+    "resource_profiles": {
+      "artifacts_hash_matched": 12,
+      "registry_profiles": 26,
+      "enabled_resource_patches": 18,
+      "disabled_old_version_profiles": 8,
+      "disabled_current_version_resource_patches": 0,
+      "builtin_upstream_fingerprints_match": 9,
+      "packaged_assets_match_source": 42
+    },
+    "grim_nbt": {
+      "scanned_structures": 140,
+      "affected_resources": 10,
+      "zero_entries_removed": 32,
+      "all_other_typed_fields_preserved": true
+    },
+    "packaged_bridge_member_references": {
+      "count": 51,
+      "missing": []
+    },
+    "figura_replay": {
+      "figura_reflective_members": 15,
+      "replay_reflective_members": 14,
+      "figura_external_target_methods": 7,
+      "replay_external_target_methods": 3,
+      "descriptors_present": true
+    }
+  },
+  "activation_policy": {
+    "chatting": "Figura and Chatting presence only; no version or JAR hash gate.",
+    "jadecustomname": "Client Jade presence; consumes standard TAB display names from a server-only Custom Name install.",
+    "trinkets": "Minecraft, Trinkets version, V1460 class SHA-256 and exact schema shape must agree.",
+    "boats": "Independent exact EMF version/JAR SHA-256 pair and provider/resource provenance checks."
+  },
+  "retained_fixes": {
+    "mobfilter": "Audited 0.28.1+26.2 still removes rejected worldgen entities and returns null dimension context.",
+    "better_lib": "Audited 2.1.2 still registers demo villager entries on the server.",
+    "additionallanterns": "Audited 1.1.2 still requests neighboring block state without checking chunk availability.",
+    "lootr_fast_frames": "Current Lootr bridge member references and identity/service contracts remain applicable."
+  },
+  "inactive_old_profiles": {
+    "plasmo_voice_2.1.16": "Current 2.2.0-beta.1 capture and UDP factories already set daemon threads; no new repair justified.",
+    "mvs_mns_better_lib_resources": "Current audited artifacts fixed the old metadata or POI resources upstream."
+  },
+  "verification_limits": [
+    "Bytecode and artifact checks do not establish live rendering, connected display, gameplay, or saved-world migration.",
+    "Missing local bytes in exact_local_bytes are unrelated to the override targets.",
+    "Repair-specific tests and production-JAR probe results are documented with their features."
+  ]
+}

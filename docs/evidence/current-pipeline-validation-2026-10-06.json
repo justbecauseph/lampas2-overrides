@@ -1,0 +1,213 @@
+{
+  "date": "2026-10-06",
+  "pipeline_version": "2.2.19",
+  "production_jar_sha256": "7efacfbb125d93ab9eb17de2d796c61feaf3d04547cd62294f1ba0f5ad319a71",
+  "build": {
+    "status": "passed",
+    "tests": 127,
+    "suites": 20,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "log": {
+      "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\gradle-build-final.log",
+      "sha256": "bde09b62188708f440ad2e9f99cde22fac57756fda9c462a4b1da04e51fa171b"
+    },
+    "final_manifest_tests": {
+      "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\final-manifest-tests.log",
+      "sha256": "7d2d1ada1c1ac7f7bb323e127bcbff35564b4b28f1590b883bc0ba9c8cca29fb"
+    }
+  },
+  "jar_inspection": {
+    "errors": [],
+    "jar": {
+      "archiveEntries": 311,
+      "filename": "lampas2-overrides-1.0.0.jar",
+      "hashes": {
+        "sha1": "e782742cfddb46d7565080c85a4a71a31707588f",
+        "sha256": "7efacfbb125d93ab9eb17de2d796c61feaf3d04547cd62294f1ba0f5ad319a71",
+        "sha512": "3c22f8bafbde09faf5304e377c83ed41cd8ace9dd04f825cd82735b2c614ad6921715f264b9d9ab95212d8e997c9cd10e7ef509c91a07819d6a12f6930bb2d5d"
+      },
+      "loader": "fabric",
+      "minecraftConstraints": [
+        "~26.2"
+      ],
+      "modIds": [
+        "lampas2-overrides"
+      ],
+      "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\libs\\lampas2-overrides-1.0.0.jar",
+      "size": 1200519,
+      "versions": [
+        "1.0.0"
+      ]
+    },
+    "valid": true
+  },
+  "chatting_jade": {
+    "status": "passed",
+    "process_exit": 0,
+    "scope": "Isolated plain KnotClient startup and forced optional target class loading; server-synced TAB name and fallback consumer fixture.",
+    "chatting_gate": "Figura and Chatting presence only; no version or hash gate.",
+    "client_custom_name_absent": true,
+    "origins_and_hashes_verified": true,
+    "applied_mixins": [
+      "[14:22:00] [Render thread/INFO]: Mixing ChatHeadsMixin from lampas2-overrides.chatheads.mixins.json into org.polyfrost.chatting.chat.ChatHeads",
+      "[14:22:00] [Render thread/INFO]: Mixing ChatHeadDrawMixin from lampas2-overrides.chatheads.mixins.json into org.polyfrost.chatting.chat.ChatHeads",
+      "[14:22:00] [Render thread/INFO]: Mixing ObjectNameProviderMixin from lampas2-overrides.jadecustomname.mixins.json into snownee.jade.addon.core.ObjectNameProvider"
+    ],
+    "inputs": {
+      "artifacts": {
+        "chatting": {
+          "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\client-probe-d5b4cbbb\\fixture\\mods\\chatting-3.2.2+26.2.jar",
+          "sha256": "af1561983aca38ae0fdd8d2173fa56b0e18d7bedf3e07329ce1825f6b3859ac6",
+          "version": "3.2.2"
+        },
+        "compose-multiplatform": {
+          "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\client-probe-d5b4cbbb\\fixture\\mods\\compose-bundle-1.0.5+compose.1.12.1.jar",
+          "sha256": "5da091a4930a3ebfcfb93a3c84159fa24cdfad44456a18c3710f632265cac443",
+          "version": "1.0.5+compose.1.12.1"
+        },
+        "fabric-api": {
+          "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\client-probe-d5b4cbbb\\fixture\\mods\\fabric-api-0.161.0+26.2.jar",
+          "sha256": "e5b858ceb13290c274e31cb888ff5a1a40cb91067e7ffab0b5b775aec51e216a",
+          "version": "0.161.0+26.2"
+        },
+        "fabric-language-kotlin": {
+          "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\client-probe-d5b4cbbb\\fixture\\mods\\fabric-language-kotlin-1.14.1+kotlin.2.4.20.jar",
+          "sha256": "620c2709be2a262b837cf976f6f85f6eda80a56af2ba4242e0bdc83a60fee7a5",
+          "version": "1.14.1+kotlin.2.4.20"
+        },
+        "jade": {
+          "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\client-probe-d5b4cbbb\\fixture\\mods\\Jade-mc26.2-Fabric-26.2.11.jar",
+          "sha256": "ffe5d2e83a531c3fbe75ad54095e6a9eafc73a38d5827b4c90bedb4b03618b87",
+          "version": "26.2.11+fabric"
+        },
+        "oneconfig": {
+          "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\client-probe-d5b4cbbb\\fixture\\mods\\OneConfig-26.2-fabric-1.2.21.jar",
+          "sha256": "25f580a7d8e37811dc24fd55162351fbb618db9ebb6d7aff0b8ca06e2f23e375",
+          "version": "1.2.21"
+        },
+        "figura": {
+          "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\client-probe-d5b4cbbb\\fixture\\mods\\figura-0.1.6-rc.1+26.2.jar",
+          "sha256": "e568627118b6541412f5631b6bed21c6631f53cc586322f3cb62dbbc34e9fd8d",
+          "version": "0.1.6-rc.1+26.2-968705ec"
+        },
+        "lampas2-overrides": {
+          "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\client-probe-d5b4cbbb\\fixture\\mods\\lampas2-overrides-1.0.0.jar",
+          "sha256": "7efacfbb125d93ab9eb17de2d796c61feaf3d04547cd62294f1ba0f5ad319a71"
+        }
+      },
+      "runtime": {
+        "loader": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\net\\fabricmc\\fabric-loader\\0.19.5\\fabric-loader-0.19.5.jar",
+        "loader_sha256": "93044e4dd46de5d8136701292f05e868da096d2c9fddb4793e4fdbcc63efc695",
+        "mixin": "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\net\\fabricmc\\sponge-mixin\\0.17.4+mixin.0.8.7\\sponge-mixin-0.17.4+mixin.0.8.7.jar",
+        "mixin_version": "0.17.4+mixin.0.8.7",
+        "mixin_sha256": "1f0ae44db7295f8626f33b1dc0ad7f043d8954a8d6847247875fcc5dfcecc934"
+      },
+      "command": [
+        "java",
+        "-Djava.library.path=C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\natives",
+        "-Dorg.lwjgl.librarypath=C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\natives",
+        "-Dmixin.debug.verbose=true",
+        "-Dmixin.debug.export=true",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "-DclientContractProbe.result=C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\client-probe-d5b4cbbb\\result.txt",
+        "-cp",
+        "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\versions\\26.2\\26.2-client.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\at\\yawk\\lz4\\lz4-java\\1.10.1\\lz4-java-1.10.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\com\\azure\\azure-json\\1.4.0\\azure-json-1.4.0.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\com\\github\\oshi\\oshi-core\\6.9.0\\oshi-core-6.9.0.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\com\\google\\code\\gson\\gson\\2.14.0\\gson-2.14.0.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\com\\google\\guava\\failureaccess\\1.0.3\\failureaccess-1.0.3.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\com\\google\\guava\\guava\\33.6.0-jre\\guava-33.6.0-jre.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\com\\ibm\\icu\\icu4j\\78.3\\icu4j-78.3.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\com\\microsoft\\azure\\msal4j\\1.24.1\\msal4j-1.24.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\com\\mojang\\authlib\\9.0.75\\authlib-9.0.75.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\com\\mojang\\blocklist\\1.0.10\\blocklist-1.0.10.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\com\\mojang\\brigadier\\1.3.10\\brigadier-1.3.10.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\com\\mojang\\datafixerupper\\10.0.21\\datafixerupper-10.0.21.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\com\\mojang\\jtracy\\1.0.37\\jtracy-1.0.37.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\com\\mojang\\jtracy-natives-windows\\1.0.37\\jtracy-natives-windows-1.0.37.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\com\\mojang\\logging\\1.7.12\\logging-1.7.12.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\com\\mojang\\patchy\\2.2.10\\patchy-2.2.10.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\com\\mojang\\text2speech\\1.19.12\\text2speech-1.19.12.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\commons-codec\\commons-codec\\1.22.0\\commons-codec-1.22.0.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\commons-io\\commons-io\\2.20.0\\commons-io-2.20.0.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\io\\netty\\netty-buffer\\4.2.15.Final\\netty-buffer-4.2.15.Final.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\io\\netty\\netty-codec-base\\4.2.15.Final\\netty-codec-base-4.2.15.Final.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\io\\netty\\netty-codec-compression\\4.2.15.Final\\netty-codec-compression-4.2.15.Final.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\io\\netty\\netty-codec-http\\4.2.15.Final\\netty-codec-http-4.2.15.Final.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\io\\netty\\netty-common\\4.2.15.Final\\netty-common-4.2.15.Final.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\io\\netty\\netty-handler\\4.2.15.Final\\netty-handler-4.2.15.Final.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\io\\netty\\netty-resolver\\4.2.15.Final\\netty-resolver-4.2.15.Final.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\io\\netty\\netty-transport\\4.2.15.Final\\netty-transport-4.2.15.Final.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\io\\netty\\netty-transport-classes-epoll\\4.2.15.Final\\netty-transport-classes-epoll-4.2.15.Final.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\io\\netty\\netty-transport-classes-kqueue\\4.2.15.Final\\netty-transport-classes-kqueue-4.2.15.Final.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\io\\netty\\netty-transport-native-unix-common\\4.2.15.Final\\netty-transport-native-unix-common-4.2.15.Final.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\it\\unimi\\dsi\\fastutil\\8.5.18\\fastutil-8.5.18.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\net\\fabricmc\\fabric-loader\\0.19.5\\fabric-loader-0.19.5.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\net\\fabricmc\\intermediary\\0.0.0\\intermediary-0.0.0.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\net\\fabricmc\\intermediary\\26.2\\intermediary-26.2.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\net\\fabricmc\\sponge-mixin\\0.17.4+mixin.0.8.7\\sponge-mixin-0.17.4+mixin.0.8.7.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\net\\java\\dev\\jna\\jna\\5.17.0\\jna-5.17.0.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\net\\java\\dev\\jna\\jna-platform\\5.17.0\\jna-platform-5.17.0.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\net\\sf\\jopt-simple\\jopt-simple\\5.0.4\\jopt-simple-5.0.4.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\apache\\commons\\commons-compress\\1.28.0\\commons-compress-1.28.0.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\apache\\commons\\commons-lang3\\3.20.0\\commons-lang3-3.20.0.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\apache\\logging\\log4j\\log4j-api\\2.26.0\\log4j-api-2.26.0.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\apache\\logging\\log4j\\log4j-core\\2.26.0\\log4j-core-2.26.0.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\apache\\logging\\log4j\\log4j-slf4j2-impl\\2.26.0\\log4j-slf4j2-impl-2.26.0.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\jcraft\\jorbis\\0.0.17\\jorbis-0.0.17.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\joml\\joml\\1.10.8\\joml-1.10.8.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\jspecify\\jspecify\\1.0.0\\jspecify-1.0.0.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl\\3.4.1\\lwjgl-3.4.1-unsafe.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-freetype\\3.4.1\\lwjgl-freetype-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-freetype-natives-windows\\3.4.1\\lwjgl-freetype-natives-windows-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-freetype-natives-windows-arm64\\3.4.1\\lwjgl-freetype-natives-windows-arm64-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-freetype-natives-windows-x86\\3.4.1\\lwjgl-freetype-natives-windows-x86-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-glfw\\3.4.1\\lwjgl-glfw-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-glfw-natives-windows\\3.4.1\\lwjgl-glfw-natives-windows-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-glfw-natives-windows-x86\\3.4.1\\lwjgl-glfw-natives-windows-x86-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-jemalloc\\3.4.1\\lwjgl-jemalloc-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-jemalloc-natives-windows\\3.4.1\\lwjgl-jemalloc-natives-windows-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-jemalloc-natives-windows-arm64\\3.4.1\\lwjgl-jemalloc-natives-windows-arm64-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-jemalloc-natives-windows-x86\\3.4.1\\lwjgl-jemalloc-natives-windows-x86-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-natives-windows\\3.4.1\\lwjgl-natives-windows-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-natives-windows-arm64\\3.4.1\\lwjgl-natives-windows-arm64-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-natives-windows-x86\\3.4.1\\lwjgl-natives-windows-x86-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-openal\\3.4.1\\lwjgl-openal-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-openal-natives-windows\\3.4.1\\lwjgl-openal-natives-windows-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-openal-natives-windows-arm64\\3.4.1\\lwjgl-openal-natives-windows-arm64-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-openal-natives-windows-x86\\3.4.1\\lwjgl-openal-natives-windows-x86-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-opengl\\3.4.1\\lwjgl-opengl-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-opengl-natives-windows\\3.4.1\\lwjgl-opengl-natives-windows-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-opengl-natives-windows-arm64\\3.4.1\\lwjgl-opengl-natives-windows-arm64-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-opengl-natives-windows-x86\\3.4.1\\lwjgl-opengl-natives-windows-x86-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-sdl\\3.4.1\\lwjgl-sdl-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-sdl-natives-windows\\3.4.1\\lwjgl-sdl-natives-windows-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-sdl-natives-windows-arm64\\3.4.1\\lwjgl-sdl-natives-windows-arm64-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-sdl-natives-windows-x86\\3.4.1\\lwjgl-sdl-natives-windows-x86-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-shaderc\\3.4.1\\lwjgl-shaderc-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-shaderc-natives-windows\\3.4.1\\lwjgl-shaderc-natives-windows-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-shaderc-natives-windows-arm64\\3.4.1\\lwjgl-shaderc-natives-windows-arm64-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-shaderc-natives-windows-x86\\3.4.1\\lwjgl-shaderc-natives-windows-x86-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-spvc\\3.4.1\\lwjgl-spvc-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-spvc-natives-windows\\3.4.1\\lwjgl-spvc-natives-windows-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-spvc-natives-windows-arm64\\3.4.1\\lwjgl-spvc-natives-windows-arm64-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-spvc-natives-windows-x86\\3.4.1\\lwjgl-spvc-natives-windows-x86-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-stb\\3.4.1\\lwjgl-stb-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-stb-natives-windows\\3.4.1\\lwjgl-stb-natives-windows-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-stb-natives-windows-arm64\\3.4.1\\lwjgl-stb-natives-windows-arm64-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-stb-natives-windows-x86\\3.4.1\\lwjgl-stb-natives-windows-x86-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-tinyfd\\3.4.1\\lwjgl-tinyfd-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-tinyfd-natives-windows\\3.4.1\\lwjgl-tinyfd-natives-windows-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-tinyfd-natives-windows-arm64\\3.4.1\\lwjgl-tinyfd-natives-windows-arm64-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-tinyfd-natives-windows-x86\\3.4.1\\lwjgl-tinyfd-natives-windows-x86-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-vma\\3.4.1\\lwjgl-vma-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-vma-natives-windows\\3.4.1\\lwjgl-vma-natives-windows-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-vma-natives-windows-arm64\\3.4.1\\lwjgl-vma-natives-windows-arm64-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-vma-natives-windows-x86\\3.4.1\\lwjgl-vma-natives-windows-x86-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\lwjgl\\lwjgl-vulkan\\3.4.1\\lwjgl-vulkan-3.4.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\ow2\\asm\\asm\\9.10.1\\asm-9.10.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\ow2\\asm\\asm-analysis\\9.10.1\\asm-analysis-9.10.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\ow2\\asm\\asm-commons\\9.10.1\\asm-commons-9.10.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\ow2\\asm\\asm-tree\\9.10.1\\asm-tree-9.10.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\ow2\\asm\\asm-util\\9.10.1\\asm-util-9.10.1.jar;C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\libraries\\org\\slf4j\\slf4j-api\\2.0.17\\slf4j-api-2.0.17.jar",
+        "net.fabricmc.loader.impl.launch.knot.KnotClient",
+        "--username",
+        "ContractProbe",
+        "--version",
+        "26.2",
+        "--gameDir",
+        "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\client-probe-d5b4cbbb\\fixture",
+        "--assetsDir",
+        "C:\\Users\\markj\\AppData\\Roaming\\.minecraft-lampas\\assets",
+        "--assetIndex",
+        "32",
+        "--uuid",
+        "00000000000000000000000000000001",
+        "--accessToken",
+        "0",
+        "--userType",
+        "msa",
+        "--versionType",
+        "release",
+        "--width",
+        "640",
+        "--height",
+        "480"
+      ]
+    },
+    "result": {
+      "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\client-probe-d5b4cbbb\\result.txt",
+      "sha256": "9f19e1e0fd006c99b2e0179337aaf8644f0e3cdf393e65d602ac67996c780339"
+    },
+    "log": {
+      "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\client-probe-d5b4cbbb\\process.log",
+      "sha256": "09c5cb1addf1836085371af657a4c376a49bf9d17b210313272229a3753d9685"
+    },
+    "harness_source": {
+      "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\ClientContractProbe.java",
+      "sha256": "4fa2e1bf4d7d7aadaed72dd594f5b730938d6e1ba145611acb765ca2b919d85e"
+    }
+  },
+  "trinkets": {
+    "status": "passed",
+    "evidence": "docs/evidence/trinkets-4.1.1-dfu.json",
+    "runtime_summary": {
+      "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\trinkets-runtime\\summary.json",
+      "sha256": "1a016e5a8b60cb5f39b9062322d2417dc0d04ee6bcfcc06f05f0a9d5bbe3d34b"
+    }
+  },
+  "boat_masks": {
+    "status": "passed",
+    "evidence": "docs/evidence/boat-water-mask-3.3.11.json",
+    "layers": 108,
+    "reload_stages": 4
+  },
+  "beautiful_items": {
+    "status": "passed",
+    "process_exit": 0,
+    "scope": "Model cache refresh, resource removal/restoration and synthetic ItemModelResolver particle materials; no connected-world item fixture.",
+    "staged_classes": [
+      "lampas2overrides/client/beautifulitems/BeautifulItemsMixinPlugin.class",
+      "lampas2overrides/client/beautifulitems/BeautifulItemsProfiles$TargetProfile.class",
+      "lampas2overrides/client/beautifulitems/BeautifulItemsProfiles.class",
+      "lampas2overrides/client/beautifulitems/mixin/BeautifulEnchantedBooksFabricMixin.class",
+      "lampas2overrides/client/beautifulitems/mixin/BeautifulPotionsFabricMixin.class"
+    ],
+    "result": {
+      "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\beautiful-items-probe\\20261006T062529Z-e5386803f5\\result.txt",
+      "sha256": "61e6daf6b6e79df52a4871ffa8fe7270cd672a07a3c5758ab3b0b5ddaadb3918"
+    },
+    "log": {
+      "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\beautiful-items-probe\\20261006T062529Z-e5386803f5\\client-process.log",
+      "sha256": "c71467ac0503f3ac28fed7ceec0a252ddbe707890190ca71e898a9862b973a62"
+    },
+    "inputs": {
+      "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\beautiful-items-probe\\20261006T062529Z-e5386803f5\\inputs.json",
+      "sha256": "8a9d055e86825004cf9d13bac59a6d5c0760c33cd23fc8c58ee513e0ac899093"
+    },
+    "mixin_application": {
+      "path": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\beautiful-items-probe\\20261006T062529Z-e5386803f5\\mixin-validation.txt",
+      "sha256": "f0d5cbe3f41b7adff23908471425c11baeec7e04d416be4bc960fffd0e0da846"
+    }
+  },
+  "copy_only_staging": {
+    "sha256": "7efacfbb125d93ab9eb17de2d796c61feaf3d04547cd62294f1ba0f5ad319a71",
+    "destination": "C:\\Users\\markj\\source\\repos\\lampas-pipeline\\pack\\custom\\lampas2-overrides-1.0.0.jar",
+    "previous_sha256": "80be0de1351fff9197c432714c57d548f342f4044d4cc20a2923c38e291a63ce",
+    "deployment_performed": false,
+    "source": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\libs\\lampas2-overrides-1.0.0.jar",
+    "resolve_performed": false,
+    "backup": "C:\\Users\\markj\\source\\repos\\lampas2-overrides\\build\\current-pipeline-fixes-2026-10-06\\previous-pipeline-lampas2-overrides-1.0.0.jar",
+    "size": 1200519,
+    "pipeline_descriptors_and_manifests_unchanged": true
+  },
+  "limitations": [
+    "Authenticated Figura portrait rendering and current boat visuals, shaders and rowing remain live-client checks.",
+    "No saved-world migration, full-pack gameplay, resolve, manifest regeneration, publication or deployment was performed."
+  ]
+}
