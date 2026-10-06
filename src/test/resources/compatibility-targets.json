@@ -161,10 +161,11 @@
     },
     "mobfilter": {
       "name": "Mob Filter",
-      "type": "exact_mixin_gate",
+      "type": "presence_mixin",
       "versions": {
-        "0.28.0+26.2": {
-          "status": "patched"
+        "0.28.1+26.2": {
+          "modrinth_version_id": "EDuF1CWZ",
+          "status": "bytecode-reviewed"
         }
       }
     },

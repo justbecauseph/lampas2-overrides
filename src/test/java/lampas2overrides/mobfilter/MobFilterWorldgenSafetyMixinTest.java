@@ -35,6 +35,8 @@ public final class MobFilterWorldgenSafetyMixinTest {
 		"lampas2overrides/mobfilter/mixin/MixinServiceMixin.class";
 	private static final String SPAWN_ATTEMPT_MIXIN_CLASS_RESOURCE =
 		"lampas2overrides/mobfilter/mixin/WorldgenThreadSpawnAttemptMixin.class";
+	private static final String MIXIN_PLUGIN_CLASS_RESOURCE =
+		"lampas2overrides/mobfilter/MobFilterMixinPlugin.class";
 	private static final String UPSTREAM_SERVICE_CLASS_RESOURCE =
 		"net/pcal/mobfilter/MixinService.class";
 	private static final String UPSTREAM_WORLDGEN_ATTEMPT_CLASS_RESOURCE =
@@ -62,8 +64,20 @@ public final class MobFilterWorldgenSafetyMixinTest {
 	}
 
 	@Test
-	void pluginGatesOnExactAffectedVersion() {
-		assertEquals("0.28.0+26.2", MobFilterMixinPlugin.AFFECTED_VERSION);
+	void pluginActivatesFromModPresenceWithoutVersionLookup() throws IOException {
+		try (InputStream input = resource(MIXIN_PLUGIN_CLASS_RESOURCE)) {
+			assertNotNull(input, MIXIN_PLUGIN_CLASS_RESOURCE + " must exist on the classpath");
+			MobFilterPluginInfo info = new MobFilterPluginInfo();
+			new ClassReader(input).accept(new MobFilterPluginVisitor(info), 0);
+
+			assertEquals(List.of("getInstance", "isModLoaded"), info.fabricLoaderCalls);
+			assertEquals(1, info.isModLoadedCalls);
+			assertEquals("mobfilter", info.modId);
+			assertTrue(info.presenceResultAssignedToApply,
+				"the loader presence result must control whether both mixins apply");
+			assertTrue(info.shouldApplyReturnsApply,
+				"shouldApplyMixin must return the presence-controlled apply flag");
+		}
 	}
 
 	@Test
@@ -532,6 +546,81 @@ public final class MobFilterWorldgenSafetyMixinTest {
 	}
 
 	// ── Upstream Bytecode Visitors ────────────────────────────────────────────
+
+	private static final class MobFilterPluginInfo {
+		final List<String> fabricLoaderCalls = new ArrayList<>();
+		String modId;
+		int isModLoadedCalls;
+		boolean presenceResultAssignedToApply;
+		boolean shouldApplyReturnsApply;
+	}
+
+	private static final class MobFilterPluginVisitor extends ClassVisitor {
+		private static final String PLUGIN_OWNER = "lampas2overrides/mobfilter/MobFilterMixinPlugin";
+		private final MobFilterPluginInfo info;
+
+		MobFilterPluginVisitor(MobFilterPluginInfo info) {
+			super(Opcodes.ASM9);
+			this.info = info;
+		}
+
+		@Override
+		public MethodVisitor visitMethod(int access, String name, String descriptor,
+				String signature, String[] exceptions) {
+			if (name.equals("onLoad")) {
+				return new MethodVisitor(Opcodes.ASM9) {
+					private String lastStringConstant;
+					private boolean presenceResultPending;
+
+					@Override
+					public void visitLdcInsn(Object value) {
+						if (value instanceof String string) lastStringConstant = string;
+					}
+
+					@Override
+					public void visitMethodInsn(int opcode, String owner, String methodName,
+							String methodDescriptor, boolean isInterface) {
+						if (!owner.equals("net/fabricmc/loader/api/FabricLoader")) return;
+						info.fabricLoaderCalls.add(methodName);
+						if (methodName.equals("isModLoaded")
+								&& methodDescriptor.equals("(Ljava/lang/String;)Z")) {
+							info.isModLoadedCalls++;
+							info.modId = lastStringConstant;
+							presenceResultPending = true;
+						}
+					}
+
+					@Override
+					public void visitFieldInsn(int opcode, String owner, String fieldName,
+							String fieldDescriptor) {
+						if (opcode == Opcodes.PUTFIELD && owner.equals(PLUGIN_OWNER)
+								&& fieldName.equals("apply") && fieldDescriptor.equals("Z")) {
+							info.presenceResultAssignedToApply = presenceResultPending;
+							presenceResultPending = false;
+						}
+					}
+				};
+			}
+			if (name.equals("shouldApplyMixin")) {
+				return new MethodVisitor(Opcodes.ASM9) {
+					private boolean readsApply;
+
+					@Override
+					public void visitFieldInsn(int opcode, String owner, String fieldName,
+							String fieldDescriptor) {
+						readsApply = opcode == Opcodes.GETFIELD && owner.equals(PLUGIN_OWNER)
+							&& fieldName.equals("apply") && fieldDescriptor.equals("Z");
+					}
+
+					@Override
+					public void visitInsn(int opcode) {
+						if (opcode == Opcodes.IRETURN && readsApply) info.shouldApplyReturnsApply = true;
+					}
+				};
+			}
+			return super.visitMethod(access, name, descriptor, signature, exceptions);
+		}
+	}
 
 	private static final class WorldgenAttemptClassInfo {
 		boolean getDimensionIdFound;

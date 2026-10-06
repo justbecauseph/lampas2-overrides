@@ -3,7 +3,7 @@
 This repo is a Fabric mod for Minecraft 26.2 holding compatibility fixes between mods that do not
 know about each other: the Figura ↔ ReplayMod avatar bridge, Figura avatars in Chatting's chat
 heads, Lootr item frames converted into Fast Item Frames blocks, Underground Village's stale loot data and 2.1.1 worldgen structure/pool defects,
-Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter 0.28.0+26.2 threaded-worldgen
+Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-activated threaded-worldgen
 entity-discard deadlock and missing dimension context, Visual Workbench tag reloads under
 Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, version-gated Incendium Legacy 5.5.0 and 5.5.1 tick-function optimizations, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files, POI tags, and loot tables (MVS, MNS, Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Better Lib). The first two
 features, Visual Workbench, Gravestones, Jade nameplates, and Jade Custom Name are client-only; the Custom Name space fix, Incendium datapacks, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
@@ -62,7 +62,7 @@ disable an unrelated feature.
 | Custom Name 0.4.4 | `../lampas-server-fabric/mods/customname-fabric-0.4.4-26.2.jar` |
 | Gravestones 1.4.2 | `../lampas-server-fabric/mods/gravestones-1.4.2+26.2+A.jar` |
 | Incendium Legacy 5.5.0 / 5.5.1 | `../lampas-server-fabric/mods/Incendium_Legacy_26.2_v5.5.0.jar` / `Incendium_26.2_v5.5.1.jar` |
-| Mob Filter 0.28.0+26.2 | `../lampas-server-fabric/mods/mobfilter-fabric-0.28.0+26.2.jar` |
+| Mob Filter 0.28.1+26.2 | `../lampas-server-fabric/mods/mobfilter-fabric-0.28.1+26.2.jar` |
 | Moog's Voyager Structures 5.0.11 / 5.0.14 | `../lampas-server-fabric/mods/MoogsVoyagerStructures-1.21-5.0.11.jar` (5.1.1 fixed upstream) |
 | Moog's Nether Structures 3.0.0 | `../lampas-server-fabric/mods/MoogsNetherStructures-1.21-3.0.0.jar` |
 | Formations Overworld 1.0.5+a | `../lampas-server-fabric/mods/formationsoverworld-1.0.5a-mc1.21+.jar` |
@@ -124,9 +124,9 @@ fingerprint mismatch must instead log that the performance datapack remains disa
 
 For Mob Filter, dedicated-server startup must succeed and, once the Mob Filter target
 classes are loaded by an entity-add or worldgen path, `MixinServiceMixin` and `WorldgenThreadSpawnAttemptMixin`
-must appear as applying with no injection failure. The common mixins are absent when Mob Filter is absent and apply
-only to version `0.28.0+26.2`; other versions are deliberately skipped until inspected. The pinned
-0.28.0+26.2 artifact is the bytecode contract reference. For the live regression, resume Chunky
+must appear as applying with no injection failure. The common mixins are absent when Mob Filter is absent and
+activate whenever it is installed. The pinned and bytecode-reviewed contract is Mob Filter `0.28.1+26.2`;
+other releases also activate but are not claimed as inspected or tested. For the live regression, resume Chunky
 with the original C2ME/Lithium
 configuration through chunk `[-49, 82]` (approximately `X -776`, `Z 1320`) and confirm it reaches
 `FULL` without the old `Sync load chunk [-49, 82]` watchdog stall. Then let generation proceed
@@ -246,7 +246,7 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   during worker decoding, so this observation does not prove general thread safety.
   Do not restore the old shim without a new failure and exact artifact evidence.
 - **Mob Filter's worldgen rejection must not call `Entity.remove()` and needs active dimension context.**
-  In 0.28.0+26.2, the `WorldGenRegion_addFreshEntity` callback has not admitted the entity to the world, so its existing
+  In the inspected 0.28.1+26.2 artifact, the `WorldGenRegion_addFreshEntity` callback has not admitted the entity to the world, so its existing
   `CallbackInfoReturnable#setReturnValue(false)` is sufficient to veto it. Removing a LivingEntity
   from a C2ME worldgen worker can run dismount collision resolution, which asks Lithium for chunks
   and can synchronously join the server thread on the same chunk whose `FEATURES` stage that worker
@@ -255,9 +255,9 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   Furthermore, Mob Filter's `WorldgenThreadSpawnAttempt.getDimensionId()` returns `null`, and its `DimensionCheck`
   treats `null` as matching every rule. Wrapping `WorldGenRegion_addFreshEntity` scopes the region level's
   dimension in `WorldgenDimensionContext`, and injecting into `WorldgenThreadSpawnAttempt#getDimensionId` returns it.
-  The mixins are gated to the inspected 0.28.0+26.2 version, and their required injection contracts
-  deliberately fail startup if that known jar moves or removes these call sites.
-  Inspect any new Mob Filter jar before extending the gate.
+  The mixins activate whenever Mob Filter is installed; the compile/test bytecode contract is pinned to
+  inspected 0.28.1+26.2. Other versions activate but are not claimed as inspected or tested. Required
+  injection contracts deliberately fail startup if a call site moves or disappears.
 - **Visual Workbench dynamically creates replacement crafting-table blocks and copies the source block's bound tags into them.**
   Puzzles Lib's `copyBoundTags` assumes a target's tags are either empty or identical. ReplayMod
   playback and repeated client configuration reloads cause client tags to be reloaded in the same
@@ -396,7 +396,7 @@ customname/
   CustomNameMixinPlugin     applies only to Custom Name 0.4.4-26.2 (common-side, server-safe)
   mixin/                    forces spaceAllowed=true in playerNameArgumentToComponent's nameArgumentToComponent call
 mobfilter/
-  MobFilterMixinPlugin      applies only to Mob Filter 0.28.0+26.2 (common-side, server-safe)
+  MobFilterMixinPlugin      applies whenever Mob Filter is present (common-side, server-safe); bytecode contract pinned to 0.28.1+26.2
   WorldgenDimensionContext  thread-local dimension scoping during worldgen entity placement
   mixin/                    suppresses worldgen Entity.remove discard and supplies dimension to WorldgenThreadSpawnAttempt
 ```

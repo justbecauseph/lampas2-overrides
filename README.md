@@ -42,7 +42,7 @@ Upstream report: [plasmoapp/plasmo-voice#539](https://github.com/plasmoapp/plasm
 
 ## Mob Filter worldgen safety and dimension context
 
-Mob Filter `0.28.0+26.2` has two major defects during world generation:
+The inspected Mob Filter `0.28.1+26.2` artifact has two major defects during world generation:
 
 1. **Unsafe `Entity.remove` worldgen discard (deadlock)**:
    When rejecting disallowed mobs from `WorldGenRegion#addFreshEntity`, Mob Filter calls
@@ -80,11 +80,19 @@ Mob Filter `0.28.0+26.2` has two major defects during world generation:
    that scoped dimension. This allows dimension-restricted rules to evaluate against the actual dimension
    being generated without leaking across threads or tasks.
 
-These compatibility mixins are common-side and enabled only for the inspected Mob Filter version
-`0.28.0+26.2`. C2ME, Lithium, and Chunky are not activation requirements: Chunky exposed the issue
-through aggressive generation, but the unsafe side effects belong to Mob Filter's worldgen logic.
-Other Mob Filter versions are deliberately skipped until their bytecode and behavior are reviewed.
-Both mixins keep a hard `require = 1` contract, failing loudly during startup if a call site changes.
+These common-side mixins activate whenever Mob Filter is present, without checking its version. Their
+compile-time and bytecode contract is pinned to Modrinth version `EDuF1CWZ` (`0.28.1+26.2`). Other
+Mob Filter versions also activate, but have not been inspected or tested against this contract. C2ME,
+Lithium, and Chunky are not activation requirements: Chunky exposed the issue through aggressive
+generation, but the unsafe side effects belong to Mob Filter's worldgen logic. Both mixins keep a hard
+`require = 1` contract, so startup fails if an installed version changes a call site.
+
+A disposable dedicated-server probe with `0.28.1+26.2` verified that Overworld structure mobs are
+admitted, Aria worldgen mobs are vetoed, and rejecting a zombie nautilus carrying a drowned avoids
+removal on both the main thread and a worker thread. It also verified dimension-context restoration,
+ordinary server-level discard, and startup without Mob Filter. The prior JAR reproduced the incorrect
+Overworld rejection in the same fixture. Full-pack C2ME pregeneration and production recovery remain
+unverified until the new JAR is deployed and the affected generation path is exercised.
 
 ## Jade nameplates and Custom Name
 
