@@ -1,0 +1,15 @@
+{
+	"required": true,
+	"package": "lampas2overrides.illagerblabber.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.illagerblabber.IllagerBlabberMixinPlugin",
+	"mixins": [
+		"IllagerVoiceRegistryAccessor",
+		"IllagerVoiceManagerAccessor",
+		"IllagerVoiceRegistryMixin",
+		"IllagerVoiceManagerMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

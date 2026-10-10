@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "feature": "IllagerBlabber 1.1.0 voice registry leak fix",
+  "date": "2026-10-10",
+  "target": {
+    "mod_id": "illagerblabber",
+    "version": "1.1.0",
+    "modrinth_project_id": "WS4FswTq",
+    "modrinth_version_id": "UrxK3Zzq",
+    "filename": "illagerblabber-26.2-Fabric-1.1.0.jar",
+    "sha256": "ceecc1248d29786d4b1b595e50dd61f9be49b647f015d30b4373c544fcd9b0e5"
+  },
+  "runtime": {
+    "minecraft": "26.2",
+    "fabric_loader": "0.19.5",
+    "java": "OpenJDK 25.0.4 (Zulu)",
+    "side": "dedicated server, disposable flat world, no players"
+  },
+  "procedure": [
+    "tools/illagerblabber-probe/run.py builds a fresh server under build/illagerblabber-probe/<label>/",
+    "summon 200 NoAI pillagers in force-loaded chunks and let them tick for 10 s",
+    "kill them and their drops",
+    "add and despawn one item during a tick in each dimension so vanilla EntityTickList swaps out its stale snapshot",
+    "summon one Invulnerable NoAI pillager, let it tick, place a nether_portal block on it, let the Nether copy tick",
+    "live-object counts come from jcmd GC.class_histogram (forces a full GC); spark heapsummary --save-to-file is also recorded"
+  ],
+  "runs": [
+    {
+      "label": "patched",
+      "mods": {
+        "illagerblabber": {
+          "file": "illagerblabber-26.2-Fabric-1.1.0.jar",
+          "sha256": "ceecc1248d29786d4b1b595e50dd61f9be49b647f015d30b4373c544fcd9b0e5"
+        },
+        "fabric-api": {
+          "file": "fabric-api-0.161.0+26.2.jar",
+          "sha256": "e5b858ceb13290c274e31cb888ff5a1a40cb91067e7ffab0b5b775aec51e216a"
+        },
+        "spark": {
+          "file": "spark-1.10.187-fabric.jar",
+          "sha256": "3fc00663caa542b1e78333730609b4eb2568326628e3666a3938ad58cbc9acc6"
+        },
+        "lampas2-overrides": {
+          "file": "lampas2-overrides-1.0.0.jar",
+          "sha256": "e072bd07ef2a4ef652eea9417491ebc24fed44e39409cf43640fc67f549a4af3"
+        }
+      },
+      "raw_evidence_path": "build/illagerblabber-probe/patched",
+      "exit_code": 0,
+      "enable_line_logged": true,
+      "mixins_applied": [
+        "IllagerVoiceManagerAccessor",
+        "IllagerVoiceManagerMixin",
+        "IllagerVoiceRegistryAccessor",
+        "IllagerVoiceRegistryMixin"
+      ],
+      "injection_failures": [],
+      "vendor_info_lines": 0,
+      "live_instances": {
+        "before": {
+          "IllagerVoiceManager": 0,
+          "Pillager": 0
+        },
+        "after_summon": {
+          "IllagerVoiceManager": 200,
+          "Pillager": 200
+        },
+        "after_kill": {
+          "IllagerVoiceManager": 0,
+          "Pillager": 200
+        },
+        "after_churn": {
+          "IllagerVoiceManager": 0,
+          "Pillager": 0
+        },
+        "traveller_overworld": {
+          "IllagerVoiceManager": 1,
+          "Pillager": 1
+        },
+        "traveller_nether": {
+          "IllagerVoiceManager": 1,
+          "Pillager": 1
+        }
+      },
+      "traveller_entity_checks": {
+        "in_nether": "Test passed. Count: 1",
+        "in_overworld": "Test failed"
+      },
+      "traveller_nether_pos": "[22.0d, 51.0d, 9.5d]",
+      "spark_heapsummary_files": [
+        "config\\spark\\heapsummary-2026-10-10_19.42.13.sparkheap"
+      ]
+    },
+    {
+      "label": "baseline",
+      "mods": {
+        "illagerblabber": {
+          "file": "illagerblabber-26.2-Fabric-1.1.0.jar",
+          "sha256": "ceecc1248d29786d4b1b595e50dd61f9be49b647f015d30b4373c544fcd9b0e5"
+        },
+        "fabric-api": {
+          "file": "fabric-api-0.161.0+26.2.jar",
+          "sha256": "e5b858ceb13290c274e31cb888ff5a1a40cb91067e7ffab0b5b775aec51e216a"
+        },
+        "spark": {
+          "file": "spark-1.10.187-fabric.jar",
+          "sha256": "3fc00663caa542b1e78333730609b4eb2568326628e3666a3938ad58cbc9acc6"
+        }
+      },
+      "raw_evidence_path": "build/illagerblabber-probe/baseline",
+      "exit_code": 0,
+      "enable_line_logged": false,
+      "mixins_applied": [],
+      "injection_failures": [],
+      "vendor_info_lines": 402,
+      "live_instances": {
+        "before": {
+          "IllagerVoiceManager": 0,
+          "Pillager": 0
+        },
+        "after_summon": {
+          "IllagerVoiceManager": 200,
+          "Pillager": 200
+        },
+        "after_kill": {
+          "IllagerVoiceManager": 200,
+          "Pillager": 200
+        },
+        "after_churn": {
+          "IllagerVoiceManager": 200,
+          "Pillager": 200
+        },
+        "traveller_overworld": {
+          "IllagerVoiceManager": 201,
+          "Pillager": 201
+        },
+        "traveller_nether": {
+          "IllagerVoiceManager": 201,
+          "Pillager": 202
+        }
+      },
+      "traveller_entity_checks": {
+        "in_nether": "Test passed. Count: 1",
+        "in_overworld": "Test failed"
+      },
+      "traveller_nether_pos": "[-10.0d, 46.0d, 21.5d]",
+      "spark_heapsummary_files": [
+        "config\\spark\\heapsummary-2026-10-10_19.43.30.sparkheap"
+      ]
+    },
+    {
+      "label": "control-no-blabber",
+      "mods": {
+        "fabric-api": {
+          "file": "fabric-api-0.161.0+26.2.jar",
+          "sha256": "e5b858ceb13290c274e31cb888ff5a1a40cb91067e7ffab0b5b775aec51e216a"
+        },
+        "spark": {
+          "file": "spark-1.10.187-fabric.jar",
+          "sha256": "3fc00663caa542b1e78333730609b4eb2568326628e3666a3938ad58cbc9acc6"
+        }
+      },
+      "raw_evidence_path": "build/illagerblabber-probe/control-no-blabber",
+      "exit_code": 0,
+      "enable_line_logged": false,
+      "mixins_applied": [],
+      "injection_failures": [],
+      "vendor_info_lines": 0,
+      "live_instances": {
+        "before": {
+          "IllagerVoiceManager": 0,
+          "Pillager": 0
+        },
+        "after_summon": {
+          "IllagerVoiceManager": 0,
+          "Pillager": 200
+        },
+        "after_kill": {
+          "IllagerVoiceManager": 0,
+          "Pillager": 200
+        },
+        "after_churn": {
+          "IllagerVoiceManager": 0,
+          "Pillager": 0
+        },
+        "traveller_overworld": {
+          "IllagerVoiceManager": 0,
+          "Pillager": 1
+        },
+        "traveller_nether": {
+          "IllagerVoiceManager": 0,
+          "Pillager": 1
+        }
+      },
+      "traveller_entity_checks": {
+        "in_nether": "Test passed. Count: 1",
+        "in_overworld": "Test failed"
+      },
+      "traveller_nether_pos": "[4.0d, 44.0d, 0.5d]",
+      "spark_heapsummary_files": [
+        "config\\spark\\heapsummary-2026-10-10_19.44.48.sparkheap"
+      ]
+    },
+    {
+      "label": "absent-with-overrides",
+      "mods": {
+        "fabric-api": {
+          "file": "fabric-api-0.161.0+26.2.jar",
+          "sha256": "e5b858ceb13290c274e31cb888ff5a1a40cb91067e7ffab0b5b775aec51e216a"
+        },
+        "spark": {
+          "file": "spark-1.10.187-fabric.jar",
+          "sha256": "3fc00663caa542b1e78333730609b4eb2568326628e3666a3938ad58cbc9acc6"
+        },
+        "lampas2-overrides": {
+          "file": "lampas2-overrides-1.0.0.jar",
+          "sha256": "e072bd07ef2a4ef652eea9417491ebc24fed44e39409cf43640fc67f549a4af3"
+        }
+      },
+      "raw_evidence_path": "build/illagerblabber-probe/absent-with-overrides",
+      "exit_code": 0,
+      "boot_done": true,
+      "enable_line_logged": false,
+      "mixins_applied": [],
+      "injection_failures": [],
+      "note": "IllagerBlabber absent: server boots and stops normally, the gate stays silent and no IllagerBlabber mixin applies."
+    }
+  ],
+  "findings": [
+    "Baseline keeps one IllagerVoiceManager and its Pillager reachable for every illager that ever ticked (200 after kill and churn).",
+    "Baseline keeps the pre-portal Pillager reachable after a dimension change (202 live = 200 dead + old + new copy), because the manager still holds the old instance.",
+    "Patched releases every manager on unload (0 after kill) and every dead Pillager once vanilla drops its tick snapshot (0 after churn).",
+    "Patched replaces the traveller's manager with one bound to the Nether copy: 1 manager and 1 live Pillager after the crossing, so the old copy is collectable.",
+    "Patched logs the enable line, applies all four mixins, and emits none of the vendor per-illager INFO lines (baseline: 402 over 201 illagers)."
+  ],
+  "vanilla_retention_note": "Without any mod (Fabric Loader only, and with Fabric API only), the 200 killed pillagers stay reachable after kill, save-all and 60 s. A heap dump traced them to DedicatedServer.levels -> ServerLevel.entityTickList -> EntityTickList.passive: entities removed mid-tick remain in the last copy-on-write snapshot until another entity is added or removed mid-tick. It is bounded to one snapshot and clears on normal churn, so the probe forces one item despawn before counting. This is vanilla behaviour, not part of the IllagerBlabber defect.",
+  "not_verified": [
+    "Audible voice lines and their playback position on a client after a dimension change",
+    "Long-uptime heap behaviour on the live server",
+    "Chunk-unload and reload of illagers with players present"
+  ]
+}

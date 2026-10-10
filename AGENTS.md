@@ -6,8 +6,9 @@ heads, Lootr item frames converted into Fast Item Frames blocks, Underground Vil
 Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-activated threaded-worldgen
 entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
-Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, version-gated Incendium Legacy 5.5.0 and 5.5.1 tick-function optimizations, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files, POI tags, and loot tables (MVS, MNS, Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Better Lib). The first two
-features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, and Beautiful item models are client-only; the Custom Name space fix, Incendium datapacks, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
+Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, version-gated Incendium Legacy 5.5.0 and 5.5.1 tick-function optimizations, the version-gated
+IllagerBlabber 1.1.0 voice-registry leak fix, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files, POI tags, and loot tables (MVS, MNS, Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Better Lib). The first two
+features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, and Beautiful item models are client-only; the Custom Name space fix, Incendium datapacks, IllagerBlabber registry fix, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -299,6 +300,26 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   max-name-length and blacklist enforcement must remain active. The patch intentionally affects `PREFIX`, `NICKNAME`, and
   `SUFFIX` because all three use the same `playerNameArgumentToComponent` path. Spaces are syntax, not a bypass.
   Do not move this fix into `jadecustomname`; Jade is only a display consumer and is unrelated to command parsing.
+- **IllagerBlabber 1.1.0's `IllagerVoiceRegistry` never forgets an illager.** Its static UUID-keyed
+  `ConcurrentHashMap`s (`voiceManagers`, `hadTargetLastTick`, `victoryTimers`, `combatDebounceTimers`,
+  `lastProcessedTick`, `lastPillagerTargets`, `lastVindicatorTargets`, `lastEvokerTargets`) have no
+  lifecycle cleanup, and each `IllagerVoiceManager` holds its `AbstractIllager`, so every illager that
+  ever ticked stays reachable. A dimension change keeps the same UUID, so the new copy reuses the
+  manager holding the removed old copy and voices it at the old position. Vendor `RaiderMixin` calls
+  `updateIllager` from `Raider.aiStep` TAIL on the server only; that method interns and locks the UUID
+  string and writes `lastProcessedTick` every tick, and its "already processed" guard cannot fire
+  because `currentGameTick` advances per call. The fix cancels `updateIllager` at HEAD, reuses a manager
+  only when its `illager` is the same instance (identity, not UUID), otherwise clears the UUID from
+  every per-entity map and creates a manager, then calls `update()` and the shadowed
+  `updateIllagerState`. `IllagerBlabberFixes` clears on `ENTITY_UNLOAD` only when no manager exists or
+  the manager holds the unloading instance, and clears everything on `SERVER_STOPPED`. The vendor INFO
+  logs in the manager constructor, `update()` and `updateIllagerState` are redirected to DEBUG. Gate:
+  exact mod ID, version `1.1.0` and full JAR SHA-256 from the sole PATH origin; the plugin, profile and
+  entrypoint name no vendor class, and the entrypoint returns before touching accessors when the gate
+  fails. State is in memory only, so the fix is safe to add to or remove from an existing world.
+  When measuring heap retention, note that vanilla `EntityTickList.passive` keeps entities removed
+  mid-tick reachable until the next mid-tick add or remove; force such churn before counting, as
+  `tools/illagerblabber-probe/run.py` does. Evidence: `docs/evidence/illagerblabber-registry.json`.
 - **Underground Village 2.1.1 bundles corrupted structure binary and mistyped pool references.**
   `poi/v4/founten.nbt` suffered binary corruption in upstream commit `23b7f51f` ("Fix Pool"), causing invalid
   gzip CRC/ISIZE and `NbtFormatException: Missing type on ListTag`. It is restored using the clean parent structure
@@ -403,6 +424,12 @@ lampas2-overrides/resource-patches/
 customname/
   CustomNameMixinPlugin     applies only to Custom Name 0.4.4-26.2 (common-side, server-safe)
   mixin/                    forces spaceAllowed=true in playerNameArgumentToComponent's nameArgumentToComponent call
+illagerblabber/
+  IllagerBlabberProfile     exact mod ID, version and JAR SHA-256 gate; names vendor classes only as strings
+  IllagerBlabberMixinPlugin applies only to the audited 1.1.0 artifact (common-side, server-safe)
+  IllagerBlabberFixes       main entrypoint; registers ownership-checked unload and server-stop cleanup
+  IllagerBlabberRegistryCleanup pure map core plus accessor adapters
+  mixin/                    registry/manager accessors, identity-checked updateIllager takeover, INFO→DEBUG
 mobfilter/
   MobFilterMixinPlugin      applies whenever Mob Filter is present (common-side, server-safe); bytecode contract pinned to 0.28.1+26.2
   WorldgenDimensionContext  thread-local dimension scoping during worldgen entity placement

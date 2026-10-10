@@ -47,6 +47,9 @@ dependencies {
 	testImplementation "org.ow2.asm:asm:9.10.1"
 	compileOnly "maven.modrinth:plasmo-voice:${project.plasmo_voice_version}"
 	testImplementation "maven.modrinth:plasmo-voice:${project.plasmo_voice_version}"
+	// IllagerBlabber is compile-only; its bytecode contract test reads the pinned classes at test runtime.
+	compileOnly "maven.modrinth:illagerblabber:${project.illagerblabber_version}"
+	testRuntimeOnly "maven.modrinth:illagerblabber:${project.illagerblabber_version}"
 
 	// Optional mods are compile-only: every compatibility feature is gated by its mixin plugin,
 	// and none of their classes are bundled into the output jar.

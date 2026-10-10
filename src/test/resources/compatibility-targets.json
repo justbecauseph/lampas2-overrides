@@ -26,6 +26,20 @@
         }
       }
     },
+    "illagerblabber": {
+      "name": "IllagerBlabber",
+      "type": "common_registry_leak_mixin",
+      "versions": {
+        "1.1.0": {
+          "status": "patched",
+          "modrinth_project_id": "WS4FswTq",
+          "modrinth_version_id": "UrxK3Zzq",
+          "artifact_sha256": "ceecc1248d29786d4b1b595e50dd61f9be49b647f015d30b4373c544fcd9b0e5",
+          "probe_evidence": "docs/evidence/illagerblabber-registry.json",
+          "verification_limit": "Unit and contract tests verify the pinned bytecode targets, the exact version and SHA-256 gate, and the ownership-checked cleanup core. Dedicated-server runtime behaviour, audible voice lines and long-uptime heap behaviour are not covered by those tests and are verified separately by a runtime probe whose evidence is recorded in probe_evidence."
+        }
+      }
+    },
     "incendium": {
       "name": "Incendium",
       "type": "datapack_replacement",

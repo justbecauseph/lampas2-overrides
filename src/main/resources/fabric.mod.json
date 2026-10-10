@@ -3,7 +3,7 @@
 	"id": "lampas2-overrides",
 	"version": "${version}",
 	"name": "Lampas2 Overrides",
-	"description": "Compatibility fixes for Figura, ReplayMod, Chatting, Lootr, Fast Item Frames, Better Lib, Underground Village, Additional Lanterns, Mob Filter, Incendium, Visual Workbench, Gravestones, Jade, Custom Name, optional boat water masks, and optional beautiful item models.",
+	"description": "Compatibility fixes for Figura, ReplayMod, Chatting, Lootr, Fast Item Frames, Better Lib, Underground Village, Additional Lanterns, Mob Filter, Incendium, Visual Workbench, Gravestones, Jade, Custom Name, optional boat water masks, optional beautiful item models, and IllagerBlabber 1.1.0 registry cleanup.",
 	"authors": [
 		"justbecauseph"
 	],
@@ -19,7 +19,8 @@
 		"main": [
 			"lampas2overrides.protocol.LampasProtocolServer",
 			"lampas2overrides.incendium.IncendiumOptimization",
-			"lampas2overrides.stoneholm.StoneholmDataFixes"
+			"lampas2overrides.stoneholm.StoneholmDataFixes",
+			"lampas2overrides.illagerblabber.IllagerBlabberFixes"
 		],
 		"client": [
 			"lampas2overrides.client.Lampas2OverridesClient",
@@ -82,6 +83,9 @@
 			"config": "lampas2-overrides.mobfilter.mixins.json"
 		},
 		{
+			"config": "lampas2-overrides.illagerblabber.mixins.json"
+		},
+		{
 			"config": "lampas2-overrides.resourcefix.mixins.json"
 		},
 		{
@@ -106,6 +110,7 @@
 		"gravestones": "*",
 		"jade": "*",
 		"eclipsescustomname": "*",
-		"mobfilter": "*"
+		"mobfilter": "*",
+		"illagerblabber": "*"
 	}
 }

@@ -22,6 +22,7 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Boat water-mask compatibility](#boat-water-mask-compatibility) | EMF 3.3.5, 3.3.8 or 3.3.11 + audited boat providers | Restores the vanilla water mask for plain hulls when the selected Fresh Animations mask is incompatible |
 | [Better Lib demo villager suppression](#better-lib-demo-villager-suppression) | Better Lib | Suppresses hardcoded demo villager registration that causes RemapException registry sync disconnects |
 | [Beautiful item-model reloads](#beautiful-item-model-reloads) | Beautiful Enchanted Books 6.0.0 and/or Beautiful Potions 2.0.1 | Clears stale extra-model keys so each resource reload uses the keys registered for that reload |
+| [IllagerBlabber voice registry](#illagerblabber-voice-registry) | IllagerBlabber 1.1.0 | Releases per-illager voice state on unload, follows illagers across dimensions, and drops per-tick lock and log overhead |
 
 ## Plasmo Voice client shutdown
 
@@ -64,6 +65,37 @@ restoration. Both mixins appeared in the client log and both clients exited norm
 The resolver uses synthetic stacks without world registry synchronization. Full-pack behavior and visible
 inventory rendering remain unverified. See [reload compatibility evidence](docs/beautiful-items-reload.md),
 the [probe runner](tools/beautiful-items-probe/run.py), and [recorded probe data](docs/evidence/beautiful-items-reload.json).
+
+## IllagerBlabber voice registry
+
+IllagerBlabber **1.1.0** keeps every illager's voice state in static `ConcurrentHashMap`s on
+`IllagerVoiceRegistry`, keyed by entity UUID, and never removes it. Each `IllagerVoiceManager` holds
+its `AbstractIllager`, so every pillager, vindicator and evoker that ever ticked stays reachable until
+the server stops. After a dimension change the new copy (same UUID) keeps using the manager that
+holds the removed old copy, so its lines are voiced at the old position. Every tick, each illager
+also interns its UUID string, locks on it and writes a tick marker whose "already processed" guard can
+never fire, and new managers log at INFO.
+
+On the server, Lampas2 Overrides takes over `IllagerVoiceRegistry.updateIllager` at HEAD. It reuses a
+manager only when that manager holds this exact entity instance. Otherwise it clears the UUID's
+per-entity state and creates a manager for the current instance, then runs the same manager update
+and state update as upstream, without the intern, lock or tick marker. On entity unload the UUID's
+state is cleared only if the unloading instance still owns it, so a newer same-UUID copy keeps its
+state. All registry maps are cleared when a server stops. The per-illager INFO logs are demoted to
+DEBUG.
+
+The fix is common-side and runs on dedicated and integrated servers. It applies only when the
+installed mod is exactly `illagerblabber` `1.1.0` with the audited JAR SHA-256; otherwise it logs a
+warning naming the installed version and stays disabled. It changes only in-memory state, so it is
+safe to add or remove on an existing world. IllagerBlabber is optional and is never bundled.
+
+A disposable dedicated-server probe with 200 pillagers showed 200 managers and 200 dead pillagers
+still reachable after the kill without the fix, and 0 of each with it. After a real Nether portal
+crossing, the old copy stayed reachable without the fix and was released with it. Vanilla briefly
+keeps entities removed during a tick in `EntityTickList`'s last snapshot; the probe forces one
+mid-tick removal before counting so that vanilla retention is not mistaken for the leak. Audible
+playback position on a client and long-uptime heap behaviour on the live server remain unverified.
+See the [probe runner](tools/illagerblabber-probe/run.py) and [recorded probe data](docs/evidence/illagerblabber-registry.json).
 
 ## Mob Filter worldgen safety and dimension context
 
