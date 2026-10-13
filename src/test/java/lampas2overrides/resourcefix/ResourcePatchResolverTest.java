@@ -43,17 +43,8 @@ public class ResourcePatchResolverTest {
 
 	@Test
 	void registryContainsAllTargetPatches() {
-		assertEquals(26, ResourcePatchRegistry.getAllPatches().size());
+		assertEquals(18, ResourcePatchRegistry.getAllPatches().size());
 
-		assertNotNull(ResourcePatchRegistry.findPatch("better_lib",
-			"data/minecraft/tags/point_of_interest_type/acquirable_job_site.json"));
-		assertNotNull(ResourcePatchRegistry.findPatch("mns", "pack.mcmeta"));
-		assertNotNull(ResourcePatchRegistry.findPatch("mvs", "5.0.11", "pack.mcmeta"));
-		assertNotNull(ResourcePatchRegistry.findPatch("mvs", "5.0.14", "pack.mcmeta"));
-		assertNull(ResourcePatchRegistry.findPatch("mvs", "5.1.1", "pack.mcmeta"));
-		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+a", "pack.mcmeta"));
-		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+a", "data/formationsoverworld/loot_table/stone_tower/smithing.json"));
-		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+a", "data/formationsoverworld/loot_table/witch_tower/smithing.json"));
 		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", "pack.mcmeta"));
 		assertNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", "data/formationsoverworld/loot_table/stone_tower/smithing.json"));
 		assertNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", "data/formationsoverworld/loot_table/witch_tower/smithing.json"));
@@ -94,16 +85,6 @@ public class ResourcePatchResolverTest {
 					assertEquals(107, sf.get(1).getAsInt());
 					assertTrue(pack.has("min_format"), "Missing min_format in " + patch.replacementPath());
 					assertTrue(pack.has("max_format"), "Missing max_format in " + patch.replacementPath());
-				} else if (patch.resourcePath().endsWith("acquirable_job_site.json")) {
-					assertFalse(content.contains("//"), "acquirable_job_site.json replacement must not contain comments");
-					assertTrue(json.has("replace"), "Missing 'replace' property");
-					assertFalse(json.get("replace").getAsBoolean());
-					assertTrue(json.has("values"), "Missing 'values' array");
-					assertEquals(0, json.getAsJsonArray("values").size(), "values array must be empty");
-				} else if (patch.resourcePath().endsWith("smithing.json")) {
-					assertFalse(content.contains("\"minecraft:chain\""), "smithing.json replacement must not contain unrenamed minecraft:chain");
-					assertTrue(content.contains("\"minecraft:iron_chain\""), "smithing.json replacement must contain minecraft:iron_chain");
-					assertTrue(json.has("pools"), "Missing 'pools' array in " + patch.replacementPath());
 				} else if (patch.resourcePath().endsWith("wilderwild/worldgen/configured_feature/stone_pool.json")) {
 					assertEquals("frozenlib:circular_waterlogged_vegetation_patch_less_borders",
 						json.get("type").getAsString());
@@ -118,116 +99,24 @@ public class ResourcePatchResolverTest {
 	}
 
 	@Test
-	void appliesPatchWhenVersionAndHashMatch() throws IOException {
-		ModContainer mod = createMockModContainer("better_lib", "2.1.1");
-		byte[] originalMalformedBytes = ("//{\n" +
-			"//  \"values\": [\n" +
-			"//    \"better_lib:andesite_worker\",\n" +
-			"//    \"better_lib:ore_trader\"\n" +
-			"//  ]\n" +
-			"//}").getBytes(StandardCharsets.UTF_8);
-
-		IoSupplier<InputStream> originalSupplier = () -> new ByteArrayInputStream(originalMalformedBytes);
-		IoSupplier<InputStream> patchedSupplier = ResourcePatchResolver.resolve(
-			mod,
-			"data/minecraft/tags/point_of_interest_type/acquirable_job_site.json",
-			originalSupplier
-		);
-
-		assertNotNull(patchedSupplier, "Expected patched supplier to be returned");
-		try (InputStream in = patchedSupplier.get()) {
-			String result = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-			JsonObject json = JsonParser.parseString(result).getAsJsonObject();
-			assertFalse(result.contains("//"));
-			assertTrue(json.has("values"));
-			assertEquals(0, json.getAsJsonArray("values").size());
-		}
-	}
-
-	@Test
-	void appliesFormationsOverworldLootTablePatch() throws IOException {
-		ModContainer mod = createMockModContainer("formationsoverworld", "1.0.5+a");
-		IoSupplier<InputStream> patchedSupplier = ResourcePatchResolver.resolve(
-			mod,
-			"data/formationsoverworld/loot_table/stone_tower/smithing.json",
-			null
-		);
-
-		assertNotNull(patchedSupplier, "Expected patched supplier for Formations Overworld stone_tower/smithing");
-		try (InputStream in = patchedSupplier.get()) {
-			String result = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-			assertFalse(result.contains("\"minecraft:chain\""), "Must not contain unrenamed minecraft:chain");
-			assertTrue(result.contains("\"minecraft:iron_chain\""), "Must contain minecraft:iron_chain");
-			JsonObject json = JsonParser.parseString(result).getAsJsonObject();
-			assertTrue(json.has("pools"));
-		}
-	}
-
-	@Test
-	void appliesFormationsOverworldMetadataPatchForBothVersions() throws IOException {
+	void appliesFormationsOverworldMetadataPatchForVersion1_0_5c() throws IOException {
 		byte[] original = formationsOverworldOriginalPackMetadata();
 		assertEquals("ffa966eb7835cc4de1273945333236331eff33116e918869e4e29c881b39f940",
 			ResourcePatchResolver.sha256Hex(original));
 
-		for (String version : new String[] {"1.0.5+a", "1.0.5+c"}) {
-			IoSupplier<InputStream> patched = ResourcePatchResolver.resolve(
-				createMockModContainer("formationsoverworld", version),
-				"pack.mcmeta",
-				() -> new ByteArrayInputStream(original)
-			);
-			assertNotNull(patched, "Expected metadata patch for Formations Overworld " + version);
-			try (InputStream in = patched.get()) {
-				JsonObject pack = JsonParser.parseString(new String(in.readAllBytes(), StandardCharsets.UTF_8))
-					.getAsJsonObject().getAsJsonObject("pack");
-				assertEquals(48, pack.get("pack_format").getAsInt());
-				assertEquals(48, pack.getAsJsonArray("supported_formats").get(0).getAsInt());
-				assertEquals(107, pack.getAsJsonArray("supported_formats").get(1).getAsInt());
-				assertEquals("Formations Overworld's resources", pack.get("description").getAsString());
-			}
-		}
-	}
-
-	@Test
-	void leavesFormationsOverworldLootTablesUpstreamForVersion1_0_5c() throws IOException {
-		String[] paths = {
-			"data/formationsoverworld/loot_table/stone_tower/smithing.json",
-			"data/formationsoverworld/loot_table/witch_tower/smithing.json"
-		};
-		for (String path : paths) {
-			byte[] oldVersionBytes = readFixtureResource("upstream/formationsoverworld/1.0.5+a/" + path);
-			assertNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", path),
-				"1.0.5+c must not register a loot-table patch for " + path);
-			assertNull(ResourcePatchResolver.resolve(
-				createMockModContainer("formationsoverworld", "1.0.5+c"),
-				path,
-				() -> new ByteArrayInputStream(oldVersionBytes)
-			), "The upstream-owned 1.0.5+c loot path must not be replaced: " + path);
-			String expectedSha = path.contains("stone_tower")
-				? "380118821ec580c348da35a5983283499950e976099e96123e015cbe508346c0"
-				: "32c4bd2ea2c860a13ebde2ac05fe964bc2334914584cb68c14f4a994d9630d46";
-			assertEquals(expectedSha, ResourcePatchResolver.sha256Hex(oldVersionBytes));
-		}
-	}
-
-	@Test
-	void appliesWilderWildStonePoolPatchWithExactVersionAndHash() throws IOException {
-		ModContainer mod = createMockModContainer("wilderwild", "4.2.11-mc26.2");
-		byte[] original = readFixtureResource(
-			"upstream/wilderwild/4.2.11-mc26.2/data/wilderwild/worldgen/configured_feature/stone_pool.json");
-		assertEquals("59cf59a1c1e86f9627361e1dcec3250b81d535c6e84ff7c3b2950d9b90f2efe4",
-			ResourcePatchResolver.sha256Hex(original));
-
 		IoSupplier<InputStream> patched = ResourcePatchResolver.resolve(
-			mod,
-			"data/wilderwild/worldgen/configured_feature/stone_pool.json",
+			createMockModContainer("formationsoverworld", "1.0.5+c"),
+			"pack.mcmeta",
 			() -> new ByteArrayInputStream(original)
 		);
-		assertNotNull(patched);
+		assertNotNull(patched, "Expected metadata patch for Formations Overworld 1.0.5+c");
 		try (InputStream in = patched.get()) {
-			String result = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-			assertEquals(14, JsonParser.parseString(result).getAsJsonObject()
-				.getAsJsonObject("config").getAsJsonObject("xz_radius")
-				.get("max_inclusive").getAsInt());
+			JsonObject pack = JsonParser.parseString(new String(in.readAllBytes(), StandardCharsets.UTF_8))
+				.getAsJsonObject().getAsJsonObject("pack");
+			assertEquals(48, pack.get("pack_format").getAsInt());
+			assertEquals(48, pack.getAsJsonArray("supported_formats").get(0).getAsInt());
+			assertEquals(107, pack.getAsJsonArray("supported_formats").get(1).getAsInt());
+			assertEquals("Formations Overworld's resources", pack.get("description").getAsString());
 		}
 	}
 
@@ -235,15 +124,13 @@ public class ResourcePatchResolverTest {
 	void appliesWilderWild43StonePoolPatchWithExactVersionAndHash() throws IOException {
 		String path = "data/wilderwild/worldgen/configured_feature/stone_pool.json";
 		byte[] original = readFixtureResource("upstream/wilderwild/4.3/" + path);
-		byte[] previousRelease = readFixtureResource("upstream/wilderwild/4.2.11-mc26.2/" + path);
-		assertArrayEquals(previousRelease, original, "Wilder Wild 4.3 retains the audited 4.2.11 resource bytes");
 		assertEquals("59cf59a1c1e86f9627361e1dcec3250b81d535c6e84ff7c3b2950d9b90f2efe4",
 			ResourcePatchResolver.sha256Hex(original));
 
 		ResourcePatch patch = ResourcePatchRegistry.findPatch("wilderwild", "4.3", path);
 		assertNotNull(patch);
 		assertEquals("4.3", patch.expectedVersion());
-		assertEquals("lampas2-overrides/resource-patches/wilderwild/4.2.11-mc26.2/data/wilderwild/worldgen/configured_feature/stone_pool.json",
+		assertEquals("lampas2-overrides/resource-patches/wilderwild/4.3/data/wilderwild/worldgen/configured_feature/stone_pool.json",
 			patch.replacementPath());
 		IoSupplier<InputStream> patched = ResourcePatchResolver.resolve(
 			createMockModContainer("wilderwild", "4.3"),
@@ -260,37 +147,15 @@ public class ResourcePatchResolverTest {
 	}
 
 	@Test
-	void leavesWilderWildStonePoolUntouchedForUnknownVersionOrHash() throws IOException {
-		byte[] original = readFixtureResource(
-			"upstream/wilderwild/4.2.11-mc26.2/data/wilderwild/worldgen/configured_feature/stone_pool.json");
-		IoSupplier<InputStream> wrongVersion = ResourcePatchResolver.resolve(
-			createMockModContainer("wilderwild", "4.2.12-mc26.2"),
-			"data/wilderwild/worldgen/configured_feature/stone_pool.json",
-			() -> new ByteArrayInputStream(original));
-		assertNull(wrongVersion);
-
-		byte[] tampered = original.clone();
-		tampered[0] = (byte) (tampered[0] ^ 1);
-		IoSupplier<InputStream> wrongHash = ResourcePatchResolver.resolve(
-			createMockModContainer("wilderwild", "4.2.11-mc26.2"),
-			"data/wilderwild/worldgen/configured_feature/stone_pool.json",
-			() -> new ByteArrayInputStream(tampered));
-		assertNotNull(wrongHash);
-		try (InputStream in = wrongHash.get()) {
-			assertArrayEquals(tampered, in.readAllBytes());
-		}
-	}
-
-	@Test
 	void leavesWilderWild43StonePoolUntouchedForUnknownVersionOrHash() throws IOException {
 		String path = "data/wilderwild/worldgen/configured_feature/stone_pool.json";
 		byte[] original = readFixtureResource("upstream/wilderwild/4.3/" + path);
-		for (String unknownVersion : new String[] {"4.3.1", "4.3-mc26.2"}) {
+		for (String unknownVersion : new String[] {"4.2.11-mc26.2", "4.3.1", "4.3-mc26.2"}) {
 			assertNull(ResourcePatchResolver.resolve(
 				createMockModContainer("wilderwild", unknownVersion),
 				path,
 				() -> new ByteArrayInputStream(original)
-			), "Unknown Wilder Wild version must remain unpatched: " + unknownVersion);
+			), "Unregistered Wilder Wild version must remain unpatched: " + unknownVersion);
 		}
 
 		byte[] tampered = original.clone();
@@ -307,34 +172,20 @@ public class ResourcePatchResolverTest {
 	}
 
 	@Test
-	void skipsPatchWhenVersionDoesNotMatch() throws IOException {
-		ModContainer modNewVersion = createMockModContainer("better_lib", "2.1.2");
-		byte[] originalMalformedBytes = "//{}".getBytes(StandardCharsets.UTF_8);
-
-		IoSupplier<InputStream> patched = ResourcePatchResolver.resolve(
-			modNewVersion,
-			"data/minecraft/tags/point_of_interest_type/acquirable_job_site.json",
-			() -> new ByteArrayInputStream(originalMalformedBytes)
-		);
-
-		assertNull(patched, "Patch must be skipped when mod version is different");
-	}
-
-	@Test
 	void skipsPatchWhenHashDoesNotMatch() throws IOException {
-		ModContainer mod = createMockModContainer("better_lib", "2.1.1");
-		byte[] alreadyFixedUpstreamBytes = "{\"replace\":false,\"values\":[\"foo:bar\"]}".getBytes(StandardCharsets.UTF_8);
+		ModContainer mod = createMockModContainer("formationsoverworld", "1.0.5+c");
+		byte[] unexpectedUpstreamBytes = "{\"pack\":{\"pack_format\":48}}".getBytes(StandardCharsets.UTF_8);
 
 		IoSupplier<InputStream> patched = ResourcePatchResolver.resolve(
 			mod,
-			"data/minecraft/tags/point_of_interest_type/acquirable_job_site.json",
-			() -> new ByteArrayInputStream(alreadyFixedUpstreamBytes)
+			"pack.mcmeta",
+			() -> new ByteArrayInputStream(unexpectedUpstreamBytes)
 		);
 
 		assertNotNull(patched, "Fallback supplier with original bytes should be returned");
 		try (InputStream in = patched.get()) {
 			byte[] read = in.readAllBytes();
-			assertArrayEquals(alreadyFixedUpstreamBytes, read, "Original bytes must be preserved when hash mismatch occurs");
+			assertArrayEquals(unexpectedUpstreamBytes, read, "Original bytes must be preserved when hash mismatch occurs");
 		}
 	}
 
@@ -352,104 +203,14 @@ public class ResourcePatchResolverTest {
 
 	@Test
 	void leavesUnrelatedPathInAffectedModUntouched() {
-		ModContainer mod = createMockModContainer("better_lib", "2.1.1");
+		ModContainer mod = createMockModContainer("formationsoverworld", "1.0.5+c");
 		IoSupplier<InputStream> patched = ResourcePatchResolver.resolve(
 			mod,
-			"data/better_lib/tags/villager_trade/ore_trader/level_1.json",
+			"data/formationsoverworld/worldgen/structure/unrelated.json",
 			() -> new ByteArrayInputStream("{}".getBytes(StandardCharsets.UTF_8))
 		);
 
 		assertNull(patched, "Unrelated path in affected mod must not be patched");
-	}
-
-	@Test
-	void resolvesMultiVersionMvsPatchesCorrectly() throws IOException {
-		// MVS 5.0.11 with original hash
-		ModContainer mvs5011 = createMockModContainer("mvs", "5.0.11");
-		byte[] raw5011 = ("{\n" +
-			"    \"pack\": {\n" +
-			"        \"description\": \"MoogsVoyagerStructures\",\n" +
-			"        \"pack_format\": 48\n" +
-			"    }\n" +
-			"}").getBytes(StandardCharsets.UTF_8);
-
-		IoSupplier<InputStream> patched5011 = ResourcePatchResolver.resolve(
-			mvs5011,
-			"pack.mcmeta",
-			() -> new ByteArrayInputStream(raw5011)
-		);
-		assertNotNull(patched5011);
-		try (InputStream in = patched5011.get()) {
-			String result = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-			assertTrue(result.contains("\"supported_formats\""));
-		}
-
-		// MVS 5.0.14 with original hash
-		ModContainer mvs5014 = createMockModContainer("mvs", "5.0.14");
-		byte[] raw5014 = ("{\n" +
-			"    \"pack\": {\n" +
-			"        \"description\": \"MoogsVoyagerStructures\",\n" +
-			"        \"pack_format\": 48,\n" +
-			"        \"min_format\": 48,\n" +
-			"        \"max_format\": 107.1\n" +
-			"    }\n" +
-			"}").getBytes(StandardCharsets.UTF_8);
-
-		IoSupplier<InputStream> patched5014 = ResourcePatchResolver.resolve(
-			mvs5014,
-			"pack.mcmeta",
-			() -> new ByteArrayInputStream(raw5014)
-		);
-		assertNotNull(patched5014);
-		try (InputStream in = patched5014.get()) {
-			String result = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-			assertTrue(result.contains("\"supported_formats\""));
-		}
-
-		// MVS 5.1.1 (fixed upstream, not registered)
-		ModContainer mvs511 = createMockModContainer("mvs", "5.1.1");
-		byte[] raw511 = ("{\n" +
-			"    \"pack\": {\n" +
-			"        \"description\": \"MoogsVoyagerStructures\",\n" +
-			"        \"pack_format\": 48,\n" +
-			"        \"min_format\": 48,\n" +
-			"        \"max_format\": 107.1,\n" +
-			"        \"supported_formats\": [48, 107]\n" +
-			"    }\n" +
-			"}").getBytes(StandardCharsets.UTF_8);
-
-		IoSupplier<InputStream> patched511 = ResourcePatchResolver.resolve(
-			mvs511,
-			"pack.mcmeta",
-			() -> new ByteArrayInputStream(raw511)
-		);
-		assertNull(patched511, "Fixed upstream MVS 5.1.1 must not be patched");
-
-		// MVS 5.0.14 with tampered hash -> original returned
-		byte[] tampered5014 = ("{\n" +
-			"    \"pack\": {\n" +
-			"        \"description\": \"Tampered\",\n" +
-			"        \"pack_format\": 48\n" +
-			"    }\n" +
-			"}").getBytes(StandardCharsets.UTF_8);
-		IoSupplier<InputStream> tamperedResult = ResourcePatchResolver.resolve(
-			mvs5014,
-			"pack.mcmeta",
-			() -> new ByteArrayInputStream(tampered5014)
-		);
-		assertNotNull(tamperedResult);
-		try (InputStream in = tamperedResult.get()) {
-			assertArrayEquals(tampered5014, in.readAllBytes());
-		}
-
-		// Unknown MVS version
-		ModContainer mvsUnknown = createMockModContainer("mvs", "9.9.9");
-		IoSupplier<InputStream> unknownResult = ResourcePatchResolver.resolve(
-			mvsUnknown,
-			"pack.mcmeta",
-			() -> new ByteArrayInputStream(raw5014)
-		);
-		assertNull(unknownResult);
 	}
 
 	@Test
@@ -460,15 +221,8 @@ public class ResourcePatchResolverTest {
 		}
 
 		String[][] jarChecks = {
-			{"better_lib-fabric-26.1-2.1.1.jar", "better_lib", "2.1.1", "data/minecraft/tags/point_of_interest_type/acquirable_job_site.json"},
-			{"MoogsNetherStructures-1.21-3.0.0.jar", "mns", "3.0.0", "pack.mcmeta"},
-			{"MoogsVoyagerStructures-1.21-5.0.11.jar", "mvs", "5.0.11", "pack.mcmeta"},
-			{"formationsoverworld-1.0.5a-mc1.21+.jar", "formationsoverworld", "1.0.5+a", "pack.mcmeta"},
 			{"formationsoverworld-1.0.5c-mc1.21+.jar", "formationsoverworld", "1.0.5+c", "pack.mcmeta"},
-			{"formationsoverworld-1.0.5a-mc1.21+.jar", "formationsoverworld", "1.0.5+a", "data/formationsoverworld/loot_table/stone_tower/smithing.json"},
-			{"formationsoverworld-1.0.5a-mc1.21+.jar", "formationsoverworld", "1.0.5+a", "data/formationsoverworld/loot_table/witch_tower/smithing.json"},
 			{"grim-kingdoms-lost-structures-ruins-2.0.3.jar", "mr_grim_kingdomsloststructuresruins", "2.0.3", "pack.mcmeta"},
-			{"WilderWild-4.2.11-mc26.2.jar", "wilderwild", "4.2.11-mc26.2", "data/wilderwild/worldgen/configured_feature/stone_pool.json"},
 			{"WilderWild-4.3-mc26.2-fabric.jar", "wilderwild", "4.3", "data/wilderwild/worldgen/configured_feature/stone_pool.json",
 				"9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c"}
 		};

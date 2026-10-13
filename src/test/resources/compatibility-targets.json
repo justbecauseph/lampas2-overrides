@@ -44,15 +44,6 @@
       "name": "Incendium",
       "type": "datapack_replacement",
       "versions": {
-        "5.5.0": {
-          "status": "patched",
-          "pack_id": "lampas2-overrides:incendium_5_5_0_optimizations",
-          "resources": {
-            "data/incendium/function/clocks/main.mcfunction": "7f72f3a8df4688dc993a03a0860a2e51d226041a5f9886ab4745e7343780d5a0",
-            "data/incendium/function/technical/entity_id/check.mcfunction": "dbdbf31acb6d9274f63f218f2616e1f4883e0963909d40d362f00bf15f308c17",
-            "data/incendium/function/technical/entity_id/reset.mcfunction": "340591a2b5a74330f04c9c0dfc07aa497302ef16c0f498cb07d6d0abe8dd92d5"
-          }
-        },
         "5.5.1": {
           "status": "patched",
           "modrinth_version_id": "vPwuqZ5y",
@@ -67,55 +58,10 @@
     },
     "better_lib": {
       "name": "Better Library",
-      "type": "mixin_and_resource_patch",
+      "type": "mixin",
       "versions": {
-        "2.1.1": {
-          "status": "patched",
-          "resources": {
-            "data/minecraft/tags/point_of_interest_type/acquirable_job_site.json": "2f605b74d0e3e5a0044e809b0d01bce9f25012800080527d2229c2576942f06d"
-          }
-        },
         "2.1.2": {
-          "status": "patched",
-          "resources": {
-            "data/minecraft/tags/point_of_interest_type/acquirable_job_site.json": "f74498097708215ee46031db7467ce3abed880ed8188eff156e81993d9787e31"
-          }
-        }
-      }
-    },
-    "mns": {
-      "name": "Moog's Nether Structures",
-      "type": "resource_patch",
-      "versions": {
-        "3.0.0": {
-          "status": "patched",
-          "resources": {
-            "pack.mcmeta": "2f42633d021798b55c2c51ba36364ce59080c0025e75bcb24fdc32f47243e90b"
-          }
-        }
-      }
-    },
-    "mvs": {
-      "name": "Moog's Voyager Structures",
-      "type": "resource_patch",
-      "versions": {
-        "5.0.11": {
-          "status": "patched",
-          "resources": {
-            "pack.mcmeta": "60b4eafe19cd5b676b457256fa3548a650830553efbc6945b4b6178fe7e627b1"
-          }
-        },
-        "5.0.14": {
-          "status": "patched",
-          "resources": {
-            "pack.mcmeta": "63edcfe8244ea844e2c98d429330e112b92a5b7ca906aac4fc61421458036dc1"
-          }
-        },
-        "5.1.1": {
-          "status": "fixed-upstream",
-          "resources": {
-            "pack.mcmeta": "9e7b398f4774cf5e9ea0b37bbbeaef30a508584cc261fd01f8b0a1c30ef2d1db"
-          }
+          "status": "patched"
         }
       }
     },
@@ -123,14 +69,6 @@
       "name": "Formations Overworld",
       "type": "resource_patch",
       "versions": {
-        "1.0.5+a": {
-          "status": "patched",
-          "resources": {
-            "pack.mcmeta": "ffa966eb7835cc4de1273945333236331eff33116e918869e4e29c881b39f940",
-            "data/formationsoverworld/loot_table/stone_tower/smithing.json": "380118821ec580c348da35a5983283499950e976099e96123e015cbe508346c0",
-            "data/formationsoverworld/loot_table/witch_tower/smithing.json": "32c4bd2ea2c860a13ebde2ac05fe964bc2334914584cb68c14f4a994d9630d46"
-          }
-        },
         "1.0.5+c": {
           "status": "patched",
           "resources": {
@@ -182,12 +120,6 @@
       "name": "Wilder Wild",
       "type": "resource_patch",
       "versions": {
-        "4.2.11-mc26.2": {
-          "status": "patched",
-          "resources": {
-            "data/wilderwild/worldgen/configured_feature/stone_pool.json": "59cf59a1c1e86f9627361e1dcec3250b81d535c6e84ff7c3b2950d9b90f2efe4"
-          }
-        },
         "4.3": {
           "status": "patched",
           "resources": {
@@ -248,13 +180,10 @@
       "name": "Puzzles Lib",
       "type": "structural_mixin",
       "versions": {
-        "26.2.3": {
-          "status": "verified"
-        },
-        "26.2.4": {
-          "status": "bytecode-and-compile-reviewed",
-          "artifact_sha256": "f084097eb65928136ac12512249822696e81695929ad859a93d1a8fba0d94765",
-          "verification_limit": "Relevant bridge and tag-copy classes match 26.2.3; reload and current-pack gameplay remain separate acceptance checks."
+        "26.2.5": {
+          "status": "bytecode-reviewed",
+          "artifact_sha256": "59f65ef188c263d7856b587bf3ad75c37bd52295ffadb1ab80ababc571469c03",
+          "verification_limit": "BlockConversionHelper bytecode is identical to 26.2.4; tag reload in the current pack remains a live acceptance check."
         }
       }
     },
@@ -280,15 +209,11 @@
       "name": "Chatting",
       "type": "structural_mixin",
       "versions": {
-        "3.1.4": {
-          "status": "historical-path-reviewed",
-          "verification_limit": "Prior PlayerFaceExtractor integration was reviewed for this release; the current required draw contract was inspected in 3.2.2."
-        },
-        "3.2.2": {
-          "status": "isolated-mixin-load-tested",
-          "artifact_sha256": "af1561983aca38ae0fdd8d2173fa56b0e18d7bedf3e07329ce1825f6b3859ac6",
+        "3.2.3": {
+          "status": "bytecode-reviewed",
+          "artifact_sha256": "3aedf7e79229932f1652775636ba20fc2ba1f64b8affd8c946a16b1068de7843",
           "activation_policy": "Presence of Figura and Chatting; no Chatting version or artifact gate.",
-          "verification_limit": "The exact draw contract and mixin application passed with current Figura and no client Custom Name. Other versions also activate; authenticated avatar rendering remains a live-client check."
+          "verification_limit": "draw, drawFace and detect(String) descriptors match ChattingHeadContract. Mixin application and authenticated avatar rendering were not run against 3.2.3."
         }
       }
     },
@@ -296,9 +221,6 @@
       "name": "Lootr",
       "type": "bridge",
       "versions": {
-        "1.24.39.122": {
-          "status": "verified"
-        },
         "1.24.41.124": {
           "status": "bytecode-and-compile-reviewed",
           "artifact_sha256": "6669f8415aa4280eae0959d6e8cac0bb0dab02dbfd3efd6a153c1fad02e80a6b",
@@ -319,11 +241,6 @@
       "name": "Trinkets entity schema repair",
       "type": "exact_mixin_gate",
       "versions": {
-        "4.1.0+26.2": {
-          "minecraft": "26.2",
-          "class_sha256": "089c59253b7b9ab9f7f0a54c1f0dc7912379ad5bfa335c4acfcfbb91e17914f9",
-          "status": "isolated-and-tested"
-        },
         "4.1.1+26.2": {
           "minecraft": "26.2",
           "class_sha256": "07f35c1ac7a56705c9671b7703b3c58dddbdc419c0fb00edf89b13e757810265",
@@ -338,7 +255,10 @@
       "type": "bridge",
       "versions": {
         "0.1.6-rc.1+26.2": {
-          "status": "verified"
+          "status": "bytecode-reviewed",
+          "artifact_sha256": "75637f0e0b9fb81ac9c7cab43343c65efbc795cc3da82a5934e9d983ce6c0107",
+          "build": "423f93c7",
+          "verification_limit": "All reflective members, mixin target methods and the four TimeController Util.getMillis call sites are present; rendering is a live-client check."
         }
       }
     },

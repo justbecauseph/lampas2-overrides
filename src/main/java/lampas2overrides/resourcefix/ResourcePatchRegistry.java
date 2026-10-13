@@ -13,65 +13,7 @@ public final class ResourcePatchRegistry {
 	private static final Map<ResourcePatchKey, ResourcePatch> PATCHES = new HashMap<>();
 
 	static {
-		// 1. Better Lib 2.1.1 - Malformed POI tags with comment prefix '//{'
-		register(new ResourcePatch(
-			"better_lib",
-			"2.1.1",
-			"data/minecraft/tags/point_of_interest_type/acquirable_job_site.json",
-			"2f605b74d0e3e5a0044e809b0d01bce9f25012800080527d2229c2576942f06d",
-			"lampas2-overrides/resource-patches/better_lib/2.1.1/data/minecraft/tags/point_of_interest_type/acquirable_job_site.json"
-		));
-
-		// 2. Moogs Nether Structures 3.0.0 - Missing supported_formats in pack.mcmeta
-		register(new ResourcePatch(
-			"mns",
-			"3.0.0",
-			"pack.mcmeta",
-			"2f42633d021798b55c2c51ba36364ce59080c0025e75bcb24fdc32f47243e90b",
-			"lampas2-overrides/resource-patches/mns/3.0.0/pack.mcmeta"
-		));
-
-		// 3. Moogs Voyager Structures 5.0.11 - Missing supported_formats in pack.mcmeta
-		register(new ResourcePatch(
-			"mvs",
-			"5.0.11",
-			"pack.mcmeta",
-			"60b4eafe19cd5b676b457256fa3548a650830553efbc6945b4b6178fe7e627b1",
-			"lampas2-overrides/resource-patches/mvs/5.0.11/pack.mcmeta"
-		));
-
-		// 4. Moogs Voyager Structures 5.0.14 - Missing supported_formats in pack.mcmeta
-		register(new ResourcePatch(
-			"mvs",
-			"5.0.14",
-			"pack.mcmeta",
-			"63edcfe8244ea844e2c98d429330e112b92a5b7ca906aac4fc61421458036dc1",
-			"lampas2-overrides/resource-patches/mvs/5.0.14/pack.mcmeta"
-		));
-
-		// 5. Formations Overworld 1.0.5+a - Missing supported_formats in pack.mcmeta & 26.2 chain renaming
-		register(new ResourcePatch(
-			"formationsoverworld",
-			"1.0.5+a",
-			"pack.mcmeta",
-			"ffa966eb7835cc4de1273945333236331eff33116e918869e4e29c881b39f940",
-			"lampas2-overrides/resource-patches/formationsoverworld/1.0.5+a/pack.mcmeta"
-		));
-		register(new ResourcePatch(
-			"formationsoverworld",
-			"1.0.5+a",
-			"data/formationsoverworld/loot_table/stone_tower/smithing.json",
-			"380118821ec580c348da35a5983283499950e976099e96123e015cbe508346c0",
-			"lampas2-overrides/resource-patches/formationsoverworld/1.0.5+a/data/formationsoverworld/loot_table/stone_tower/smithing.json"
-		));
-		register(new ResourcePatch(
-			"formationsoverworld",
-			"1.0.5+a",
-			"data/formationsoverworld/loot_table/witch_tower/smithing.json",
-			"32c4bd2ea2c860a13ebde2ac05fe964bc2334914584cb68c14f4a994d9630d46",
-			"lampas2-overrides/resource-patches/formationsoverworld/1.0.5+a/data/formationsoverworld/loot_table/witch_tower/smithing.json"
-		));
-		// 1.0.5+c - The loot tables are already 26.2-compatible; only pack.mcmeta needs the format range.
+		// 1. Formations Overworld 1.0.5+c - The loot tables are already 26.2-compatible; only pack.mcmeta needs the format range.
 		register(new ResourcePatch(
 			"formationsoverworld",
 			"1.0.5+c",
@@ -80,7 +22,7 @@ public final class ResourcePatchRegistry {
 			"lampas2-overrides/resource-patches/formationsoverworld/1.0.5+c/pack.mcmeta"
 		));
 
-		// 6. Grim Kingdoms Lost Structures Ruins 2.0.3 - Missing supported_formats in pack.mcmeta
+		// 2. Grim Kingdoms Lost Structures Ruins 2.0.3 - Missing supported_formats in pack.mcmeta
 		register(new ResourcePatch(
 			"mr_grim_kingdomsloststructuresruins",
 			"2.0.3",
@@ -151,7 +93,7 @@ public final class ResourcePatchRegistry {
 			"lampas2-overrides/resource-patches/mr_grim_kingdomsloststructuresruins/2.0.3/data/grim_kingdoms/structure/water/ship9.nbt"
 		));
 
-		// 7. Pyrite 0.18.3+26.2 - Builtin datapack pack.mcmeta files with max format 81 instead of 107
+		// 3. Pyrite 0.18.3+26.2 - Builtin datapack pack.mcmeta files with max format 81 instead of 107
 		register(new ResourcePatch(
 			"pyrite",
 			"0.18.3+26.2",
@@ -181,7 +123,7 @@ public final class ResourcePatchRegistry {
 			"lampas2-overrides/resource-patches/pyrite/0.18.3+26.2/resourcepacks/pyrite_oddities/pack.mcmeta"
 		));
 
-		// 8. Easter's Delight 1.3.1 - Builtin recipe override pack.mcmeta missing supported_formats
+		// 4. Easter's Delight 1.3.1 - Builtin recipe override pack.mcmeta missing supported_formats
 		register(new ResourcePatch(
 			"eastersdelight",
 			"1.3.1",
@@ -190,22 +132,14 @@ public final class ResourcePatchRegistry {
 			"lampas2-overrides/resource-patches/eastersdelight/1.3.1/resourcepacks/farmersdelight_overrides/pack.mcmeta"
 		));
 
-		// 9. Wilder Wild 4.2.11-mc26.2 - stone pool's radius 15 reaches chunk distance 2
+		// 5. Wilder Wild 4.3 - stone pool's radius 15 reaches chunk distance 2
 		// under FrozenLib's +1 sampling and four-neighbor exposure checks with C2ME's write radius 1.
-		register(new ResourcePatch(
-			"wilderwild",
-			"4.2.11-mc26.2",
-			"data/wilderwild/worldgen/configured_feature/stone_pool.json",
-			"59cf59a1c1e86f9627361e1dcec3250b81d535c6e84ff7c3b2950d9b90f2efe4",
-			"lampas2-overrides/resource-patches/wilderwild/4.2.11-mc26.2/data/wilderwild/worldgen/configured_feature/stone_pool.json"
-		));
-		// 4.3 keeps the same radius-15 resource bytes and needs the same radius-14 repair.
 		register(new ResourcePatch(
 			"wilderwild",
 			"4.3",
 			"data/wilderwild/worldgen/configured_feature/stone_pool.json",
 			"59cf59a1c1e86f9627361e1dcec3250b81d535c6e84ff7c3b2950d9b90f2efe4",
-			"lampas2-overrides/resource-patches/wilderwild/4.2.11-mc26.2/data/wilderwild/worldgen/configured_feature/stone_pool.json"
+			"lampas2-overrides/resource-patches/wilderwild/4.3/data/wilderwild/worldgen/configured_feature/stone_pool.json"
 		));
 	}
 

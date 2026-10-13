@@ -6,9 +6,9 @@ heads, Lootr item frames converted into Fast Item Frames blocks, Underground Vil
 Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-activated threaded-worldgen
 entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
-Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, version-gated Incendium Legacy 5.5.0 and 5.5.1 tick-function optimizations, the version-gated
-IllagerBlabber 1.1.0 voice-registry leak fix, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files, POI tags, and loot tables (MVS, MNS, Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Better Lib). The first two
-features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, and Beautiful item models are client-only; the Custom Name space fix, Incendium datapacks, IllagerBlabber registry fix, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
+Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, the version-gated
+IllagerBlabber 1.1.0 voice-registry leak fix, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3). The first two
+features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, and Beautiful item models are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium datapacks, IllagerBlabber registry fix, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -50,24 +50,22 @@ disable an unrelated feature.
 
 | What | Where |
 |---|---|
-| Figura 0.1.6-rc.1+26.2-968705ec | `../lampas-pipeline/pack/custom/figura-0.1.6-rc.1+26.2.jar` — pipeline artifact; sources at `../figura-port` |
+| Figura 0.1.6-rc.1+26.2 (build 423f93c7) | `../lampas-pipeline/pack/custom/figura-0.1.6-rc.1+26.2.jar` — pipeline artifact; sources at `../figura-port` |
 | ReplayMod 26.2-2.6.27 | `C:\Users\markj\AppData\Roaming\PrismLauncher\instances\26.2\minecraft\mods\replaymod-26.2-2.6.27.jar` |
-| Chatting 3.2.2+26.2 | `../lampas-pipeline/.lampas/cache/modrinth/8pJYUDNi/OgYV2xUV/chatting-3.2.2+26.2.jar`; sources at `../Chatting` (stonecutter — trust the built jar) |
+| Chatting 3.2.3+26.2 | `../lampas-pipeline/.lampas/cache/modrinth/8pJYUDNi/OMqUxcsb/chatting-3.2.3+26.2.jar`; sources at `../Chatting` (stonecutter — trust the built jar) |
 | Lootr 1.24.41.124 | `../lampas-pipeline/.lampas/cache/modrinth/EltpO5cN/HegkPUoM/lootr-fabric-26.2-1.24.41.124.jar`; sources at `../Lootr` |
 | Fast Item Frames 26.2.1 | `../lampas-server-fabric/mods/FastItemFrames-v26.2.1-mc26.2.x-Fabric.jar`; sources at `../fast-item-frames` |
-| Puzzles Lib 26.2.4 | `../lampas-pipeline/.lampas/cache/modrinth/QAGBst4M/aNOJuoCM/PuzzlesLib-v26.2.4-mc26.2.x-Fabric.jar` |
+| Puzzles Lib 26.2.5 | `../lampas-pipeline/.lampas/cache/modrinth/QAGBst4M/TXPuVSH3/puzzleslib-v26.2.5-mc26.2.x+fabric.jar` |
 | Fabric API 0.161.0+26.2 | `../lampas-pipeline/.lampas/cache/modrinth/P7dR8mSH/ewUK83HI/fabric-api-0.161.0+26.2.jar` |
-| Better Lib 2.1.2 | `../lampas-server-fabric/mods/better_lib-fabric-26.1-2.1.2.jar` (fixed upstream) |
+| Better Lib 2.1.2 | `../lampas-server-fabric/mods/better_lib-fabric-26.1-2.1.2.jar` (POI and filesystem defects fixed upstream; demo villager mixin still applies) |
 | Underground Village 2.1.1 | `../lampas-server-fabric/mods/underground_village-fabric-26.1-2.1.1.jar` |
 | Additional Lanterns 1.1.2 | `../lampas-server-fabric/mods/additionallanterns-1.1.2-fabric-mc26.2.jar` |
 | Jade 26.2.11 | `../lampas-server-fabric/mods/Jade-mc26.2-Fabric-26.2.11.jar` |
 | Custom Name 0.4.4 | `../lampas-server-fabric/mods/customname-fabric-0.4.4-26.2.jar` |
 | Gravestones 1.4.2 | `../lampas-server-fabric/mods/gravestones-1.4.2+26.2+A.jar` |
-| Incendium Legacy 5.5.0 / 5.5.1 | `../lampas-server-fabric/mods/Incendium_Legacy_26.2_v5.5.0.jar` / `Incendium_26.2_v5.5.1.jar` |
+| Incendium Legacy 5.5.1 | `../lampas-server-fabric/mods/Incendium_26.2_v5.5.1.jar` |
 | Mob Filter 0.28.1+26.2 | `../lampas-server-fabric/mods/mobfilter-fabric-0.28.1+26.2.jar` |
-| Moog's Voyager Structures 5.0.11 / 5.0.14 | `../lampas-server-fabric/mods/MoogsVoyagerStructures-1.21-5.0.11.jar` (5.1.1 fixed upstream) |
-| Moog's Nether Structures 3.0.0 | `../lampas-server-fabric/mods/MoogsNetherStructures-1.21-3.0.0.jar` |
-| Formations Overworld 1.0.5+a | `../lampas-server-fabric/mods/formationsoverworld-1.0.5a-mc1.21+.jar` |
+| Formations Overworld 1.0.5+c | `../lampas-server-fabric/mods/formationsoverworld-1.0.5c-mc1.21+.jar` |
 | Grim Kingdoms 2.0.3 | `../lampas-server-fabric/mods/grim-kingdoms-lost-structures-ruins-2.0.3.jar` |
 | Pyrite 0.18.3+26.2 | `../lampas-server-fabric/mods/pyrite-0.18.3+26.2-fabric.jar` |
 | Easter's Delight 1.3.1 | `../lampas-server-fabric/mods/eastersdelight-fabric-26.2-1.3.1.jar` |
@@ -117,7 +115,7 @@ must load all Stoneholm structures (including `poi/v4/founten`, `sidebed_bedroom
 and template pools without errors.
 
 For Incendium, dedicated-server startup must log
-`Enabled the version-gated Incendium <version> performance datapack` (for verified 5.5.0 or 5.5.1), and `/datapack list enabled` must
+`Enabled the version-gated Incendium <version> performance datapack` (for verified 5.5.1), and `/datapack list enabled` must
 include the Lampas2 Incendium pack. Test the ID rollover by setting `$current.id` in `in.eid` to
 `32767`, then spawning a new living mob.
 After at most five ticks, the new mob and all previously initialized mobs and players must have
@@ -176,12 +174,13 @@ Zip-level and format work can be tested outside the game entirely; that is how `
 - **Video export never enters `Minecraft#runTick`**, which is why the bridge counts ticks with its
   own `Minecraft#tick` mixin rather than Fabric's lifecycle event, and drives animations from
   `VideoRenderer#updateForNextFrame`.
-- **Chatting 3.2.2 draws cached heads directly.** `ChatHeads.draw` passes the owner `PlayerInfo`
+- **Chatting 3.2.3 draws cached heads directly.** `ChatHeads.draw` passes the owner `PlayerInfo`
   through `drawHead` into `drawFace`; both cached textures and skin fallbacks use that boundary.
   The previous `PlayerFaceExtractor` hooks miss cached heads and must not be restored as the
   main route. Scope state to the full draw with cleanup in `finally`; shadow and main calls must
   draw the avatar once. Gate only on Figura and Chatting presence, with no Chatting version or
   artifact-hash gate. Keep required descriptor checks fail-loud when the upstream contract moves.
+  The `draw`, `drawFace` and `detect(String)` descriptors were confirmed against 3.2.3 with `javap` on 2026-10-13.
 - **Injecting into another mod's `@Unique` method needs a higher `priority`**, since the method only
   exists once that mod's mixin has been applied — Mixin applies higher priority values later. Pair
   it with `require = 0` when the feature is cosmetic: losing a path beats refusing to start.
@@ -207,8 +206,8 @@ Zip-level and format work can be tested outside the game entirely; that is how `
 - **An emptied frame is not a deleted frame.** After a player takes their item, client rendering can
   show the converted frame as absent or empty. A Lootr refresh repopulates it, and its UUID and
   Lootr properties remain present. Confirm block-entity state before diagnosing this as data loss.
-- **Converted frames must implement Lootr's tick scheduling offset contract.** Lootr 1.24.39.122
-  added the abstract `ILootrContainerInstance#getRandomOffset()` member. The bridge delegates it to
+- **Converted frames must implement Lootr's tick scheduling offset contract.** Lootr declares the
+  abstract `ILootrContainerInstance#getRandomOffset()` member, including in the pinned 1.24.41.124. The bridge delegates it to
   the converted frame's existing `SimpleLootrInstance`, which lazily chooses and then preserves the
   same `0..19` offset for that live instance. Lootr uses the value for tick scheduling; it is not
   serialized by the helper. Missing this implementation crashes when Lootr's tick path calls the
@@ -230,24 +229,23 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   counter is 32767, reassign all existing owners, exclude the caller during that repair, and let
   `entity_id/check` initialize the caller once after reset. Non-living entities in the `other` tag
   do not call the ID allocator.
-- **The Incendium optimization uses version profiles.** Each supported release (currently 5.5.0 and 5.5.1)
-  has its own profile declaring expected upstream function fingerprints and mapping to its dedicated built-in
-  optimization datapack. 5.5.1 preserves upstream's freezing delegate (`entity/chilling`) while removing the redundant
+- **The Incendium optimization uses a version profile for 5.5.1, the only supported release.** The profile
+  declares the expected upstream function fingerprints and maps to the built-in `incendium_5_5_1_optimizations`
+  datapack. 5.5.1 preserves upstream's freezing delegate (`entity/chilling`) while removing the redundant
   20 Hz entity-ID scan and throttling living mob initialization. Unknown versions or tampered functions disable
   the datapack fail-closed.
-- **Resource patches support multi-version profiling via `ResourcePatchKey`.** When multiple releases of the
-  same mod require virtual patching (e.g. Moog's Voyager Structures 5.0.11 and 5.0.14), `ResourcePatchRegistry`
-  indexes patches by mod ID, exact version, and resource path. MVS 5.1.1 fixed `pack.mcmeta` upstream and requires
-  no patch. Formations Overworld 1.0.5+a patches root `pack.mcmeta` and its `stone_tower` and `witch_tower` smithing
-  loot tables to rename pre-26.2 `minecraft:chain` to `minecraft:iron_chain`; 1.0.5+c requires only the root metadata
-  patch because its audited loot tables contain no exact chain item reference. Candidate provenance is recorded in
-  `docs/evidence/formations-overworld-1.0.5c.json`.
+- **Resource patches are keyed by mod ID, exact version, and resource path.** `ResourcePatchKey` and
+  `ResourcePatchRegistry` index each patch by all three, so a patch for one release never applies to another
+  release, and each patch fails closed on a changed SHA-256. Formations Overworld 1.0.5+c requires only the root
+  `pack.mcmeta` patch because its audited loot tables contain no exact `minecraft:chain` item reference. Candidate
+  provenance is recorded in `docs/evidence/formations-overworld-1.0.5c.json`.
 - **FrozenLib wind compatibility is retired for the latest supported pair.**
   FrozenLib 3.0 clears `loadedExtensions` during reset and Wilder Wild 4.3 applies
   cloud sync to its existing extension. The unpatched isolated client no longer
   showed the old missing-extension window. FrozenLib still mutates the singleton
   during worker decoding, so this observation does not prove general thread safety.
   Do not restore the old shim without a new failure and exact artifact evidence.
+  The probe and `docs/wind-state.md` evidence were removed after commit `d8d84f1`.
 - **Mob Filter's worldgen rejection must not call `Entity.remove()` and needs active dimension context.**
   In the inspected 0.28.1+26.2 artifact, the `WorldGenRegion_addFreshEntity` callback has not admitted the entity to the world, so its existing
   `CallbackInfoReturnable#setReturnValue(false)` is sufficient to veto it. Removing a LivingEntity
@@ -334,7 +332,7 @@ Zip-level and format work can be tested outside the game entirely; that is how `
 The client-only `boatmask` feature repairs the audited FA/EMF water mask for 108 boat
 layers from Pyrite, Promenade, Wilder Wild, BetterEnd, and BetterNether. Keep plugin
 gates in `BoatWaterMaskProfiles` free of Minecraft model classes. EMF artifact policy is
-an immutable exact version-to-hash map for 3.3.5, 3.3.8 and 3.3.11; never accept a digest
+an immutable exact version-to-hash map for 3.3.11 only; never accept a digest
 independently of its metadata version. Fingerprints of loaded artifacts may be cached;
 selected resource provenance must be checked on renderer construction so resource reloads
 reevaluate it. Preserve custom hulls, vanilla animated boats, and the explicit
@@ -409,8 +407,6 @@ beautifulitems/
 incendium/
   IncendiumOptimization     fingerprints Incendium and registers version-specific built-in pack
   IncendiumCompatibility    version profiles and upstream-function fingerprint gate
-resourcepacks/incendium_5_5_0_optimizations/
-  data/incendium/function/  clock and entity-ID overrides for verified Incendium 5.5.0
 resourcepacks/incendium_5_5_1_optimizations/
   data/incendium/function/  clock and entity-ID overrides for verified Incendium 5.5.1
 resourcefix/
@@ -418,9 +414,9 @@ resourcefix/
   ResourcePatchRegistry     registry of defective mod resources with SHA-256 fingerprints
   ResourcePatchResolver     runtime virtual patch resolver
   ResourcePatch             immutable patch rule record
-  Includes the version- and SHA-gated Wilder Wild 4.2.11 and 4.3 stone-pool radius repair
+  Includes the version- and SHA-gated Wilder Wild 4.3 stone-pool radius repair
 lampas2-overrides/resource-patches/
-  mvs/, mns/, etc.          replacement resource assets for supported broken versions
+  <mod>/<version>/          replacement resource assets, e.g. wilderwild/4.3/, formationsoverworld/1.0.5+c/
 customname/
   CustomNameMixinPlugin     applies only to Custom Name 0.4.4-26.2 (common-side, server-safe)
   mixin/                    forces spaceAllowed=true in playerNameArgumentToComponent's nameArgumentToComponent call
@@ -458,32 +454,20 @@ remain on the logical server thread; its render-state and attack hooks remain on
 5. New behaviour and any new limitation written into `README.md` and, when it changes agent-facing
    architecture or verification knowledge, this file.
 
-## Plasmo Voice shutdown compatibility
-
-`client/plasmovoice` and `lampas2-overrides.plasmoshutdown.mixins.json` are client-only,
-gated to Plasmo Voice 2.1.16. The pinned Modrinth I0T9OQcy JAR is compile-only plus a test
-dependency, never bundled. `BaseVoiceClient.onShutdown()V` is injected at HEAD so capture
-stop and `removeClient(DISCONNECT)` occur before upstream unregisters listeners/unloads
-add-ons. UDP close owns Netty shutdown; capture owns its encoder/device cleanup. Do not
-replace this with global thread interruption, daemon conversion, or watchdog suppression.
-The isolated client probe proves both workers terminate but does not prove multiplayer
-or add-on behavior. Preserve cancellation semantics and inspect new versions before
-extending the gate. Evidence and reproduction are in `docs/plasmo-shutdown.md`.
-
 ## Structure DFU compatibility architecture
 
 The common-side Trinkets datafix repair is a narrowly gated MixinExtras return-value hook. It targets
 Minecraft 26.2 V1460 player/entity schema lambdas and repairs only the audited `trinkets_updated`
-4.1.0+26.2 and 4.1.1+26.2 V1460 classes through independent exact version/class-hash profiles
-(SHA-256 recorded in the compatibility manifest). Each profile must match its own schema shape.
-The 4.1.1 shape needs flat-slot and unknown-entry preservation and Cardinal sibling retention;
-merely extending the 4.1.0 gate does not repair it. It preserves vanilla DFU
-ownership and fails closed on absent versions, hash mismatch, or unknown Product/Sum shape. This is
-common-side and must be present on dedicated servers as well as integrated clients.
+4.1.1+26.2 V1460 class, selected by exact version and class-hash (SHA-256 recorded in the compatibility
+manifest). The 4.1.1 shape needs flat-slot and unknown-entry preservation and Cardinal sibling retention.
+It preserves vanilla DFU ownership and fails closed on absent versions, hash mismatch, or unknown
+Product/Sum shape. This is common-side and must be present on dedicated servers as well as integrated clients.
 
 Verification requires pure shape/gate tests, the semantic DFU fixtures, and an exact deployed-pack
 runtime run. Build success alone is insufficient; until that runtime run passes, report the hook as
-pending. Re-evaluate bees, spawners, and block-attached entity reports after this schema repair.
+pending. The headless runtime probe passed for the 4.1.1 artifact with production JAR `7efacfbb…`; after the
+4.1.0 profile was removed, the helper probe passed again on `53e278ad…` (4.1.1 schema code unchanged); the deployed-pack run has not been done.
+Re-evaluate bees, spawners, and block-attached entity reports after this schema repair.
 
 
 ## Grim Kingdoms zero-level enchantment resources

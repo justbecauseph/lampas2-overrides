@@ -1,20 +1,18 @@
 # Trinkets V1460 structure DFU repair
 
-## Scope and artifact gates
+## Scope and artifact gate
 
-The common-side V1460 hook supports two exact `trinkets_updated` artifacts on Minecraft 26.2. It
-selects a repair profile only when both the metadata version and the SHA-256 of
+The common-side V1460 hook supports one exact `trinkets_updated` artifact on Minecraft 26.2. It
+selects the repair profile only when both the metadata version and the SHA-256 of
 `eu/pb4/trinkets/mixin/datafixer/V1460Mixin.class` match:
 
 | Version | V1460 class SHA-256 | Artifact SHA-256 | Schema contract |
 |---|---|---|---|
-| 4.1.0+26.2 | `089c59253b7b9ab9f7f0a54c1f0dc7912379ad5bfa335c4acfcfbb91e17914f9` | `e1b49012e3fe25e63812ef73dfd0f2e0891fd6aa88c7ef4e73d781fddc714f39` | Old duplicate root remainder |
 | 4.1.1+26.2 | `07f35c1ac7a56705c9671b7703b3c58dddbdc419c0fb00edf89b13e757810265` | `2365e8a19b5f62c812e95ac5fc23ee163bc753a5d9ec38f517f72da269eb0c4b` | Current flat slot and Cardinal schema |
 
-Each pair is independent. A version with the other artifact's class hash remains disabled. The 4.1.1
-repair matches the exact `DSL.and(cardinal, trinkets, vanillaTail)` template emitted by that class;
-the 4.1.0 repair retains its separate `allWithRemainder` shape check. Both reuse the vanilla tail,
-and unknown template shapes remain unchanged.
+A different version, or this version with a different class hash, leaves the hook disabled. The
+repair matches the exact `DSL.and(cardinal, trinkets, vanillaTail)` template emitted by that class.
+It reuses the vanilla tail, and unknown template shapes remain unchanged.
 
 ## 4.1.1 data loss
 
@@ -37,17 +35,20 @@ class hash, and invokes its private `attachTrinketFixer` method to build the exa
 A marker `DataFix` then checks that the unpatched template reproduces current-root and Cardinal
 sibling loss, while the repaired template migrates markers in vanilla inventory, flat `Items`,
 `cosmetic`, and legacy grouped Trinkets stacks. A no-rewrite typed read/write checks that supported
-current data and unknown values survive unchanged. The previous 4.1.0 migration fixture remains.
+current data and unknown values survive unchanged.
 
-After building the production JAR, run the isolated helper probe with the exact audit artifact and
-the existing runtime classpath:
+After building the production JAR, write the client compile classpath and run the isolated helper
+probe with the exact audit artifact:
 
 ```powershell
+./gradlew -I tools/trinkets-dfu-probe/classpath.init.gradle trinketsProbeClasspath
 .\tools\trinkets-dfu-probe\run.ps1 `
   -ProductionJar build\libs\lampas2-overrides-1.0.0.jar `
-  -TrinketsJar C:\path\to\trinkets-4.1.1+26.2.jar `
-  -RuntimeClasspathFile build\wind-state-probe\frozen3-wilder43\compile-classpath.txt
+  -TrinketsJar C:\path\to\trinkets-4.1.1+26.2.jar
 ```
+
+The init script writes `build/trinkets-dfu-probe/compile-classpath.txt`, which `run.ps1` reads by
+default; pass `-RuntimeClasspathFile` to use another file.
 
 The probe verifies both JARs, invokes the real Trinkets attachment method, runs a DataFixer
 migration through the resulting V1460 schema, checks the production helper, and does not launch a
@@ -55,8 +56,8 @@ game or modify a world. The helper probe alone does not prove Mixin application;
 headless runtime probe below checks the actual Minecraft fixer. Dedicated-server structure loading,
 saved-world migration and deployed-pack checks remain separate acceptance steps.
 
-The focused Trinkets tests passed (16 tests), the coordinated Gradle build passed, and the probe
-passed on Java 25.0.4 against production JAR SHA-256
+The focused Trinkets tests passed (16 tests, run before the 4.1.0 cases were removed), the coordinated
+Gradle build passed, and the probe passed on Java 25.0.4 against production JAR SHA-256
 `7efacfbb125d93ab9eb17de2d796c61feaf3d04547cd62294f1ba0f5ad319a71` and the audited Trinkets JAR
 SHA-256 above. It verified the reproduced upstream loss, current flat and legacy grouped item
 migrations, Cardinal sibling retention, unknown scalar/empty data, and no-rewrite round-trip.
@@ -71,10 +72,10 @@ repair in both target lambdas. Both processes exited `0` from a fixture-only `pr
 before server Main, mod initializers, world creation or a listening server. This verifies woven
 schema behavior on controlled fixtures; it does not establish live saved-world migration.
 Exact origins, hashes, results and hook order are in
-[the 4.1.1 evidence](evidence/trinkets-4.1.1-dfu.json).
+[the 4.1.1 evidence](evidence/trinkets-4.1.1-dfu.json). That file predates the 2026-10-13 removal
+of the 4.1.0 profile; its 4.1.0 entries are historical.
 
-Historical 4.1.0 validation loaded the exact templates `grim_kingdoms:plains/zweiberg_plains` at
-`200,80,0` and `grim_kingdoms:water/blackwater` at `300,80,0` with zero decode failures and zero
-schema mismatches. The matching earlier production JAR was
-`e2f05414e9fdc5c16f7860670c14cef05e7b50f78789917afbc11d01b36ebbc8`; that result applies to the
-4.1.0 deployment only.
+On 2026-10-13, after the 4.1.0 profile was removed, the helper probe passed again against production
+JAR SHA-256 `53e278ad3914af9183eec1c87f78f3a82368138acc24065924b006d5568c5e4f` and the installed
+`trinkets-4.1.1+26.2.jar`. The 4.1.1 gate, `currentVanillaTail` and `repair411` are unchanged; the
+headless `SERVER` probe above was not re-run on this JAR.

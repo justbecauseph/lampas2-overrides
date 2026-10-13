@@ -18,10 +18,9 @@ import net.minecraft.util.datafix.fixes.References;
 /**
  * Repairs the exact audited V1460 template selected by the version and bytecode gate.
  *
- * <p>Trinkets 4.1.0 and 4.1.1 emit different wrappers, so each has an independent
- * exact template contract. Unknown shapes are returned unchanged. The repair keeps
- * the vanilla tail in place, types only the audited item lists, and retains unknown
- * values through nested remainder branches.</p>
+ * <p>The repair matches only the exact audited Trinkets 4.1.1 wrapper. Unknown shapes
+ * are returned unchanged. The repair keeps the vanilla tail in place, types only the
+ * audited item lists, and retains unknown values through nested remainder branches.</p>
  */
 // Run after Trinkets' priority-1000 return modifier so the complete wrapper is available.
 @Mixin(value = V1460.class, priority = 1500, remap = false)

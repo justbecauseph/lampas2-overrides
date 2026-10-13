@@ -37,10 +37,6 @@
 			"environment": "client"
 		},
 		{
-			"config": "lampas2-overrides.plasmoshutdown.mixins.json",
-			"environment": "client"
-		},
-		{
 			"config": "lampas2-overrides.figurareplay.mixins.json",
 			"environment": "client"
 		},
@@ -105,7 +101,7 @@
 		"better_lib": "*",
 		"underground_village": "*",
 		"additionallanterns": "*",
-		"incendium": ">=5.5.0 <=5.5.1",
+		"incendium": "5.5.1",
 		"visualworkbench": "*",
 		"gravestones": "*",
 		"jade": "*",

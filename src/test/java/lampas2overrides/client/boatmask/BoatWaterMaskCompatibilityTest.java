@@ -33,9 +33,7 @@ import net.minecraft.resources.Identifier;
 
 class BoatWaterMaskCompatibilityTest {
 
-	private static final String EMF_VERSION = "3.3.5";
-	private static final String EMF_VERSION_NEW = "3.3.8";
-	private static final String EMF_VERSION_CURRENT = "3.3.11";
+	private static final String EMF_VERSION = "3.3.11";
 	private static final BoatWaterMaskCompatibility.EmfRootInfo VANILLA_HULL =
 		new BoatWaterMaskCompatibility.EmfRootInfo(false, false, false, null, true);
 	private static final BoatWaterMaskCompatibility.EmfRootInfo ACTIVE_WATER_ROOT =
@@ -43,27 +41,19 @@ class BoatWaterMaskCompatibilityTest {
 			true, true, true, BoatWaterMaskCompatibility.MASK_FINAL_FILE_LOCATION, true);
 	private static final BoatWaterMaskCompatibility.ResourceProof ACTIVE_RESOURCE =
 		new BoatWaterMaskCompatibility.ResourceProof(true, true, EMF_VERSION);
-	private static final BoatWaterMaskCompatibility.ResourceProof ACTIVE_RESOURCE_NEW =
-		new BoatWaterMaskCompatibility.ResourceProof(true, true, EMF_VERSION_NEW);
-	private static final BoatWaterMaskCompatibility.ResourceProof ACTIVE_RESOURCE_CURRENT =
-		new BoatWaterMaskCompatibility.ResourceProof(true, true, EMF_VERSION_CURRENT);
+	private static final BoatWaterMaskCompatibility.ResourceProof RETIRED_EMF_3_3_5_RESOURCE =
+		new BoatWaterMaskCompatibility.ResourceProof(true, true, "3.3.5");
+	private static final BoatWaterMaskCompatibility.ResourceProof RETIRED_EMF_3_3_8_RESOURCE =
+		new BoatWaterMaskCompatibility.ResourceProof(true, true, "3.3.8");
 
 	@Test
-	void acceptsExactEmfProfilesAndRejectsEveryCrossedOrUnknownPair() {
-		Map<String, String> profiles = Map.of(
-			EMF_VERSION, "72b2d489d03bf2ea07b5693ef26cd03572a42dda181e095aed85b3ab39cce549",
-			EMF_VERSION_NEW, "714686cefe56a7e46fa1e13ecdeddcb55ddfbb9715ae5b1ffd7573c1928d9fdd",
-			EMF_VERSION_CURRENT, "26b13c2ee755932e74f80ecf6baf16a25582568ae7482cf472751abb98e7b14a");
-		for (Map.Entry<String, String> version : profiles.entrySet()) {
-			assertEquals(version.getValue(), BoatWaterMaskProfiles.emfArtifactProfile(version.getKey())
-				.orElseThrow().artifactSha256());
-			for (Map.Entry<String, String> artifact : profiles.entrySet()) {
-				assertEquals(version.getKey().equals(artifact.getKey()),
-					BoatWaterMaskProfiles.matchesEmfProfile(version.getKey(), artifact.getValue()));
-			}
-			assertFalse(BoatWaterMaskProfiles.matchesEmfProfile(version.getKey(), null));
-			assertFalse(BoatWaterMaskProfiles.matchesEmfProfile("3.3.12", version.getValue()));
-		}
+	void acceptsOnlyTheCurrentEmfArtifactProfile() {
+		String currentSha256 = "26b13c2ee755932e74f80ecf6baf16a25582568ae7482cf472751abb98e7b14a";
+		assertEquals(currentSha256, BoatWaterMaskProfiles.emfArtifactProfile(EMF_VERSION).orElseThrow().artifactSha256());
+		assertTrue(BoatWaterMaskProfiles.supportedEmfVersion(EMF_VERSION));
+		assertTrue(BoatWaterMaskProfiles.matchesEmfProfile(EMF_VERSION, currentSha256));
+		assertFalse(BoatWaterMaskProfiles.matchesEmfProfile(EMF_VERSION, null));
+		assertFalse(BoatWaterMaskProfiles.matchesEmfProfile("3.3.12", currentSha256));
 	}
 
 	@Test
@@ -75,14 +65,20 @@ class BoatWaterMaskCompatibilityTest {
 			"nostalgia_stained", "orange_stained", "pink_stained", "poisonous_stained", "purple_stained",
 			"red_mushroom", "red_stained", "rose_stained", "star_stained", "white_stained", "yellow_stained"}, false);
 		assertLayers("promenade", "5.6.0", new String[] {"sakura", "maple", "palm"}, false);
-		assertLayers("wilderwild", "4.2.11-mc26.2", new String[] {"baobab", "willow", "cypress", "palm", "maple"}, false);
 		assertLayers("wilderwild", "4.3", new String[] {"baobab", "willow", "cypress", "palm", "maple"}, false);
-		assertLayers("betterend", "26.201.2", new String[] {
+		assertLayers("betterend", "26.201.3", new String[] {
 			"dragon_tree", "helix_tree", "jellyshroom", "lacugrove", "lucernia", "mossy_glowshroom",
 			"pythadendron", "tenanea", "umbrella_tree"}, true);
-		assertLayers("betternether", "26.201.2", new String[] {
+		assertLayers("betternether", "26.201.3", new String[] {
 			"anchor_tree", "crimson", "gloomwood", "mushroom_fir", "nether_mushroom", "nether_sakura",
 			"rubeus", "stalagnate", "warped", "wart", "willow"}, true);
+	}
+
+	@Test
+	void betterXProvidersRequireMatchingWoverItem() {
+		assertFalse(BoatWaterMaskProfiles.requiredModsMatch(loader(Map.of(
+			"betterend", metadataContainer("betterend", "26.201.3"),
+			"wover-item", metadataContainer("wover-item", "26.201.2"))), "betterend"));
 	}
 
 	@Test
@@ -90,9 +86,9 @@ class BoatWaterMaskCompatibilityTest {
 		assertFalse(BoatWaterMaskCompatibility.isAuditedLayer(
 			"pyrite", "0.18.3+26.2", layer("pyrite", "cyan_stained_boat")));
 		assertFalse(BoatWaterMaskCompatibility.isAuditedLayer(
-			"betterend", "26.201.2", layer("betterend", "boat/end_lotus_boat")));
+			"betterend", "26.201.3", layer("betterend", "boat/end_lotus_boat")));
 		assertFalse(BoatWaterMaskCompatibility.isAuditedLayer(
-			"betternether", "26.201.2", layer("betternether", "chest_boat/nether_reed_chest_boat")));
+			"betternether", "26.201.3", layer("betternether", "chest_boat/nether_reed_chest_boat")));
 		assertFalse(BoatWaterMaskCompatibility.isAuditedLayer(
 			"pyrite", "0.18.3+26.2", new ModelLayerLocation(Identifier.parse("pyrite:boat/cyan_stained"), "alt")));
 		assertFalse(BoatWaterMaskCompatibility.isAuditedLayer(
@@ -109,10 +105,12 @@ class BoatWaterMaskCompatibilityTest {
 			new BoatWaterMaskCompatibility.EmfRootInfo(true, false, true, null, true), ACTIVE_WATER_ROOT, ACTIVE_RESOURCE));
 		assertFalse(eligible("pyrite", "0.18.3+26.2", layer("pyrite", "boat/cyan_stained"),
 			new BoatWaterMaskCompatibility.EmfRootInfo(false, false, false, null, false), ACTIVE_WATER_ROOT, ACTIVE_RESOURCE));
-		assertTrue(eligible("pyrite", "0.18.3+26.2", layer("pyrite", "boat/cyan_stained"),
-			VANILLA_HULL, ACTIVE_WATER_ROOT, ACTIVE_RESOURCE_NEW));
+		assertFalse(eligible("pyrite", "0.18.3+26.2", layer("pyrite", "boat/cyan_stained"),
+			VANILLA_HULL, ACTIVE_WATER_ROOT, RETIRED_EMF_3_3_5_RESOURCE));
+		assertFalse(eligible("pyrite", "0.18.3+26.2", layer("pyrite", "boat/cyan_stained"),
+			VANILLA_HULL, ACTIVE_WATER_ROOT, RETIRED_EMF_3_3_8_RESOURCE));
 		assertTrue(eligible("wilderwild", "4.3", layer("wilderwild", "boat/baobab"),
-			VANILLA_HULL, ACTIVE_WATER_ROOT, ACTIVE_RESOURCE_CURRENT));
+			VANILLA_HULL, ACTIVE_WATER_ROOT, ACTIVE_RESOURCE));
 	}
 
 	@Test
@@ -153,11 +151,11 @@ class BoatWaterMaskCompatibilityTest {
 		ModContainer container = pathOriginContainer(artifact, ModOrigin.Kind.PATH, EMF_VERSION);
 
 		assertFalse(BoatWaterMaskCompatibility.matchesEmfArtifact(container));
-		assertFalse(BoatWaterMaskCompatibility.matchesEmfArtifact(container, EMF_VERSION_NEW));
+		assertFalse(BoatWaterMaskCompatibility.matchesEmfArtifact(container, "3.3.8"));
 		assertFalse(BoatWaterMaskCompatibility.matchesEmfArtifact(
-			pathOriginContainer(artifact, ModOrigin.Kind.PATH, EMF_VERSION_NEW), EMF_VERSION));
+			pathOriginContainer(artifact, ModOrigin.Kind.PATH, "3.3.8"), EMF_VERSION));
 		assertFalse(BoatWaterMaskCompatibility.matchesEmfArtifact(
-			pathOriginContainer(artifact, ModOrigin.Kind.PATH, EMF_VERSION_NEW)));
+			pathOriginContainer(artifact, ModOrigin.Kind.PATH, "3.3.8")));
 		assertFalse(BoatWaterMaskCompatibility.matchesEmfArtifact(
 			pathOriginContainer(artifact, ModOrigin.Kind.UNKNOWN, EMF_VERSION)));
 		assertFalse(BoatWaterMaskCompatibility.matchesEmfArtifact(
@@ -179,13 +177,13 @@ class BoatWaterMaskCompatibilityTest {
 		assertFalse(BoatWaterMaskProfiles.installedProviderMatches(loader(Map.of()), "promenade"));
 
 		Map<String, ModContainer> betterEnd = Map.of(
-			"betterend", metadataContainer("betterend", "26.201.2"),
-			"wover-item", metadataContainer("wover-item", "26.201.2"));
+			"betterend", metadataContainer("betterend", "26.201.3"),
+			"wover-item", metadataContainer("wover-item", "26.201.3"));
 		assertTrue(BoatWaterMaskProfiles.requiredModsMatch(loader(betterEnd), "betterend"));
 		assertFalse(BoatWaterMaskProfiles.requiredModsMatch(loader(
-			Map.of("betterend", metadataContainer("betterend", "26.201.2"))), "betterend"));
+			Map.of("betterend", metadataContainer("betterend", "26.201.3"))), "betterend"));
 		assertFalse(BoatWaterMaskProfiles.requiredModsMatch(loader(Map.of(
-			"betterend", metadataContainer("betterend", "26.201.2"),
+			"betterend", metadataContainer("betterend", "26.201.3"),
 			"wover-item", metadataContainer("wover-item", "26.201.1"))), "betterend"));
 	}
 

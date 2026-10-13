@@ -1,0 +1,13 @@
+allprojects {
+    afterEvaluate {
+        // Writes the client compile classpath (Minecraft, DataFixerUpper and libraries)
+        // that run.ps1 combines with the production and Trinkets JARs.
+        tasks.register('trinketsProbeClasspath') {
+            doLast {
+                def output = file('build/trinkets-dfu-probe/compile-classpath.txt')
+                output.parentFile.mkdirs()
+                output.text = tasks.compileClientJava.classpath.asPath
+            }
+        }
+    }
+}

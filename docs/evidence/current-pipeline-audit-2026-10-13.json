@@ -1,0 +1,116 @@
+{
+  "date": "2026-10-13",
+  "pack_version": "2.3.29",
+  "lock_updated": "2026-10-13T05:19:42.376Z",
+  "minecraft": "26.2",
+  "loader": {
+    "type": "fabric",
+    "version": "0.19.5"
+  },
+  "scope": "Pipeline lock changes since the 2026-10-06 audit, and the compatibility changes made for them. Artifact, hash and bytecode checks only.",
+  "changed_since_2026-10-06": [
+    {
+      "lock_key": "chatting",
+      "from": "3.2.2",
+      "to": "3.2.3",
+      "filename": "chatting-3.2.3+26.2.jar",
+      "lock_sha256": "3aedf7e79229932f1652775636ba20fc2ba1f64b8affd8c946a16b1068de7843",
+      "finding": "ChatHeads draw, drawFace and detect(String) descriptors match. The chat head override is still needed."
+    },
+    {
+      "lock_key": "figura-0-1-6-rc-1",
+      "from": "0.1.6-rc.1+26.2-968705ec",
+      "to": "0.1.6-rc.1+26.2-423f93c7",
+      "filename": "figura-0.1.6-rc.1+26.2.jar",
+      "lock_sha256": "75637f0e0b9fb81ac9c7cab43343c65efbc795cc3da82a5934e9d983ce6c0107",
+      "finding": "All reflective members, mixin targets and the four TimeController Util.getMillis call sites are present. The bridge is still needed."
+    },
+    {
+      "lock_key": "puzzleslib",
+      "from": "26.2.4",
+      "to": "26.2.5",
+      "filename": "puzzleslib-v26.2.5-mc26.2.x+fabric.jar",
+      "lock_sha256": "59f65ef188c263d7856b587bf3ad75c37bd52295ffadb1ab80ababc571469c03",
+      "finding": "BlockConversionHelper bytecode is identical to 26.2.4, and the build compiles against 26.2.5. The Visual Workbench tag override is still needed."
+    },
+    {
+      "lock_key": "mns-moogs-nether-structures",
+      "from": "3.0.0",
+      "to": "3.1.1",
+      "filename": "MoogsNetherStructures-universal-1.21-3.1.1.jar",
+      "lock_sha256": "46e0506264bd66df1ec6fb031f75d6b7f4660ad5f874b5df446dc1a3beebe7f6",
+      "finding": "pack.mcmeta declares supported_formats [48, 121], which covers 26.2 data format 107.1. No virtual pack.mcmeta patch is needed."
+    },
+    {
+      "lock_key": "mvs",
+      "from": "5.0.11 and 5.0.14 (both patched)",
+      "to": "5.1.3",
+      "filename": "MoogsVoyagerStructures-universal-1.21-5.1.3.jar",
+      "lock_sha256": "07dba4e4d81bd342bf5000be19da1e5132a242d6c591da46e6d2e73aeebe5103",
+      "finding": "pack.mcmeta declares supported_formats [48, 121], which covers 26.2 data format 107.1. No virtual pack.mcmeta patch is needed."
+    },
+    {
+      "lock_key": "betterend",
+      "from": "26.201.2",
+      "to": "26.201.3",
+      "filename": "better-end-26.201.3.jar",
+      "lock_sha256": "4f43af115334e6353c9fe20a4eb2e7478ff69ef58580960548ccd88d028386c1",
+      "finding": "Every archive entry whose path contains boat is byte-identical to 26.201.2 (112 entries). The boat profile moved to 26.201.3 with wover-item 26.201.3."
+    },
+    {
+      "lock_key": "betternether",
+      "from": "26.201.2",
+      "to": "26.201.3",
+      "filename": "better-nether-26.201.3.jar",
+      "lock_sha256": "6b9811ea1ba6a266a0929656fcafa42b43e6a5044d0cc47d339914fff56023ab",
+      "finding": "Every archive entry whose path contains boat is byte-identical to 26.201.2 (136 entries). The boat profile moved to 26.201.3 with wover-item 26.201.3."
+    },
+    {
+      "lock_key": "frozenlib",
+      "from": "3.0.1 (boat-water-mask.md, 2026-10-06 inventory)",
+      "to": "3.0.3",
+      "filename": "FrozenLib-3.0.3-mc26.2-fabric.jar",
+      "lock_sha256": "69787501fb3209b6396460e83d302981fad04460f869ea1708e1c6093f6fad0f",
+      "finding": "All seven vegetation-patch feature classes, including CircularWaterloggedVegetationPatchLessBordersFeature, are byte-identical to 3.0.1, so the Wilder Wild 4.3 stone-pool analysis still applies. The 2026-10-13 boat probes ran with 3.0.3."
+    }
+  ],
+  "fingerprints_still_matching": {
+    "underground_village_2_1_1": "6 of 6 upstream resource fingerprints match.",
+    "incendium_5_5_1": "3 of 3 upstream function fingerprints match.",
+    "grim_kingdoms_2_0_3": "11 of 11 match: root pack.mcmeta and the 10 NBT templates.",
+    "formations_overworld_1_0_5_c": "Root pack.mcmeta fingerprint matches.",
+    "easters_delight_1_3_1": "Matches.",
+    "pyrite_0_18_3_26_2": "4 of 4 nested pack.mcmeta fingerprints match.",
+    "wilder_wild_4_3": "stone_pool fingerprint matches."
+  },
+  "removed_profiles": [
+    "plasmo_voice_2.1.16: client BaseVoiceClient shutdown hook, its mixin config, probe tooling and docs. Plasmo Voice 2.2.0-beta.1 capture and UDP factories already use daemon threads.",
+    "frozenlib_wind_shim: FrozenLib 2.5.3 and Wilder Wild 4.2.11 wind compatibility. The code was already removed; probe tooling, docs and wind-state evidence are removed now.",
+    "incendium_5_5_0: version profile and incendium_5_5_0_optimizations datapack.",
+    "trinkets_updated_4_1_0: V1460 repair profile and its class-hash gate.",
+    "emf_3_3_5 and emf_3_3_8: boat water-mask version and artifact hash profiles, the 2026-09-20 visual matrix, and the emf-boat-water-mask-3.3.8 evidence file.",
+    "wilder_wild_4_2_11_mc26_2: boat provider profile and stone-pool patch.",
+    "better_lib_2_1_1_poi_tag: virtual data/minecraft/tags/point_of_interest_type/acquirable_job_site.json patch. Better Lib 2.1.2 fixed it upstream.",
+    "mvs_5_0_11 and mvs_5_0_14: pack.mcmeta patches.",
+    "mns_3_0_0: pack.mcmeta patch.",
+    "formations_overworld_1_0_5_a: pack.mcmeta patch and stone_tower/witch_tower smithing loot table patches."
+  ],
+  "verification_limits": [
+    "Static checks only: lock and cached artifact hashes, class and resource fingerprints, and javap or bytecode descriptors. Runtime coverage is limited to the isolated boat-mask client probes and the Trinkets helper probe recorded here; no full-pack client or dedicated server was run against pack 2.3.29.",
+    "Figura, Chatting and Puzzles Lib results are descriptor and bytecode checks. Live bridge, chat head and Visual Workbench behavior remain unverified.",
+    "fingerprints_still_matching was supplied with the 2026-10-13 change and was not re-run by the documentation update."
+  ],
+  "boat_water_mask_probe": {
+    "baseline_run": "20261013T061410Z-baseline-17af85d6",
+    "patched_run": "20261013T062425Z-patched-3c042eaf",
+    "inventory": "build/pipeline-validation-2026-10-13/inventory.json",
+    "production_jar_sha256": "53e278ad3914af9183eec1c87f78f3a82368138acc24065924b006d5568c5e4f",
+    "baseline": "PASS, exit 0; 18 BetterEnd and 22 BetterNether hulls plain with the FA boat_patch.jem EMF water root (defect present)",
+    "patched": "PASS, exit 0; BoatRendererMixin applied; vanilla mask geometry for Pyrite 52, Promenade 6, Wilder Wild 10, BetterEnd 18, BetterNether 22; rafts, BloomingNature and vanilla EMF boats unchanged"
+  },
+  "trinkets_helper_probe": {
+    "production_jar_sha256": "53e278ad3914af9183eec1c87f78f3a82368138acc24065924b006d5568c5e4f",
+    "trinkets_jar": "trinkets-4.1.1+26.2.jar",
+    "result": "PASS; headless SERVER probe not re-run"
+  }
+}

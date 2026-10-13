@@ -26,49 +26,30 @@ final class TrinketsSchemaMigrationTest {
 	private static final DSL.TypeReference ENTITY = () -> "test:entity";
 	private static final DSL.TypeReference ITEM_STACK = References.ITEM_STACK;
 
-	private static TypeTemplate oldTrinketData(TypeTemplate item) {
-		TypeTemplate slot = DSL.optional(DSL.compoundList(DSL.optionalFields("Items", DSL.list(item))));
-		return DSL.optional(DSL.compoundList(DSL.and(slot,
-			DSL.optionalFields("Items", DSL.list(item)),
-			DSL.optionalFields("cosmetic", DSL.list(item)))));
-	}
-
-	private static TypeTemplate entityTemplate(Schema schema, boolean current411, boolean repaired) {
+	private static TypeTemplate entityTemplate(Schema schema, boolean repaired) {
 		TypeTemplate item = ITEM_STACK.in(schema);
 		TypeTemplate original = DSL.optionalFields("Item", item,
 			"Inventory", DSL.list(item), "ArmorItems", DSL.list(item), "HandItems", DSL.list(item));
-		if (current411) {
-			TypeTemplate deployed;
-			try {
-				deployed = AuditedTrinkets411.attach(schema, original);
-			} catch (Exception e) {
-				throw new IllegalStateException("Could not invoke the pinned Trinkets 4.1.1 schema attachment", e);
-			}
-			return repaired
-				? TrinketsSchemaRepair.repair(deployed, item, TrinketsSchemaRepair.Profile.V4_1_1)
-				: deployed;
+		TypeTemplate deployed;
+		try {
+			deployed = AuditedTrinkets411.attach(schema, original);
+		} catch (Exception e) {
+			throw new IllegalStateException("Could not invoke the pinned Trinkets 4.1.1 schema attachment", e);
 		}
-
-		TypeTemplate data = oldTrinketData(item);
-		TypeTemplate cardinal = DSL.optional(DSL.field("cardinal_components",
-			DSL.optionalFields("trinkets:trinkets", data)));
-		TypeTemplate trinkets = DSL.optional(DSL.optionalFields("trinkets", data));
-		TypeTemplate deployed = DSL.allWithRemainder(cardinal, trinkets, original);
 		return repaired
-			? TrinketsSchemaRepair.repair(deployed, item, TrinketsSchemaRepair.Profile.V4_1_0)
+			? TrinketsSchemaRepair.repair(deployed, item, TrinketsSchemaRepair.Profile.V4_1_1)
 			: deployed;
 	}
 
 	private abstract static class TestSchema extends Schema {
 		TestSchema(int version, Schema parent) { super(version, parent); }
-		protected abstract boolean current411();
 		protected abstract boolean repaired();
 
 		@Override public void registerTypes(Schema schema,
 			Map<String, Supplier<TypeTemplate>> entities,
 			Map<String, Supplier<TypeTemplate>> blocks) {
 			schema.registerType(true, ITEM_STACK, DSL::remainder);
-			schema.registerType(true, ENTITY, () -> entityTemplate(schema, current411(), repaired()));
+			schema.registerType(true, ENTITY, () -> entityTemplate(schema, repaired()));
 		}
 
 		@Override public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
@@ -82,25 +63,11 @@ final class TrinketsSchemaMigrationTest {
 
 	private static final class CurrentUnrepairedSchema extends TestSchema {
 		CurrentUnrepairedSchema(int version, Schema parent) { super(version, parent); }
-		@Override protected boolean current411() { return true; }
 		@Override protected boolean repaired() { return false; }
 	}
 
 	private static final class CurrentRepairedSchema extends TestSchema {
 		CurrentRepairedSchema(int version, Schema parent) { super(version, parent); }
-		@Override protected boolean current411() { return true; }
-		@Override protected boolean repaired() { return true; }
-	}
-
-	private static final class LegacyUnrepairedSchema extends TestSchema {
-		LegacyUnrepairedSchema(int version, Schema parent) { super(version, parent); }
-		@Override protected boolean current411() { return false; }
-		@Override protected boolean repaired() { return false; }
-	}
-
-	private static final class LegacyRepairedSchema extends TestSchema {
-		LegacyRepairedSchema(int version, Schema parent) { super(version, parent); }
-		@Override protected boolean current411() { return false; }
 		@Override protected boolean repaired() { return true; }
 	}
 
@@ -117,23 +84,19 @@ final class TrinketsSchemaMigrationTest {
 		}
 	}
 
-	private static DataFixer fixer(boolean current411, boolean repaired) {
+	private static DataFixer fixer(boolean repaired) {
 		DataFixerBuilder builder = new DataFixerBuilder(1);
-		BiFunction<Integer, Schema, Schema> factory = (version, parent) -> makeSchema(version, parent,
-			current411, repaired);
+		BiFunction<Integer, Schema, Schema> factory = (version, parent) -> makeSchema(version, parent, repaired);
 		builder.addSchema(0, factory);
 		Schema target = builder.addSchema(1, factory);
 		builder.addFixer(new MarkerFix(target));
 		return builder.build().fixer();
 	}
 
-	private static TestSchema makeSchema(int version, Schema parent, boolean current411, boolean repaired) {
-		if (current411) return repaired
+	private static TestSchema makeSchema(int version, Schema parent, boolean repaired) {
+		return repaired
 			? new CurrentRepairedSchema(version, parent)
 			: new CurrentUnrepairedSchema(version, parent);
-		return repaired
-			? new LegacyRepairedSchema(version, parent)
-			: new LegacyUnrepairedSchema(version, parent);
 	}
 
 	private static JsonObject vanillaFixture() {
@@ -171,7 +134,7 @@ final class TrinketsSchemaMigrationTest {
 
 	@Test void exactUpstreamSchemaReproducesFlatAndCardinalLossBeforeRepair() {
 		JsonObject input = currentFixture();
-		JsonObject actual = fixer(true, false).update(ENTITY, new Dynamic<>(JsonOps.INSTANCE, input), 0, 1)
+		JsonObject actual = fixer(false).update(ENTITY, new Dynamic<>(JsonOps.INSTANCE, input), 0, 1)
 			.getValue().getAsJsonObject();
 		assertEquals(new JsonObject(), actual.getAsJsonObject("trinkets"), actual.toString());
 		assertFalse(actual.getAsJsonObject("cardinal_components").has("other_component"), actual.toString());
@@ -179,7 +142,7 @@ final class TrinketsSchemaMigrationTest {
 
 	@Test void exactUpstreamSchemaRepairMigratesVanillaFlatAndCardinalItems() {
 		JsonObject input = currentFixture();
-		JsonObject actual = fixer(true, true).update(ENTITY, new Dynamic<>(JsonOps.INSTANCE, input), 0, 1)
+		JsonObject actual = fixer(true).update(ENTITY, new Dynamic<>(JsonOps.INSTANCE, input), 0, 1)
 			.getValue().getAsJsonObject();
 		JsonObject expected = currentFixture();
 		migrate(expected, "Item");
@@ -211,7 +174,7 @@ final class TrinketsSchemaMigrationTest {
 			{"sibling":{"keep":true},
 			 "trinkets:trinkets":{"hand":{"ring":{"Items":[{"id":"minecraft:stick","legacy_marker":"legacy-cardinal"}]}}}}
 			""").getAsJsonObject());
-		JsonObject actual = fixer(true, true).update(ENTITY, new Dynamic<>(JsonOps.INSTANCE, input), 0, 1)
+		JsonObject actual = fixer(true).update(ENTITY, new Dynamic<>(JsonOps.INSTANCE, input), 0, 1)
 			.getValue().getAsJsonObject();
 		JsonObject expected = input.deepCopy();
 		migrate(expected, "Item");
@@ -222,21 +185,6 @@ final class TrinketsSchemaMigrationTest {
 		migrate(expected, "trinkets", "hand", "ring", "cosmetic", "0");
 		migrate(expected, "cardinal_components", "trinkets:trinkets", "hand", "ring", "Items", "0");
 		assertEquals(expected, actual);
-	}
-
-	@Test void oldArtifactProfileStillMigratesLegacyItems() {
-		JsonObject input = vanillaFixture();
-		input.add("trinkets", JsonParser.parseString(
-			"{\"hand\":{\"ring\":{\"Items\":[{\"id\":\"minecraft:torch\",\"legacy_marker\":\"legacy\"}]}}}")
-			.getAsJsonObject());
-		JsonObject actual = fixer(false, true).update(ENTITY, new Dynamic<>(JsonOps.INSTANCE, input), 0, 1)
-			.getValue().getAsJsonObject();
-		migrate(input, "Item");
-		migrate(input, "Inventory", "0");
-		migrate(input, "ArmorItems", "0");
-		migrate(input, "HandItems", "0");
-		migrate(input, "trinkets", "hand", "ring", "Items", "0");
-		assertEquals(input, actual);
 	}
 
 	private static void migrate(JsonObject root, String... path) {

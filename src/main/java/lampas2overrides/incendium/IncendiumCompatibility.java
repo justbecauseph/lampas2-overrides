@@ -21,20 +21,6 @@ public final class IncendiumCompatibility {
 			Map<String, String> expectedResources
 	) {}
 
-	private static final Profile PROFILE_5_5_0 = new Profile(
-			"5.5.0",
-			Identifier.fromNamespaceAndPath("lampas2-overrides", "incendium_5_5_0_optimizations"),
-			"Lampas2 Incendium 5.5.0 optimizations",
-			Map.of(
-					"data/incendium/function/clocks/main.mcfunction",
-					"7f72f3a8df4688dc993a03a0860a2e51d226041a5f9886ab4745e7343780d5a0",
-					"data/incendium/function/technical/entity_id/check.mcfunction",
-					"dbdbf31acb6d9274f63f218f2616e1f4883e0963909d40d362f00bf15f308c17",
-					"data/incendium/function/technical/entity_id/reset.mcfunction",
-					"340591a2b5a74330f04c9c0dfc07aa497302ef16c0f498cb07d6d0abe8dd92d5"
-			)
-	);
-
 	private static final Profile PROFILE_5_5_1 = new Profile(
 			"5.5.1",
 			Identifier.fromNamespaceAndPath("lampas2-overrides", "incendium_5_5_1_optimizations"),
@@ -50,7 +36,6 @@ public final class IncendiumCompatibility {
 	);
 
 	private static final Map<String, Profile> PROFILES = Map.of(
-			"5.5.0", PROFILE_5_5_0,
 			"5.5.1", PROFILE_5_5_1
 	);
 

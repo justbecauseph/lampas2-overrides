@@ -3,7 +3,7 @@ param(
 	[string]$ProductionJar,
 	[Parameter(Mandatory = $true)]
 	[string]$TrinketsJar,
-	[string]$RuntimeClasspathFile = "build\wind-state-probe\frozen3-wilder43\compile-classpath.txt"
+	[string]$RuntimeClasspathFile = "build\trinkets-dfu-probe\compile-classpath.txt"
 )
 
 $ErrorActionPreference = "Stop"

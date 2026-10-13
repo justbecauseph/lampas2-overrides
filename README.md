@@ -12,35 +12,17 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Additional Lanterns chunk loading](#additional-lanterns-chunk-loading) | Additional Lanterns 1.1.2 | Prevents redstone neighbor checks from synchronously loading unloaded chunks |
 | [Mob Filter worldgen safety and dimension context](#mob-filter-worldgen-safety-and-dimension-context) | Mob Filter | Prevents C2ME worldgen deadlock on rejected mobs and provides dimension context for worldgen rules |
 | [Visual Workbench tag rebinding](#visual-workbench-tag-rebinding) | Visual Workbench + Puzzles Lib | Prevents replay loading and tag reload crashes from stale Visual Workbench tags |
-| [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.0, 5.5.1 | Removes a redundant 20 Hz entity-ID scan and throttles living-mob initialization |
+| [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.1 | Removes a redundant 20 Hz entity-ID scan and throttles living-mob initialization |
 | [Gravestones death inscription and glow](#gravestones-death-inscription-and-glow) | Gravestones | Suppresses technical death grave text and renders a glowing outline only on your own graves |
 | [Jade nameplates and Custom Name](#jade-nameplates-and-custom-name) | Client Jade; server TAB name sync | Suppresses vanilla in-world entity/player nameplates and shows server-synced player display names in Jade |
 | [Custom Name multi-word names](#custom-name-multi-word-names) | Custom Name 0.4.4-26.2 | Permits spaces in nickname, prefix, and suffix commands for non-operators |
-| [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | MVS, MNS, Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Better Lib | Transparently repairs malformed `pack.mcmeta` formats and POI tags at runtime |
-| [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.2.11-mc26.2 or 4.3 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
-| [Bee and spawner structure DFU validation](#bee-and-spawner-structure-dfu-validation) | Exact Trek and Stoneholm fixtures | Verifies repaired bee inventories and zombie spawner payloads survive structure loading |
-| [Boat water-mask compatibility](#boat-water-mask-compatibility) | EMF 3.3.5, 3.3.8 or 3.3.11 + audited boat providers | Restores the vanilla water mask for plain hulls when the selected Fresh Animations mask is incompatible |
+| [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3 | Transparently repairs malformed `pack.mcmeta` formats and worldgen resources at runtime |
+| [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.3 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
+| [Bee and spawner structure DFU validation](#bee-and-spawner-structure-dfu-validation) | Exact Trek and Stoneholm fixtures | Historical run on the removed Trinkets 4.1.0 profile; re-validation on 4.1.1 is pending |
+| [Boat water-mask compatibility](#boat-water-mask-compatibility) | EMF 3.3.11 + audited boat providers | Restores the vanilla water mask for plain hulls when the selected Fresh Animations mask is incompatible |
 | [Better Lib demo villager suppression](#better-lib-demo-villager-suppression) | Better Lib | Suppresses hardcoded demo villager registration that causes RemapException registry sync disconnects |
 | [Beautiful item-model reloads](#beautiful-item-model-reloads) | Beautiful Enchanted Books 6.0.0 and/or Beautiful Potions 2.0.1 | Clears stale extra-model keys so each resource reload uses the keys registered for that reload |
 | [IllagerBlabber voice registry](#illagerblabber-voice-registry) | IllagerBlabber 1.1.0 | Releases per-illager voice state on unload, follows illagers across dimensions, and drops per-tick lock and log overhead |
-
-## Plasmo Voice client shutdown
-
-For Plasmo Voice **2.1.16**, a client-only compatibility hook requests microphone capture
-stop and UDP disconnection before Plasmo unregisters its listeners and unloads add-ons.
-The upstream UDP close method also shuts down its Netty event loop. This addresses the
-surviving non-daemon voice threads reported in the Minecraft shutdown watchdog crash.
-Other Plasmo versions and clients without Plasmo skip the hook; servers do not load it.
-
-The fix uses upstream cleanup APIs, preserves capture-stop event cancellation, and logs
-cleanup exceptions while allowing remaining cleanup and upstream shutdown to proceed.
-It does not forcibly terminate threads or wait on them from the render thread.
-
-Verified with unit tests and an isolated Fabric client using the exact installed Plasmo JAR:
-the mixin applied, an idle capture thread and started UDP event loop terminated, and the
-client exited normally. Full-pack multiplayer microphone use, add-on interaction, and
-disconnect/reconnect testing remain pending. See [verification evidence](docs/plasmo-shutdown.md).
-Upstream report: [plasmoapp/plasmo-voice#539](https://github.com/plasmoapp/plasmo-voice/issues/539).
 
 ## Beautiful item-model reloads
 
@@ -236,11 +218,12 @@ in the same process, leaving the generated target block with stale tags and caus
 Lampas2 Overrides intercepts `BlockConversionHelper.copyBoundTags` and rebinds the tags when the target
 block belongs to the `visualworkbench` namespace. Puzzles Lib's strict invariant remains untouched for
 all other targets and callers. The mixin is client-only and gated on both `visualworkbench` and
-`puzzleslib`.
+`puzzleslib`. Puzzles Lib 26.2.5, the version the build compiles against, keeps the `BlockConversionHelper`
+bytecode of 26.2.4 (checked 2026-10-13).
 
 ## Incendium tick optimization
 
-Incendium Legacy 5.5.0 and 5.5.1 scan every living non-player entity each tick to repair missing or
+Incendium Legacy 5.5.1 scans every living non-player entity each tick to repair missing or
 invalid entity IDs, even though the same clock initializes previously unseen mobs. Lampas2 Overrides
 installs an always-enabled built-in datapack that removes that redundant scan and runs only the unseen
 living-mob initialization pass every five ticks (4 Hz). Existing ticking mobs, frozen-state updates,
@@ -250,19 +233,19 @@ The pack also makes the 15-bit ID rollover safe without relying on the removed v
 resets before assigning 32768, immediately reassigns every existing player and initialized mob, and
 then assigns the entity that triggered the rollover exactly once.
 
-This feature fails closed using explicit version profiles:
-- **Incendium 5.5.0**: registers `incendium_5_5_0_optimizations` when verified against 5.5.0's exact SHA-256 fingerprints.
-- **Incendium 5.5.1**: registers `incendium_5_5_1_optimizations` when verified against 5.5.1's exact SHA-256 fingerprints. The 5.5.1 optimization semantically rebases on upstream's new `entity/chilling` call while removing the redundant ID check.
+This feature fails closed using an explicit version profile for Incendium 5.5.1, the only supported release.
+It registers `incendium_5_5_1_optimizations` only when Incendium 5.5.1 matches that profile's exact SHA-256
+fingerprints. The optimization semantically rebases on upstream's `entity/chilling` call while removing the
+redundant ID check.
 
 A modified or unsupported Incendium release is left untouched and produces a warning in the server
 log instead of receiving potentially stale function overrides.
 
 ## Wilder Wild stone pool
 
-Wilder Wild `4.2.11-mc26.2` and `4.3` ship identical stone-pool resources with a sampled
-radius of 12–15. FrozenLib 2.5.3 and 3.0.1's circular waterlogged vegetation feature adds one
-block to the sampled radius before placement, then checks the four horizontal neighbors of
-each placed block. At a chunk edge, the upstream maximum reaches two chunks away.
+Wilder Wild `4.3` ships the stone-pool resource with a sampled radius of 12–15. FrozenLib's
+circular waterlogged vegetation feature (audited in 3.0.1; 3.0.3 ships byte-identical classes) adds one block to the sampled radius before placement, then
+checks the four horizontal neighbors of each placed block. At a chunk edge, the upstream maximum reaches two chunks away.
 Historical C2ME 0.4.2-alpha.0.43 logs report unsafe worldgen reads from
 `mesoglea_caves_stone_pool`.
 
@@ -273,7 +256,7 @@ the active chunk and its one-chunk write radius even at positive, negative, edge
 coordinates. The patch is version and SHA-256 gated; an unknown Wilder Wild release or changed
 `stone_pool.json` remains untouched.
 
-Verification on 4 October 2026 passed all 103 unit tests, exact installed-artifact and fixture
+Verification on 4 October 2026 passed 103 unit tests at that run, exact installed-artifact and fixture
 checks, and a disposable production-JAR dedicated-server probe with Wilder Wild 4.3 and
 FrozenLib 3.0.1. The resource mixin applied, the selected stone-pool JSON matched the replacement,
 and Minecraft decoded its configured-feature radius as 12–14 before normal shutdown.
@@ -281,20 +264,15 @@ Fresh cave generation with C2ME/Lithium and full-pack gameplay remain unverified
 
 ## Retired FrozenLib wind compatibility
 
-The former 2.5.3/4.2.11 wind shim was removed for the latest supported
-FrozenLib 3.0 and Wilder Wild 4.3 pair. An unpatched isolated client showed that
-FrozenLib now clears its reset flag and Wilder Wild updates the existing cloud
-extension in place. Worker decoding still changes the wind singleton; no
-missing-extension failure was observed in this probe. See the
-[wind-state evidence](docs/wind-state.md) for the scope and remaining gameplay checks.
+Lampas2 Overrides applies no FrozenLib wind shim: an unpatched isolated client with FrozenLib 3.0 and Wilder Wild 4.3 showed no missing-extension failure. FrozenLib still changes the wind singleton during worker decoding, so general thread safety is not established. The probe and evidence for this observation were removed after commit `d8d84f1` (`docs/wind-state.md`).
 
 ## Boat water-mask compatibility
 
-EMF 3.3.5, 3.3.8 and 3.3.11 can replace Minecraft's shared boat water-patch layer with the Fresh Animations
+EMF 3.3.11 can replace Minecraft's shared boat water-patch layer with the Fresh Animations
 `assets/minecraft/optifine/cem/boat_patch.jem` model. That model's animation expects `var.base_*`
 values supplied by Fresh Animations hull models. Plain hulls from the audited Pyrite 0.18.3+26.2,
-Promenade 5.6.0, Wilder Wild 4.2.11-mc26.2 or the exact audited 4.3 artifact, BetterEnd 26.201.2, and BetterNether 26.201.2
-providers do not supply those values.
+Promenade 5.6.0, Wilder Wild 4.3, BetterEnd 26.201.3, and BetterNether 26.201.3 providers do not supply those values.
+BetterEnd and BetterNether each require `wover-item` 26.201.3.
 
 The client-only compatibility hook runs at the end of each `BoatRenderer` construction. It checks
 the exact provider layer, provider version, EMF version, selected resource bytes, and EMF's actual
@@ -303,32 +281,28 @@ the exact provider layer, provider version, EMF version, selected resource bytes
 Custom EMF hulls or animations, disabled or different resource packs, absent or mismatched versions,
 the BetterEnd/BetterNether `wover-item` companion mismatch, and unlisted boat layers remain
 untouched. The explicit provider list and verification limits are recorded in
-[docs/boat-water-mask.md](docs/boat-water-mask.md). The exact EMF profile pairs are recorded in
-[the focused 3.3.8 evidence](docs/evidence/emf-boat-water-mask-3.3.8.json) and the current-pipeline
-probe evidence linked from the feature document.
+[docs/boat-water-mask.md](docs/boat-water-mask.md). The audited EMF 3.3.11 identity is recorded in
+[the boat probe evidence](docs/evidence/boat-water-mask-3.3.11.json).
 
 The isolated probe verifies artifact identities from the audited pipeline inventory:
 
 ```powershell
 ./tools/boat-water-mask-probe/run.ps1 -Mode baseline -Strict `
-  -InventoryPath build/pipeline-validation-2026-10-06/inventory.json
+  -InventoryPath build/pipeline-validation-2026-10-13/inventory.json
 ./tools/boat-water-mask-probe/run.ps1 -Mode patched -Strict `
-  -InventoryPath build/pipeline-validation-2026-10-06/inventory.json `
+  -InventoryPath build/pipeline-validation-2026-10-13/inventory.json `
   -OverrideArtifactPath build/libs/lampas2-overrides-1.0.0.jar
 ```
+
+On 2026-10-13 both modes passed against the pack 2.3.29 inventory: the baseline reproduced the
+displaced mask on the BetterEnd and BetterNether `26.201.3` hulls, and the patched run restored
+vanilla mask geometry for all 108 supported layers.
 
 The runner verifies selected JAR metadata and SHA-256 before creating each fresh fixture,
 preserves prior run evidence, discovers Biolith through the inventory, and uses
 fixture-only FrozenLib and shutdown guards. The guards do not affect the installed client.
-The earlier EMF 3.3.8 isolated validation covers four strict reload stages plus baseline and patched
-shader-off and shader-on visual runs; see the focused evidence for result, log, input,
-override, harness, and shader hashes. This evidence does not establish pack staging,
-deployment, or behavior in the live installed instance.
-Manual review found rectangular baseline water transparency and continuous candidate water;
-shader-on logs had nonfatal GTAO option warnings but no invalid-pack or fallback messages.
-Mounted rowing and turning covered vanilla oak only.
-Current EMF 3.3.11 coverage is checked separately against the pipeline artifact hashes; earlier
-visual and movement observations do not establish rendering for this newer artifact.
+No visual, movement, or shader run is recorded for EMF 3.3.11. The probe establishes artifact identity,
+resource provenance, and renderer geometry only; live rendering in the installed instance remains unverified.
 
 ## Additional Lanterns chunk loading
 
@@ -356,24 +330,24 @@ Underground Village 2.1.1 contains several upstream data bugs:
 
 Worldgen data fixes are packaged in an always-enabled built-in datapack (`stoneholm_2_1_1_fixes`), version-gated to Underground Village 2.1.1 and protected by SHA-256 fingerprints of all six upstream target resources. Other Stoneholm structures and pools are untouched.
 
-## Better Lib startup (Retired / Fixed Upstream)
+## Better Lib demo villager suppression
 
-Better Lib 2.1.0 and 2.1.1 scanned bundled JSON villager definitions by opening their own jar as a ZIP
-filesystem. Fabric Loader already had that filesystem open, so the second open threw
-`FileSystemAlreadyExistsException` and aborted mod initialization, while subsequent filesystem closure
-corrupted Fabric Loader's shared jar filesystem. Additionally, Better Lib's generated data added disabled
-demo professions to `minecraft:acquirable_job_site`.
+Better Lib **2.1.2** bundles `data/better_lib/villagers/andesite_worker.json` and calls
+`registerJsonVillagers()` at startup. That registers the demo `better_lib:andesite_worker` profession in
+`POINT_OF_INTEREST_TYPE` and `VILLAGER_PROFESSION`. When Better Lib runs on a dedicated server, which
+Underground Village depends on, and a connecting client lacks the mod, Fabric Registry Sync aborts with
+`RemapException`.
 
-Better Lib **2.1.2** resolved both issues upstream by checking `FileSystems.getFileSystem(uri)` first,
-only closing filesystems it created itself, and cleaning up its POI tags. The `betterlib` mixins were
-therefore retired in Lampas2 Overrides.
+The common-side `betterlib` mixin cancels `CommonClass.registerJsonVillagers()` at HEAD, so the demo
+entries never enter the registries. It applies whenever Better Lib is installed and runs on dedicated
+servers as well as clients. Better Lib 2.1.2 already fixed its ZIP filesystem startup and POI tag
+defects upstream, so this mixin is the only Better Lib override.
 
 ## Virtual Resource & Datapack Patches
 
 Minecraft 26.2 enforces strict pack format metadata checks via `PackMetadataSection` and `PackFormat`.
 Several mods bundle data or built-in datapacks with malformed `pack.mcmeta` files (such as declaring
-format ranges without `supported_formats`, or specifying obsolete maximum format versions like 81 instead of 107)
-or malformed JSON files.
+format ranges without `supported_formats`, or specifying obsolete maximum format versions like 81 instead of 107), malformed JSON files, or invalid values in worldgen data.
 
 Lampas2 Overrides implements a low-overhead runtime virtual patch system (`ResourcePatchResolver`) that intercepts
 mod resource streams. Each patch is strictly version-gated and SHA-256 fingerprinted: if an upstream mod updates
@@ -381,30 +355,24 @@ or fixes the bug, the patch fails closed and leaves the upstream resource untouc
 
 Patched mods and resources:
 
-1. **Moog's Voyager Structures (MVS 5.0.11 & 5.0.14)**:
-   - **Defect**: Upstream 5.0.11 and 5.0.14 declare `pack_format: 48` without `supported_formats` or declare `min_format: 48, max_format: 107.1` without `supported_formats`, causing Minecraft 26.2's `PackMetadataSection` parser to reject the pack.
-   - **Fix**: Virtually replaces `pack.mcmeta` with valid `supported_formats: [48, 107]` and `max_format: [107, 1]`.
-   - *Note*: MVS 5.1.1 fixed this upstream and requires no patch.
-2. **Moog's Nether Structures (MNS 3.0.0)**:
-   - **Defect**: Missing `supported_formats` in root `pack.mcmeta`.
-   - **Fix**: Virtually replaces `pack.mcmeta` with valid `supported_formats: [48, 107]`.
-3. **Formations Overworld (1.0.5+a and 1.0.5+c)**:
-   - **Defect**: Version `1.0.5+a` is missing `supported_formats` in root `pack.mcmeta`, and its structure smithing loot tables (`stone_tower/smithing.json` and `witch_tower/smithing.json`) reference pre-26.2 `minecraft:chain` instead of `minecraft:iron_chain`, causing `DataResult.Error['Unknown registry key...']` loot table parse errors on 26.2. Version `1.0.5+c` still needs the root metadata format range; its audited loot tables contain no exact `minecraft:chain` item reference.
-   - **Fix**: Version `1.0.5+a` virtually replaces `pack.mcmeta` with valid `supported_formats: [48, 107]` and replaces both smithing loot tables with `minecraft:iron_chain`. Version `1.0.5+c` receives only the `pack.mcmeta` replacement because its audited loot tables contain no exact `minecraft:chain` item reference.
+1. **Formations Overworld (1.0.5+c)**:
+   - **Defect**: Root `pack.mcmeta` is missing `supported_formats`.
+   - **Fix**: Virtually replaces `pack.mcmeta` with valid `supported_formats: [48, 107]`. Its audited loot tables contain no exact `minecraft:chain` item reference, so no loot table is replaced.
    - **Evidence**: Candidate artifact identity and resource hashes are recorded in [`docs/evidence/formations-overworld-1.0.5c.json`](docs/evidence/formations-overworld-1.0.5c.json).
-4. **Grim Kingdoms Lost Structures Ruins (2.0.3)**:
+2. **Grim Kingdoms Lost Structures Ruins (2.0.3)**:
    - **Defect**: Missing `supported_formats` in root `pack.mcmeta`.
-   - **Fix**: Virtually replaces `pack.mcmeta` with valid `supported_formats: [48, 107]`.
-5. **Pyrite (0.18.3+26.2)**:
+   - **Fix**: Virtually replaces `pack.mcmeta` with valid `supported_formats: [48, 107]`. Zero-level enchantments in ten structure templates are repaired separately; see [Grim Kingdoms 2.0.3 zero-level enchantments](#grim-kingdoms-203-zero-level-enchantments).
+3. **Pyrite (0.18.3+26.2)**:
    - **Defect**: All four built-in datapacks (`pyrite_azalea`, `pyrite_crafting_tables`, `pyrite_mushrooms`, and `pyrite_oddities`) declare `max_format: 81` in `pack.mcmeta`. In MC 26.2 (which requires format up to 107), Minecraft flags the datapacks as incompatible or fails to load them.
    - **Fix**: Replaces `pack.mcmeta` across all 4 built-in packs with `supported_formats: [48, 107]` and `max_format: 107`.
-6. **Easter's Delight (1.3.1)**:
+4. **Easter's Delight (1.3.1)**:
    - **Defect**: Built-in recipe override datapack `resourcepacks/farmersdelight_overrides/pack.mcmeta` is missing `supported_formats`.
    - **Fix**: Replaces `pack.mcmeta` with valid `supported_formats: [48, 107]`.
-7. **Better Lib (2.1.1)**:
-   - **Defect**: Bundles `data/minecraft/tags/point_of_interest_type/acquirable_job_site.json` prefixed with illegal JSON comments (`//{`), causing strict JSON parsers to throw exceptions on tag reload.
-   - **Fix**: Virtually substitutes the clean, comment-free POI tag definition.
-   - *Note*: Better Lib 2.1.2 fixed this upstream by replacing the malformed comments with valid JSON.
+5. **Wilder Wild (4.3)**: The stone-pool radius repair is described in [Wilder Wild stone pool](#wilder-wild-stone-pool).
+
+Moog's Voyager Structures 5.1.3 and Moog's Nether Structures 3.1.1 declare `supported_formats: [48, 121]` upstream,
+which covers 26.2's data format 107.1, so neither needs a virtual patch. Better Lib 2.1.2 fixed its POI tag
+upstream and needs no virtual patch.
 
 ## Lootr ↔ Fast Item Frames
 
@@ -422,7 +390,7 @@ Live testing confirmed conversion, per-player looting and Lootr refresh behavior
 takes their item, the converted frame renders empty for that player; refreshing it through Lootr
 repopulates it, and its Lootr identity and properties remain intact.
 
-The bridge is compiled against Lootr 1.24.41.124 and Puzzles Lib 26.2.4. Converted frames delegate Lootr's random
+The bridge is compiled against Lootr 1.24.41.124 and Puzzles Lib 26.2.5. Converted frames delegate Lootr's random
 tick-scheduling offset to their existing per-instance state, so the value remains stable while the
 frame instance is live.
 
@@ -440,7 +408,7 @@ face calls share one scope, which ends even if drawing throws. Players without a
 their skin face.
 
 Activation requires Figura and Chatting. There is no Chatting version or artifact-hash gate.
-The required draw descriptors were inspected in Chatting 3.2.2; a changed target causes a clear
+The required draw descriptors were inspected in Chatting 3.2.3 with `javap` on 2026-10-13; a changed target causes a clear
 mixin failure at startup. Authenticated avatar rendering still requires a live client check.
 
 Chatting's sender detector is also enhanced with `ChatPlayerResolver` to associate multi-word,
@@ -545,16 +513,15 @@ verified.
 
 ### Trinkets entity schema repair (common-side)
 
-The `trinkets_updated` V1460 schema repair has separate exact profiles for 4.1.0+26.2 and
-4.1.1+26.2. The latter's upstream shape differs and still drops modern flat slot inventories and
-unrelated Cardinal components during typed round trips. The repair preserves grouped legacy
-slots, flat `Items`/`cosmetic` slots, unknown data, and sibling components while retaining the
-vanilla tail responsible for item migration. It fails closed on version, class-hash, or schema
-mismatch. See [the repair evidence and verification limits](docs/trinkets-dfu-repair.md).
+The `trinkets_updated` 4.1.1+26.2 V1460 schema repair is gated on the exact version and V1460 class
+SHA-256. Upstream's shape still drops modern flat slot inventories and unrelated Cardinal components during
+typed round trips. The repair preserves grouped legacy slots, flat `Items`/`cosmetic` slots, unknown data,
+and sibling components while retaining the vanilla tail responsible for item migration. It fails closed on
+version, class-hash, or schema mismatch. See [the repair evidence and verification limits](docs/trinkets-dfu-repair.md).
 
 ## Bee and spawner structure DFU validation
 
-Phase 2B validates the exact Trek and Stoneholm runtime fixtures that previously produced bee and spawner decode failures. The complete fixture provenance, hashes, coordinates, and vanilla-reference comparisons are recorded in [docs/bee-spawner-dfu-validation.md](docs/bee-spawner-dfu-validation.md) and [docs/evidence/phase2b-bees-spawner.json](docs/evidence/phase2b-bees-spawner.json).
+Phase 2B validates the exact Trek and Stoneholm runtime fixtures that previously produced bee and spawner decode failures. That run used the removed Trinkets 4.1.0 repair profile, so the fixtures still need re-validation with 4.1.1. The complete fixture provenance, hashes, coordinates, and vanilla-reference comparisons are recorded in [docs/bee-spawner-dfu-validation.md](docs/bee-spawner-dfu-validation.md) and [docs/evidence/phase2b-bees-spawner.json](docs/evidence/phase2b-bees-spawner.json).
 
 ## Grim Kingdoms 2.0.3 zero-level enchantments
 
