@@ -121,6 +121,9 @@ include the Lampas2 Incendium pack. Test the ID rollover by setting `$current.id
 After at most five ticks, the new mob and all previously initialized mobs and players must have
 unique IDs in `0..32767`; no entity may retain 32768 or lose its `in.eid_*` bit tags. A version or
 fingerprint mismatch must instead log that the performance datapack remains disabled.
+For the helper marker, `/forceload query 0 0` in the overworld must report the chunk as force-loaded, and
+`/execute store result score #n in.dummy if entity @e[type=marker,tag=in.helper_entity]` must settle at 1
+within two 7-second clock cycles, including on a world that already holds duplicate markers.
 
 For Mob Filter, dedicated-server startup must succeed and, once the Mob Filter target
 classes are loaded by an entity-add or worldgen path, `MixinServiceMixin` and `WorldgenThreadSpawnAttemptMixin`
@@ -234,6 +237,13 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   datapack. 5.5.1 preserves upstream's freezing delegate (`entity/chilling`) while removing the redundant
   20 Hz entity-ID scan and throttling living mob initialization. Unknown versions or tampered functions disable
   the datapack fail-closed.
+- **Incendium's helper marker needs overworld chunk [0, 0] loaded.** `technical/summon_helper` counts
+  `in.helper_entity` markers with `@e`, which cannot see entities in unloaded chunks, and summons a new one
+  whenever the count is not 1. Upstream force-loads [0, 0] only from `technical/load`. On the live server that
+  force-load is gone after load even though `load.status` shows Incendium's load ran (14 Oct 2026; the mod that
+  removes or blocks it is unidentified, and a Fabric API + Incendium server keeps it), so every call summoned
+  another marker into the unloaded chunk (94,300 markers). The override re-adds the force-load before each
+  count rather than skipping the summon, because `misc/aim` needs a helper to compute launch vectors.
 - **Resource patches are keyed by mod ID, exact version, and resource path.** `ResourcePatchKey` and
   `ResourcePatchRegistry` index each patch by all three, so a patch for one release never applies to another
   release, and each patch fails closed on a changed SHA-256. Formations Overworld 1.0.5+c requires only the root

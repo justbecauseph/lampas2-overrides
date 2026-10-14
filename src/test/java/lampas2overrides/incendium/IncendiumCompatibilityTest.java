@@ -37,7 +37,7 @@ public class IncendiumCompatibilityTest {
 		assertTrue(p551.isPresent());
 		assertEquals("5.5.1", p551.get().version());
 		assertEquals(Identifier.fromNamespaceAndPath("lampas2-overrides", "incendium_5_5_1_optimizations"), p551.get().packId());
-		assertEquals(3, p551.get().expectedResources().size());
+		assertEquals(4, p551.get().expectedResources().size());
 
 		assertTrue(IncendiumCompatibility.getProfile("5.5.0").isEmpty());
 		assertTrue(IncendiumCompatibility.getProfile("5.5.2").isEmpty());
@@ -76,6 +76,20 @@ public class IncendiumCompatibilityTest {
 		assertTrue(reset.contains("@a[tag=!lampas.eid_reset_current]"));
 		assertTrue(reset.contains("type=#incendium:mobs_no_player,tag=in.checked,tag=!lampas.eid_reset_current"));
 		assertTrue(reset.contains("tag @s remove lampas.eid_reset_current"));
+	}
+
+	@Test
+	void packagedHelperCheckForceLoadsHelperChunk551() throws IOException {
+		String packRoot = "resourcepacks/incendium_5_5_1_optimizations/";
+		String helper = readPackResource(packRoot, "data/incendium/function/technical/summon_helper.mcfunction");
+
+		// The force-load must come before the count, or an unloaded chunk hides existing markers from @e.
+		int forceload = helper.indexOf("execute in minecraft:overworld unless loaded 0 0 0 run forceload add 0 0");
+		int count = helper.indexOf("execute store result score $count in.dummy if entity @e[type=marker,tag=in.helper_entity]");
+		assertTrue(forceload >= 0);
+		assertTrue(count > forceload);
+		assertTrue(helper.contains("unless score $count in.dummy matches 1 run kill @e[type=marker,tag=in.helper_entity]"));
+		assertTrue(helper.contains("in minecraft:overworld run summon marker 0.0 0.0 0.0 {Tags:[\"in.helper_entity\", \"smithed.entity\"]}"));
 	}
 
 	private static String readPackResource(String packRoot, String path) throws IOException {

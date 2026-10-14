@@ -31,7 +31,9 @@ public final class IncendiumCompatibility {
 					"data/incendium/function/technical/entity_id/check.mcfunction",
 					"dbdbf31acb6d9274f63f218f2616e1f4883e0963909d40d362f00bf15f308c17",
 					"data/incendium/function/technical/entity_id/reset.mcfunction",
-					"340591a2b5a74330f04c9c0dfc07aa497302ef16c0f498cb07d6d0abe8dd92d5"
+					"340591a2b5a74330f04c9c0dfc07aa497302ef16c0f498cb07d6d0abe8dd92d5",
+					"data/incendium/function/technical/summon_helper.mcfunction",
+					"5ed3539c83a33c6c90fd7402fff2caac89c5277cc8f251dd3b99b5419e77b5f5"
 			)
 	);
 

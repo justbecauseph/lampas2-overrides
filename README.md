@@ -12,7 +12,7 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Additional Lanterns chunk loading](#additional-lanterns-chunk-loading) | Additional Lanterns 1.1.2 | Prevents redstone neighbor checks from synchronously loading unloaded chunks |
 | [Mob Filter worldgen safety and dimension context](#mob-filter-worldgen-safety-and-dimension-context) | Mob Filter | Prevents C2ME worldgen deadlock on rejected mobs and provides dimension context for worldgen rules |
 | [Visual Workbench tag rebinding](#visual-workbench-tag-rebinding) | Visual Workbench + Puzzles Lib | Prevents replay loading and tag reload crashes from stale Visual Workbench tags |
-| [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.1 | Removes a redundant 20 Hz entity-ID scan and throttles living-mob initialization |
+| [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.1 | Removes a redundant 20 Hz entity-ID scan, throttles living-mob initialization, and stops helper markers accumulating in chunk [0, 0] |
 | [Gravestones death inscription and glow](#gravestones-death-inscription-and-glow) | Gravestones | Suppresses technical death grave text and renders a glowing outline only on your own graves |
 | [Jade nameplates and Custom Name](#jade-nameplates-and-custom-name) | Client Jade; server TAB name sync | Suppresses vanilla in-world entity/player nameplates and shows server-synced player display names in Jade |
 | [Custom Name multi-word names](#custom-name-multi-word-names) | Custom Name 0.4.4-26.2 | Permits spaces in nickname, prefix, and suffix commands for non-operators |
@@ -232,6 +232,17 @@ particles, player logic, altar items, and short-lived projectile initialization 
 The pack also makes the 15-bit ID rollover safe without relying on the removed validation pass. It
 resets before assigning 32768, immediately reassigns every existing player and initialized mob, and
 then assigns the entity that triggered the rollover exactly once.
+
+The pack also stops Incendium's helper marker from multiplying. Upstream's `technical/summon_helper` runs
+every 7 seconds and on every aim, keeps one `in.helper_entity` marker at overworld `0 0 0`, and relies on
+`technical/load` running `forceload add 0 0` so that chunk stays loaded. On the live Lampas server the
+force-load is gone after load (cause not yet identified; a server with only Fabric API and Incendium keeps it).
+With the chunk unloaded, `@e` counted zero markers and every check summoned another into it; the live server
+had accumulated 94,300 of them (26.8 MB of entity NBT in chunk [0, 0]) by 14 Oct 2026. The override re-adds the
+force-load before every count, so the existing markers become visible and upstream's "count is not 1" branch
+kills every duplicate and summons one. The first check after the chunk is re-added can add one extra marker
+while the chunk's entities load; the next 7-second check removes it. If another mod blocks force-loading
+outright, this override cannot help.
 
 This feature fails closed using an explicit version profile for Incendium 5.5.1, the only supported release.
 It registers `incendium_5_5_1_optimizations` only when Incendium 5.5.1 matches that profile's exact SHA-256
