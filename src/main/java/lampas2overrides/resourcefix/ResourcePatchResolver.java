@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,12 +50,12 @@ public final class ResourcePatchResolver {
 		ResourcePatch patch = ResourcePatchRegistry.findPatch(modId, actualVersion, normalizedPath);
 		if (patch == null) {
 			// A version change drops the patch, so it must be as visible as a SHA-256 mismatch.
-			ResourcePatch otherVersion = ResourcePatchRegistry.findPatch(modId, normalizedPath);
-			if (otherVersion != null) {
+			List<String> registered = ResourcePatchRegistry.registeredVersions(modId, normalizedPath);
+			if (!registered.isEmpty()) {
 				String logKey = "ver_unregistered:" + modId + ":" + normalizedPath + ":" + actualVersion;
 				if (LOGGED_KEYS.add(logKey)) {
 					LOGGER.warn("Skipping {} resource patch for {}: version {} is not registered (patch targets {}); using upstream resource",
-						modId, normalizedPath, actualVersion, otherVersion.expectedVersion());
+						modId, normalizedPath, actualVersion, String.join(", ", registered));
 				}
 			}
 			return null;

@@ -141,7 +141,7 @@
           },
           "artifact_sha256": "77bdff881c01011bff6e6e722a1f47dc01ca7d377a1f08231d305fc11b08f113",
           "probe_evidence": "docs/evidence/rogues-sharpness.json",
-          "verification_limit": "Unit tests cover the exact version and SHA-256 gate and the WARN paths; the production-JAR dedicated-server probe verifies the decoded registry entry and both resource paths with Rogues, Apothic Enchanting and their dependencies. Combat damage and full-pack behavior are unverified."
+          "verification_limit": "Unit tests cover the exact version and SHA-256 gate and the WARN paths; the production-JAR dedicated-server probe verifies the decoded registry entry and both resource paths with Rogues, Apothic Enchanting and their dependencies. Combat damage, the client-side registry decode and full-pack behavior are unverified."
         }
       }
     },

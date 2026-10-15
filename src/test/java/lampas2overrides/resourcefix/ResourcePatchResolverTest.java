@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -271,9 +272,7 @@ public class ResourcePatchResolverTest {
 	@Test
 	void roguesSharpnessReplacementIsApothicEnchantingDefinitionWithDamageExclusiveSet() throws IOException {
 		Path aeJar = Path.of("../lampas-server-fabric/mods/ApothicEnchanting-26.2-3.0.1.jar");
-		if (!Files.exists(aeJar)) {
-			return;
-		}
+		assumeTrue(Files.exists(aeJar), "Apothic Enchanting 3.0.1 jar not present at " + aeJar);
 		JsonObject expected;
 		try (ZipFile zf = new ZipFile(aeJar.toFile());
 				InputStream in = zf.getInputStream(zf.getEntry(SHARPNESS))) {
@@ -285,6 +284,23 @@ public class ResourcePatchResolverTest {
 		ResourcePatch patch = ResourcePatchRegistry.findPatch(ROGUES, ROGUES_VERSION, SHARPNESS);
 		try (InputStream in = getClass().getClassLoader().getResourceAsStream(patch.replacementPath())) {
 			assertEquals(expected, JsonParser.parseString(new String(in.readAllBytes(), StandardCharsets.UTF_8)));
+		}
+	}
+
+	@Test
+	void roguesSharpnessReplacementEqualsVanillaSharpness() throws IOException {
+		List<java.net.URL> providers = java.util.Collections.list(
+			getClass().getClassLoader().getResources(SHARPNESS));
+		assertEquals(1, providers.size(), "Expected only the Minecraft jar to provide " + SHARPNESS + ": " + providers);
+		JsonObject vanilla;
+		try (InputStream in = providers.get(0).openStream()) {
+			vanilla = JsonParser.parseString(new String(in.readAllBytes(), StandardCharsets.UTF_8)).getAsJsonObject();
+		}
+		assertFlatExclusiveSharpness(vanilla);
+
+		ResourcePatch patch = ResourcePatchRegistry.findPatch(ROGUES, ROGUES_VERSION, SHARPNESS);
+		try (InputStream in = getClass().getClassLoader().getResourceAsStream(patch.replacementPath())) {
+			assertEquals(vanilla, JsonParser.parseString(new String(in.readAllBytes(), StandardCharsets.UTF_8)));
 		}
 	}
 

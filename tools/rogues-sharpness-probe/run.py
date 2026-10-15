@@ -18,6 +18,7 @@ import argparse
 import hashlib
 import io
 import json
+import os
 import pathlib
 import re
 import shutil
@@ -86,15 +87,20 @@ def provided_ids(archive, depth=0):
 
 
 def dependency_closure(mods_dir, roots):
-    index, metadata = {}, {}
+    index, nested_index, metadata = {}, {}, {}
     for jar in sorted(mods_dir.glob("*.jar")):
         with zipfile.ZipFile(jar) as archive:
             meta = mod_metadata(archive)
             if not meta:
                 continue
             metadata[jar] = meta
-            for mod_id in provided_ids(archive):
+            for mod_id in [meta["id"], *meta.get("provides", [])]:
                 index.setdefault(mod_id, jar)
+            for mod_id in provided_ids(archive):
+                nested_index.setdefault(mod_id, jar)
+    # A top-level mod wins over another jar's jar-in-jar copy of it.
+    for mod_id, jar in nested_index.items():
+        index.setdefault(mod_id, jar)
     selected, queue, missing = set(), list(roots), []
     while queue:
         mod_id = queue.pop()
@@ -126,7 +132,7 @@ def declare_version(source, target, version):
 
 
 def build_probe_mod(root):
-    subprocess.run([str(REPO / ("gradlew.bat" if (REPO / "gradlew.bat").exists() else "gradlew")), "-q",
+    subprocess.run([str(REPO / ("gradlew.bat" if os.name == "nt" else "gradlew")), "-q",
                     "--init-script", str(PROBE_DIR / "classpath.init.gradle"), "roguesSharpnessProbeClasspath"],
                    cwd=REPO, check=True, shell=False)
     classpath = (REPO / "build" / "rogues-sharpness-probe" / "compile-classpath.txt").read_text(encoding="utf-8").strip()
@@ -213,8 +219,11 @@ def main():
             time.sleep(2)
         results["seconds_to_probe"] = round(time.time() - started)
         if proc.poll() is None:
-            proc.stdin.write("stop\n")
-            proc.stdin.flush()
+            try:
+                proc.stdin.write("stop\n")
+                proc.stdin.flush()
+            except OSError:
+                pass  # the server exited after poll(); results are still collected below
         try:
             proc.wait(timeout=180)
         except subprocess.TimeoutExpired:

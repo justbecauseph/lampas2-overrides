@@ -278,9 +278,11 @@ Fresh cave generation with C2ME/Lithium and full-pack gameplay remain unverified
 
 Rogues `3.1.3.003+26.2` (RPG Series) ships `data/minecraft/enchantment/sharpness.json` with a
 `minecraft:attributes` effect: +8% of base attack damage per level (`add_multiplied_base`, linear
-0.08 + 0.08 per level above the first). That modifier multiplies every other damage bonus. Fabric
-orders mod data packs alphabetically by mod ID on every load, so Rogues' file overrides Apothic
-Enchanting's and vanilla's, and a Lampas data pack that sorts before `rogues` cannot win.
+0.08 + 0.08 per level above the first). It scales base attack damage plus every flat attack-damage
+modifier (weapon damage, Strength), unlike vanilla's flat bonus. Fabric API orders mod data packs
+alphabetically by mod ID unless a mod declares `fabric:resource_load_order`, so Rogues' file overrides
+Apothic Enchanting's and vanilla's. A version- and SHA-gated resource patch replaces it instead of a
+later-loading pack, so a Rogues update is detected rather than silently overridden.
 
 The virtual resource patch replaces Rogues' file with Apothic Enchanting 3.0.1's Sharpness (flat
 `minecraft:damage` add, 1.0 + 0.5 per level above the first; Apothic Enchanting's costs, weight and
@@ -306,6 +308,11 @@ closure from the deployed server's mods directory:
 The resource manager's top `sharpness.json` came from the `rogues` pack in every run, and the registry
 loader's `listResources` path decoded the replacement. Evidence: `docs/evidence/rogues-sharpness.json`.
 Damage in combat and full-pack behavior with every other mod are not covered by the probe.
+
+Enchantments are a synced registry. For entries from packs the client also has, the server sends no
+contents and each client decodes its own Rogues copy, so the patch must run on clients as well; the
+pipeline ships this jar on both sides. A client without it shows Rogues' +8% modifier in tooltips while
+the server deals flat damage. The client-side path has not been probed.
 
 ## Retired FrozenLib wind compatibility
 

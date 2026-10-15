@@ -116,7 +116,7 @@
         "file": "lampas2-overrides-1.0.1.jar",
         "id": "lampas2-overrides",
         "version": "1.0.1",
-        "sha256": "7895669c7034efd426e6df72a3d625d035b398f18de88e25321c01c1074633bf"
+        "sha256": "63af43ef4c440388ee729babd51d3d24ede6608c6c6df10b87c7a4bcf06cedc2"
       }
     ]
   },
@@ -248,7 +248,7 @@
       "overrides_jar": {
         "file": "lampas2-overrides-1.0.1.jar",
         "version": "1.0.1",
-        "sha256": "7895669c7034efd426e6df72a3d625d035b398f18de88e25321c01c1074633bf"
+        "sha256": "63af43ef4c440388ee729babd51d3d24ede6608c6c6df10b87c7a4bcf06cedc2"
       },
       "declared_rogues_version": null,
       "exit_code": 0,
@@ -372,7 +372,7 @@
       "overrides_jar": {
         "file": "lampas2-overrides-1.0.1.jar",
         "version": "1.0.1",
-        "sha256": "7895669c7034efd426e6df72a3d625d035b398f18de88e25321c01c1074633bf"
+        "sha256": "63af43ef4c440388ee729babd51d3d24ede6608c6c6df10b87c7a4bcf06cedc2"
       },
       "declared_rogues_version": "3.1.3.004+26.2",
       "exit_code": 0,
@@ -494,6 +494,7 @@
   ],
   "not_covered": [
     "combat damage with a player",
+    "client-side registry decode of known-pack entries (clients decode their own Rogues copy)",
     "full-pack behavior with every other installed mod",
     "deployment to the dev or live server"
   ]

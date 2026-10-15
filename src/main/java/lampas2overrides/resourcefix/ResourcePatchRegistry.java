@@ -2,6 +2,7 @@ package lampas2overrides.resourcefix;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -142,9 +143,9 @@ public final class ResourcePatchRegistry {
 			"lampas2-overrides/resource-patches/wilderwild/4.3/data/wilderwild/worldgen/configured_feature/stone_pool.json"
 		));
 
-		// 6. Rogues 3.1.3.003+26.2 - Sharpness rewritten as +8% base attack damage per level, which
-		// multiplies every other damage bonus. Restores flat Sharpness (Apothic Enchanting's definition)
-		// and keeps the damage exclusive set so Sharpness cannot stack with Smite or Bane of Arthropods.
+		// 6. Rogues 3.1.3.003+26.2 - Sharpness rewritten as +8% per level of base attack damage plus flat
+		// attack-damage modifiers (weapon damage, Strength). Restores flat Sharpness (Apothic Enchanting's
+		// definition) and keeps the damage exclusive set so Sharpness cannot stack with Smite or Bane.
 		register(new ResourcePatch(
 			"rogues",
 			"3.1.3.003+26.2",
@@ -156,7 +157,10 @@ public final class ResourcePatchRegistry {
 
 	private static void register(ResourcePatch patch) {
 		ResourcePatchKey key = ResourcePatchKey.of(patch.modId(), patch.expectedVersion(), patch.resourcePath());
-		PATCHES.put(key, patch);
+		// Keys are normalized, so two spellings of one version would otherwise replace each other silently.
+		if (PATCHES.put(key, patch) != null) {
+			throw new IllegalStateException("Duplicate resource patch " + key);
+		}
 	}
 
 	public static ResourcePatch findPatch(String modId, String version, String resourcePath) {
@@ -172,6 +176,17 @@ public final class ResourcePatchRegistry {
 			}
 		}
 		return null;
+	}
+
+	/** Registered versions, as declared, of every patch for this mod resource. */
+	public static List<String> registeredVersions(String modId, String resourcePath) {
+		String normMod = modId.toLowerCase();
+		String normPath = ResourcePatchResolver.normalizePath(resourcePath).toLowerCase();
+		return PATCHES.entrySet().stream()
+			.filter(entry -> entry.getKey().modId().equals(normMod) && entry.getKey().resourcePath().equals(normPath))
+			.map(entry -> entry.getValue().expectedVersion())
+			.sorted()
+			.toList();
 	}
 
 	public static Map<ResourcePatchKey, ResourcePatch> getAllPatches() {

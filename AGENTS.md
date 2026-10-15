@@ -142,7 +142,9 @@ village villagers, iron golems, and cats) generate normally.
 
 **Live testing and deployment** are managed declaratively via `lampas-pipeline` (`../lampas-pipeline`):
 
-1. Copy the built jar `build/libs/lampas2-overrides-1.0.1.jar` to `../lampas-pipeline/pack/custom/lampas2-overrides-1.0.1.jar`.
+1. Copy the built jar `build/libs/lampas2-overrides-<version>.jar` to `../lampas-pipeline/pack/custom/`. The
+   pack entry (`pack/mods/lampas2-overrides-*.toml`) names the jar file, so a version bump also needs that
+   entry replaced (see the `lampas-custom-jar-deploy` workflow); copying the file alone keeps the old jar.
 2. In `../lampas-pipeline`, run:
    ```bash
    bun run lampasctl resolve
@@ -258,16 +260,22 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   `3.1.3.3+26.2` (that is what the server's mod list prints). `ResourcePatchKey` normalizes registered
   versions through `Version.parse(...).getFriendlyString()`; register the version the upstream
   `fabric.mod.json` declares, and the `Applied …` line prints that registered form.
-- **Sharpness belongs to Rogues on this pack.** Fabric orders mod data packs alphabetically by mod ID
-  on every load, so Rogues' `data/minecraft/enchantment/sharpness.json` (+8% base attack damage per
-  level) beats Apothic Enchanting's and vanilla's, and a Lampas data pack sorting before `rogues` cannot
-  win. The resource patch replaces Rogues' file with Apothic Enchanting's flat definition plus
+- **Sharpness belongs to Rogues on this pack.** Fabric API orders mod data packs alphabetically by mod ID
+  unless a mod declares `fabric:resource_load_order`, so Rogues' `data/minecraft/enchantment/sharpness.json`
+  (+8% per level of base attack damage plus flat attack-damage modifiers) beats Apothic Enchanting's and
+  vanilla's. The resource patch is used instead of a later-loading pack because it is version- and
+  SHA-gated and WARNs when Rogues changes. It replaces Rogues' file with Apothic Enchanting's flat definition plus
   `exclusive_set: #minecraft:exclusive_set/damage`, which makes it equal to vanilla 26.2 Sharpness.
   Apothic Enchanting's `exclusive_set/damage` tag carries a NeoForge-style `remove: [minecraft:sharpness]`
   that Fabric ignores: the probe decoded the tag with Sharpness still in it, so vanilla Smite and Bane
   also exclude Sharpness. Keep Sharpness' own `exclusive_set` so the exclusion holds if that tag changes.
   The registry loader reads data through `listResources`; `getResource` serves direct lookups. The
   resource mixin wraps both, and `tools/rogues-sharpness-probe/run.py` checks both on a dedicated server.
+- **Patches to synced registries must also run on clients.** For a registry entry from a pack the client
+  also has (a known pack, which Fabric API declares for each mod pack), the server sends no contents and
+  the client decodes its own copy through `getResource`. A client without the matching overrides version
+  therefore shows Rogues' Sharpness in tooltips while the server applies flat damage. The pipeline ships
+  this jar with `side = "both"`; the client path has not been probed.
 - **FrozenLib wind compatibility is retired for the latest supported pair.**
   FrozenLib 3.0 clears `loadedExtensions` during reset and Wilder Wild 4.3 applies
   cloud sync to its existing extension. The unpatched isolated client no longer
