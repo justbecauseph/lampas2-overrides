@@ -141,6 +141,17 @@ public final class ResourcePatchRegistry {
 			"59cf59a1c1e86f9627361e1dcec3250b81d535c6e84ff7c3b2950d9b90f2efe4",
 			"lampas2-overrides/resource-patches/wilderwild/4.3/data/wilderwild/worldgen/configured_feature/stone_pool.json"
 		));
+
+		// 6. Rogues 3.1.3.003+26.2 - Sharpness rewritten as +8% base attack damage per level, which
+		// multiplies every other damage bonus. Restores flat Sharpness (Apothic Enchanting's definition)
+		// and keeps the damage exclusive set so Sharpness cannot stack with Smite or Bane of Arthropods.
+		register(new ResourcePatch(
+			"rogues",
+			"3.1.3.003+26.2",
+			"data/minecraft/enchantment/sharpness.json",
+			"fe176357898633059d7e37643e19115d25352725a0015630f92f39b2f96f620e",
+			"lampas2-overrides/resource-patches/rogues/3.1.3.003+26.2/data/minecraft/enchantment/sharpness.json"
+		));
 	}
 
 	private static void register(ResourcePatch patch) {
@@ -161,10 +172,6 @@ public final class ResourcePatchRegistry {
 			}
 		}
 		return null;
-	}
-
-	public static boolean hasPatchForResource(String modId, String resourcePath) {
-		return findPatch(modId, resourcePath) != null;
 	}
 
 	public static Map<ResourcePatchKey, ResourcePatch> getAllPatches() {

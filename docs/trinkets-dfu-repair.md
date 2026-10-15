@@ -43,7 +43,7 @@ probe with the exact audit artifact:
 ```powershell
 ./gradlew -I tools/trinkets-dfu-probe/classpath.init.gradle trinketsProbeClasspath
 .\tools\trinkets-dfu-probe\run.ps1 `
-  -ProductionJar build\libs\lampas2-overrides-1.0.0.jar `
+  -ProductionJar build\libs\lampas2-overrides-1.0.1.jar `
   -TrinketsJar C:\path\to\trinkets-4.1.1+26.2.jar
 ```
 

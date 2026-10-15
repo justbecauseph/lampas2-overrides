@@ -14,9 +14,16 @@ import java.lang.reflect.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.config.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,6 +43,10 @@ import net.minecraft.nbt.NbtAccounter;
 
 public class ResourcePatchResolverTest {
 
+	private static final String ROGUES = "rogues";
+	private static final String ROGUES_VERSION = "3.1.3.003+26.2";
+	private static final String SHARPNESS = "data/minecraft/enchantment/sharpness.json";
+
 	@BeforeEach
 	void setUp() {
 		ResourcePatchResolver.clearLogHistoryForTests();
@@ -43,7 +54,7 @@ public class ResourcePatchResolverTest {
 
 	@Test
 	void registryContainsAllTargetPatches() {
-		assertEquals(18, ResourcePatchRegistry.getAllPatches().size());
+		assertEquals(19, ResourcePatchRegistry.getAllPatches().size());
 
 		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", "pack.mcmeta"));
 		assertNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", "data/formationsoverworld/loot_table/stone_tower/smithing.json"));
@@ -55,6 +66,9 @@ public class ResourcePatchResolverTest {
 			"data/wilderwild/worldgen/configured_feature/stone_pool.json"));
 		assertNull(ResourcePatchRegistry.findPatch("wilderwild", "4.3-mc26.2",
 			"data/wilderwild/worldgen/configured_feature/stone_pool.json"));
+		assertNotNull(ResourcePatchRegistry.findPatch(ROGUES, ROGUES_VERSION, SHARPNESS));
+		assertNull(ResourcePatchRegistry.findPatch(ROGUES, "3.1.3.004+26.2", SHARPNESS));
+		assertNull(ResourcePatchRegistry.findPatch("apothic_enchanting", "3.0.1", SHARPNESS));
 	}
 
 	@Test
@@ -93,6 +107,8 @@ public class ResourcePatchResolverTest {
 					assertEquals(14, config.getAsJsonObject("xz_radius").get("max_inclusive").getAsInt());
 					assertEquals(4, config.get("depth").getAsInt());
 					assertEquals(2, config.get("vertical_range").getAsInt());
+				} else if (patch.resourcePath().equals(SHARPNESS)) {
+					assertFlatExclusiveSharpness(json);
 				}
 			}
 		}
@@ -172,6 +188,107 @@ public class ResourcePatchResolverTest {
 	}
 
 	@Test
+	void appliesRoguesSharpnessPatchWithExactVersionAndHash() throws IOException {
+		byte[] original = readFixtureResource("upstream/rogues/" + ROGUES_VERSION + "/" + SHARPNESS);
+		assertEquals("fe176357898633059d7e37643e19115d25352725a0015630f92f39b2f96f620e",
+			ResourcePatchResolver.sha256Hex(original));
+		JsonObject upstream = JsonParser.parseString(new String(original, StandardCharsets.UTF_8)).getAsJsonObject();
+		JsonObject upstreamModifier = upstream.getAsJsonObject("effects")
+			.getAsJsonArray("minecraft:attributes").get(0).getAsJsonObject();
+		assertEquals("add_multiplied_base", upstreamModifier.get("operation").getAsString(),
+			"Fixture must be Rogues' percentage Sharpness");
+		assertEquals(0.08, upstreamModifier.getAsJsonObject("amount").get("per_level_above_first").getAsDouble());
+
+		ResourcePatch patch = ResourcePatchRegistry.findPatch(ROGUES, ROGUES_VERSION, SHARPNESS);
+		assertNotNull(patch);
+		assertEquals("lampas2-overrides/resource-patches/rogues/3.1.3.003+26.2/data/minecraft/enchantment/sharpness.json",
+			patch.replacementPath());
+		// Fabric Loader drops leading zeros from numeric components: the live server lists "rogues 3.1.3.3+26.2".
+		ModContainer rogues = createMockModContainer(ROGUES, ROGUES_VERSION);
+		assertEquals("3.1.3.3+26.2", rogues.getMetadata().getVersion().getFriendlyString());
+		try (LogCapture logs = LogCapture.attach()) {
+			IoSupplier<InputStream> patched = ResourcePatchResolver.resolve(
+				rogues,
+				SHARPNESS,
+				() -> new ByteArrayInputStream(original)
+			);
+			assertNotNull(patched);
+			try (InputStream in = patched.get()) {
+				assertFlatExclusiveSharpness(JsonParser.parseString(new String(in.readAllBytes(), StandardCharsets.UTF_8))
+					.getAsJsonObject());
+			}
+			assertTrue(logs.has(Level.INFO,
+				"Applied rogues 3.1.3.003+26.2 compatibility resource: data/minecraft/enchantment/sharpness.json"),
+				"Expected the applied line: " + logs.messages());
+		}
+	}
+
+	@Test
+	void warnsAndKeepsUpstreamSharpnessForUnregisteredRoguesVersion() throws IOException {
+		byte[] original = readFixtureResource("upstream/rogues/" + ROGUES_VERSION + "/" + SHARPNESS);
+		// Declared fabric.mod.json version, then the form Fabric Loader reports for it.
+		String[][] unknownVersions = {
+			{"3.1.3.004+26.2", "3.1.3.4+26.2"},
+			{"3.1.3.003+26.1", "3.1.3.3+26.1"},
+			{"3.1.3.003", "3.1.3.3"},
+			{"3.1.3.003-beta+26.2", "3.1.3.3-beta+26.2"}
+		};
+		for (String[] unknown : unknownVersions) {
+			String unknownVersion = unknown[0];
+			try (LogCapture logs = LogCapture.attach()) {
+				assertNull(ResourcePatchResolver.resolve(
+					createMockModContainer(ROGUES, unknownVersion),
+					SHARPNESS,
+					() -> new ByteArrayInputStream(original)
+				), "Unregistered Rogues version must remain unpatched: " + unknownVersion);
+				assertTrue(logs.has(Level.WARN, "Skipping rogues resource patch for " + SHARPNESS
+						+ ": version " + unknown[1] + " is not registered (patch targets " + ROGUES_VERSION + ")"),
+					"Expected a WARN naming the unregistered version: " + logs.messages());
+				assertFalse(logs.has(Level.INFO, "is not registered"), "Version mismatch must not log at INFO");
+			}
+		}
+	}
+
+	@Test
+	void warnsAndKeepsUpstreamSharpnessWhenRoguesResourceChanges() throws IOException {
+		byte[] tampered = readFixtureResource("upstream/rogues/" + ROGUES_VERSION + "/" + SHARPNESS).clone();
+		tampered[tampered.length - 1] = (byte) ' ';
+		try (LogCapture logs = LogCapture.attach()) {
+			IoSupplier<InputStream> resolved = ResourcePatchResolver.resolve(
+				createMockModContainer(ROGUES, ROGUES_VERSION),
+				SHARPNESS,
+				() -> new ByteArrayInputStream(tampered)
+			);
+			assertNotNull(resolved);
+			try (InputStream in = resolved.get()) {
+				assertArrayEquals(tampered, in.readAllBytes(), "A changed resource must pass through unchanged");
+			}
+			assertTrue(logs.has(Level.WARN, "SHA-256 mismatch (expected fe176357898633059d7e37643e19115d25352725a0015630f92f39b2f96f620e"),
+				"Expected the SHA-256 mismatch WARN: " + logs.messages());
+		}
+	}
+
+	@Test
+	void roguesSharpnessReplacementIsApothicEnchantingDefinitionWithDamageExclusiveSet() throws IOException {
+		Path aeJar = Path.of("../lampas-server-fabric/mods/ApothicEnchanting-26.2-3.0.1.jar");
+		if (!Files.exists(aeJar)) {
+			return;
+		}
+		JsonObject expected;
+		try (ZipFile zf = new ZipFile(aeJar.toFile());
+				InputStream in = zf.getInputStream(zf.getEntry(SHARPNESS))) {
+			expected = JsonParser.parseString(new String(in.readAllBytes(), StandardCharsets.UTF_8)).getAsJsonObject();
+		}
+		assertFalse(expected.has("exclusive_set"), "Apothic Enchanting 3.0.1 Sharpness is expected to omit exclusive_set");
+		expected.addProperty("exclusive_set", "#minecraft:exclusive_set/damage");
+
+		ResourcePatch patch = ResourcePatchRegistry.findPatch(ROGUES, ROGUES_VERSION, SHARPNESS);
+		try (InputStream in = getClass().getClassLoader().getResourceAsStream(patch.replacementPath())) {
+			assertEquals(expected, JsonParser.parseString(new String(in.readAllBytes(), StandardCharsets.UTF_8)));
+		}
+	}
+
+	@Test
 	void skipsPatchWhenHashDoesNotMatch() throws IOException {
 		ModContainer mod = createMockModContainer("formationsoverworld", "1.0.5+c");
 		byte[] unexpectedUpstreamBytes = "{\"pack\":{\"pack_format\":48}}".getBytes(StandardCharsets.UTF_8);
@@ -224,7 +341,9 @@ public class ResourcePatchResolverTest {
 			{"formationsoverworld-1.0.5c-mc1.21+.jar", "formationsoverworld", "1.0.5+c", "pack.mcmeta"},
 			{"grim-kingdoms-lost-structures-ruins-2.0.3.jar", "mr_grim_kingdomsloststructuresruins", "2.0.3", "pack.mcmeta"},
 			{"WilderWild-4.3-mc26.2-fabric.jar", "wilderwild", "4.3", "data/wilderwild/worldgen/configured_feature/stone_pool.json",
-				"9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c"}
+				"9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c"},
+			{"rogues-fabric-3.1.3.003+26.2.jar", ROGUES, ROGUES_VERSION, SHARPNESS,
+				"77bdff881c01011bff6e6e722a1f47dc01ca7d377a1f08231d305fc11b08f113"}
 		};
 
 		for (String[] check : jarChecks) {
@@ -305,6 +424,67 @@ public class ResourcePatchResolverTest {
 			try (InputStream in = ResourcePatchResolver.resolve(mod, path, () -> new ByteArrayInputStream(mismatch)).get()) {
 				assertArrayEquals(mismatch, in.readAllBytes());
 			}
+		}
+	}
+
+	/** Vanilla-style Sharpness: flat +1 damage, +0.5 per level above the first, exclusive with the damage set. */
+	private static void assertFlatExclusiveSharpness(JsonObject json) {
+		JsonObject effects = json.getAsJsonObject("effects");
+		assertEquals(1, effects.size(), "Only the flat damage effect may remain: " + effects);
+		assertFalse(effects.has("minecraft:attributes"), "The +8% attack damage modifier must be gone");
+		JsonArray damage = effects.getAsJsonArray("minecraft:damage");
+		assertEquals(1, damage.size());
+		JsonObject effect = damage.get(0).getAsJsonObject().getAsJsonObject("effect");
+		assertEquals("minecraft:add", effect.get("type").getAsString());
+		JsonObject value = effect.getAsJsonObject("value");
+		assertEquals("minecraft:linear", value.get("type").getAsString());
+		assertEquals(1.0, value.get("base").getAsDouble());
+		assertEquals(0.5, value.get("per_level_above_first").getAsDouble());
+		assertEquals("#minecraft:exclusive_set/damage", json.get("exclusive_set").getAsString());
+		assertEquals(5, json.get("max_level").getAsInt());
+		assertEquals("#minecraft:enchantable/sharp_weapon", json.get("supported_items").getAsString());
+	}
+
+	/** Captures events from the resolver's Log4j logger, the SLF4J binding Minecraft ships. */
+	private static final class LogCapture extends AbstractAppender implements AutoCloseable {
+		private static final String LOGGER_NAME = "lampas2-overrides/resource-fix";
+		private final List<LogEvent> events = new CopyOnWriteArrayList<>();
+		private final org.apache.logging.log4j.core.Logger logger;
+		private final Level previousLevel;
+
+		private LogCapture() {
+			super("lampas2-resource-fix-capture", null, null, true, Property.EMPTY_ARRAY);
+			this.logger = (org.apache.logging.log4j.core.Logger) LogManager.getLogger(LOGGER_NAME);
+			this.previousLevel = logger.getLevel();
+		}
+
+		static LogCapture attach() {
+			LogCapture capture = new LogCapture();
+			capture.start();
+			capture.logger.addAppender(capture);
+			capture.logger.setLevel(Level.ALL);
+			return capture;
+		}
+
+		@Override
+		public void append(LogEvent event) {
+			events.add(event.toImmutable());
+		}
+
+		boolean has(Level level, String fragment) {
+			return events.stream().anyMatch(event -> event.getLevel() == level
+				&& event.getMessage().getFormattedMessage().contains(fragment));
+		}
+
+		List<String> messages() {
+			return events.stream().map(event -> event.getLevel() + " " + event.getMessage().getFormattedMessage()).toList();
+		}
+
+		@Override
+		public void close() {
+			logger.removeAppender(this);
+			logger.setLevel(previousLevel);
+			stop();
 		}
 	}
 

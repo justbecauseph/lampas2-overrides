@@ -12,7 +12,7 @@ python -I tools/illagerblabber-probe/run.py --label control-no-blabber --baselin
 Each run recreates `build/illagerblabber-probe/<label>/`. It copies the Fabric server launcher, libraries
 and version files from `run/phase2a-server-smoke`, and takes IllagerBlabber, Fabric API and spark from the
 `lampas-pipeline` Modrinth cache. IllagerBlabber's SHA-256 is checked before copying. Unless
-`--baseline` is set, it also adds `build/libs/lampas2-overrides-1.0.0.jar` (override with
+`--baseline` is set, it also adds `build/libs/lampas2-overrides-1.0.1.jar` (override with
 `--overrides`). The server is a flat, offline, player-less world on `127.0.0.1:25679`.
 
 Live instance counts for `IllagerVoiceManager` and `Pillager` come from `jcmd GC.class_histogram`,

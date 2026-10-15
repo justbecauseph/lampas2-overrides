@@ -1,0 +1,13 @@
+allprojects {
+    afterEvaluate {
+        // Writes the main compile classpath (Minecraft, Fabric Loader and Fabric API modules)
+        // that run.py compiles the probe mod against.
+        tasks.register('roguesSharpnessProbeClasspath') {
+            doLast {
+                def output = file('build/rogues-sharpness-probe/compile-classpath.txt')
+                output.parentFile.mkdirs()
+                output.text = tasks.compileJava.classpath.asPath
+            }
+        }
+    }
+}

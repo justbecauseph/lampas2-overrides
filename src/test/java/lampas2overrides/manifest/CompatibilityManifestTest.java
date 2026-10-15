@@ -59,6 +59,13 @@ public class CompatibilityManifestTest {
 		assertEquals("9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c",
 			wilderWild43.get("artifact_sha256").getAsString());
 
+		JsonObject rogues = targets.getAsJsonObject("rogues").getAsJsonObject("versions").getAsJsonObject("3.1.3.003+26.2");
+		assertEquals("patched", rogues.get("status").getAsString());
+		assertEquals("fe176357898633059d7e37643e19115d25352725a0015630f92f39b2f96f620e",
+			rogues.getAsJsonObject("resources").get("data/minecraft/enchantment/sharpness.json").getAsString());
+		assertEquals("77bdff881c01011bff6e6e722a1f47dc01ca7d377a1f08231d305fc11b08f113",
+			rogues.get("artifact_sha256").getAsString());
+
 		JsonObject puzzles = targets.getAsJsonObject("puzzleslib").getAsJsonObject("versions");
 		assertTrue(puzzles.has("26.2.5"));
 

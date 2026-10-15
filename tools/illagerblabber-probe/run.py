@@ -81,7 +81,7 @@ def main():
     parser.add_argument("--heap-dump", action="store_true", help="write a live-object heap dump after the kill")
     parser.add_argument("--omit", action="append", default=[], choices=sorted(MODS),
                         help="leave a dependency out, for control runs")
-    parser.add_argument("--overrides", default=str(REPO / "build" / "libs" / "lampas2-overrides-1.0.0.jar"))
+    parser.add_argument("--overrides", default=str(REPO / "build" / "libs" / "lampas2-overrides-1.0.1.jar"))
     args = parser.parse_args()
 
     root = REPO / "build" / "illagerblabber-probe" / args.label

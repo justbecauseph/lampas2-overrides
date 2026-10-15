@@ -7,7 +7,7 @@ Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-ac
 entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
 Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, the version-gated
-IllagerBlabber 1.1.0 voice-registry leak fix, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3). The first two
+IllagerBlabber 1.1.0 voice-registry leak fix, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3), and the Rogues 3.1.3.003+26.2 Sharpness definition. The first two
 features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, and Beautiful item models are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium datapacks, IllagerBlabber registry fix, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
@@ -69,6 +69,8 @@ disable an unrelated feature.
 | Grim Kingdoms 2.0.3 | `../lampas-server-fabric/mods/grim-kingdoms-lost-structures-ruins-2.0.3.jar` |
 | Pyrite 0.18.3+26.2 | `../lampas-server-fabric/mods/pyrite-0.18.3+26.2-fabric.jar` |
 | Easter's Delight 1.3.1 | `../lampas-server-fabric/mods/eastersdelight-fabric-26.2-1.3.1.jar` |
+| Rogues 3.1.3.003+26.2 | `../lampas-server-fabric/mods/rogues-fabric-3.1.3.003+26.2.jar` |
+| Apothic Enchanting 3.0.1 | `../lampas-server-fabric/mods/ApothicEnchanting-26.2-3.0.1.jar` (source of the flat Sharpness definition) |
 | Figura sources | `../figura-port/common/src/main/java/org/figuramc/figura/` |
 | ReplayMod sources | `../ReplayMod/src/main/java/com/replaymod/` — preprocessed, read `//#if MC>=…` blocks carefully |
 | Minecraft 26.2 sources | `../figura-port/.mcsources/` — decompiled, authoritative |
@@ -140,7 +142,7 @@ village villagers, iron golems, and cats) generate normally.
 
 **Live testing and deployment** are managed declaratively via `lampas-pipeline` (`../lampas-pipeline`):
 
-1. Copy the built jar `build/libs/lampas2-overrides-1.0.0.jar` to `../lampas-pipeline/pack/custom/lampas2-overrides-1.0.0.jar`.
+1. Copy the built jar `build/libs/lampas2-overrides-1.0.1.jar` to `../lampas-pipeline/pack/custom/lampas2-overrides-1.0.1.jar`.
 2. In `../lampas-pipeline`, run:
    ```bash
    bun run lampasctl resolve
@@ -249,6 +251,23 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   release, and each patch fails closed on a changed SHA-256. Formations Overworld 1.0.5+c requires only the root
   `pack.mcmeta` patch because its audited loot tables contain no exact `minecraft:chain` item reference. Candidate
   provenance is recorded in `docs/evidence/formations-overworld-1.0.5c.json`.
+  A registered patch whose mod is present at another version logs WARN, like a SHA-256 mismatch, so an
+  upstream update cannot silently drop a patch.
+- **Fabric Loader drops leading zeros from version components.** It rebuilds a semantic version's
+  friendly string from parsed integers, so Rogues' declared `3.1.3.003+26.2` reaches the resolver as
+  `3.1.3.3+26.2` (that is what the server's mod list prints). `ResourcePatchKey` normalizes registered
+  versions through `Version.parse(...).getFriendlyString()`; register the version the upstream
+  `fabric.mod.json` declares, and the `Applied …` line prints that registered form.
+- **Sharpness belongs to Rogues on this pack.** Fabric orders mod data packs alphabetically by mod ID
+  on every load, so Rogues' `data/minecraft/enchantment/sharpness.json` (+8% base attack damage per
+  level) beats Apothic Enchanting's and vanilla's, and a Lampas data pack sorting before `rogues` cannot
+  win. The resource patch replaces Rogues' file with Apothic Enchanting's flat definition plus
+  `exclusive_set: #minecraft:exclusive_set/damage`, which makes it equal to vanilla 26.2 Sharpness.
+  Apothic Enchanting's `exclusive_set/damage` tag carries a NeoForge-style `remove: [minecraft:sharpness]`
+  that Fabric ignores: the probe decoded the tag with Sharpness still in it, so vanilla Smite and Bane
+  also exclude Sharpness. Keep Sharpness' own `exclusive_set` so the exclusion holds if that tag changes.
+  The registry loader reads data through `listResources`; `getResource` serves direct lookups. The
+  resource mixin wraps both, and `tools/rogues-sharpness-probe/run.py` checks both on a dedicated server.
 - **FrozenLib wind compatibility is retired for the latest supported pair.**
   FrozenLib 3.0 clears `loadedExtensions` during reset and Wilder Wild 4.3 applies
   cloud sync to its existing extension. The unpatched isolated client no longer
@@ -424,9 +443,9 @@ resourcefix/
   ResourcePatchRegistry     registry of defective mod resources with SHA-256 fingerprints
   ResourcePatchResolver     runtime virtual patch resolver
   ResourcePatch             immutable patch rule record
-  Includes the version- and SHA-gated Wilder Wild 4.3 stone-pool radius repair
+  Includes the version- and SHA-gated Wilder Wild 4.3 stone-pool radius repair and Rogues Sharpness replacement
 lampas2-overrides/resource-patches/
-  <mod>/<version>/          replacement resource assets, e.g. wilderwild/4.3/, formationsoverworld/1.0.5+c/
+  <mod>/<version>/          replacement resource assets, e.g. wilderwild/4.3/, rogues/3.1.3.003+26.2/
 customname/
   CustomNameMixinPlugin     applies only to Custom Name 0.4.4-26.2 (common-side, server-safe)
   mixin/                    forces spaceAllowed=true in playerNameArgumentToComponent's nameArgumentToComponent call

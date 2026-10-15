@@ -113,7 +113,7 @@ inventory (BetterEnd and BetterNether `26.201.3`):
   -InventoryPath build/pipeline-validation-2026-10-13/inventory.json
 ./tools/boat-water-mask-probe/run.ps1 -Mode patched -Strict `
   -InventoryPath build/pipeline-validation-2026-10-13/inventory.json `
-  -OverrideArtifactPath build/libs/lampas2-overrides-1.0.0.jar
+  -OverrideArtifactPath build/libs/lampas2-overrides-1.0.1.jar
 ```
 
 The runner launches installed Minecraft and Fabric Loader through plain `KnotClient`; it does

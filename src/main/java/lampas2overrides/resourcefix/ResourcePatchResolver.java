@@ -48,11 +48,13 @@ public final class ResourcePatchResolver {
 		String actualVersion = modContainer.getMetadata().getVersion().getFriendlyString();
 		ResourcePatch patch = ResourcePatchRegistry.findPatch(modId, actualVersion, normalizedPath);
 		if (patch == null) {
-			if (ResourcePatchRegistry.hasPatchForResource(modId, normalizedPath)) {
+			// A version change drops the patch, so it must be as visible as a SHA-256 mismatch.
+			ResourcePatch otherVersion = ResourcePatchRegistry.findPatch(modId, normalizedPath);
+			if (otherVersion != null) {
 				String logKey = "ver_unregistered:" + modId + ":" + normalizedPath + ":" + actualVersion;
 				if (LOGGED_KEYS.add(logKey)) {
-					LOGGER.info("{} version {} is not registered for patching resource {}; using upstream resource",
-						modId, actualVersion, normalizedPath);
+					LOGGER.warn("Skipping {} resource patch for {}: version {} is not registered (patch targets {}); using upstream resource",
+						modId, normalizedPath, actualVersion, otherVersion.expectedVersion());
 				}
 			}
 			return null;
@@ -109,8 +111,9 @@ public final class ResourcePatchResolver {
 
 		String logKey = "applied:" + modId + ":" + normalizedPath;
 		if (LOGGED_KEYS.add(logKey)) {
+			// The registered version is the one the upstream fabric.mod.json declares.
 			LOGGER.info("Applied {} {} compatibility resource: {}",
-				modId, actualVersion, normalizedPath);
+				modId, patch.expectedVersion(), normalizedPath);
 		}
 
 		return () -> new ByteArrayInputStream(replacementBytes);

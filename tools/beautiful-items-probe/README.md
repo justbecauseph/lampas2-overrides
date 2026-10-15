@@ -6,7 +6,7 @@ Run from the repository root:
 
 ```powershell
 python tools/beautiful-items-probe/run.py baseline
-python tools/beautiful-items-probe/run.py patched --override-jar build/libs/lampas2-overrides-1.0.0.jar
+python tools/beautiful-items-probe/run.py patched --override-jar build/libs/lampas2-overrides-1.0.1.jar
 ```
 
 `--minecraft-root` can select another installed `.minecraft-lampas` root. By default the runner uses `%APPDATA%\.minecraft-lampas`. `--timeout-seconds` defaults to 180. Java 25 and Python must be available on `PATH`.

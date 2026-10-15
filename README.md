@@ -16,8 +16,9 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Gravestones death inscription and glow](#gravestones-death-inscription-and-glow) | Gravestones | Suppresses technical death grave text and renders a glowing outline only on your own graves |
 | [Jade nameplates and Custom Name](#jade-nameplates-and-custom-name) | Client Jade; server TAB name sync | Suppresses vanilla in-world entity/player nameplates and shows server-synced player display names in Jade |
 | [Custom Name multi-word names](#custom-name-multi-word-names) | Custom Name 0.4.4-26.2 | Permits spaces in nickname, prefix, and suffix commands for non-operators |
-| [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3 | Transparently repairs malformed `pack.mcmeta` formats and worldgen resources at runtime |
+| [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3, Rogues 3.1.3.003+26.2 | Transparently repairs malformed `pack.mcmeta` formats, worldgen resources and Rogues' Sharpness at runtime |
 | [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.3 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
+| [Rogues Sharpness](#rogues-sharpness) | Rogues 3.1.3.003+26.2 | Restores flat Sharpness in place of Rogues' +8% base attack damage per level |
 | [Bee and spawner structure DFU validation](#bee-and-spawner-structure-dfu-validation) | Exact Trek and Stoneholm fixtures | Historical run on the removed Trinkets 4.1.0 profile; re-validation on 4.1.1 is pending |
 | [Boat water-mask compatibility](#boat-water-mask-compatibility) | EMF 3.3.11 + audited boat providers | Restores the vanilla water mask for plain hulls when the selected Fresh Animations mask is incompatible |
 | [Better Lib demo villager suppression](#better-lib-demo-villager-suppression) | Better Lib | Suppresses hardcoded demo villager registration that causes RemapException registry sync disconnects |
@@ -273,6 +274,39 @@ FrozenLib 3.0.1. The resource mixin applied, the selected stone-pool JSON matche
 and Minecraft decoded its configured-feature radius as 12–14 before normal shutdown.
 Fresh cave generation with C2ME/Lithium and full-pack gameplay remain unverified.
 
+## Rogues Sharpness
+
+Rogues `3.1.3.003+26.2` (RPG Series) ships `data/minecraft/enchantment/sharpness.json` with a
+`minecraft:attributes` effect: +8% of base attack damage per level (`add_multiplied_base`, linear
+0.08 + 0.08 per level above the first). That modifier multiplies every other damage bonus. Fabric
+orders mod data packs alphabetically by mod ID on every load, so Rogues' file overrides Apothic
+Enchanting's and vanilla's, and a Lampas data pack that sorts before `rogues` cannot win.
+
+The virtual resource patch replaces Rogues' file with Apothic Enchanting 3.0.1's Sharpness (flat
+`minecraft:damage` add, 1.0 + 0.5 per level above the first; Apothic Enchanting's costs, weight and
+max level 5) plus `"exclusive_set": "#minecraft:exclusive_set/damage"`, which Apothic Enchanting's file
+omits. The result is semantically equal to vanilla 26.2 Sharpness. Apothic Enchanting also ships an
+`exclusive_set/damage` tag with a NeoForge-style `remove` of Sharpness; Fabric ignores `remove`, so the
+decoded tag still contains Sharpness and Smite and Bane of Arthropods also exclude it through their
+own sets. The patch requires mod ID `rogues`, version `3.1.3.003+26.2` and the original resource
+SHA-256 `fe176357…f620e`; another release or a changed file keeps Rogues' resource and logs WARN.
+
+Verification on 16 October 2026: unit tests cover the exact version and hash gate, the WARN on an
+unregistered version or changed resource, the installed Rogues JAR (SHA-256 `77bdff88…08f113`) and
+equality with Apothic Enchanting's file plus the exclusive set. The production-JAR dedicated-server
+probe (`tools/rogues-sharpness-probe/run.py`) ran Rogues, Apothic Enchanting and their dependency
+closure from the deployed server's mods directory:
+
+| Run | Decoded Sharpness | Rogues pack `getResource` / `listResources` | Log |
+|---|---|---|---|
+| Without overrides | `minecraft:attributes` +8% `add_multiplied_base`, no flat damage | original `fe176357…` | — |
+| With `lampas2-overrides-1.0.1.jar` | one `minecraft:damage` add: +1.0, 1.5, 2.0, 2.5, 3.0 at levels 1–5; no attribute effect; `exclusive_set` `#minecraft:exclusive_set/damage`; incompatible with Smite and Bane | replacement `b1b06c64…` on both | `Applied rogues 3.1.3.003+26.2 compatibility resource: data/minecraft/enchantment/sharpness.json` |
+| Rogues declared as `3.1.3.004+26.2` | unchanged Rogues +8% `minecraft:attributes` | original `fe176357…` | WARN `Skipping rogues resource patch for data/minecraft/enchantment/sharpness.json: version 3.1.3.4+26.2 is not registered (patch targets 3.1.3.003+26.2); using upstream resource` |
+
+The resource manager's top `sharpness.json` came from the `rogues` pack in every run, and the registry
+loader's `listResources` path decoded the replacement. Evidence: `docs/evidence/rogues-sharpness.json`.
+Damage in combat and full-pack behavior with every other mod are not covered by the probe.
+
 ## Retired FrozenLib wind compatibility
 
 Lampas2 Overrides applies no FrozenLib wind shim: an unpatched isolated client with FrozenLib 3.0 and Wilder Wild 4.3 showed no missing-extension failure. FrozenLib still changes the wind singleton during worker decoding, so general thread safety is not established. The probe and evidence for this observation were removed after commit `d8d84f1` (`docs/wind-state.md`).
@@ -302,7 +336,7 @@ The isolated probe verifies artifact identities from the audited pipeline invent
   -InventoryPath build/pipeline-validation-2026-10-13/inventory.json
 ./tools/boat-water-mask-probe/run.ps1 -Mode patched -Strict `
   -InventoryPath build/pipeline-validation-2026-10-13/inventory.json `
-  -OverrideArtifactPath build/libs/lampas2-overrides-1.0.0.jar
+  -OverrideArtifactPath build/libs/lampas2-overrides-1.0.1.jar
 ```
 
 On 2026-10-13 both modes passed against the pack 2.3.29 inventory: the baseline reproduced the
@@ -380,6 +414,12 @@ Patched mods and resources:
    - **Defect**: Built-in recipe override datapack `resourcepacks/farmersdelight_overrides/pack.mcmeta` is missing `supported_formats`.
    - **Fix**: Replaces `pack.mcmeta` with valid `supported_formats: [48, 107]`.
 5. **Wilder Wild (4.3)**: The stone-pool radius repair is described in [Wilder Wild stone pool](#wilder-wild-stone-pool).
+6. **Rogues (3.1.3.003+26.2)**: The Sharpness replacement is described in [Rogues Sharpness](#rogues-sharpness).
+
+A registered patch whose mod is installed at a different version is skipped with a WARN naming both
+versions, as a changed SHA-256 is. Fabric Loader reports versions without leading zeros in numeric
+components (Rogues `3.1.3.003+26.2` appears as `3.1.3.3+26.2` in the mod list); registered versions are
+compared in that form, so register the version the upstream `fabric.mod.json` declares.
 
 Moog's Voyager Structures 5.1.3 and Moog's Nether Structures 3.1.1 declare `supported_formats: [48, 121]` upstream,
 which covers 26.2's data format 107.1, so neither needs a virtual patch. Better Lib 2.1.2 fixed its POI tag
