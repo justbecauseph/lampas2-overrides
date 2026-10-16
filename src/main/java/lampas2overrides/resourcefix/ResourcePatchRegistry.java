@@ -133,14 +133,14 @@ public final class ResourcePatchRegistry {
 			"lampas2-overrides/resource-patches/eastersdelight/1.3.1/resourcepacks/farmersdelight_overrides/pack.mcmeta"
 		));
 
-		// 5. Wilder Wild 4.3 - stone pool's radius 15 reaches chunk distance 2
+		// 5. Wilder Wild 4.3.3 - stone pool's radius 15 reaches chunk distance 2
 		// under FrozenLib's +1 sampling and four-neighbor exposure checks with C2ME's write radius 1.
 		register(new ResourcePatch(
 			"wilderwild",
-			"4.3",
+			"4.3.3",
 			"data/wilderwild/worldgen/configured_feature/stone_pool.json",
 			"59cf59a1c1e86f9627361e1dcec3250b81d535c6e84ff7c3b2950d9b90f2efe4",
-			"lampas2-overrides/resource-patches/wilderwild/4.3/data/wilderwild/worldgen/configured_feature/stone_pool.json"
+			"lampas2-overrides/resource-patches/wilderwild/4.3.3/data/wilderwild/worldgen/configured_feature/stone_pool.json"
 		));
 
 		// 6. Rogues 3.1.3.003+26.2 - Sharpness rewritten as +8% per level of base attack damage plus flat

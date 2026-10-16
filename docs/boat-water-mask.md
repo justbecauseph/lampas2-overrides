@@ -1,6 +1,6 @@
 # Boat water-mask compatibility
 
-EMF `3.3.11` can replace Minecraft's shared boat water-patch layer with the selected
+EMF `3.3.12` can replace Minecraft's shared boat water-patch layer with the selected
 Fresh Animations `boat_patch.jem` from the audited `FA+All_Extensions-v1.9.2` pack. That
 model uses `var.base_*` animation values from
 Fresh Animations hull models. A plain hull from an audited provider can therefore leave
@@ -22,7 +22,7 @@ The audited provider profiles are:
   `white_stained`, and `yellow_stained`.
 - Promenade `5.6.0`: `boat/{sakura,maple,palm}` and
   `chest_boat/{sakura,maple,palm}`.
-- Wilder Wild `4.3`: `boat/{baobab,willow,cypress,palm,maple}` and
+- Wilder Wild `4.3.3`: `boat/{baobab,willow,cypress,palm,maple}` and
   `chest_boat/{baobab,willow,cypress,palm,maple}`.
 - BetterEnd `26.201.3` with `wover-item` `26.201.3`: `boat/<name>_boat` and
   `chest_boat/<name>_chest_boat` for `dragon_tree`, `helix_tree`, `jellyshroom`,
@@ -44,14 +44,14 @@ Activation requires the immutable EMF version and artifact profile:
 
 | EMF metadata version | EMF artifact SHA-256 |
 |---|---|
-| `3.3.11` | `26b13c2ee755932e74f80ecf6baf16a25582568ae7482cf472751abb98e7b14a` |
+| `3.3.12` | `3a45fb9b028f6e2303438c74e91410223e8af503637956d876a75dd4f9af4af5` |
 
 The mixin plugin accepts only that version with that artifact hash. It rejects unknown, absent,
 unreadable, multi-path, and wrong-hash artifacts. Pyrite additionally
 requires artifact SHA-256
-`6c378632fcadd0501a41bd4af90aec58b8cf03a065f69cd9837160c97ed81831`. Wilder Wild `4.3`
+`6c378632fcadd0501a41bd4af90aec58b8cf03a065f69cd9837160c97ed81831`. Wilder Wild `4.3.3`
 additionally requires artifact SHA-256
-`9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c`. The artifact result
+`dfcc128df21715b20fe86bba18c5b9f731a66d3854269044ead125f6f9c20204`. The artifact result
 is cached per loaded mod container, while selected resources are checked on each renderer
 construction so a resource reload cannot reuse an old pack decision.
 
@@ -67,7 +67,7 @@ JUnit tests cover every provider's positive layer allowlist, entity-style and ra
 version and resource failures, custom-root gate inputs, artifact path and hash checks, and
 geometry equality with the vanilla water patch. The isolated client probe checks the reflective
 EMF roots, actual selected resource provenance, constructor behavior across resource reloads,
-and the resulting renderer model state. No visual or shader run is recorded for EMF `3.3.11`.
+and the resulting renderer model state. No visual or shader run is recorded for EMF `3.3.12`.
 
 ## Verification — 2026-10-06
 
@@ -105,8 +105,9 @@ Wilder Wild `4.3` registers all ten audited `main` layers and constructs `BoatRe
 the same two-argument descriptor for each of them. The production renderer hook and its
 resource, hull and geometry conditions are unchanged.
 
-Reproduce the baseline and then test one built production JAR against the current pack 2.3.29
-inventory (BetterEnd and BetterNether `26.201.3`):
+On 2026-10-13 the baseline and one built production JAR were tested against the then-current pack
+2.3.29 inventory (BetterEnd and BetterNether `26.201.3`). For current runs, use the commands in the
+2026-10-16 section, which pass `-MinecraftRoot`:
 
 ```powershell
 ./tools/boat-water-mask-probe/run.ps1 -Mode baseline -Strict `
@@ -150,3 +151,44 @@ stages passed with exit `0`, and every supported mask matched vanilla geometry: 
 Promenade 6, Wilder Wild 10, BetterEnd 18 and BetterNether 22. The four raft layers,
 BloomingNature, and vanilla boats with EMF hulls kept their masks unchanged. Gameplay, visual
 rendering and shader behavior remain unverified.
+
+## Update — 2026-10-16 EMF 3.3.12 and Wilder Wild 4.3.3
+
+Pack `2.3.44` moved EMF from `3.3.11` to `3.3.12` (SHA-256
+`3a45fb9b028f6e2303438c74e91410223e8af503637956d876a75dd4f9af4af5`) and Wilder Wild from `4.3` to
+`4.3.3` (SHA-256 `dfcc128df21715b20fe86bba18c5b9f731a66d3854269044ead125f6f9c20204`). The profiles
+above now name those versions and hashes; `3.3.11` and `4.3` are retired.
+
+EMF `3.3.12` changes 9 of 302 archive entries: `fabric.mod.json`, `MixinEntity` (its entity variable
+map is now an `Object2FloatOpenHashMap`) and the animation-math compiler (`EMFMath`, `ASMParser`,
+`MultiASMAnimationHandler`, `MathBinaryExpressionComponent`). `EMFModelPartRoot` and
+`EMFDirectoryHandler` are byte-identical, so the reflected `getRoot`, custom-model, custom-animation
+and directory members are unchanged. Wilder Wild `4.3.3` changes only `fabric.mod.json`, the manifest,
+and boat entity/item registration in `WWEntityTypes` and `WWItems`; every client class is byte-identical.
+
+`%APPDATA%\.minecraft-lampas` no longer exists on the workstation, so both runs used a launcher-style
+root assembled with hardlinks from PrismLauncher's `net.minecraft` 26.2, LWJGL 3.4.1 and Fabric Loader
+0.19.5 libraries, passed with `-MinecraftRoot`. Its client JAR (`40896ee9…`), Fabric Loader (`93044e4d…`)
+and Mixin (`1f0ae44d…`) match the 2026-10-06 runs. The pack 2.3.44 inventory selects EMF `3.3.12`,
+ETF `7.2.6`, Wilder Wild `4.3.3`, FrozenLib `3.0.3`, Architectury `21.1.12` and the unchanged
+Pyrite, Promenade, BetterEnd and BetterNether profiles.
+
+```powershell
+./tools/boat-water-mask-probe/run.ps1 -Mode baseline -Strict -MinecraftRoot <root> `
+  -InventoryPath build/pipeline-validation-2026-10-16/inventory.json
+./tools/boat-water-mask-probe/run.ps1 -Mode patched -Strict -MinecraftRoot <root> `
+  -InventoryPath build/pipeline-validation-2026-10-16/inventory.json `
+  -OverrideArtifactPath build/libs/lampas2-overrides-1.0.1.jar
+```
+
+The unpatched baseline (`20261016T055244Z-baseline-e096d3b1`) completed ON-1, OFF, ON-2 and OFF-2 with
+PASS and exit `0`. With FA Extensions enabled, all 108 supported hulls stayed plain while their water
+patch was the selected `boat_patch.jem` EMF root, so the defect persists on EMF `3.3.12`. The patched
+run (`20261016T060110Z-patched-e0ca8048`) used the production JAR with SHA-256
+`2f0ac7bd040d790349927a18537a25c4b28b6f19545abe513bd381bd62fd6caf`. `BoatRendererMixin` applied and
+all four stages passed with exit `0`. With FA enabled, exactly the 108 supported renderers changed to
+vanilla mask geometry (Pyrite 52, Promenade 6, Wilder Wild 10, BetterEnd 18, BetterNether 22); hull
+geometry signatures matched the baseline for all 134 renderers, and the FA-off stages were identical to
+the baseline. Rafts, BloomingNature and vanilla boats were unchanged. Gameplay, visual rendering and
+shader behavior remain unverified. The audit is recorded in
+[`docs/evidence/current-pipeline-audit-2026-10-16.json`](evidence/current-pipeline-audit-2026-10-16.json).

@@ -7,7 +7,7 @@ Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-ac
 entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
 Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, the version-gated
-IllagerBlabber 1.1.0 voice-registry leak fix, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3), and the Rogues 3.1.3.003+26.2 Sharpness definition. The first two
+IllagerBlabber 1.1.0 voice-registry leak fix, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3), and the Rogues 3.1.3.003+26.2 Sharpness definition. The first two
 features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, and Beautiful item models are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium datapacks, IllagerBlabber registry fix, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
@@ -278,7 +278,7 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   this jar with `side = "both"`; the client path has not been probed.
 - **FrozenLib wind compatibility is retired for the latest supported pair.**
   FrozenLib 3.0 clears `loadedExtensions` during reset and Wilder Wild 4.3 applies
-  cloud sync to its existing extension. The unpatched isolated client no longer
+  cloud sync to its existing extension (4.3.3 changes only boat entity/item registration). The unpatched isolated client no longer
   showed the old missing-extension window. FrozenLib still mutates the singleton
   during worker decoding, so this observation does not prove general thread safety.
   Do not restore the old shim without a new failure and exact artifact evidence.
@@ -369,7 +369,7 @@ Zip-level and format work can be tested outside the game entirely; that is how `
 The client-only `boatmask` feature repairs the audited FA/EMF water mask for 108 boat
 layers from Pyrite, Promenade, Wilder Wild, BetterEnd, and BetterNether. Keep plugin
 gates in `BoatWaterMaskProfiles` free of Minecraft model classes. EMF artifact policy is
-an immutable exact version-to-hash map for 3.3.11 only; never accept a digest
+an immutable exact version-to-hash map for 3.3.12 only; never accept a digest
 independently of its metadata version. Fingerprints of loaded artifacts may be cached;
 selected resource provenance must be checked on renderer construction so resource reloads
 reevaluate it. Preserve custom hulls, vanilla animated boats, and the explicit
@@ -385,6 +385,13 @@ and logs under the ignored build directory. The probe's temporary GLFW close gua
 non-daemon pool threads, and fixture-only FrozenLib `packDownloading` setting exist only
 for deterministic probe shutdown; they are not compatibility behavior and must not be
 copied into production code.
+
+The runner's default `--minecraft-root` (`%APPDATA%\.minecraft-lampas`) no longer exists on the
+workstation (16 Oct 2026). It needs `versions/26.2/26.2-client.jar`, a `libraries/` tree holding only
+the 26.2 classpath (it adds every JAR under it), `natives/` and `assets/` with index 32. The
+2026-10-16 runs hardlinked PrismLauncher's `net.minecraft` 26.2, LWJGL 3.4.1, Fabric Loader 0.19.5 and
+intermediary libraries from `PrismLauncher/meta` into such a root and junctioned its `assets`; never point
+it at Prism's whole `libraries` folder, which holds other Minecraft versions.
 
 ```
 compat/
@@ -451,9 +458,9 @@ resourcefix/
   ResourcePatchRegistry     registry of defective mod resources with SHA-256 fingerprints
   ResourcePatchResolver     runtime virtual patch resolver
   ResourcePatch             immutable patch rule record
-  Includes the version- and SHA-gated Wilder Wild 4.3 stone-pool radius repair and Rogues Sharpness replacement
+  Includes the version- and SHA-gated Wilder Wild 4.3.3 stone-pool radius repair and Rogues Sharpness replacement
 lampas2-overrides/resource-patches/
-  <mod>/<version>/          replacement resource assets, e.g. wilderwild/4.3/, rogues/3.1.3.003+26.2/
+  <mod>/<version>/          replacement resource assets, e.g. wilderwild/4.3.3/, rogues/3.1.3.003+26.2/
 customname/
   CustomNameMixinPlugin     applies only to Custom Name 0.4.4-26.2 (common-side, server-safe)
   mixin/                    forces spaceAllowed=true in playerNameArgumentToComponent's nameArgumentToComponent call

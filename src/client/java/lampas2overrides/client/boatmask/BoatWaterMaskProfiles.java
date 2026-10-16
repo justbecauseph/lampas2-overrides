@@ -25,13 +25,13 @@ public final class BoatWaterMaskProfiles {
 	public static final String EMF_MOD_ID = "entity_model_features";
 	public static final String EXPECTED_PYRITE_ARTIFACT_SHA256 =
 		"6c378632fcadd0501a41bd4af90aec58b8cf03a065f69cd9837160c97ed81831";
-	public static final String EXPECTED_WILDER_WILD_4_3_ARTIFACT_SHA256 =
-		"9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c";
+	public static final String EXPECTED_WILDER_WILD_4_3_3_ARTIFACT_SHA256 =
+		"dfcc128df21715b20fe86bba18c5b9f731a66d3854269044ead125f6f9c20204";
 
 	private static final Map<String, EmfArtifactProfile> EMF_ARTIFACT_PROFILES = Map.of(
-		"3.3.11", new EmfArtifactProfile(
-			"3.3.11",
-			"26b13c2ee755932e74f80ecf6baf16a25582568ae7482cf472751abb98e7b14a"));
+		"3.3.12", new EmfArtifactProfile(
+			"3.3.12",
+			"3a45fb9b028f6e2303438c74e91410223e8af503637956d876a75dd4f9af4af5"));
 	private static final Map<ProviderKey, ProviderProfile> PROVIDERS = providers();
 	private static final Map<ModContainer, ArtifactResult> ARTIFACT_RESULTS =
 		Collections.synchronizedMap(new IdentityHashMap<>());
@@ -224,7 +224,7 @@ public final class BoatWaterMaskProfiles {
 			"chest_boat/red_mushroom", "chest_boat/red_stained", "chest_boat/rose_stained",
 			"chest_boat/star_stained", "chest_boat/white_stained", "chest_boat/yellow_stained")));
 		addProvider(profiles, new ProviderProfile("promenade", "5.6.0", Map.of(), null, boatPairPaths("sakura", "maple", "palm")));
-		addProvider(profiles, new ProviderProfile("wilderwild", "4.3", Map.of(), EXPECTED_WILDER_WILD_4_3_ARTIFACT_SHA256,
+		addProvider(profiles, new ProviderProfile("wilderwild", "4.3.3", Map.of(), EXPECTED_WILDER_WILD_4_3_3_ARTIFACT_SHA256,
 			boatPairPaths("baobab", "willow", "cypress", "palm", "maple")));
 		addProvider(profiles, new ProviderProfile("betterend", "26.201.3",
 			Map.of("wover-item", "26.201.3"), null, fullItemBoatPairPaths(

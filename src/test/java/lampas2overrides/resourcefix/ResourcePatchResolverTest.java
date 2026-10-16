@@ -63,9 +63,9 @@ public class ResourcePatchResolverTest {
 		assertNotNull(ResourcePatchRegistry.findPatch("mr_grim_kingdomsloststructuresruins", "pack.mcmeta"));
 		assertNotNull(ResourcePatchRegistry.findPatch("wilderwild",
 			"data/wilderwild/worldgen/configured_feature/stone_pool.json"));
-		assertNotNull(ResourcePatchRegistry.findPatch("wilderwild", "4.3",
+		assertNotNull(ResourcePatchRegistry.findPatch("wilderwild", "4.3.3",
 			"data/wilderwild/worldgen/configured_feature/stone_pool.json"));
-		assertNull(ResourcePatchRegistry.findPatch("wilderwild", "4.3-mc26.2",
+		assertNull(ResourcePatchRegistry.findPatch("wilderwild", "4.3.3-mc26.2",
 			"data/wilderwild/worldgen/configured_feature/stone_pool.json"));
 		assertNotNull(ResourcePatchRegistry.findPatch(ROGUES, ROGUES_VERSION, SHARPNESS));
 		assertNull(ResourcePatchRegistry.findPatch(ROGUES, "3.1.3.004+26.2", SHARPNESS));
@@ -138,19 +138,19 @@ public class ResourcePatchResolverTest {
 	}
 
 	@Test
-	void appliesWilderWild43StonePoolPatchWithExactVersionAndHash() throws IOException {
+	void appliesWilderWild433StonePoolPatchWithExactVersionAndHash() throws IOException {
 		String path = "data/wilderwild/worldgen/configured_feature/stone_pool.json";
-		byte[] original = readFixtureResource("upstream/wilderwild/4.3/" + path);
+		byte[] original = readFixtureResource("upstream/wilderwild/4.3.3/" + path);
 		assertEquals("59cf59a1c1e86f9627361e1dcec3250b81d535c6e84ff7c3b2950d9b90f2efe4",
 			ResourcePatchResolver.sha256Hex(original));
 
-		ResourcePatch patch = ResourcePatchRegistry.findPatch("wilderwild", "4.3", path);
+		ResourcePatch patch = ResourcePatchRegistry.findPatch("wilderwild", "4.3.3", path);
 		assertNotNull(patch);
-		assertEquals("4.3", patch.expectedVersion());
-		assertEquals("lampas2-overrides/resource-patches/wilderwild/4.3/data/wilderwild/worldgen/configured_feature/stone_pool.json",
+		assertEquals("4.3.3", patch.expectedVersion());
+		assertEquals("lampas2-overrides/resource-patches/wilderwild/4.3.3/data/wilderwild/worldgen/configured_feature/stone_pool.json",
 			patch.replacementPath());
 		IoSupplier<InputStream> patched = ResourcePatchResolver.resolve(
-			createMockModContainer("wilderwild", "4.3"),
+			createMockModContainer("wilderwild", "4.3.3"),
 			path,
 			() -> new ByteArrayInputStream(original)
 		);
@@ -164,10 +164,10 @@ public class ResourcePatchResolverTest {
 	}
 
 	@Test
-	void leavesWilderWild43StonePoolUntouchedForUnknownVersionOrHash() throws IOException {
+	void leavesWilderWild433StonePoolUntouchedForUnknownVersionOrHash() throws IOException {
 		String path = "data/wilderwild/worldgen/configured_feature/stone_pool.json";
-		byte[] original = readFixtureResource("upstream/wilderwild/4.3/" + path);
-		for (String unknownVersion : new String[] {"4.2.11-mc26.2", "4.3.1", "4.3-mc26.2"}) {
+		byte[] original = readFixtureResource("upstream/wilderwild/4.3.3/" + path);
+		for (String unknownVersion : new String[] {"4.2.11-mc26.2", "4.3", "4.3.1", "4.3.3-mc26.2"}) {
 			assertNull(ResourcePatchResolver.resolve(
 				createMockModContainer("wilderwild", unknownVersion),
 				path,
@@ -178,7 +178,7 @@ public class ResourcePatchResolverTest {
 		byte[] tampered = original.clone();
 		tampered[0] = (byte) (tampered[0] ^ 1);
 		IoSupplier<InputStream> wrongHash = ResourcePatchResolver.resolve(
-			createMockModContainer("wilderwild", "4.3"),
+			createMockModContainer("wilderwild", "4.3.3"),
 			path,
 			() -> new ByteArrayInputStream(tampered)
 		);
@@ -356,8 +356,8 @@ public class ResourcePatchResolverTest {
 		String[][] jarChecks = {
 			{"formationsoverworld-1.0.5c-mc1.21+.jar", "formationsoverworld", "1.0.5+c", "pack.mcmeta"},
 			{"grim-kingdoms-lost-structures-ruins-2.0.3.jar", "mr_grim_kingdomsloststructuresruins", "2.0.3", "pack.mcmeta"},
-			{"WilderWild-4.3-mc26.2-fabric.jar", "wilderwild", "4.3", "data/wilderwild/worldgen/configured_feature/stone_pool.json",
-				"9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c"},
+			{"WilderWild-4.3.3-mc26.2-fabric.jar", "wilderwild", "4.3.3", "data/wilderwild/worldgen/configured_feature/stone_pool.json",
+				"dfcc128df21715b20fe86bba18c5b9f731a66d3854269044ead125f6f9c20204"},
 			{"rogues-fabric-3.1.3.003+26.2.jar", ROGUES, ROGUES_VERSION, SHARPNESS,
 				"77bdff881c01011bff6e6e722a1f47dc01ca7d377a1f08231d305fc11b08f113"}
 		};

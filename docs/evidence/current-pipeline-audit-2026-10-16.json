@@ -1,0 +1,78 @@
+{
+  "date": "2026-10-16",
+  "pack_version": "2.3.44",
+  "lock_updated": "2026-10-16T05:37:30.121Z",
+  "minecraft": "26.2",
+  "loader": {
+    "type": "fabric",
+    "version": "0.19.5"
+  },
+  "scope": "Pipeline changes since the 2026-10-13 audit (pack 2.3.29), and the compatibility changes made for them. The 2.3.29 baseline is the Portal release manifests (dev.lampas.town /api/v1/releases/2.3.29/{client,server}-manifest), compared by artifact id and filename with the local 2.3.44 manifests and lock.",
+  "changed_affecting_overrides": [
+    {
+      "lock_key": "entity-model-features",
+      "from": "3.3.11",
+      "to": "3.3.12",
+      "filename": "entity_model_features-3.3.12-26.2-fabric.jar",
+      "lock_sha256": "3a45fb9b028f6e2303438c74e91410223e8af503637956d876a75dd4f9af4af5",
+      "finding": "9 of 302 archive entries changed: fabric.mod.json, MixinEntity (entity variable map is now Object2FloatOpenHashMap), and animation-math compilation (EMFMath, ASMParser, MultiASMAnimationHandler, MathBinaryExpressionComponent). EMFModelPartRoot and EMFDirectoryHandler, which the boat hook reads reflectively, are byte-identical. The boat water-mask EMF profile moved to 3.3.12 with this hash; 3.3.11 is retired."
+    },
+    {
+      "lock_key": "wilderwild",
+      "from": "4.3",
+      "to": "4.3.3",
+      "filename": "WilderWild-4.3.3-mc26.2-fabric.jar",
+      "lock_sha256": "dfcc128df21715b20fe86bba18c5b9f731a66d3854269044ead125f6f9c20204",
+      "finding": "4 of 7810 archive entries changed: META-INF/MANIFEST.MF, fabric.mod.json (version 4.3 -> 4.3.3), and boat entity/item registration in WWEntityTypes and WWItems (registerBoat/registerChestBoat take Supplier<Item> instead of DeferredItem through new lambdas, and registerAbstractBoat passes a no-op Consumer to a five-argument register). All client classes and data/wilderwild/worldgen/configured_feature/stone_pool.json (SHA-256 59cf59a1c1e86f9627361e1dcec3250b81d535c6e84ff7c3b2950d9b90f2efe4) are byte-identical. The stone-pool resource patch and the boat provider profile moved to 4.3.3 with this hash; 4.3 is retired."
+    }
+  ],
+  "changed_not_affecting_overrides": [
+    {"lock_key": "apotheosis-26_2-10_0_1", "from": "10.0.1", "to": "10.0.2"},
+    {"lock_key": "apothicattributes-26_2-4_0_1", "from": "4.0.1", "to": "4.0.2"},
+    {"lock_key": "collective", "from": "8.48", "to": "8.53"},
+    {"lock_key": "emf-compat-core", "from": "2.3.0", "to": "2.3.1"},
+    {"lock_key": "entitytexturefeatures", "from": "7.2.5", "to": "7.2.6"},
+    {"lock_key": "gatewaystoeternity-26_2-7_0_1", "from": "7.0.1", "to": "7.0.2"},
+    {"lock_key": "lampas-addons-1_0_0", "from": "1.0.0", "to": "1.0.1"},
+    {"lock_key": "lampas2-overrides-1_0_0", "from": "1.0.0", "to": "1.0.1", "note": "The locked 1.0.1 (SHA-256 63af43ef…) predates this change and still pins EMF 3.3.11 and Wilder Wild 4.3. The rebuilt 1.0.1 (2f0ac7bd…) is not yet staged in pack/custom."},
+    {"lock_key": "levelledmobs-apotheosis-1_0_0", "from": "1.0.0", "to": "1.0.1"},
+    {"lock_key": "levelledmobs-fabric-1_0_0", "from": "1.0.0", "to": "1.0.2"},
+    {"lock_key": "lolmlv", "from": "1.9.3", "to": "1.10.0"},
+    {"lock_key": "more-barrel-variants", "from": "2.1.0", "to": "2.1.1"},
+    {"lock_key": "obe", "from": "1.1.51", "to": "1.1.53"},
+    {"lock_key": "oneconfigbootstrap", "from": "1.4.1", "to": "1.4.2"},
+    {"lock_key": "punchy-fpa", "from": "2.8e", "to": "2.8f"},
+    {"lock_key": "walksylib", "from": "2.0.2", "to": "2.0.3"}
+  ],
+  "added": [
+    "amecs", "better-village", "camera-entity-fade", "client-projectiles", "combat-roll", "complete-shield-fixes",
+    "crossbow-optimizer", "crosshair-addons-public", "leawind-third-person", "library-ferret", "new-health-bars",
+    "packet-fixer", "perspective-api", "pick-up-notifier"
+  ],
+  "removed": ["inventory-particles"],
+  "pack_metadata_review": {
+    "criterion": "Data-bearing mods whose pack.mcmeta does not cover 26.2 data format 107.1, the defect class patched for Formations Overworld, Grim Kingdoms, Pyrite and Easter's Delight.",
+    "data_bearing_ok": "Better Village 4.0.1 and Library Ferret 5.0.1 declare min/max 107; Collective 8.53 declares 107.1; Apotheosis 10.0.2, Apothic Attributes 4.0.2, Gateways 7.0.2, Combat Roll 3.0.1, More Barrel Variants 2.1.1, More Lectern Variants 1.10.0 (root) and Lampas Addons 1.0.1 ship no root pack.mcmeta.",
+    "more_lectern_variants_1_10_0": "Adds built-in datapack resourcepacks/mlecternv-quad-compat declaring pack_format 71, supported 15-81. MoreLecternVariants registers it only when isModLoaded(\"quad\"); no Quad mod is in the lock, so it is not registered. No patch.",
+    "client_assets_only": "Leawind Third Person (48), Perspective API (34) and Camera Entity Fade (15) declare legacy root pack_format values, the same pattern ETF ships unchanged in 7.2.5 and 7.2.6 (pack_format 9). Not patched; client resource loading of these mods was not run.",
+    "result": "No new resource patch is needed."
+  },
+  "unchanged_pinned_targets": "Every compatibility-targets.json entry with an artifact_sha256 (Beautiful Enchanted Books, Beautiful Potions, IllagerBlabber, Wilder Wild 4.3.3, Rogues, Puzzles Lib, Chatting, Lootr, Trinkets, Figura) matches a 2.3.44 lock artifact. The other pinned targets keep the filenames and versions they had in 2.3.29, so the 2026-10-13 fingerprint results still apply; they were not re-run.",
+  "boat_water_mask_probe": {
+    "inventory": "build/pipeline-validation-2026-10-16/inventory.json",
+    "inventory_sha256": "7adae6079da1909cd7abe95bfe7eead0d501762431ffc6e8574031d646d58bfd",
+    "minecraft_root": "Launcher-style root assembled with hardlinks from PrismLauncher libraries (net.minecraft 26.2, LWJGL 3.4.1, Fabric Loader 0.19.5) because %APPDATA%/.minecraft-lampas no longer exists; client 40896ee9..., loader 93044e4d... and Mixin 1f0ae44d... match the 2026-10-06 runs.",
+    "baseline_run": "20261016T055244Z-baseline-e096d3b1",
+    "baseline_result_sha256": "2a8187b2320a09e7a58d5d69f36552d4836f3260f97b852789eadacf5bf7b130",
+    "patched_run": "20261016T060110Z-patched-e0ca8048",
+    "patched_result_sha256": "a7a1959b46b7a106b1d14486b955bae0575af72a597c877ad6498a065d42cebc",
+    "production_jar_sha256": "2f0ac7bd040d790349927a18537a25c4b28b6f19545abe513bd381bd62fd6caf",
+    "baseline": "PASS, exit 0; with FA Extensions enabled all 108 supported hulls (Pyrite 52, Promenade 6, Wilder Wild 10, BetterEnd 18, BetterNether 22) are plain while the water patch is the selected boat_patch.jem EMF root (defect present on EMF 3.3.12)",
+    "patched": "PASS, exit 0; BoatRendererMixin applied; with FA on exactly those 108 renderers changed to vanilla mask geometry; hull signatures equal to baseline for all 134 renderers; rafts, BloomingNature and vanilla boats unchanged; FA-off stages identical to baseline"
+  },
+  "verification_limits": [
+    "Static checks: lock and cached artifact hashes, archive entry diffs, javap diffs of changed classes, and pack.mcmeta review.",
+    "Runtime coverage is the isolated boat-mask client probe pair above. No dedicated server or full-pack client ran against pack 2.3.44; the Wilder Wild 4.3.3 stone-pool patch is covered by unit tests and the byte-identical resource only.",
+    "Gameplay, visual rendering and shader behavior of boats remain unverified."
+  ]
+}

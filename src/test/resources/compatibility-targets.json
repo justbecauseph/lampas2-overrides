@@ -121,12 +121,12 @@
       "name": "Wilder Wild",
       "type": "resource_patch",
       "versions": {
-        "4.3": {
+        "4.3.3": {
           "status": "patched",
           "resources": {
             "data/wilderwild/worldgen/configured_feature/stone_pool.json": "59cf59a1c1e86f9627361e1dcec3250b81d535c6e84ff7c3b2950d9b90f2efe4"
           },
-          "artifact_sha256": "9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c"
+          "artifact_sha256": "dfcc128df21715b20fe86bba18c5b9f731a66d3854269044ead125f6f9c20204"
         }
       }
     },

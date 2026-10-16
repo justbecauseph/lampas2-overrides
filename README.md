@@ -16,11 +16,11 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Gravestones death inscription and glow](#gravestones-death-inscription-and-glow) | Gravestones | Suppresses technical death grave text and renders a glowing outline only on your own graves |
 | [Jade nameplates and Custom Name](#jade-nameplates-and-custom-name) | Client Jade; server TAB name sync | Suppresses vanilla in-world entity/player nameplates and shows server-synced player display names in Jade |
 | [Custom Name multi-word names](#custom-name-multi-word-names) | Custom Name 0.4.4-26.2 | Permits spaces in nickname, prefix, and suffix commands for non-operators |
-| [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3, Rogues 3.1.3.003+26.2 | Transparently repairs malformed `pack.mcmeta` formats, worldgen resources and Rogues' Sharpness at runtime |
-| [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.3 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
+| [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Rogues 3.1.3.003+26.2 | Transparently repairs malformed `pack.mcmeta` formats, worldgen resources and Rogues' Sharpness at runtime |
+| [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.3.3 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
 | [Rogues Sharpness](#rogues-sharpness) | Rogues 3.1.3.003+26.2 | Restores flat Sharpness in place of Rogues' +8% base attack damage per level |
 | [Bee and spawner structure DFU validation](#bee-and-spawner-structure-dfu-validation) | Exact Trek and Stoneholm fixtures | Historical run on the removed Trinkets 4.1.0 profile; re-validation on 4.1.1 is pending |
-| [Boat water-mask compatibility](#boat-water-mask-compatibility) | EMF 3.3.11 + audited boat providers | Restores the vanilla water mask for plain hulls when the selected Fresh Animations mask is incompatible |
+| [Boat water-mask compatibility](#boat-water-mask-compatibility) | EMF 3.3.12 + audited boat providers | Restores the vanilla water mask for plain hulls when the selected Fresh Animations mask is incompatible |
 | [Better Lib demo villager suppression](#better-lib-demo-villager-suppression) | Better Lib | Suppresses hardcoded demo villager registration that causes RemapException registry sync disconnects |
 | [Beautiful item-model reloads](#beautiful-item-model-reloads) | Beautiful Enchanted Books 6.0.0 and/or Beautiful Potions 2.0.1 | Clears stale extra-model keys so each resource reload uses the keys registered for that reload |
 | [IllagerBlabber voice registry](#illagerblabber-voice-registry) | IllagerBlabber 1.1.0 | Releases per-illager voice state on unload, follows illagers across dimensions, and drops per-tick lock and log overhead |
@@ -255,7 +255,7 @@ log instead of receiving potentially stale function overrides.
 
 ## Wilder Wild stone pool
 
-Wilder Wild `4.3` ships the stone-pool resource with a sampled radius of 12–15. FrozenLib's
+Wilder Wild `4.3.3` ships the stone-pool resource with a sampled radius of 12–15. FrozenLib's
 circular waterlogged vegetation feature (audited in 3.0.1; 3.0.3 ships byte-identical classes) adds one block to the sampled radius before placement, then
 checks the four horizontal neighbors of each placed block. At a chunk edge, the upstream maximum reaches two chunks away.
 Historical C2ME 0.4.2-alpha.0.43 logs report unsafe worldgen reads from
@@ -273,6 +273,11 @@ checks, and a disposable production-JAR dedicated-server probe with Wilder Wild 
 FrozenLib 3.0.1. The resource mixin applied, the selected stone-pool JSON matched the replacement,
 and Minecraft decoded its configured-feature radius as 12–14 before normal shutdown.
 Fresh cave generation with C2ME/Lithium and full-pack gameplay remain unverified.
+
+On 16 October 2026 the patch moved from Wilder Wild `4.3` to `4.3.3`. The two JARs differ only in
+`fabric.mod.json`, the manifest, and boat entity/item registration in `WWEntityTypes` and `WWItems`;
+`stone_pool.json` (SHA-256 `59cf59a1…f2efe4`) and FrozenLib 3.0.3 are unchanged, so the analysis above
+still applies. The dedicated-server probe was not re-run on 4.3.3.
 
 ## Rogues Sharpness
 
@@ -320,10 +325,10 @@ Lampas2 Overrides applies no FrozenLib wind shim: an unpatched isolated client w
 
 ## Boat water-mask compatibility
 
-EMF 3.3.11 can replace Minecraft's shared boat water-patch layer with the Fresh Animations
+EMF 3.3.12 can replace Minecraft's shared boat water-patch layer with the Fresh Animations
 `assets/minecraft/optifine/cem/boat_patch.jem` model. That model's animation expects `var.base_*`
 values supplied by Fresh Animations hull models. Plain hulls from the audited Pyrite 0.18.3+26.2,
-Promenade 5.6.0, Wilder Wild 4.3, BetterEnd 26.201.3, and BetterNether 26.201.3 providers do not supply those values.
+Promenade 5.6.0, Wilder Wild 4.3.3, BetterEnd 26.201.3, and BetterNether 26.201.3 providers do not supply those values.
 BetterEnd and BetterNether each require `wover-item` 26.201.3.
 
 The client-only compatibility hook runs at the end of each `BoatRenderer` construction. It checks
@@ -333,27 +338,29 @@ the exact provider layer, provider version, EMF version, selected resource bytes
 Custom EMF hulls or animations, disabled or different resource packs, absent or mismatched versions,
 the BetterEnd/BetterNether `wover-item` companion mismatch, and unlisted boat layers remain
 untouched. The explicit provider list and verification limits are recorded in
-[docs/boat-water-mask.md](docs/boat-water-mask.md). The audited EMF 3.3.11 identity is recorded in
-[the boat probe evidence](docs/evidence/boat-water-mask-3.3.11.json).
+[docs/boat-water-mask.md](docs/boat-water-mask.md). The audited EMF 3.3.12 identity and probe runs are recorded in
+[the 2026-10-16 pipeline audit](docs/evidence/current-pipeline-audit-2026-10-16.json).
 
 The isolated probe verifies artifact identities from the audited pipeline inventory:
 
 ```powershell
-./tools/boat-water-mask-probe/run.ps1 -Mode baseline -Strict `
-  -InventoryPath build/pipeline-validation-2026-10-13/inventory.json
-./tools/boat-water-mask-probe/run.ps1 -Mode patched -Strict `
-  -InventoryPath build/pipeline-validation-2026-10-13/inventory.json `
+./tools/boat-water-mask-probe/run.ps1 -Mode baseline -Strict -MinecraftRoot <root> `
+  -InventoryPath build/pipeline-validation-2026-10-16/inventory.json
+./tools/boat-water-mask-probe/run.ps1 -Mode patched -Strict -MinecraftRoot <root> `
+  -InventoryPath build/pipeline-validation-2026-10-16/inventory.json `
   -OverrideArtifactPath build/libs/lampas2-overrides-1.0.1.jar
 ```
 
-On 2026-10-13 both modes passed against the pack 2.3.29 inventory: the baseline reproduced the
-displaced mask on the BetterEnd and BetterNether `26.201.3` hulls, and the patched run restored
-vanilla mask geometry for all 108 supported layers.
+`-MinecraftRoot` defaults to `%APPDATA%\.minecraft-lampas`, which no longer exists on the workstation;
+the 2026-10-16 runs used a launcher-style root hardlinked from PrismLauncher's 26.2 libraries.
+On 2026-10-16 both modes passed against the pack 2.3.44 inventory: the baseline reproduced the
+displaced mask on all 108 supported hulls with EMF 3.3.12 and Wilder Wild 4.3.3, and the patched run
+restored vanilla mask geometry for those 108 layers while leaving the other 26 renderers unchanged.
 
 The runner verifies selected JAR metadata and SHA-256 before creating each fresh fixture,
 preserves prior run evidence, discovers Biolith through the inventory, and uses
 fixture-only FrozenLib and shutdown guards. The guards do not affect the installed client.
-No visual, movement, or shader run is recorded for EMF 3.3.11. The probe establishes artifact identity,
+No visual, movement, or shader run is recorded for EMF 3.3.12. The probe establishes artifact identity,
 resource provenance, and renderer geometry only; live rendering in the installed instance remains unverified.
 
 ## Additional Lanterns chunk loading

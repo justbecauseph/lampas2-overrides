@@ -33,7 +33,7 @@ import net.minecraft.resources.Identifier;
 
 class BoatWaterMaskCompatibilityTest {
 
-	private static final String EMF_VERSION = "3.3.11";
+	private static final String EMF_VERSION = "3.3.12";
 	private static final BoatWaterMaskCompatibility.EmfRootInfo VANILLA_HULL =
 		new BoatWaterMaskCompatibility.EmfRootInfo(false, false, false, null, true);
 	private static final BoatWaterMaskCompatibility.EmfRootInfo ACTIVE_WATER_ROOT =
@@ -45,15 +45,17 @@ class BoatWaterMaskCompatibilityTest {
 		new BoatWaterMaskCompatibility.ResourceProof(true, true, "3.3.5");
 	private static final BoatWaterMaskCompatibility.ResourceProof RETIRED_EMF_3_3_8_RESOURCE =
 		new BoatWaterMaskCompatibility.ResourceProof(true, true, "3.3.8");
+	private static final BoatWaterMaskCompatibility.ResourceProof RETIRED_EMF_3_3_11_RESOURCE =
+		new BoatWaterMaskCompatibility.ResourceProof(true, true, "3.3.11");
 
 	@Test
 	void acceptsOnlyTheCurrentEmfArtifactProfile() {
-		String currentSha256 = "26b13c2ee755932e74f80ecf6baf16a25582568ae7482cf472751abb98e7b14a";
+		String currentSha256 = "3a45fb9b028f6e2303438c74e91410223e8af503637956d876a75dd4f9af4af5";
 		assertEquals(currentSha256, BoatWaterMaskProfiles.emfArtifactProfile(EMF_VERSION).orElseThrow().artifactSha256());
 		assertTrue(BoatWaterMaskProfiles.supportedEmfVersion(EMF_VERSION));
 		assertTrue(BoatWaterMaskProfiles.matchesEmfProfile(EMF_VERSION, currentSha256));
 		assertFalse(BoatWaterMaskProfiles.matchesEmfProfile(EMF_VERSION, null));
-		assertFalse(BoatWaterMaskProfiles.matchesEmfProfile("3.3.12", currentSha256));
+		assertFalse(BoatWaterMaskProfiles.matchesEmfProfile("3.3.11", currentSha256));
 	}
 
 	@Test
@@ -65,7 +67,7 @@ class BoatWaterMaskCompatibilityTest {
 			"nostalgia_stained", "orange_stained", "pink_stained", "poisonous_stained", "purple_stained",
 			"red_mushroom", "red_stained", "rose_stained", "star_stained", "white_stained", "yellow_stained"}, false);
 		assertLayers("promenade", "5.6.0", new String[] {"sakura", "maple", "palm"}, false);
-		assertLayers("wilderwild", "4.3", new String[] {"baobab", "willow", "cypress", "palm", "maple"}, false);
+		assertLayers("wilderwild", "4.3.3", new String[] {"baobab", "willow", "cypress", "palm", "maple"}, false);
 		assertLayers("betterend", "26.201.3", new String[] {
 			"dragon_tree", "helix_tree", "jellyshroom", "lacugrove", "lucernia", "mossy_glowshroom",
 			"pythadendron", "tenanea", "umbrella_tree"}, true);
@@ -109,7 +111,9 @@ class BoatWaterMaskCompatibilityTest {
 			VANILLA_HULL, ACTIVE_WATER_ROOT, RETIRED_EMF_3_3_5_RESOURCE));
 		assertFalse(eligible("pyrite", "0.18.3+26.2", layer("pyrite", "boat/cyan_stained"),
 			VANILLA_HULL, ACTIVE_WATER_ROOT, RETIRED_EMF_3_3_8_RESOURCE));
-		assertTrue(eligible("wilderwild", "4.3", layer("wilderwild", "boat/baobab"),
+		assertFalse(eligible("pyrite", "0.18.3+26.2", layer("pyrite", "boat/cyan_stained"),
+			VANILLA_HULL, ACTIVE_WATER_ROOT, RETIRED_EMF_3_3_11_RESOURCE));
+		assertTrue(eligible("wilderwild", "4.3.3", layer("wilderwild", "boat/baobab"),
 			VANILLA_HULL, ACTIVE_WATER_ROOT, ACTIVE_RESOURCE));
 	}
 
@@ -189,23 +193,23 @@ class BoatWaterMaskCompatibilityTest {
 
 	@Test
 	void currentWilderWildRequiresItsOwnExactVersionAndArtifact(@TempDir Path directory) throws IOException {
-		String currentHash = "9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c";
-		assertTrue(BoatWaterMaskProfiles.matchesProviderProfile("wilderwild", "4.3", currentHash));
-		assertFalse(BoatWaterMaskProfiles.matchesProviderProfile("wilderwild", "4.3", null));
-		assertFalse(BoatWaterMaskProfiles.matchesProviderProfile("wilderwild", "4.3",
+		String currentHash = "dfcc128df21715b20fe86bba18c5b9f731a66d3854269044ead125f6f9c20204";
+		assertTrue(BoatWaterMaskProfiles.matchesProviderProfile("wilderwild", "4.3.3", currentHash));
+		assertFalse(BoatWaterMaskProfiles.matchesProviderProfile("wilderwild", "4.3.3", null));
+		assertFalse(BoatWaterMaskProfiles.matchesProviderProfile("wilderwild", "4.3.3",
 			BoatWaterMaskProfiles.EXPECTED_PYRITE_ARTIFACT_SHA256));
-		assertFalse(BoatWaterMaskProfiles.matchesProviderProfile("wilderwild", "4.3.1", currentHash));
-		assertFalse(BoatWaterMaskProfiles.matchesProviderProfile("promenade", "4.3", currentHash));
-		assertFalse(BoatWaterMaskProfiles.isAuditedLayer("wilderwild", "4.3", "main", "wilderwild", "boat/unknown"));
-		assertFalse(BoatWaterMaskProfiles.isAuditedLayer("wilderwild", "4.3", "alt", "wilderwild", "boat/baobab"));
+		assertFalse(BoatWaterMaskProfiles.matchesProviderProfile("wilderwild", "4.3", currentHash));
+		assertFalse(BoatWaterMaskProfiles.matchesProviderProfile("promenade", "4.3.3", currentHash));
+		assertFalse(BoatWaterMaskProfiles.isAuditedLayer("wilderwild", "4.3.3", "main", "wilderwild", "boat/unknown"));
+		assertFalse(BoatWaterMaskProfiles.isAuditedLayer("wilderwild", "4.3.3", "alt", "wilderwild", "boat/baobab"));
 		Path fakeArtifact = directory.resolve("WilderWild.jar");
 		Files.writeString(fakeArtifact, "different bytes", StandardCharsets.UTF_8);
 		assertFalse(BoatWaterMaskProfiles.installedProviderMatches(loader(Map.of(
-			"wilderwild", pathOriginContainer(fakeArtifact, ModOrigin.Kind.PATH, "4.3"))), "wilderwild"));
+			"wilderwild", pathOriginContainer(fakeArtifact, ModOrigin.Kind.PATH, "4.3.3"))), "wilderwild"));
 		assertFalse(BoatWaterMaskProfiles.installedProviderMatches(loader(Map.of(
-			"wilderwild", pathOriginContainer(fakeArtifact, ModOrigin.Kind.UNKNOWN, "4.3"))), "wilderwild"));
+			"wilderwild", pathOriginContainer(fakeArtifact, ModOrigin.Kind.UNKNOWN, "4.3.3"))), "wilderwild"));
 		assertFalse(BoatWaterMaskProfiles.installedProviderMatches(loader(Map.of(
-			"wilderwild", metadataContainer("wilderwild", "4.3"))), "wilderwild"));
+			"wilderwild", metadataContainer("wilderwild", "4.3.3"))), "wilderwild"));
 	}
 
 	@Test

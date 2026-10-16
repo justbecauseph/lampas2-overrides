@@ -51,13 +51,13 @@ public class CompatibilityManifestTest {
 		assertEquals("ffa966eb7835cc4de1273945333236331eff33116e918869e4e29c881b39f940",
 			formationsCResources.get("pack.mcmeta").getAsString());
 
-		JsonObject wilderWild43 = targets.getAsJsonObject("wilderwild").getAsJsonObject("versions").getAsJsonObject("4.3");
-		assertEquals("patched", wilderWild43.get("status").getAsString());
+		JsonObject wilderWild433 = targets.getAsJsonObject("wilderwild").getAsJsonObject("versions").getAsJsonObject("4.3.3");
+		assertEquals("patched", wilderWild433.get("status").getAsString());
 		assertEquals("59cf59a1c1e86f9627361e1dcec3250b81d535c6e84ff7c3b2950d9b90f2efe4",
-			wilderWild43.getAsJsonObject("resources")
+			wilderWild433.getAsJsonObject("resources")
 				.get("data/wilderwild/worldgen/configured_feature/stone_pool.json").getAsString());
-		assertEquals("9569288654cee9becfb075a3379d9c8eb5f4a9b06180d7f1936d5bc530f5368c",
-			wilderWild43.get("artifact_sha256").getAsString());
+		assertEquals("dfcc128df21715b20fe86bba18c5b9f731a66d3854269044ead125f6f9c20204",
+			wilderWild433.get("artifact_sha256").getAsString());
 
 		JsonObject rogues = targets.getAsJsonObject("rogues").getAsJsonObject("versions").getAsJsonObject("3.1.3.003+26.2");
 		assertEquals("patched", rogues.get("status").getAsString());
