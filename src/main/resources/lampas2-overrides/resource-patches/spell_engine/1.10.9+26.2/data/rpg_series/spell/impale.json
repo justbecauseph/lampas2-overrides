@@ -1,0 +1,86 @@
+{
+  "school": "spell_power:physical_melee",
+  "range": 16.0,
+  "tier": 1,
+  "learn": {},
+  "active": {
+    "cast": {
+      "duration": 1.0,
+      "type": "CHARGE",
+      "charge": {
+        "output_scaling": 0.6,
+        "curve": "EASE_IN_QUART",
+        "bonus": {
+          "range_add": 16.0
+        }
+      },
+      "animation": {
+        "id": "spell_engine:weapon_spearthrow_ready"
+      }
+    }
+  },
+  "release": {
+    "animation": {
+      "id": "spell_engine:weapon_spearthrow_toss",
+      "speed": 1.5
+    },
+    "sound": {
+      "id": "spell_engine:weapon_spear_throw"
+    }
+  },
+  "target": {
+    "type": "AIM",
+    "aim": {}
+  },
+  "deliver": {
+    "type": "PROJECTILE",
+    "projectile": {
+      "launch_properties": {
+        "velocity": 1.5
+      },
+      "projectile": {
+        "homing_angle": 0.0,
+        "travel_sound_interval": 8,
+        "travel_sound": {
+          "id": "spell_engine:weapon_spear_travel"
+        },
+        "client_data": {
+          "composite_model": {
+            "models": [
+              {
+                "orientation": "ALONG_MOTION",
+                "rotate_degrees_per_tick": 0.0,
+                "rotate_degrees_offset": -135.0,
+                "use_held_item": true,
+                "fx": {
+                  "light_emission": "NONE"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "DAMAGE",
+        "damage": {
+          "spell_power_coefficient": 1.2,
+          "knockback": 3.0
+        }
+      },
+      "sound": {
+        "id": "spell_engine:weapon_spear_stab"
+      }
+    }
+  ],
+  "cost": {
+    "cooldown": {
+      "group": "weapon",
+      "duration": 10.0,
+      "haste_affected": false
+    }
+  }
+}

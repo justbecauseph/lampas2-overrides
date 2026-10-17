@@ -7,7 +7,7 @@ Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-ac
 entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
 Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, the version-gated
-IllagerBlabber 1.1.0 voice-registry leak fix, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3), and the Rogues 3.1.3.003+26.2 Sharpness definition. The first two
+IllagerBlabber 1.1.0 voice-registry leak fix, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3), the Rogues 3.1.3.003+26.2 Sharpness definition, and 64 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised). The first two
 features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, and Beautiful item models are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium datapacks, IllagerBlabber registry fix, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
@@ -71,6 +71,8 @@ disable an unrelated feature.
 | Easter's Delight 1.3.1 | `../lampas-server-fabric/mods/eastersdelight-fabric-26.2-1.3.1.jar` |
 | Rogues 3.1.3.003+26.2 | `../lampas-server-fabric/mods/rogues-fabric-3.1.3.003+26.2.jar` |
 | Apothic Enchanting 3.0.1 | `../lampas-server-fabric/mods/ApothicEnchanting-26.2-3.0.1.jar` (source of the flat Sharpness definition) |
+| RPG Series spell jars | `../lampas-server-fabric/mods/`: `wizards-`, `paladins-`, `archers-fabric-3.1.3.003+26.2.jar`, `spell_engine-fabric-1.10.9+26.2.jar`, `skill_tree-fabric-1.6.2+26.2.jar`, `relics-fabric-1.4.1+26.2.jar`; pins in `tools/generate_rpg_spell_patches.py` |
+| Spell Power 1.6.2 | `../lampas-server-fabric/mods/spell_power-fabric-1.6.2+26.2.jar` (`SpellPower.getHaste`, `SpellPower$Result`) |
 | Figura sources | `../figura-port/common/src/main/java/org/figuramc/figura/` |
 | ReplayMod sources | `../ReplayMod/src/main/java/com/replaymod/` — preprocessed, read `//#if MC>=…` blocks carefully |
 | Minecraft 26.2 sources | `../figura-port/.mcsources/` — decompiled, authoritative |
@@ -276,6 +278,32 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   the client decodes its own copy through `getResource`. A client without the matching overrides version
   therefore shows Rogues' Sharpness in tooltips while the server applies flat damage. The pipeline ships
   this jar with `side = "both"`; the client path has not been probed.
+- **Haste shortens a spell's cooldown only through `cost.cooldown.haste_affected`.** Spell Engine 1.10.9's
+  `SpellParameters.getCooldownDuration` takes `cost.cooldown.duration`, subtracts the player's
+  `SpellModifiers.cooldownDeduction`, and divides by `SpellPower.getHaste(caster, spell.school)` only when the
+  result is above 0, the server config's `haste_affects_cooldown` is true and the spell's `haste_affected` is
+  true (the field defaults to true). Passive procs go through the same path, so skill-tree passives and relic
+  procs were hasted too. Physical melee haste is built from the attack-speed modifiers
+  (`AttributeModifierUtil.multipliersOf` sums modifier amounts and never reads the attribute value) plus spell
+  haste, so an AttributeFix cap on `minecraft:attack_speed` does not cap it; physical ranged haste is
+  `ranged_weapon:haste` / 100. D3 P1 therefore sets `haste_affected: false` per spell, on all 59 martial spells
+  (physical_melee, physical_melee_dual or physical_ranged with a cooldown above 0) in the seven RPG Series jars,
+  and leaves the global switch on for casters. Cast and channel times stay hasted.
+- **`SpellImpacts.underApplyLimit` is `health_base + nonCriticalValue x spell_power_multiplier >= target max
+  health`** (true when the impact has no limit). The power is the impact's school power after its own
+  `power_blend` and `1 + sum(power_multiplier)` (target modifiers, school weakness, spell modifiers without
+  impact filters), clamped to `min_power` 1. Separately, any effect that `StatusEffectClassification` flags as
+  movement impairing or AI disabling is refused on `#spell_engine:bosses` whatever the limit. D9 raised twelve
+  limits (Frost Nova/Spikes/Bolt/Lance/Blizzard, Judgement, Shout, Throw, Throw Net, Shock Powder, Bear Trap,
+  Entangling Roots at a flat 780) so CC reaches End top-band health (736.5) at modelled Pinnacle power.
+  Apotheosis elite and invader immunity is lampas-addons' job (W6) and must ship with or before these limits.
+- **Spells are the synced `minecraft:spell` registry, decoded by Gson.** Clients decode known-pack entries from
+  their own copy, as with Sharpness, so the spell patches also need `side = "both"`. A spell file that needs both
+  the P1 and the D9 change has one replacement; the registry throws on a duplicate key. The replacements are
+  generated: `python -I tools/generate_rpg_spell_patches.py --mods <server mods>` rebuilds them from the pinned
+  jars and `--check` verifies the committed files. Every upstream spell round-trips byte-exactly through
+  `json.dumps(indent=2, ensure_ascii=False)` without a trailing newline, so each replacement differs from upstream
+  only in the decided keys. An RPG Series update drops that mod's patches with a WARN until they are re-pinned.
 - **FrozenLib wind compatibility is retired for the latest supported pair.**
   FrozenLib 3.0 clears `loadedExtensions` during reset and Wilder Wild 4.3 applies
   cloud sync to its existing extension (4.3.3 changes only boat entity/item registration). The unpatched isolated client no longer
@@ -458,6 +486,7 @@ resourcefix/
   ResourcePatchRegistry     registry of defective mod resources with SHA-256 fingerprints
   ResourcePatchResolver     runtime virtual patch resolver
   ResourcePatch             immutable patch rule record
+  RpgSeriesSpellPatches     64 RPG Series spell patches (D3 P1 cooldown haste, D9 apply limits), one Target per jar
   Includes the version- and SHA-gated Wilder Wild 4.3.3 stone-pool radius repair and Rogues Sharpness replacement
 lampas2-overrides/resource-patches/
   <mod>/<version>/          replacement resource assets, e.g. wilderwild/4.3.3/, rogues/3.1.3.003+26.2/

@@ -1,0 +1,82 @@
+{
+  "school": "spell_power:physical_melee",
+  "range": 0.0,
+  "range_mechanic": "MELEE",
+  "tier": 4,
+  "group": "warrior_fury",
+  "learn": {},
+  "active": {
+    "cast": {
+      "duration": 0.5,
+      "animation": {
+        "id": "spell_engine:two_handed_slash_vertical_windup"
+      },
+      "animation_pitch": false,
+      "start_sound": {
+        "id": "rogues:mortal_strike_swing"
+      }
+    }
+  },
+  "target": {
+    "type": "NONE"
+  },
+  "deliver": {
+    "type": "MELEE",
+    "melee": {
+      "attacks": [
+        {
+          "damage_bonus": 0.5,
+          "delay": 0.3,
+          "hitbox": {
+            "width": 0.5,
+            "height": 1.5,
+            "arc": 120.0
+          },
+          "animation": {
+            "id": "spell_engine:two_handed_slash_vertical_slash"
+          },
+          "swing_sound": {
+            "id": "rogues:mortal_strike_whoosh"
+          },
+          "impact_sound": {
+            "id": "rogues:mortal_strike_impact"
+          }
+        }
+      ]
+    }
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "STATUS_EFFECT",
+        "status_effect": {
+          "effect_id": "spell_engine:bleed",
+          "duration": 6.0,
+          "amplifier": 1,
+          "amplifier_power_multiplier": 0.25
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:dripping_blood",
+            "appearance": {},
+            "batch": {
+              "count": 40.0,
+              "shape": "SPHERE",
+              "anchor": "ENTITY",
+              "min_speed": 0.2,
+              "max_speed": 0.4
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "cost": {
+    "exhaust": 0.4,
+    "cooldown": {
+      "duration": 15.0
+    }
+  }
+}

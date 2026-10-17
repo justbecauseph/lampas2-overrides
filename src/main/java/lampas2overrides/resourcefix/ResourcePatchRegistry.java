@@ -1,8 +1,10 @@
 package lampas2overrides.resourcefix;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -12,6 +14,8 @@ import java.util.Map;
 public final class ResourcePatchRegistry {
 
 	private static final Map<ResourcePatchKey, ResourcePatch> PATCHES = new HashMap<>();
+	/** Declared versions per normalized "modId|path"; the resolver asks for these on every unpatched resource. */
+	private static final Map<String, List<String>> VERSIONS = new HashMap<>();
 
 	static {
 		// 1. Formations Overworld 1.0.5+c - The loot tables are already 26.2-compatible; only pack.mcmeta needs the format range.
@@ -153,6 +157,12 @@ public final class ResourcePatchRegistry {
 			"fe176357898633059d7e37643e19115d25352725a0015630f92f39b2f96f620e",
 			"lampas2-overrides/resource-patches/rogues/3.1.3.003+26.2/data/minecraft/enchantment/sharpness.json"
 		));
+
+		// 7. RPG Series 26.2 spells - martial cooldowns stop scaling with haste (D3 P1) and twelve crowd-control
+		// apply limits reach the End top band at Pinnacle (D9). 64 patches across seven jars.
+		RpgSeriesSpellPatches.registerAll(ResourcePatchRegistry::register);
+
+		VERSIONS.replaceAll((resource, versions) -> versions.stream().sorted().toList());
 	}
 
 	private static void register(ResourcePatch patch) {
@@ -161,6 +171,12 @@ public final class ResourcePatchRegistry {
 		if (PATCHES.put(key, patch) != null) {
 			throw new IllegalStateException("Duplicate resource patch " + key);
 		}
+		VERSIONS.computeIfAbsent(resourceKey(key.modId(), key.resourcePath()), resource -> new ArrayList<>())
+			.add(patch.expectedVersion());
+	}
+
+	private static String resourceKey(String normalizedModId, String normalizedPath) {
+		return normalizedModId + "|" + normalizedPath;
 	}
 
 	public static ResourcePatch findPatch(String modId, String version, String resourcePath) {
@@ -180,13 +196,9 @@ public final class ResourcePatchRegistry {
 
 	/** Registered versions, as declared, of every patch for this mod resource. */
 	public static List<String> registeredVersions(String modId, String resourcePath) {
-		String normMod = modId.toLowerCase();
-		String normPath = ResourcePatchResolver.normalizePath(resourcePath).toLowerCase();
-		return PATCHES.entrySet().stream()
-			.filter(entry -> entry.getKey().modId().equals(normMod) && entry.getKey().resourcePath().equals(normPath))
-			.map(entry -> entry.getValue().expectedVersion())
-			.sorted()
-			.toList();
+		String normMod = modId.toLowerCase(Locale.ROOT);
+		String normPath = ResourcePatchResolver.normalizePath(resourcePath).toLowerCase(Locale.ROOT);
+		return VERSIONS.getOrDefault(resourceKey(normMod, normPath), List.of());
 	}
 
 	public static Map<ResourcePatchKey, ResourcePatch> getAllPatches() {

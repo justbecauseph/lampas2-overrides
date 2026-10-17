@@ -12,3 +12,8 @@
 /src/test/resources/upstream/rogues/3.1.3.003+26.2/data/minecraft/enchantment/sharpness.json -text
 # Keep the Rogues replacement byte-identical to the SHA-256 recorded in docs/evidence/rogues-sharpness.json.
 /src/main/resources/lampas2-overrides/resource-patches/rogues/3.1.3.003+26.2/data/minecraft/enchantment/sharpness.json -text
+# RPG Series spell patches: fixtures are byte-exact jar entries (no trailing LF) and replacements match the
+# SHA-256 values in docs/evidence/rpg-spell-patches.manifest.json, which keeps the plan's recorded bytes.
+/src/test/resources/upstream/**/spell/**/*.json -text
+/src/main/resources/lampas2-overrides/resource-patches/**/spell/**/*.json -text
+/docs/evidence/rpg-spell-patches.manifest.json -text

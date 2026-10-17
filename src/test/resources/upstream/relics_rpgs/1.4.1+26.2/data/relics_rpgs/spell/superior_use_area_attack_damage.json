@@ -1,0 +1,80 @@
+{
+  "school": "spell_power:physical_melee",
+  "secondary_archetype": "ANY",
+  "range": 15.0,
+  "tier": 7,
+  "tooltip": {
+    "show_header": false,
+    "name": {
+      "show_in_compact": false,
+      "show_in_details": false
+    },
+    "description": {
+      "color": "dark_green"
+    }
+  },
+  "active": {},
+  "release": {
+    "animation": {
+      "id": "spell_engine:dual_handed_weapon_charge"
+    },
+    "visuals": {
+      "particles": [
+        {
+          "id": "spell_engine:magic_spell",
+          "appearance": {
+            "color": 4294954239,
+            "motion": "DECELERATE"
+          },
+          "batch": {
+            "count": 60.0,
+            "shape": "CIRCLE",
+            "anchor": "ENTITY",
+            "min_speed": 0.8,
+            "max_speed": 0.8
+          }
+        },
+        {
+          "id": "spell_engine:magic_spell",
+          "appearance": {
+            "color": 4294954239,
+            "motion": "DECELERATE"
+          },
+          "batch": {
+            "count": 60.0,
+            "shape": "CIRCLE",
+            "anchor": "ENTITY",
+            "min_speed": 1.2,
+            "max_speed": 1.2
+          }
+        }
+      ]
+    },
+    "sound": {
+      "id": "relics_rpgs:horn_activate",
+      "randomness": 0.0
+    }
+  },
+  "target": {
+    "type": "AREA",
+    "area": {
+      "include_caster": true
+    }
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "STATUS_EFFECT",
+        "status_effect": {
+          "effect_id": "relics_rpgs:superior_attack_damage",
+          "duration": 15.0
+        }
+      }
+    }
+  ],
+  "cost": {
+    "cooldown": {
+      "duration": 90.0
+    }
+  }
+}

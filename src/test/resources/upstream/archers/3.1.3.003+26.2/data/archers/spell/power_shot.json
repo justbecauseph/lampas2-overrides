@@ -1,0 +1,85 @@
+{
+  "school": "spell_power:physical_ranged",
+  "range": 0.0,
+  "tier": 2,
+  "group": "archer_marksman",
+  "learn": {},
+  "active": {},
+  "release": {
+    "visuals": {
+      "particles": [
+        {
+          "id": "spell_engine:magic_stripe",
+          "appearance": {
+            "color": 3208659199,
+            "motion": "FLOAT"
+          },
+          "batch": {
+            "count": 10.0,
+            "shape": "PIPE",
+            "anchor": "ENTITY",
+            "vertical_origin": 0.1,
+            "min_speed": 0.01,
+            "max_speed": 0.1,
+            "width_factor": 2.0
+          }
+        }
+      ]
+    },
+    "sound": {
+      "id": "archers:marker_shot",
+      "volume": 0.5
+    }
+  },
+  "deliver": {
+    "type": "STASH_EFFECT",
+    "stash_effect": {
+      "id": "archers:hunters_mark_stash",
+      "amplifier": 2,
+      "duration": 12.0,
+      "triggers": [
+        {
+          "type": "ARROW_SHOT"
+        }
+      ],
+      "impact_mode": "TRANSFER"
+    }
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "STATUS_EFFECT",
+        "status_effect": {
+          "effect_id": "archers:hunters_mark",
+          "duration": 12.0,
+          "amplifier": 1,
+          "amplifier_cap": 2,
+          "apply_mode": "ADD"
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "firework",
+            "appearance": {},
+            "batch": {
+              "count": 3.0,
+              "shape": "PILLAR",
+              "anchor": "ENTITY",
+              "min_speed": 0.01,
+              "max_speed": 0.1
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "arrow_perks": {
+    "bypass_iframes": true
+  },
+  "cost": {
+    "cooldown": {
+      "duration": 8.0
+    }
+  }
+}

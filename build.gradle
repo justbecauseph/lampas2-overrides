@@ -58,6 +58,12 @@ dependencies {
 
 test {
 	useJUnitPlatform()
+	// Opt-in checks against the dev server's deployed jars, which live outside this repository:
+	// ./gradlew test -PserverModsDir=../lampas-server-fabric/mods
+	def serverModsDir = providers.gradleProperty("serverModsDir").orNull
+	if (serverModsDir != null) {
+		systemProperty "lampas2.serverModsDir", file(serverModsDir).absolutePath
+	}
 }
 
 

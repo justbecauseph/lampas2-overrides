@@ -1,0 +1,59 @@
+{
+  "school": "spell_power:physical_ranged",
+  "secondary_archetype": "ANY",
+  "range": 0.0,
+  "tier": 7,
+  "tooltip": {
+    "show_header": false,
+    "name": {
+      "show_in_compact": false,
+      "show_in_details": false
+    },
+    "description": {
+      "color": "dark_green"
+    }
+  },
+  "active": {},
+  "release": {
+    "animation": {
+      "id": "spell_engine:dual_handed_weapon_charge"
+    },
+    "visuals": {
+      "particles": [
+        {
+          "id": "spell_engine:magic_spark",
+          "appearance": {
+            "color": 1728014079,
+            "motion": "DECELERATE"
+          },
+          "batch": {
+            "count": 25.0,
+            "shape": "SPHERE",
+            "anchor": "ENTITY",
+            "min_speed": 0.14,
+            "max_speed": 0.15
+          }
+        }
+      ]
+    },
+    "sound": {
+      "id": "relics_rpgs:eagle_boost"
+    }
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "STATUS_EFFECT",
+        "status_effect": {
+          "effect_id": "relics_rpgs:lesser_ranged_damage"
+        }
+      }
+    }
+  ],
+  "cost": {
+    "cooldown": {
+      "duration": 60.0,
+      "haste_affected": false
+    }
+  }
+}

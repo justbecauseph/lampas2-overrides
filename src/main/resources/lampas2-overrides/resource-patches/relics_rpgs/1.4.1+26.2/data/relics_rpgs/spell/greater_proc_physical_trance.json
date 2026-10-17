@@ -1,0 +1,109 @@
+{
+  "school": "spell_power:physical_melee",
+  "range": 0.0,
+  "tier": 7,
+  "tooltip": {
+    "show_header": false,
+    "name": {
+      "show_in_compact": false,
+      "show_in_details": false
+    },
+    "description": {
+      "color": "dark_green"
+    }
+  },
+  "type": "PASSIVE",
+  "passive": {
+    "triggers": [
+      {
+        "type": "MELEE_IMPACT",
+        "chance": 0.1
+      },
+      {
+        "type": "ARROW_IMPACT",
+        "chance": 0.1
+      }
+    ]
+  },
+  "release": {
+    "animation": {
+      "id": "spell_engine:dual_handed_weapon_charge"
+    },
+    "visuals": {
+      "particles": [
+        {
+          "id": "spell_engine:magic_holy",
+          "appearance": {
+            "color": 3208659199,
+            "motion": "DECELERATE"
+          },
+          "batch": {
+            "count": 25.0,
+            "shape": "PIPE",
+            "anchor": "ENTITY",
+            "vertical_origin": 0.1,
+            "min_speed": 0.15,
+            "max_speed": 0.15,
+            "width_factor": 2.0
+          }
+        },
+        {
+          "id": "spell_engine:magic_skull",
+          "appearance": {
+            "color": 3208659199,
+            "motion": "DECELERATE"
+          },
+          "batch": {
+            "count": 50.0,
+            "shape": "PIPE",
+            "anchor": "ENTITY",
+            "vertical_origin": 0.1,
+            "min_speed": 0.3,
+            "max_speed": 0.3,
+            "width_factor": 2.0
+          }
+        }
+      ]
+    },
+    "sound": {
+      "id": "relics_rpgs:bloodlust_activate"
+    }
+  },
+  "deliver": {
+    "type": "STASH_EFFECT",
+    "stash_effect": {
+      "id": "relics_rpgs:greater_physical_trance",
+      "triggers": [
+        {
+          "target_override": "CASTER",
+          "type": "MELEE_IMPACT"
+        },
+        {
+          "target_override": "CASTER",
+          "type": "ARROW_IMPACT"
+        }
+      ],
+      "consume": 0
+    }
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "STATUS_EFFECT",
+        "status_effect": {
+          "effect_id": "relics_rpgs:greater_physical_trance",
+          "amplifier": 1,
+          "amplifier_cap": 9,
+          "refresh_duration": false,
+          "apply_mode": "ADD"
+        }
+      }
+    }
+  ],
+  "cost": {
+    "cooldown": {
+      "duration": 45.0,
+      "haste_affected": false
+    }
+  }
+}

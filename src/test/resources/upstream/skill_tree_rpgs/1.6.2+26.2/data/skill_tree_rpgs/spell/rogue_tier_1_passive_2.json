@@ -1,0 +1,91 @@
+{
+  "school": "spell_power:physical_melee",
+  "range": 0.0,
+  "tier": 1,
+  "type": "PASSIVE",
+  "passive": {
+    "triggers": [
+      {
+        "type": "MELEE_IMPACT",
+        "chance": 0.25
+      },
+      {
+        "type": "SPELL_IMPACT_SPECIFIC",
+        "chance": 0.25,
+        "spell": {
+          "archetype": "MELEE",
+          "type": "ACTIVE"
+        }
+      }
+    ]
+  },
+  "target": {
+    "type": "FROM_TRIGGER"
+  },
+  "deliver": {
+    "delay": 1
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "DAMAGE",
+        "damage": {
+          "spell_power_coefficient": 0.5,
+          "knockback": 0.0
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:magic_spark",
+            "appearance": {
+              "color": 3003121919,
+              "motion": "BURST"
+            },
+            "batch": {
+              "count": 40.0,
+              "shape": "SPHERE",
+              "anchor": "ENTITY",
+              "min_speed": 0.5,
+              "max_speed": 0.8
+            }
+          },
+          {
+            "id": "spell_engine:area_effect_409",
+            "appearance": {
+              "color": 3003121919,
+              "facing": "CAMERA",
+              "attachment": "POSITION"
+            },
+            "batch": {
+              "count": 1.0,
+              "shape": "LINE",
+              "anchor": "ENTITY"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "action": {
+        "type": "STATUS_EFFECT",
+        "status_effect": {
+          "effect_id": "skill_tree_rpgs:fracture",
+          "duration": 6.0,
+          "amplifier": 1,
+          "amplifier_cap": 1,
+          "apply_mode": "ADD"
+        }
+      },
+      "sound": {
+        "id": "skill_tree_rpgs:rogue_fracture_impact"
+      }
+    }
+  ],
+  "cost": {
+    "durability": 0,
+    "cooldown": {
+      "duration": 6.0
+    }
+  }
+}

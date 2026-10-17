@@ -1,0 +1,127 @@
+{
+  "school": "spell_power:physical_melee",
+  "range": 5.0,
+  "tier": 2,
+  "group": "rogue_subtlety",
+  "learn": {},
+  "active": {},
+  "release": {
+    "animation": {
+      "id": "spell_engine:dual_handed_ground_release"
+    },
+    "visuals": {
+      "particles": [
+        {
+          "id": "spell_engine:smoke_medium",
+          "appearance": {},
+          "batch": {
+            "count": 50.0,
+            "shape": "CIRCLE",
+            "anchor": "ENTITY",
+            "min_speed": 0.2,
+            "max_speed": 0.3,
+            "pre_travel": 6.0
+          }
+        },
+        {
+          "id": "spell_engine:smoke_medium",
+          "appearance": {},
+          "batch": {
+            "count": 60.0,
+            "shape": "CIRCLE",
+            "anchor": "ENTITY",
+            "min_speed": 0.2,
+            "max_speed": 0.3,
+            "pre_travel": 8.0
+          }
+        },
+        {
+          "id": "spell_engine:smoke_medium",
+          "appearance": {},
+          "batch": {
+            "count": 50.0,
+            "shape": "SPHERE",
+            "anchor": "ENTITY",
+            "min_speed": 0.25,
+            "max_speed": 0.25,
+            "pre_travel": 4.0
+          }
+        },
+        {
+          "id": "spell_engine:lightning_arc_a",
+          "appearance": {
+            "playback_speed": 0.41,
+            "lifetime_variance": 0.55,
+            "color": 4294928127,
+            "scale": 0.75,
+            "drag": 0.96,
+            "collides": true
+          },
+          "batch": {
+            "count": 6.0,
+            "shape": "PILLAR",
+            "anchor": "ENTITY",
+            "vertical_origin": 0.1,
+            "min_speed": 0.01,
+            "max_speed": 0.05,
+            "extent": 3.0
+          }
+        },
+        {
+          "id": "spell_engine:lightning_arc_b",
+          "appearance": {
+            "playback_speed": 0.41,
+            "lifetime_variance": 0.55,
+            "color": 4294928127,
+            "scale": 0.75,
+            "drag": 0.96,
+            "collides": true
+          },
+          "batch": {
+            "count": 8.0,
+            "shape": "PILLAR",
+            "anchor": "ENTITY",
+            "vertical_origin": 0.1,
+            "min_speed": 0.01,
+            "max_speed": 0.05,
+            "extent": 5.0
+          }
+        }
+      ]
+    },
+    "sound": {
+      "id": "rogues:shock_powder_release"
+    }
+  },
+  "target": {
+    "type": "AREA",
+    "area": {
+      "vertical_range_multiplier": 0.5
+    }
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "STATUS_EFFECT",
+        "status_effect": {
+          "effect_id": "rogues:shock",
+          "duration": 2.0,
+          "apply_limit": {
+            "health_base": 50.0,
+            "spell_power_multiplier": 7.5
+          }
+        }
+      },
+      "sound": {
+        "id": "rogues:shock_powder_impact"
+      }
+    }
+  ],
+  "cost": {
+    "exhaust": 0.3,
+    "cooldown": {
+      "duration": 16.0,
+      "haste_affected": false
+    }
+  }
+}

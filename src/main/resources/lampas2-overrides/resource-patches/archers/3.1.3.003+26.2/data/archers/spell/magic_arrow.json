@@ -1,0 +1,218 @@
+{
+  "school": "spell_power:physical_ranged",
+  "range": 16.0,
+  "tier": 4,
+  "group": "archer_nature",
+  "learn": {},
+  "active": {
+    "cast": {
+      "duration": 1.0,
+      "type": "CHARGE",
+      "charge": {
+        "bonus": {
+          "range_add": 48.0
+        }
+      },
+      "animation": {
+        "id": "spell_engine:archery_pull"
+      },
+      "animates_ranged_weapon": true,
+      "sound": {
+        "id": "spell_engine:generic_wind_charging"
+      },
+      "particles": [
+        {
+          "id": "spell_engine:magic_spark",
+          "appearance": {
+            "color": 1728014079,
+            "motion": "FLOAT"
+          },
+          "batch": {
+            "count": 4.0,
+            "shape": "SPHERE",
+            "anchor": "LAUNCH_POINT",
+            "min_speed": 0.02,
+            "max_speed": 0.1,
+            "pre_travel": 14.0,
+            "invert": true
+          }
+        }
+      ]
+    }
+  },
+  "release": {
+    "animation": {
+      "id": "spell_engine:archery_release"
+    },
+    "visuals": {
+      "particles": [
+        {
+          "id": "spell_engine:magic_spark",
+          "appearance": {
+            "color": 1728014079,
+            "motion": "DECELERATE"
+          },
+          "batch": {
+            "count": 50.0,
+            "shape": "CIRCLE",
+            "anchor": "LAUNCH_POINT",
+            "alignment": "LOOK",
+            "min_speed": 0.18,
+            "max_speed": 0.2
+          }
+        },
+        {
+          "id": "spell_engine:magic_spark",
+          "appearance": {
+            "color": 1728014079,
+            "motion": "DECELERATE"
+          },
+          "batch": {
+            "count": 25.0,
+            "shape": "CIRCLE",
+            "anchor": "LAUNCH_POINT",
+            "alignment": "LOOK",
+            "min_speed": 0.28,
+            "max_speed": 0.3
+          }
+        }
+      ]
+    },
+    "sound": {
+      "id": "archers:magic_arrow_release"
+    }
+  },
+  "target": {
+    "type": "AIM",
+    "aim": {}
+  },
+  "deliver": {
+    "type": "PROJECTILE",
+    "projectile": {
+      "launch_properties": {
+        "velocity": 1.5
+      },
+      "projectile": {
+        "homing_angle": 2.0,
+        "perks": {
+          "pierce": 99999
+        },
+        "client_data": {
+          "light_level": 10,
+          "travel_particles": [
+            {
+              "id": "spell_engine:magic_spark",
+              "appearance": {
+                "color": 1728014079,
+                "motion": "DECELERATE"
+              },
+              "batch": {
+                "count": 5.0,
+                "shape": "LINE",
+                "anchor": "ENTITY",
+                "alignment": "LOOK",
+                "roll_per_tick": 18.0,
+                "min_speed": 0.14,
+                "max_speed": 0.15
+              }
+            },
+            {
+              "id": "spell_engine:magic_spark",
+              "appearance": {
+                "color": 1728014079,
+                "motion": "DECELERATE"
+              },
+              "batch": {
+                "count": 5.0,
+                "shape": "LINE",
+                "anchor": "ENTITY",
+                "alignment": "LOOK",
+                "roll_per_tick": 18.0,
+                "roll_offset": 180.0,
+                "min_speed": 0.14,
+                "max_speed": 0.15
+              }
+            },
+            {
+              "id": "firework",
+              "appearance": {},
+              "batch": {
+                "count": 2.0,
+                "shape": "CIRCLE",
+                "anchor": "ENTITY",
+                "alignment": "LOOK",
+                "max_speed": 0.05
+              }
+            },
+            {
+              "id": "spell_engine:magic_spark",
+              "appearance": {
+                "color": 1728014079,
+                "motion": "DECELERATE"
+              },
+              "batch": {
+                "count": 10.0,
+                "shape": "CIRCLE",
+                "anchor": "ENTITY",
+                "alignment": "LOOK",
+                "max_speed": 0.05
+              }
+            }
+          ],
+          "composite_model": {
+            "models": [
+              {
+                "fx": {
+                  "model_id": "archers:spell_projectile/magic_arrow",
+                  "light_emission": "RADIATE",
+                  "scale": 1.2
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "DAMAGE",
+        "damage": {
+          "spell_power_coefficient": 1.2,
+          "knockback": 2.0
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:magic_spark",
+            "appearance": {
+              "color": 1728014079,
+              "motion": "BURST"
+            },
+            "batch": {
+              "count": 25.0,
+              "shape": "SPHERE",
+              "anchor": "ENTITY",
+              "min_speed": 1.2,
+              "max_speed": 1.8
+            }
+          }
+        ]
+      },
+      "sound": {
+        "id": "archers:magic_arrow_impact"
+      }
+    }
+  ],
+  "cost": {
+    "cooldown": {
+      "duration": 8.0,
+      "haste_affected": false
+    },
+    "item": {
+      "id": "arrow"
+    }
+  }
+}

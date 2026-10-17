@@ -1,0 +1,78 @@
+{
+  "school": "spell_power:physical_melee",
+  "range": 0.0,
+  "tier": 7,
+  "tooltip": {
+    "show_header": false,
+    "name": {
+      "show_in_compact": false,
+      "show_in_details": false
+    },
+    "description": {
+      "color": "dark_green"
+    }
+  },
+  "type": "PASSIVE",
+  "passive": {
+    "triggers": [
+      {
+        "target_override": "CASTER",
+        "type": "EVASION",
+        "chance": 0.5
+      }
+    ]
+  },
+  "release": {
+    "visuals": {
+      "particles": [
+        {
+          "id": "spell_engine:magic_spark",
+          "appearance": {
+            "color": 3439329279,
+            "motion": "DECELERATE",
+            "attachment": "POSITION"
+          },
+          "batch": {
+            "count": 25.0,
+            "shape": "SPHERE",
+            "anchor": "ENTITY",
+            "min_speed": 0.3,
+            "max_speed": 0.3,
+            "pre_travel": 4.0,
+            "invert": true
+          }
+        }
+      ]
+    },
+    "sound": {
+      "id": "relics_rpgs:hook_activate"
+    }
+  },
+  "target": {
+    "type": "FROM_TRIGGER"
+  },
+  "deliver": {
+    "type": "STASH_EFFECT",
+    "stash_effect": {
+      "id": "relics_rpgs:greater_evasion_attack",
+      "triggers": [
+        {
+          "type": "MELEE_IMPACT"
+        },
+        {
+          "type": "SPELL_IMPACT_SPECIFIC",
+          "spell": {
+            "archetype": "MELEE",
+            "type": "ACTIVE"
+          }
+        }
+      ]
+    }
+  },
+  "cost": {
+    "cooldown": {
+      "duration": 10.0,
+      "haste_affected": false
+    }
+  }
+}

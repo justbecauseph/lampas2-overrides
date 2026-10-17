@@ -16,9 +16,10 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Gravestones death inscription and glow](#gravestones-death-inscription-and-glow) | Gravestones | Suppresses technical death grave text and renders a glowing outline only on your own graves |
 | [Jade nameplates and Custom Name](#jade-nameplates-and-custom-name) | Client Jade; server TAB name sync | Suppresses vanilla in-world entity/player nameplates and shows server-synced player display names in Jade |
 | [Custom Name multi-word names](#custom-name-multi-word-names) | Custom Name 0.4.4-26.2 | Permits spaces in nickname, prefix, and suffix commands for non-operators |
-| [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Rogues 3.1.3.003+26.2 | Transparently repairs malformed `pack.mcmeta` formats, worldgen resources and Rogues' Sharpness at runtime |
+| [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Rogues 3.1.3.003+26.2, RPG Series spells | Transparently repairs malformed `pack.mcmeta` formats, worldgen resources, Rogues' Sharpness and RPG Series spell data at runtime |
 | [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.3.3 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
 | [Rogues Sharpness](#rogues-sharpness) | Rogues 3.1.3.003+26.2 | Restores flat Sharpness in place of Rogues' +8% base attack damage per level |
+| [RPG Series spell patches](#rpg-series-spell-patches) | RPG Series 26.2 (Rogues, Wizards, Paladins, Archers, Spell Engine, Skill Tree, Relics) | Martial spell cooldowns ignore haste; crowd-control apply limits reach Pinnacle mobs |
 | [Bee and spawner structure DFU validation](#bee-and-spawner-structure-dfu-validation) | Exact Trek and Stoneholm fixtures | Historical run on the removed Trinkets 4.1.0 profile; re-validation on 4.1.1 is pending |
 | [Boat water-mask compatibility](#boat-water-mask-compatibility) | EMF 3.3.12 + audited boat providers | Restores the vanilla water mask for plain hulls when the selected Fresh Animations mask is incompatible |
 | [Better Lib demo villager suppression](#better-lib-demo-villager-suppression) | Better Lib | Suppresses hardcoded demo villager registration that causes RemapException registry sync disconnects |
@@ -319,6 +320,85 @@ contents and each client decodes its own Rogues copy, so the patch must run on c
 pipeline ships this jar on both sides. A client without it shows Rogues' +8% modifier in tooltips while
 the server deals flat damage. The client-side path has not been probed.
 
+## RPG Series spell patches
+
+Two class balance decisions of 17 October 2026 (D3 P1 and D9) change RPG Series spell data. Both are
+version- and SHA-gated resource patches: 64 spell files in seven jars, one replacement per file even
+where a file gets both changes.
+
+**Martial cooldowns ignore haste (D3 P1).** Spell Engine 1.10.9's `SpellParameters.getCooldownDuration`
+divides a spell's cooldown by the caster's haste for its school when the server's
+`haste_affects_cooldown` and the spell's `cost.cooldown.haste_affected` are both true; the field defaults
+to true. Physical melee haste comes from attack-speed modifiers plus spell haste, and physical ranged
+haste from `ranged_weapon:haste`, so attack speed shortened melee cooldowns and Agile/Slipstream shortened
+archer ones. AttributeFix's cap on `minecraft:attack_speed` does not limit it: Spell Engine sums modifier
+amounts and never reads the capped value. Every spell in the physical_melee, physical_melee_dual or
+physical_ranged school with a cooldown above 0 gets `"haste_affected": false` as the last key of
+`cost.cooldown`:
+
+| Mod (version) | Spells |
+|---|---|
+| Rogues & Warriors (3.1.3.003+26.2) | bear_trap, charge, mortal_strike, mutilate, shadow_step, shock_powder, shout, slice_and_dice, throw, throw_net, vanish |
+| Spell Engine `rpg_series` (1.10.9+26.2) | cleave, fan_of_knives, flurry, ground_slam, impale, smash, swift_strikes, swipe, thrust, whirlwind |
+| Paladins & Priests (3.1.3.003+26.2) | judgement |
+| Archers (3.1.3.003+26.2) | barrage, entangling_roots, magic_arrow, power_shot, rain_of_arrows |
+| Skill Tree (1.6.2+26.2) | 18 passives: archer tier 1-3, paladin tier 1 and 3, rogue tier 1-3, warrior tier 1 and 3, weapon_bow_passive_1, weapon_swipe_modifier_2 |
+| Relics (1.4.1+26.2) | 14 procs and uses, including medium_proc_attack_speed, whose own attack speed used to shorten its 45 s cooldown |
+
+`archers:spirit_wolf` already sets `haste_affected: false`, and `rogues:last_stand` is in the health
+school, which has no haste source. Caster and healer cooldowns, the global switch and cast times stay
+hasted.
+
+**Crowd-control apply limits reach Pinnacle (D9).** A status effect with an `apply_limit` lands only when
+`health_base + power x spell_power_multiplier >= target max health`. Twelve limits are raised so a
+modelled Pinnacle user reaches the End top band (736.5 health at level 200) with at least 5% margin:
+
+| Spell (impact) | Effect | Upstream | Patched | Modelled Pinnacle limit |
+|---|---|---|---|---|
+| Frost Nova, Frost Spikes [1] | wizards:frozen | 60+4P | 60+13.5P | 829 |
+| Frostbolt, Frost Lance [1] | wizards:frost_slowness | 100+4P | 100+12.5P | 812 |
+| Frost Blizzard [1] | wizards:frost_slowness | 80+4P | 80+12.5P | 792 |
+| Judgement [1] | paladins:judgement | 50+2P | 50+7.5P | 823 |
+| Shout [0] | rogues:demoralize | 50+2P | 50+9.5P | 848 |
+| Throw, Throw Net [1] | rogues:shatter, rogues:net_trap | 100+2P | 100+8.5P | 814 |
+| Shock Powder [0] | rogues:shock | 50+2P | 50+7.5P | 842 |
+| Bear Trap [1] | rogues:bear_trap | 100+2P | 100+5.5P | 835 |
+| Entangling Roots [0] | archers:entangling_roots | 50+5P | 780+5P | 785-815 at every tier |
+
+The P values are the audit's scratch models with idealized gear. Roots' power is the archer's attack
+damage (about 1, or 7 with Strength II), so its base is raised instead. Spell Engine refuses
+movement-impairing and AI-disabling effects on `#spell_engine:bosses` regardless of the limit; that
+covers every effect above except Demoralize and Shatter. Apotheosis elites and invaders are not bosses,
+so their immunity comes from lampas-addons, which must ship in the same pack or earlier.
+
+Each patch requires the mod ID, the version the upstream `fabric.mod.json` declares and the upstream
+file's SHA-256; another release or a changed file keeps the upstream spell and logs WARN. The
+replacements are generated: `python -I tools/generate_rpg_spell_patches.py --mods <server mods>`
+rebuilds them and their test fixtures from the pinned jars, and `--check` verifies the committed files.
+Every upstream spell file is written exactly as `json.dumps(indent=2)` writes it, so each replacement
+differs from upstream only in the decided keys. Per-file SHA-256 values are in
+`docs/evidence/rpg-spell-patches.manifest.json`.
+
+Verification on 17 October 2026: unit tests check that the registry holds exactly the decided spells,
+that each replacement is its upstream jar entry with only the decided keys changed (byte for byte), the
+limit margins, the Loader-normalized version gate, and the WARN on an unregistered version or changed
+file. `./gradlew test -PserverModsDir=../lampas-server-fabric/mods` also scans every spell in the
+deployed jars for an unpatched hasted martial cooldown or apply limit. The dedicated-server probe
+(`tools/rpg-spell-patch-probe/run.py`) ran the seven jars and their dependency closure, with a
+FakePlayer at haste 3.0 (melee), 2.0 (ranged) and 2.0 (spell):
+
+| Run | Applied lines | `rogues:charge` (12 s) | `wizards:fire_meteor` (10 s) | Frost Nova vs 736.5 health at P 56.99 | WARN |
+|---|---|---|---|---|---|
+| Without overrides | 0 | 4.0 s | 5.0 s | does not apply (60+4P) | none |
+| With `lampas2-overrides-1.0.2.jar` | 64 | 12.0 s | 5.0 s | applies (60+13.5P); off at P 49.6, on at P 50.6 | none |
+| Wizards declared `3.1.3.004+26.2` | 59 | 12.0 s | 5.0 s | does not apply (60+4P) | 5 x `is not registered` |
+| Whirlwind entry tampered | 63 | 12.0 s | 5.0 s | applies | 1 x `SHA-256 mismatch`; Whirlwind stays hasted |
+
+Evidence: `docs/evidence/rpg-spell-patches.json`. Spells are the synced `minecraft:spell` registry, and
+clients decode known-pack entries from their own copy, so the jar must also run on clients; a client
+without it shows hasted cooldowns in tooltips while the server enforces the patched ones. Combat with a
+real player, the client-side decode, full-pack behavior and elite/invader immunity are not covered.
+
 ## Retired FrozenLib wind compatibility
 
 Lampas2 Overrides applies no FrozenLib wind shim: an unpatched isolated client with FrozenLib 3.0 and Wilder Wild 4.3 showed no missing-extension failure. FrozenLib still changes the wind singleton during worker decoding, so general thread safety is not established. The probe and evidence for this observation were removed after commit `d8d84f1` (`docs/wind-state.md`).
@@ -429,6 +509,7 @@ Patched mods and resources:
    - **Fix**: Replaces `pack.mcmeta` with valid `supported_formats: [48, 107]`.
 5. **Wilder Wild (4.3)**: The stone-pool radius repair is described in [Wilder Wild stone pool](#wilder-wild-stone-pool).
 6. **Rogues (3.1.3.003+26.2)**: The Sharpness replacement is described in [Rogues Sharpness](#rogues-sharpness).
+7. **RPG Series spells**: 64 spell files across seven jars, described in [RPG Series spell patches](#rpg-series-spell-patches).
 
 A registered patch whose mod is installed at a different version is skipped with a WARN naming both
 versions, as a changed SHA-256 is. Fabric Loader reports versions without leading zeros in numeric
@@ -568,6 +649,7 @@ workflow's artifacts — into your `mods` folder.
 
 ```bash
 ./gradlew build          # jar lands in build/libs/
+./gradlew test -PserverModsDir=../lampas-server-fabric/mods   # adds checks against the deployed RPG Series jars
 ./gradlew runClient      # dev client; put figura + replaymod jars in run/mods/ first
 ```
 

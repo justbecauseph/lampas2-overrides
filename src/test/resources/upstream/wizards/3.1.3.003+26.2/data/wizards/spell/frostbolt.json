@@ -1,0 +1,177 @@
+{
+  "school": "spell_power:frost",
+  "range": 64.0,
+  "tier": 1,
+  "group": "frost_weapon",
+  "learn": {},
+  "active": {
+    "cast": {
+      "duration": 1.1,
+      "animation": {
+        "id": "spell_engine:one_handed_projectile_charge"
+      },
+      "sound": {
+        "id": "spell_engine:generic_frost_casting",
+        "randomness": 0.0
+      },
+      "particles": [
+        {
+          "id": "spell_engine:snowflake",
+          "appearance": {},
+          "batch": {
+            "count": 0.5,
+            "shape": "PIPE",
+            "anchor": "ENTITY",
+            "min_speed": 0.1,
+            "max_speed": 0.2,
+            "width_factor": 2.0
+          }
+        }
+      ]
+    }
+  },
+  "release": {
+    "animation": {
+      "id": "spell_engine:one_handed_projectile_release"
+    }
+  },
+  "target": {
+    "type": "AIM",
+    "aim": {}
+  },
+  "deliver": {
+    "type": "PROJECTILE",
+    "projectile": {
+      "launch_properties": {
+        "velocity": 1.2,
+        "sound": {
+          "id": "spell_engine:generic_frost_release"
+        }
+      },
+      "projectile": {
+        "homing_angle": 2.0,
+        "perks": {
+          "ricochet": 2,
+          "bounce": 2
+        },
+        "client_data": {
+          "light_level": 12,
+          "travel_particles": [
+            {
+              "id": "spell_engine:snowflake",
+              "appearance": {},
+              "batch": {
+                "count": 4.0,
+                "shape": "CIRCLE",
+                "anchor": "ENTITY",
+                "alignment": "LOOK",
+                "max_speed": 0.1
+              }
+            },
+            {
+              "id": "spell_engine:magic_frost",
+              "appearance": {
+                "color": 3439329279,
+                "motion": "BURST"
+              },
+              "batch": {
+                "count": 1.0,
+                "shape": "CIRCLE",
+                "anchor": "ENTITY",
+                "alignment": "LOOK",
+                "min_speed": 0.1,
+                "max_speed": 0.2
+              }
+            }
+          ],
+          "composite_model": {
+            "models": [
+              {
+                "fx": {
+                  "model_id": "wizards:spell_projectile/frostbolt_inner",
+                  "scale": 0.5
+                }
+              },
+              {
+                "rotate_degrees_per_tick": -2.0,
+                "fx": {
+                  "model_id": "wizards:spell_projectile/frostbolt_outer",
+                  "scale": 0.5
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "DAMAGE",
+        "damage": {
+          "spell_power_coefficient": 0.8
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:magic_frost",
+            "appearance": {
+              "color": 3439329279,
+              "motion": "BURST"
+            },
+            "batch": {
+              "count": 50.0,
+              "shape": "SPHERE",
+              "anchor": "ENTITY",
+              "min_speed": 0.2,
+              "max_speed": 0.7
+            }
+          }
+        ]
+      },
+      "sound": {
+        "id": "spell_engine:generic_frost_impact"
+      }
+    },
+    {
+      "action": {
+        "type": "STATUS_EFFECT",
+        "status_effect": {
+          "effect_id": "wizards:frost_slowness",
+          "duration": 5.0,
+          "amplifier_cap": 1,
+          "apply_mode": "ADD",
+          "apply_limit": {
+            "health_base": 100.0,
+            "spell_power_multiplier": 4.0
+          }
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:snowflake",
+            "appearance": {},
+            "batch": {
+              "count": 25.0,
+              "shape": "SPHERE",
+              "anchor": "ENTITY",
+              "min_speed": 0.1,
+              "max_speed": 0.4
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "cost": {
+    "cooldown": {
+      "group": "weapon"
+    },
+    "item": {
+      "id": "runes:frost_stone"
+    }
+  }
+}

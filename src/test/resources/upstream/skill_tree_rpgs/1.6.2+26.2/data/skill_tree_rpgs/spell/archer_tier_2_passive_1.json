@@ -1,0 +1,60 @@
+{
+  "school": "spell_power:physical_ranged",
+  "range": 0.0,
+  "tier": 1,
+  "type": "PASSIVE",
+  "passive": {
+    "triggers": [
+      {
+        "type": "ROLL"
+      }
+    ]
+  },
+  "target": {
+    "type": "FROM_TRIGGER"
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "STATUS_EFFECT",
+        "apply_to_caster": true,
+        "status_effect": {
+          "effect_id": "skill_tree_rpgs:rhythm",
+          "duration": 6.0,
+          "amplifier": 1,
+          "amplifier_cap": 4,
+          "apply_mode": "ADD"
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:magic_spark",
+            "appearance": {
+              "color": 1728014079,
+              "motion": "DECELERATE"
+            },
+            "batch": {
+              "count": 15.0,
+              "shape": "PIPE",
+              "anchor": "ENTITY",
+              "vertical_origin": 0.1,
+              "min_speed": 0.1,
+              "max_speed": 0.4,
+              "width_factor": 2.0
+            }
+          }
+        ]
+      },
+      "sound": {
+        "id": "skill_tree_rpgs:archer_rhythm_activate"
+      }
+    }
+  ],
+  "cost": {
+    "durability": 0,
+    "cooldown": {
+      "duration": 6.0
+    }
+  }
+}

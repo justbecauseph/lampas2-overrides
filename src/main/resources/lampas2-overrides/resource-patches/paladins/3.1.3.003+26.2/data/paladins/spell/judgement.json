@@ -1,0 +1,231 @@
+{
+  "school": "spell_power:physical_melee",
+  "range": 16.0,
+  "tier": 3,
+  "group": "paladin_retribution",
+  "learn": {},
+  "active": {
+    "cast": {
+      "duration": 0.5,
+      "animation": {
+        "id": "spell_engine:one_handed_projectile_charge"
+      },
+      "sound": {
+        "id": "spell_engine:generic_healing_casting",
+        "randomness": 0.0
+      },
+      "particles": [
+        {
+          "id": "spell_engine:magic_spark",
+          "appearance": {
+            "color": 4294954239,
+            "motion": "FLOAT"
+          },
+          "batch": {
+            "count": 1.0,
+            "shape": "PIPE",
+            "anchor": "ENTITY",
+            "vertical_origin": 0.1,
+            "min_speed": 0.05,
+            "max_speed": 0.1,
+            "width_factor": 2.0
+          }
+        }
+      ]
+    }
+  },
+  "release": {
+    "animation": {
+      "id": "spell_engine:one_handed_area_release"
+    },
+    "sound": {
+      "id": "spell_engine:generic_healing_release"
+    }
+  },
+  "target": {
+    "type": "AIM",
+    "aim": {
+      "required": true,
+      "sticky": true
+    }
+  },
+  "deliver": {
+    "type": "METEOR",
+    "meteor": {
+      "launch_height": 12.0,
+      "launch_properties": {
+        "velocity": 1.2
+      },
+      "projectile": {
+        "client_data": {
+          "light_level": 15,
+          "travel_particles": [
+            {
+              "id": "spell_engine:magic_stripe",
+              "appearance": {
+                "color": 4294954239,
+                "motion": "FLOAT"
+              },
+              "batch": {
+                "count": 5.0,
+                "shape": "PIPE",
+                "anchor": "ENTITY",
+                "alignment": "LOOK",
+                "max_speed": 0.2,
+                "width_factor": 2.0
+              }
+            },
+            {
+              "id": "spell_engine:magic_spark",
+              "appearance": {
+                "color": 4294954239,
+                "motion": "FLOAT"
+              },
+              "batch": {
+                "count": 4.0,
+                "shape": "PIPE",
+                "anchor": "ENTITY",
+                "alignment": "LOOK",
+                "max_speed": 0.1,
+                "width_factor": 2.0
+              }
+            }
+          ],
+          "composite_model": {
+            "models": [
+              {
+                "fx": {
+                  "model_id": "paladins:spell_projectile/judgement",
+                  "light_emission": "RADIATE",
+                  "scale": 1.2
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "impacts": [
+    {
+      "power_blend": [
+        {
+          "school": "spell_power:healing",
+          "power": true,
+          "weight": 0.33333334
+        }
+      ],
+      "target_modifiers": [
+        {
+          "conditions": [
+            {
+              "entity_type": "#minecraft:undead"
+            }
+          ],
+          "modifier": {
+            "power_multiplier": 0.5
+          }
+        }
+      ],
+      "action": {
+        "type": "DAMAGE",
+        "damage": {
+          "spell_power_coefficient": 0.9
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:magic_holy",
+            "appearance": {
+              "color": 4294954239,
+              "motion": "BURST"
+            },
+            "batch": {
+              "count": 25.0,
+              "shape": "SPHERE",
+              "anchor": "ENTITY",
+              "min_speed": 0.2,
+              "max_speed": 1.0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "action": {
+        "type": "STATUS_EFFECT",
+        "status_effect": {
+          "effect_id": "paladins:judgement",
+          "duration": 3.0,
+          "apply_limit": {
+            "health_base": 50.0,
+            "spell_power_multiplier": 7.5
+          }
+        }
+      }
+    }
+  ],
+  "area_impact": {
+    "radius": 6.0,
+    "area": {
+      "distance_dropoff": "SQUARED"
+    },
+    "visuals": {
+      "particles": [
+        {
+          "id": "spell_engine:magic_holy",
+          "appearance": {
+            "color": 4294954239,
+            "motion": "DECELERATE"
+          },
+          "batch": {
+            "count": 100.0,
+            "shape": "SPHERE",
+            "anchor": "ENTITY",
+            "min_speed": 0.8,
+            "max_speed": 0.9
+          }
+        },
+        {
+          "id": "spell_engine:magic_spark",
+          "appearance": {
+            "color": 4294954239,
+            "motion": "FLOAT"
+          },
+          "batch": {
+            "count": 100.0,
+            "shape": "SPHERE",
+            "anchor": "ENTITY",
+            "min_speed": 0.2,
+            "max_speed": 0.4
+          }
+        },
+        {
+          "id": "smoke",
+          "appearance": {},
+          "batch": {
+            "count": 50.0,
+            "shape": "SPHERE",
+            "anchor": "ENTITY",
+            "min_speed": 0.1,
+            "max_speed": 0.3
+          }
+        }
+      ]
+    },
+    "sound": {
+      "id": "paladins:judgement_impact",
+      "volume": 1.5
+    }
+  },
+  "cost": {
+    "cooldown": {
+      "duration": 15.0,
+      "haste_affected": false
+    },
+    "item": {
+      "id": "runes:healing_stone"
+    }
+  }
+}

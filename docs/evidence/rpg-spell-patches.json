@@ -1,0 +1,3189 @@
+{
+  "schema_version": 1,
+  "feature": "RPG Series spell patches: D3 P1 (martial cooldowns ignore haste) and D9 (crowd-control apply limits), lampas2-overrides 1.0.2",
+  "date": "2026-10-17",
+  "decision_source": "lampas-two-planning docs/plan/CLASS-BALANCE-PLAN.md W5 (OV-1, OV-2); Q3 and Q8 defaults",
+  "manifest": "docs/evidence/rpg-spell-patches.manifest.json",
+  "manifest_sha256": "245a2affcbb009c7df2fb176cd5b38f1b98e547efe55cae0081dd792e5f15b5b",
+  "counts": {
+    "patches": 64,
+    "p1": 59,
+    "d9": 12,
+    "both": 7
+  },
+  "generator": "tools/generate_rpg_spell_patches.py --check reproduces every replacement and fixture from the pinned jars",
+  "runtime": {
+    "minecraft": "26.2",
+    "fabric_loader": "0.19.5",
+    "java": "OpenJDK 25.0.4 (Zulu 25.36+15-CA)",
+    "side": "dedicated server, disposable flat world, no players",
+    "spell_engine_haste_affects_cooldown": true,
+    "spell_registry": "ResourceKey[minecraft:root / minecraft:spell]",
+    "spell_registry_size": 346,
+    "probe_mod_sha256": "d71ebdea8eae9102c61e929b12564ad3fdfcbf6ddec9446f6257888524e0b677",
+    "haste_setup": "FakePlayer with minecraft:attack_speed +1.0 add_multiplied_total, ranged_weapon:haste +100, spell_power:haste +100",
+    "mods": [
+      {
+        "file": "archers-fabric-3.1.3.003+26.2.jar",
+        "id": "archers",
+        "version": "3.1.3.003+26.2",
+        "sha256": "4ee9c35f54d74f28f742f36a4f0b319d4d3936bc0731bd95cb823c17225db22d"
+      },
+      {
+        "file": "armor_model_api-fabric-1.1.2+26.2.jar",
+        "id": "armor_model_api",
+        "version": "1.1.2+26.2",
+        "sha256": "f0bf76cdd6f5e62d340813180a9bd0a2f5c754a614259ca74cbb6e1df25337e9"
+      },
+      {
+        "file": "bundle-api-fabric-4.0.0+26.2.jar",
+        "id": "bundleapi",
+        "version": "4.0.0+26.2",
+        "sha256": "b5fd743a9ceb95a6a128918d7fab312741cd2dd77941e79fa352bac2538ff1cc"
+      },
+      {
+        "file": "cloth-config-26.2.155.jar",
+        "id": "cloth-config",
+        "version": "26.2.155",
+        "sha256": "def4be7639cd66704f7e304d658ea0f6bf490fb4a6eaa2dbf18ec2c3999d6349"
+      },
+      {
+        "file": "fabric-api-0.161.0+26.2.jar",
+        "id": "fabric-api",
+        "version": "0.161.0+26.2",
+        "sha256": "e5b858ceb13290c274e31cb888ff5a1a40cb91067e7ffab0b5b775aec51e216a"
+      },
+      {
+        "file": "paladins-fabric-3.1.3.003+26.2.jar",
+        "id": "paladins",
+        "version": "3.1.3.003+26.2",
+        "sha256": "f36009e6a60fae66ca195fc9165a2d7a59c92bd55fd75b1e2e18620ffa4fc492"
+      },
+      {
+        "file": "PlayerAnimationLibMerged-1.2.8+mc.26.2.jar",
+        "id": "player_animation_library",
+        "version": "1.2.8+mc.26.2",
+        "sha256": "644aa199c5e905f098ead8b3d857e39a04712201871367129b36b144b12d13c8"
+      },
+      {
+        "file": "puffish_skills-0.19.2-26.2-fabric.jar",
+        "id": "puffish_skills",
+        "version": "0.19.2",
+        "sha256": "7ee73289c8653ab198bb1fa47b53973e36baad5482c6892b10aafe130053cbed"
+      },
+      {
+        "file": "ranged_weapon_api-fabric-4.0.0+26.2.jar",
+        "id": "ranged_weapon_api",
+        "version": "4.0.0+26.2",
+        "sha256": "87b84bea0ab193257a7666d40d098bb8de392735b736e3440f9553d52ffb27e1"
+      },
+      {
+        "file": "relics-fabric-1.4.1+26.2.jar",
+        "id": "relics_rpgs",
+        "version": "1.4.1+26.2",
+        "sha256": "013eae223a352138342e5d629e5fec75ee7f19405b82589435993f403be8469f"
+      },
+      {
+        "file": "rogues-fabric-3.1.3.003+26.2.jar",
+        "id": "rogues",
+        "version": "3.1.3.003+26.2",
+        "sha256": "77bdff881c01011bff6e6e722a1f47dc01ca7d377a1f08231d305fc11b08f113"
+      },
+      {
+        "file": "runes-fabric-1.3.2+26.2.jar",
+        "id": "runes",
+        "version": "1.3.2+26.2",
+        "sha256": "6e98d0c603ccbc1452b5be3ab8e3336f633abf3fd2f2d611eba868a0ab8e5a49"
+      },
+      {
+        "file": "skill_tree-fabric-1.6.2+26.2.jar",
+        "id": "skill_tree_rpgs",
+        "version": "1.6.2+26.2",
+        "sha256": "405ff761ba518c87a14d8923f0c8db5f01311b86d58ca78c3e1f2731d3469901"
+      },
+      {
+        "file": "spell_engine-fabric-1.10.9+26.2.jar",
+        "id": "spell_engine",
+        "version": "1.10.9+26.2",
+        "sha256": "bfc258875662071d76c448e603f05f0f519bf3e8a0c32207d232d820cab0ab2a"
+      },
+      {
+        "file": "spell_power-fabric-1.6.2+26.2.jar",
+        "id": "spell_power",
+        "version": "1.6.2+26.2",
+        "sha256": "5619b9f65134cce55284af0cb1e879a7bebdcab5d6099936ee1231cedbb89f90"
+      },
+      {
+        "file": "structure_pool_api-fabric-1.3.0+26.2.jar",
+        "id": "structure_pool_api",
+        "version": "1.3.0+26.2",
+        "sha256": "4cc05e1c0e022c1ab23efbc85d47ee6eafabaf9db70dec51159c8d82f275f28e"
+      },
+      {
+        "file": "wizards-fabric-3.1.3.003+26.2.jar",
+        "id": "wizards",
+        "version": "3.1.3.003+26.2",
+        "sha256": "ced172215b3f5fb4301252d171e26c621fbebcc579fc67bd639fb2d92a8034a2"
+      },
+      {
+        "file": "lampas2-overrides-1.0.2.jar",
+        "id": "lampas2-overrides",
+        "version": "1.0.2",
+        "sha256": "8cf8ad43af1a029cc8d952fa4ee1729e0af23696a329ab7271a26785e9f3aa81"
+      }
+    ]
+  },
+  "runs": {
+    "patched": {
+      "command": "run.py --label patched",
+      "applied_lines": 64,
+      "expected_applied_lines": 64,
+      "not_registered_warnings": [],
+      "sha256_mismatch_warnings": [],
+      "spell_errors": [],
+      "failures": [],
+      "passed": true
+    },
+    "baseline": {
+      "command": "run.py --label baseline --baseline",
+      "applied_lines": 0,
+      "expected_applied_lines": 0,
+      "not_registered_warnings": [],
+      "sha256_mismatch_warnings": [],
+      "spell_errors": [],
+      "failures": [],
+      "passed": true
+    },
+    "version-mismatch": {
+      "command": "run.py --label version-mismatch --declare-version wizards=3.1.3.004+26.2",
+      "applied_lines": 59,
+      "expected_applied_lines": 59,
+      "not_registered_warnings": [
+        "[20:12:41] [Worker-Main-2/WARN]: Skipping wizards resource patch for data/wizards/spell/frostbolt.json: version 3.1.3.4+26.2 is not registered (patch targets 3.1.3.003+26.2); using upstream resource",
+        "[20:12:41] [Worker-Main-2/WARN]: Skipping wizards resource patch for data/wizards/spell/frost_spikes.json: version 3.1.3.4+26.2 is not registered (patch targets 3.1.3.003+26.2); using upstream resource",
+        "[20:12:41] [Worker-Main-2/WARN]: Skipping wizards resource patch for data/wizards/spell/frost_nova.json: version 3.1.3.4+26.2 is not registered (patch targets 3.1.3.003+26.2); using upstream resource",
+        "[20:12:41] [Worker-Main-2/WARN]: Skipping wizards resource patch for data/wizards/spell/frost_lance.json: version 3.1.3.4+26.2 is not registered (patch targets 3.1.3.003+26.2); using upstream resource",
+        "[20:12:41] [Worker-Main-2/WARN]: Skipping wizards resource patch for data/wizards/spell/frost_blizzard.json: version 3.1.3.4+26.2 is not registered (patch targets 3.1.3.003+26.2); using upstream resource"
+      ],
+      "sha256_mismatch_warnings": [],
+      "spell_errors": [],
+      "failures": [],
+      "passed": true
+    },
+    "tamper": {
+      "command": "run.py --label tamper --tamper spell_engine:data/rpg_series/spell/whirlwind.json",
+      "applied_lines": 63,
+      "expected_applied_lines": 63,
+      "not_registered_warnings": [],
+      "sha256_mismatch_warnings": [
+        "[20:13:02] [Worker-Main-2/WARN]: Skipping spell_engine 1.10.9+26.2 resource patch for data/rpg_series/spell/whirlwind.json: SHA-256 mismatch (expected dfa96b6720080946f2fd5213d7cd8fefa0ea20a9e23053c3bfd740d78c67e47c, found d3f19a844907e4a28af6f3e1661774da5a6f1534808c25504cf75b76dda91ffc)"
+      ],
+      "spell_errors": [],
+      "failures": [],
+      "passed": true
+    }
+  },
+  "unrelated_log_errors": [
+    "Couldn't load tag fastitemframes:item_frames ... lootr:item_frame (from lampas2-overrides): the fixture has no Lootr; present with and without the spell patches",
+    "No key layers in MapLike[{}]: also in the baseline run without lampas2-overrides"
+  ],
+  "spells": [
+    {
+      "id": "archers:barrage",
+      "school": "spell_power:physical_ranged",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 10.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 5.0,
+        "patched": 10.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "a0b9787786cf1811793379f990e21d2a42f08db07831818380201fdd2f589ff8",
+        "patched": "565228f9b26096a20266a31f7519da3afa3e5891370d800253d768e826e9c820"
+      }
+    },
+    {
+      "id": "archers:entangling_roots",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 18.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 6.0,
+        "patched": 18.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "18125be43cd04274b3904bea2a61240630c10d7397e336a9fb7d895b78ef4c7c",
+        "patched": "f046ff536ecdfbffcb12404019d472da006638c75f0257584c1d72753aaa4a91"
+      },
+      "apply_limit": {
+        "effect": "archers:entangling_roots",
+        "baseline": "50+5P",
+        "patched": "780+5P",
+        "boss_gate": {
+          "movement_impairing": true,
+          "disables_mob_ai": false
+        },
+        "checks": {
+          "baseline": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 93.0,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 94.0,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 1.0,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 112.9,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 113.9,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 1.0,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 136.8,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 137.8,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 1.0,
+              "applies": false
+            }
+          ],
+          "patched": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 1.0,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 1.0,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 1.0,
+              "applies": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "archers:magic_arrow",
+      "school": "spell_power:physical_ranged",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 8.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 4.0,
+        "patched": 8.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "fe06abd905c430a1b617df5641ed750486fbca5fab21016c03af82381e838053",
+        "patched": "f241aceae4bc2a03cf3915166146a341a3a75c37c6d51d55f17fb1f5dabb6d39"
+      }
+    },
+    {
+      "id": "archers:power_shot",
+      "school": "spell_power:physical_ranged",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 8.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 4.0,
+        "patched": 8.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "debfd779430db6b48c6b41f0b6d3a4c054d6e04c50090d03142a5ae2e6a7894c",
+        "patched": "f8f972e1295cfd47a10d16c227d7b979f768cb17fccb6b8836b8afc7de001deb"
+      }
+    },
+    {
+      "id": "archers:rain_of_arrows",
+      "school": "spell_power:physical_ranged",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 15.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 7.5,
+        "patched": 15.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "c0861848d520d1bc5e49aab6f73c9a45176010bd7a3eadb0157c03e98bc74b36",
+        "patched": "4c5af5b8b896cb0115f02877a096b2093e37a98c2699272dc93ac391bdc07e9a"
+      }
+    },
+    {
+      "id": "paladins:judgement",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 15.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 5.0,
+        "patched": 15.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "a85576a3d32814d575117a9c82b7780676679add9e36164c73304ecec39a6fc0",
+        "patched": "42ae2e9269c105191a5d0b967cc258d7a440c9bc01fca51b045c143b81ff3e14"
+      },
+      "apply_limit": {
+        "effect": "paladins:judgement",
+        "baseline": "50+2P",
+        "patched": "50+7.5P",
+        "boss_gate": {
+          "movement_impairing": false,
+          "disables_mob_ai": true
+        },
+        "checks": {
+          "baseline": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 233.25,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 234.25,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 103.04,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 283.0,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 284.0,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 103.04,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 342.75,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 343.75,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 103.04,
+              "applies": false
+            }
+          ],
+          "patched": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 61.833,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 62.833,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 103.04,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 75.1,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 76.1,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 103.04,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 91.033,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 92.033,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 103.04,
+              "applies": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rogues:bear_trap",
+      "school": "spell_power:physical_melee_dual",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 15.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 5.0,
+        "patched": 15.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "9fdebb8c04f5d6e149f41b42828d74b9365af18f0076d18c8a36358e0c861f65",
+        "patched": "45962065c31fda7d9e827f8529e89371fbd9aea8e39875f46a988196bfed1a33"
+      },
+      "apply_limit": {
+        "effect": "rogues:bear_trap",
+        "baseline": "100+2P",
+        "patched": "100+5.5P",
+        "boss_gate": {
+          "movement_impairing": true,
+          "disables_mob_ai": false
+        },
+        "checks": {
+          "baseline": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 208.25,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 209.25,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 133.7,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 258.0,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 259.0,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 133.7,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 317.75,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 318.75,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 133.7,
+              "applies": false
+            }
+          ],
+          "patched": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 75.409,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 76.409,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 133.7,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 93.5,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 94.5,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 133.7,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 115.227,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 116.227,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 133.7,
+              "applies": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rogues:charge",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 12.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 4.0,
+        "patched": 12.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "5ec55a59a4f4338da4a00a37addc2bf7706130169177b01c73318b453a798d14",
+        "patched": "54a78fa6375d53339e63bde410e0afbb9d31fa61ba416fa0e5c0fd97c3a76e26"
+      }
+    },
+    {
+      "id": "rogues:mortal_strike",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 15.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 5.0,
+        "patched": 15.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "a65ff216447ea19acda86d03be4b2da82a8256f35db8c8305104265a16fda60c",
+        "patched": "5b5d80f56be3a8c6f2632b0c6450276d06a862067dfc872a8613bc4c630a2b4b"
+      }
+    },
+    {
+      "id": "rogues:mutilate",
+      "school": "spell_power:physical_melee_dual",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 12.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 4.0,
+        "patched": 12.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "1210f6df29f0dd26be31f0f891b28b9f5cc2c309b2dc63b91266fe0da04aab49",
+        "patched": "182cc44b0b120c67513f890c03bd3bf5899cce431f217886f39a7b36430aaa57"
+      }
+    },
+    {
+      "id": "rogues:shadow_step",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 12.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 4.0,
+        "patched": 12.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "b52f39d281d3b035f858c6f929345b475610e7c0e53a4d84f8948976abcea86b",
+        "patched": "4849ce0c9bffcb5f009e96bb42c2b85cef23a76dc0e1b724c298d989a21bdf70"
+      }
+    },
+    {
+      "id": "rogues:shock_powder",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 16.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 5.3333,
+        "patched": 16.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "4ca2e20baa1c4acb9c0124b2777ed10eb648091bfe96dfc8c8c47da422e6f49e",
+        "patched": "4273a3f2700def81e0ef016719ba572ffa393630516448e37677acfae5a6d7a9"
+      },
+      "apply_limit": {
+        "effect": "rogues:shock",
+        "baseline": "50+2P",
+        "patched": "50+7.5P",
+        "boss_gate": {
+          "movement_impairing": true,
+          "disables_mob_ai": true
+        },
+        "checks": {
+          "baseline": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 233.25,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 234.25,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 105.65,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 283.0,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 284.0,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 105.65,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 342.75,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 343.75,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 105.65,
+              "applies": false
+            }
+          ],
+          "patched": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 61.833,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 62.833,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 105.65,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 75.1,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 76.1,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 105.65,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 91.033,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 92.033,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 105.65,
+              "applies": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rogues:shout",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 12.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 4.0,
+        "patched": 12.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "30309fe053f65474953a51c399d65d0bd114a8027c1db1171827550653543327",
+        "patched": "58738ffec14936fe8f1116cde6ce259183bf70deb02d6e0241db232c07715a36"
+      },
+      "apply_limit": {
+        "effect": "rogues:demoralize",
+        "baseline": "50+2P",
+        "patched": "50+9.5P",
+        "boss_gate": {
+          "movement_impairing": false,
+          "disables_mob_ai": false
+        },
+        "checks": {
+          "baseline": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 233.25,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 234.25,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 84.0,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 283.0,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 284.0,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 84.0,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 342.75,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 343.75,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 84.0,
+              "applies": false
+            }
+          ],
+          "patched": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 48.711,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 49.711,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 84.0,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 59.184,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 60.184,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 84.0,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 71.763,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 72.763,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 84.0,
+              "applies": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rogues:slice_and_dice",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 15.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 5.0,
+        "patched": 15.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "7db998548e148df03450cd6baaeed141570bac7b86762acfe7855a48d963b4f0",
+        "patched": "d9af957945bcad0e2ecdb883abdb8b999b5fbf5c0b2b993ada4f167f87e3169e"
+      }
+    },
+    {
+      "id": "rogues:throw",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 8.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 2.6667,
+        "patched": 8.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "c3f2f91da9cf586d991b22655d48199cddc7e9c04d02809c2c0d9cccb2080300",
+        "patched": "02910af828f6010391838d8dede0f15291045e0f1f290e8249c893d0dd02b431"
+      },
+      "apply_limit": {
+        "effect": "rogues:shatter",
+        "baseline": "100+2P",
+        "patched": "100+8.5P",
+        "boss_gate": {
+          "movement_impairing": false,
+          "disables_mob_ai": false
+        },
+        "checks": {
+          "baseline": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 208.25,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 209.25,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 84.0,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 258.0,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 259.0,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 84.0,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 317.75,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 318.75,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 84.0,
+              "applies": false
+            }
+          ],
+          "patched": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 48.618,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 49.618,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 84.0,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 60.324,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 61.324,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 84.0,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 74.382,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 75.382,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 84.0,
+              "applies": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rogues:throw_net",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 12.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 4.0,
+        "patched": 12.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "0954c4025d5f084dbf0d4a60554a04015741681c7f264d11b6db895e06095823",
+        "patched": "ecb420462c264ace38e491d7d3b400dc0d64195a8e91d0477cecab3775a0fc52"
+      },
+      "apply_limit": {
+        "effect": "rogues:net_trap",
+        "baseline": "100+2P",
+        "patched": "100+8.5P",
+        "boss_gate": {
+          "movement_impairing": true,
+          "disables_mob_ai": false
+        },
+        "checks": {
+          "baseline": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 208.25,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 209.25,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 84.0,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 258.0,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 259.0,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 84.0,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 317.75,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 318.75,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 84.0,
+              "applies": false
+            }
+          ],
+          "patched": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 48.618,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 49.618,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 84.0,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 60.324,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 61.324,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 84.0,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 74.382,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 75.382,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 84.0,
+              "applies": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rogues:vanish",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 30.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 10.0,
+        "patched": 30.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "33314bb34d54a0dc9c916adafaa9f727b3a5e579d49e5ebd3755c14ca73a1523",
+        "patched": "3b8c258a9840b7e142373886b6029474e532ad94f8c19490a7ca060ccfa20fca"
+      }
+    },
+    {
+      "id": "wizards:frost_blizzard",
+      "school": "spell_power:frost",
+      "p1": false,
+      "control": false,
+      "cooldown_duration": 16.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 8.0,
+        "patched": 8.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": true
+      },
+      "served_sha256": {
+        "baseline": "1d3204d22b34efb887fba229b5e5bef5c71c10b0e161b31f7a173991eaddf641",
+        "patched": "9a11ae806dfbba9da05538324c964fdcd722b57d4f9df68561b2c3951ec9fab9"
+      },
+      "apply_limit": {
+        "effect": "wizards:frost_slowness",
+        "baseline": "80+4P",
+        "patched": "80+12.5P",
+        "boss_gate": {
+          "movement_impairing": true,
+          "disables_mob_ai": false
+        },
+        "checks": {
+          "baseline": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 108.875,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 109.875,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 133.75,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 134.75,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 163.625,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 164.625,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": false
+            }
+          ],
+          "patched": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 34.5,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 35.5,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 42.46,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 43.46,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 52.02,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 53.02,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "wizards:frost_lance",
+      "school": "spell_power:frost",
+      "p1": false,
+      "control": false,
+      "cooldown_duration": 8.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 4.0,
+        "patched": 4.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": true
+      },
+      "served_sha256": {
+        "baseline": "7e2a00708692ca03ee6f9d9418ab836310309de95940671ffff98e2764151520",
+        "patched": "1940c11889865664eb2fbd4d0832f0785b85c05ac0907e173d8fc60425e453f5"
+      },
+      "apply_limit": {
+        "effect": "wizards:frost_slowness",
+        "baseline": "100+4P",
+        "patched": "100+12.5P",
+        "boss_gate": {
+          "movement_impairing": true,
+          "disables_mob_ai": false
+        },
+        "checks": {
+          "baseline": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 103.875,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 104.875,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 128.75,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 129.75,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 158.625,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 159.625,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": false
+            }
+          ],
+          "patched": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 32.9,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 33.9,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 40.86,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 41.86,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 50.42,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 51.42,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "wizards:frost_nova",
+      "school": "spell_power:frost",
+      "p1": false,
+      "control": false,
+      "cooldown_duration": 10.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 5.0,
+        "patched": 5.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": true
+      },
+      "served_sha256": {
+        "baseline": "cf7d6159a4c0a85260e06e901ca38048ed593273b9eaddd385a8b4c9e712856c",
+        "patched": "1cdcce48b885a10a18104d85b910e4d6d68ad0e11c94e8e3e9534826a6eae1e0"
+      },
+      "apply_limit": {
+        "effect": "wizards:frozen",
+        "baseline": "60+4P",
+        "patched": "60+13.5P",
+        "boss_gate": {
+          "movement_impairing": true,
+          "disables_mob_ai": false
+        },
+        "checks": {
+          "baseline": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 113.875,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 114.875,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 138.75,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 139.75,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 168.625,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 169.625,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": false
+            }
+          ],
+          "patched": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 33.389,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 34.389,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 40.759,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 41.759,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 49.611,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 50.611,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "wizards:frost_spikes",
+      "school": "spell_power:frost",
+      "p1": false,
+      "control": false,
+      "cooldown_duration": 8.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 4.0,
+        "patched": 4.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": true
+      },
+      "served_sha256": {
+        "baseline": "50d2d9e0e6d4525a1779178d6f70a1b2254ca22f010493f088d165b74e6aa96a",
+        "patched": "91a9153e5ae15a76da1ccf57a1181c553042ad3f14794945a1e65830ba6cbf91"
+      },
+      "apply_limit": {
+        "effect": "wizards:frozen",
+        "baseline": "60+4P",
+        "patched": "60+13.5P",
+        "boss_gate": {
+          "movement_impairing": true,
+          "disables_mob_ai": false
+        },
+        "checks": {
+          "baseline": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 113.875,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 114.875,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 138.75,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 139.75,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 168.625,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 169.625,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": false
+            }
+          ],
+          "patched": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 33.389,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 34.389,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 40.759,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 41.759,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 49.611,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 50.611,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "wizards:frostbolt",
+      "school": "spell_power:frost",
+      "p1": false,
+      "control": false,
+      "cooldown_duration": 0.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 0.0,
+        "patched": 0.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": true
+      },
+      "served_sha256": {
+        "baseline": "92d85ac73a1441eeb0e8de4871da5bf7bb0cc27d0a682e30c3c6011c14547477",
+        "patched": "f818e5b5ef16fd9e3fcf0ac8e81d77d64c22add75058339b6d5966ea329b7a66"
+      },
+      "apply_limit": {
+        "effect": "wizards:frost_slowness",
+        "baseline": "100+4P",
+        "patched": "100+12.5P",
+        "boss_gate": {
+          "movement_impairing": true,
+          "disables_mob_ai": false
+        },
+        "checks": {
+          "baseline": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 103.875,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 104.875,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 128.75,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 129.75,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 158.625,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 159.625,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": false
+            }
+          ],
+          "patched": [
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold-0.5",
+              "power": 32.9,
+              "applies": false
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "threshold+0.5",
+              "power": 33.9,
+              "applies": true
+            },
+            {
+              "band": "overworld",
+              "max_health": 517.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold-0.5",
+              "power": 40.86,
+              "applies": false
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "threshold+0.5",
+              "power": 41.86,
+              "applies": true
+            },
+            {
+              "band": "nether",
+              "max_health": 617.0,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold-0.5",
+              "power": 50.42,
+              "applies": false
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "threshold+0.5",
+              "power": 51.42,
+              "applies": true
+            },
+            {
+              "band": "end",
+              "max_health": 736.5,
+              "at": "pinnacle",
+              "power": 56.99,
+              "applies": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rpg_series:cleave",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 8.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 2.6667,
+        "patched": 8.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "4dee409d8601b7c4b7fb9252b578d3a2b1a333732964461d15662cf7f450d533",
+        "patched": "8bf65dfff9be7cb1026730a1d2f50f54e1f5a6739a5409dd595ab3635bad7426"
+      }
+    },
+    {
+      "id": "rpg_series:fan_of_knives",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 8.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 2.6667,
+        "patched": 8.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "4609da90e39b5f1664abd453f63ba31776af9e99f734f2acc800fda27602364e",
+        "patched": "c95a5d8bbe825827c5a63361d893532e1481cdad36cb686ece7e7c12cf2f1719"
+      }
+    },
+    {
+      "id": "rpg_series:flurry",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 12.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 4.0,
+        "patched": 12.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "bc7d7af4b01e83329655955b8333a1fcd48e7ca5cc7752499bf38abcb4b3b56d",
+        "patched": "69aaf9186c30d1472379c928f42695022c1fda812b7944dd0c0379102da5308f"
+      }
+    },
+    {
+      "id": "rpg_series:ground_slam",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 12.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 4.0,
+        "patched": 12.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "19dd7d6b30a971342aa4dac655dc867d1e020a3177a095d717a828fd7564c578",
+        "patched": "0bca73d1819f0c4a8517fff30e6f4a143ea8442b1e27dd7c90a9f080008d8211"
+      }
+    },
+    {
+      "id": "rpg_series:impale",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 10.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 3.3333,
+        "patched": 10.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "9301ad4271bb744c6cdae1306d5296d7d0f803afb47678d04efc8a8951780e29",
+        "patched": "56d61cb1c86934b3cf9895f5be06c0d2651576ca30d19ee71eca753834db7ae0"
+      }
+    },
+    {
+      "id": "rpg_series:smash",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 10.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 3.3333,
+        "patched": 10.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "fb8b0f72201a2fcdda05d467339c097f12ba72fb20eda23c201631d4ad2129d9",
+        "patched": "8a4960ec16da4b759bc1c3fbb6ffde003d4715f27cc2ce28e727c39bd3734bb0"
+      }
+    },
+    {
+      "id": "rpg_series:swift_strikes",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 8.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 2.6667,
+        "patched": 8.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "7899863baa2a82a415604cedf4a61f77f2425df006d5c539a4c34dae7bab1ed1",
+        "patched": "ff2dd16e98c3dbdac40958da9b1b6fd1663d9629bf34ace31b26d6882da3d513"
+      }
+    },
+    {
+      "id": "rpg_series:swipe",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 8.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 2.6667,
+        "patched": 8.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "50d265ce27c3e6e618aa970327f8586a625cff74f4bfef4c3989d578d732c44a",
+        "patched": "a11671580be25a42baaf30b777bc245c7f4d7572cb7aff0840774fa74ded9b95"
+      }
+    },
+    {
+      "id": "rpg_series:thrust",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 12.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 4.0,
+        "patched": 12.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "5b4346f7eebe20beb76f8cf1f31b52cbf2fca8a837aeb40d56814f9c9e8dff3b",
+        "patched": "b11ee65921e37f7bcf852121809ae5dc13d2ce59b69c60cf3f7fe9157bf1b55e"
+      }
+    },
+    {
+      "id": "rpg_series:whirlwind",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 30.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 10.0,
+        "patched": 30.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "dfa96b6720080946f2fd5213d7cd8fefa0ea20a9e23053c3bfd740d78c67e47c",
+        "patched": "2fe13a54ab26f2de9230a0a6ca6809f89fa616f60b48a5bb02bf3935169391d1"
+      }
+    },
+    {
+      "id": "skill_tree_rpgs:archer_tier_1_passive_1",
+      "school": "spell_power:physical_ranged",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 10.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 5.0,
+        "patched": 10.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "ba97a94a0e3bc9920d17a44c4a0cec8c3cd7241ba8c5b5cb318e8ac2d1158352",
+        "patched": "7af643286e5f1e02106eb49ac06068b00830911169f330489081aad444d7145d"
+      }
+    },
+    {
+      "id": "skill_tree_rpgs:archer_tier_2_passive_1",
+      "school": "spell_power:physical_ranged",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 6.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 3.0,
+        "patched": 6.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "a660998a1e1645be2d0332b2b4f76264c2768fd1da366ee7965554f6bbedb0c6",
+        "patched": "9c30cc55617070e1b0f6f25893f16cbf860f2dddeb039b1d9450d81d9098fe96"
+      }
+    },
+    {
+      "id": "skill_tree_rpgs:archer_tier_2_passive_2",
+      "school": "spell_power:physical_ranged",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 10.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 5.0,
+        "patched": 10.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "9dce597e94ef2324e8305ed92a29e74344ed15c16ff0f96895ce9297d396cdbf",
+        "patched": "9356472cecbe83c124810bdc4fbb4fd8d697f9aaebd2eccd7e1713f37ad5b36e"
+      }
+    },
+    {
+      "id": "skill_tree_rpgs:archer_tier_3_passive_1",
+      "school": "spell_power:physical_ranged",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 10.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 5.0,
+        "patched": 10.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "76d9925eb3fdbe4404c29db29ec7bbb308aebef7ea94f6cabc354952d7f64b54",
+        "patched": "3d9f18d5e1aa06baab74ccef9578785425c14c68641ce9f3c5af6bf54615f16f"
+      }
+    },
+    {
+      "id": "skill_tree_rpgs:archer_tier_3_passive_2",
+      "school": "spell_power:physical_ranged",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 45.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 22.5,
+        "patched": 45.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "6b98d8eacb90199234a7f29f38673ecb2327d1ea36d02681a3c1ba4747fc44fb",
+        "patched": "2d5d7a3dcbfee429f8109f36d8467df860656223c306598818f01b635a2a92a8"
+      }
+    },
+    {
+      "id": "skill_tree_rpgs:paladin_tier_1_passive_1",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 1.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 0.3333,
+        "patched": 1.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "edabee86309d3d3eafc0c52ea5f4a6feb497e7cbbc0e46b2ce380cd5aeb2b549",
+        "patched": "bba4b7ee78aeae7c1a34de59c78b8f378fe6a5791421fb02b9475128455920d7"
+      }
+    },
+    {
+      "id": "skill_tree_rpgs:paladin_tier_3_passive_2",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 5.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 1.6667,
+        "patched": 5.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "87caab49c3b400009198ff4e79541ee5682e6ccba18ff6e574a5b6b161872694",
+        "patched": "ccae865cdd208f71d535aeb00e537e7be5320292f20820fd90442747bb47d077"
+      }
+    },
+    {
+      "id": "skill_tree_rpgs:rogue_tier_1_passive_2",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 6.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 2.0,
+        "patched": 6.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "6ecd5b00ab1598fc2c23d5327cb1c0d493ca91c094f58cc7a72c9b494783524c",
+        "patched": "c87e839df757696ab4b71c86f88fff6f139b223ffe8d32ccb764751c3c79560c"
+      }
+    },
+    {
+      "id": "skill_tree_rpgs:rogue_tier_2_passive_2",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 10.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 3.3333,
+        "patched": 10.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "a13709a6a6d9585f5eab9459e4a03dda0806b64357f303f9c6847d821129cc35",
+        "patched": "e041288ba37061cdbfe099e8f7d90b761c78c2812cafd69ce5e49d98831701c8"
+      }
+    },
+    {
+      "id": "skill_tree_rpgs:rogue_tier_3_passive_1",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 60.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 20.0,
+        "patched": 60.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "41473ec727c3d2b13ecdf33aadb37bc4bd3a6330725811d87fb0e6432aca9a9f",
+        "patched": "d5c13c672a98e69ab03c9a77b9e9cec2dfe6886251552fb26082e81a099cfe12"
+      }
+    },
+    {
+      "id": "skill_tree_rpgs:rogue_tier_3_passive_2",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 30.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 10.0,
+        "patched": 30.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "a1ad5617bcb70961ee66a492a777efbacda49ee96f339c5a96f14d98fae1458f",
+        "patched": "080340e0adad7caaaab9e94cd69babf0ed3f37e69791dd3adc8f16b64f9dbfba"
+      }
+    },
+    {
+      "id": "skill_tree_rpgs:warrior_tier_1_passive_1",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 1.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 0.3333,
+        "patched": 1.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "754bf09a56688923ff383f72911c97ff7e457bb5f53f3ca41a91d29e6a25262b",
+        "patched": "f871d76d84df4cc15867cab1c1efb30b7ba77391d82b5a2624121e18b606e099"
+      }
+    },
+    {
+      "id": "skill_tree_rpgs:warrior_tier_1_passive_2",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 1.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 0.3333,
+        "patched": 1.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "d95e1f20ea7ea35bd5588ea3e8701c0634f5833e770fe2752febb3fd359cc77d",
+        "patched": "a73ddf1369d31b0116cc75e147e1036a14d167ea4dab279255214a317cbef153"
+      }
+    },
+    {
+      "id": "skill_tree_rpgs:warrior_tier_3_passive_1",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 30.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 10.0,
+        "patched": 30.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "5398782fb1ec3aaedde7cfdc06e0103d67f6e496de5b64f88fe83c8ad664839d",
+        "patched": "fbdf0fa4f2b5cdeb430cc7a98426401c531c13fe6ab8365d9eae85f0eb2e270d"
+      }
+    },
+    {
+      "id": "skill_tree_rpgs:warrior_tier_3_passive_2",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 30.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 10.0,
+        "patched": 30.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "1d0e9ef8be8153293aa75ad064db250f0d6f11f6caae66ddbdcda3abd2def3b7",
+        "patched": "370ded506092db7c2b9b5b05d8cf1845d0694eb59f09597be4bc26bcfdcebc92"
+      }
+    },
+    {
+      "id": "skill_tree_rpgs:warrior_tier_3_spell_1_modifier_2",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 10.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 3.3333,
+        "patched": 10.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "fcbcf060971790521516be5fd651f56179e87520ca07fc0004bd141edefdacdb",
+        "patched": "cb09ee7ebc516ebf7684835dc37edb13b29424969752e6a0d45be5513015b6b7"
+      }
+    },
+    {
+      "id": "skill_tree_rpgs:weapon_bow_passive_1",
+      "school": "spell_power:physical_ranged",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 3.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 1.5,
+        "patched": 3.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "0a56ccf989ef6caf9dc8f1fd5694ae1c3f92f2ab1ae3c6b6df7c97c342938365",
+        "patched": "547c46d7b2b77786800c761d3fc9163258b5232df25d6494e28c47ec7b19a14d"
+      }
+    },
+    {
+      "id": "skill_tree_rpgs:weapon_swipe_modifier_2",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 5.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 1.6667,
+        "patched": 5.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "72158c5732d410f3d4dd3f342c9e7a277fa0f465c35e02120f9f81ad5f9c25f2",
+        "patched": "6e05da79cda1213d8db7272a6bc10baffa9a141799f02cd379a68c5a68f53cd1"
+      }
+    },
+    {
+      "id": "relics_rpgs:greater_perk_defense_danger",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 45.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 15.0,
+        "patched": 45.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "343c5d2fe74b4a2ccbbf23b14f9ca6c60cbdd5bc118e85e5edf2f2a6e4a3c20e",
+        "patched": "efbcaa1c2fb17d6f917023ea6d081b9534484a1313057b215d2b6628dcbc8376"
+      }
+    },
+    {
+      "id": "relics_rpgs:greater_perk_evasion_attack",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 10.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 3.3333,
+        "patched": 10.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "d357983ec923e8fdaf456178aa49d1ca8e092917fb723e21126c2c831aec4e70",
+        "patched": "796fe83cc84951ab193bc2cf43f835dfe415cf4e87a057e9be1e1d7e4be6b0bb"
+      }
+    },
+    {
+      "id": "relics_rpgs:greater_perk_melee_stun",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 20.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 6.6667,
+        "patched": 20.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "78131e0de3052abc4b801214d0f586488cdc7730fa752a12a49e6e1e8bb084e3",
+        "patched": "be0e37368449687f7bbf3b0240d02e9654dc9dcd3a17c57bcc743d32083a6f22"
+      }
+    },
+    {
+      "id": "relics_rpgs:greater_perk_ranged_levitate",
+      "school": "spell_power:physical_ranged",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 20.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 10.0,
+        "patched": 20.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "6f17c142beb379aa13e44503eea519b07e415696346d84074f368839297a82ab",
+        "patched": "0499263525a1a4c541f122bc89fdc5e494cca300d8a6a549e36e17f6d540628e"
+      }
+    },
+    {
+      "id": "relics_rpgs:greater_proc_physical_trance",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 45.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 15.0,
+        "patched": 45.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "270a703789c63eab88f9ee256497a0616e6199c3b74832c3b5078a86c2c72c68",
+        "patched": "453d8c5605f712363334bf91ca64ad449cfc1d9688b2271d00b6af87639fcb21"
+      }
+    },
+    {
+      "id": "relics_rpgs:lesser_use_damage",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 60.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 20.0,
+        "patched": 60.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "7d0c694f12b82515bc028c66ccae076761272ebaa24658fb6c80cf1ba25fe8b3",
+        "patched": "87de9733b296fb10ac1b53001c1b7c40f8b3e5295281258ecde246c55bea4e74"
+      }
+    },
+    {
+      "id": "relics_rpgs:lesser_use_dex",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 60.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 20.0,
+        "patched": 60.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "58f111155804deee60fd77df0811b979966c0c5321b9c23325e5ff48d8b2301c",
+        "patched": "a64ddf6e9ca3aaa0258a58703bc45f087c24470fdada31200f42fce0f68b413e"
+      }
+    },
+    {
+      "id": "relics_rpgs:lesser_use_ranged",
+      "school": "spell_power:physical_ranged",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 60.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 30.0,
+        "patched": 60.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "fece6782588d65d10b16f1af03cbeb949026000fcd268546e92ec567f57fbe04",
+        "patched": "084bb64a5c664dcba1bee42ab3c97f2d4cbab35159f72dea7236a4e3c6daad9a"
+      }
+    },
+    {
+      "id": "relics_rpgs:medium_proc_attack_damage",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 45.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 15.0,
+        "patched": 45.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "259abdbc25fce5deead91c6209b8b4a361485c77c1a589a42bc5976ff9882f55",
+        "patched": "0c9ccb50e4b8c894699701f78d63b5e4c604b7634a04b1d7ba77ad3787d60010"
+      }
+    },
+    {
+      "id": "relics_rpgs:medium_proc_attack_speed",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 45.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 15.0,
+        "patched": 45.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "bd9a337ccbc19aba3efc206232c10d5283fa8589c33b07dd06b967b0a7c6555f",
+        "patched": "1a688dd1500368a1b3db74f3e33363a19ccd056ceceeb87d4439f7474b3e24d4"
+      }
+    },
+    {
+      "id": "relics_rpgs:medium_proc_defense",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 45.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 15.0,
+        "patched": 45.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "65fae0be384dae07eaceb04a87f2c49249ab7c5142663dc658f438188f0ee46f",
+        "patched": "cc3292e5c35fa8b73e861d46d755161476095854be4b3e5c990c22cbff9a7789"
+      }
+    },
+    {
+      "id": "relics_rpgs:medium_proc_evasion",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 45.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 15.0,
+        "patched": 45.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "a289e0db233d0219ebc6a8c8f4f5e6d04ec516c25ce9127ac03812a2273be8f6",
+        "patched": "52dba10f2a34fa556ff20aceb75ac763cf52cf4805cf464d1d02450167660481"
+      }
+    },
+    {
+      "id": "relics_rpgs:medium_proc_ranged_damage",
+      "school": "spell_power:physical_ranged",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 45.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 22.5,
+        "patched": 45.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "646708a6b0d7138e63c4f7ec65ae755465844fbbe3186339c995174c6597eb71",
+        "patched": "67b31b6cfbcdbea91b1b9e49ab4e08346cdb3671e3b434bd93080c4aa4b659f7"
+      }
+    },
+    {
+      "id": "relics_rpgs:superior_use_area_attack_damage",
+      "school": "spell_power:physical_melee",
+      "p1": true,
+      "control": false,
+      "cooldown_duration": 90.0,
+      "haste": 3.0,
+      "effective_cooldown": {
+        "baseline": 30.0,
+        "patched": 90.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": false
+      },
+      "served_sha256": {
+        "baseline": "67faabf286bb21bac63f771cae97b283eab0060924befc5bb23ee5fa47bf2a79",
+        "patched": "d4694c188b47c45fb3f591c189024ccbb496ad57dc86124f7aab6a44623277fe"
+      }
+    },
+    {
+      "id": "wizards:fire_meteor",
+      "school": "spell_power:fire",
+      "p1": false,
+      "control": true,
+      "cooldown_duration": 10.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 5.0,
+        "patched": 5.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": true
+      },
+      "served_sha256": {
+        "baseline": "38e0fd3161058ada06444a1d92ab1d590f7f43df4296bd211c816a0c1c748528",
+        "patched": "38e0fd3161058ada06444a1d92ab1d590f7f43df4296bd211c816a0c1c748528"
+      }
+    },
+    {
+      "id": "wizards:fireball",
+      "school": "spell_power:fire",
+      "p1": false,
+      "control": true,
+      "cooldown_duration": 0.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 0.0,
+        "patched": 0.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": true
+      },
+      "served_sha256": {
+        "baseline": "be7b3b6d342f22cc18aa30490cddc23a74fc5ae3906f92c9a0f91910be0a146d",
+        "patched": "be7b3b6d342f22cc18aa30490cddc23a74fc5ae3906f92c9a0f91910be0a146d"
+      }
+    },
+    {
+      "id": "paladins:flash_heal",
+      "school": "spell_power:healing",
+      "p1": false,
+      "control": true,
+      "cooldown_duration": 6.0,
+      "haste": 2.0,
+      "effective_cooldown": {
+        "baseline": 3.0,
+        "patched": 3.0
+      },
+      "haste_affected": {
+        "baseline": true,
+        "patched": true
+      },
+      "served_sha256": {
+        "baseline": "444e1f1a12a96059c6b27ba23a85a0d89c6a434be6d174b3b6690aaaf5e8d77f",
+        "patched": "444e1f1a12a96059c6b27ba23a85a0d89c6a434be6d174b3b6690aaaf5e8d77f"
+      }
+    }
+  ],
+  "findings": [
+    "A probe on SERVER_STARTED read StatusEffectClassification before Spell Engine's own SERVER_STARTED listener filled its movement-impairing set and reported Frozen and Roots as unclassified; the probe now runs on the first server tick.",
+    "Every raised-limit effect except rogues:demoralize (Shout) and rogues:shatter (Throw) is movement impairing or AI disabling, so Spell Engine's boss gate refuses it on #spell_engine:bosses regardless of the limit. Demoralize and Shatter are limited only by health; lampas-addons Q7 adds them to lampas:spell_crowd_control.",
+    "paladins:judgement is AI disabling (disables_mob_ai true), not movement impairing.",
+    "archers:entangling_roots is school spell_power:physical_melee; its power is the archer's attack damage, hence the flat health_base."
+  ],
+  "verification_limit": "Covers the decoded registry entries, cooldowns under haste, underApplyLimit at the decided thresholds and the resource-manager bytes on a dedicated server with the seven jars and their dependency closure. Combat with a real player, the client-side registry decode and tooltips, full-pack behavior and Apotheosis elite/invader immunity (lampas-addons W6) are not covered."
+}

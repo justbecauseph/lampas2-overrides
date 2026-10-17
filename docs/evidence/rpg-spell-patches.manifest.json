@@ -1,0 +1,912 @@
+[
+ {
+  "mod": "archers",
+  "version": "3.1.3.003+26.2",
+  "jar": "archers-fabric-3.1.3.003+26.2.jar",
+  "path": "data/archers/spell/barrage.json",
+  "upstream_sha256": "a0b9787786cf1811793379f990e21d2a42f08db07831818380201fdd2f589ff8",
+  "replacement_sha256": "565228f9b26096a20266a31f7519da3afa3e5891370d800253d768e826e9c820",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "archers",
+  "version": "3.1.3.003+26.2",
+  "jar": "archers-fabric-3.1.3.003+26.2.jar",
+  "path": "data/archers/spell/entangling_roots.json",
+  "upstream_sha256": "18125be43cd04274b3904bea2a61240630c10d7397e336a9fb7d895b78ef4c7c",
+  "replacement_sha256": "f046ff536ecdfbffcb12404019d472da006638c75f0257584c1d72753aaa4a91",
+  "changes": [
+   "cost.cooldown.haste_affected=false",
+   "impacts[0].action.status_effect.apply_limit 50+5P -> 780+5P"
+  ],
+  "workstreams": [
+   "D9",
+   "P1"
+  ]
+ },
+ {
+  "mod": "archers",
+  "version": "3.1.3.003+26.2",
+  "jar": "archers-fabric-3.1.3.003+26.2.jar",
+  "path": "data/archers/spell/magic_arrow.json",
+  "upstream_sha256": "fe06abd905c430a1b617df5641ed750486fbca5fab21016c03af82381e838053",
+  "replacement_sha256": "f241aceae4bc2a03cf3915166146a341a3a75c37c6d51d55f17fb1f5dabb6d39",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "archers",
+  "version": "3.1.3.003+26.2",
+  "jar": "archers-fabric-3.1.3.003+26.2.jar",
+  "path": "data/archers/spell/power_shot.json",
+  "upstream_sha256": "debfd779430db6b48c6b41f0b6d3a4c054d6e04c50090d03142a5ae2e6a7894c",
+  "replacement_sha256": "f8f972e1295cfd47a10d16c227d7b979f768cb17fccb6b8836b8afc7de001deb",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "archers",
+  "version": "3.1.3.003+26.2",
+  "jar": "archers-fabric-3.1.3.003+26.2.jar",
+  "path": "data/archers/spell/rain_of_arrows.json",
+  "upstream_sha256": "c0861848d520d1bc5e49aab6f73c9a45176010bd7a3eadb0157c03e98bc74b36",
+  "replacement_sha256": "4c5af5b8b896cb0115f02877a096b2093e37a98c2699272dc93ac391bdc07e9a",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "paladins",
+  "version": "3.1.3.003+26.2",
+  "jar": "paladins-fabric-3.1.3.003+26.2.jar",
+  "path": "data/paladins/spell/judgement.json",
+  "upstream_sha256": "a85576a3d32814d575117a9c82b7780676679add9e36164c73304ecec39a6fc0",
+  "replacement_sha256": "42ae2e9269c105191a5d0b967cc258d7a440c9bc01fca51b045c143b81ff3e14",
+  "changes": [
+   "cost.cooldown.haste_affected=false",
+   "impacts[1].action.status_effect.apply_limit 50+2P -> 50+7.5P"
+  ],
+  "workstreams": [
+   "D9",
+   "P1"
+  ]
+ },
+ {
+  "mod": "rogues",
+  "version": "3.1.3.003+26.2",
+  "jar": "rogues-fabric-3.1.3.003+26.2.jar",
+  "path": "data/rogues/spell/bear_trap.json",
+  "upstream_sha256": "9fdebb8c04f5d6e149f41b42828d74b9365af18f0076d18c8a36358e0c861f65",
+  "replacement_sha256": "45962065c31fda7d9e827f8529e89371fbd9aea8e39875f46a988196bfed1a33",
+  "changes": [
+   "cost.cooldown.haste_affected=false",
+   "impacts[1].action.status_effect.apply_limit 100+2P -> 100+5.5P"
+  ],
+  "workstreams": [
+   "D9",
+   "P1"
+  ]
+ },
+ {
+  "mod": "rogues",
+  "version": "3.1.3.003+26.2",
+  "jar": "rogues-fabric-3.1.3.003+26.2.jar",
+  "path": "data/rogues/spell/charge.json",
+  "upstream_sha256": "5ec55a59a4f4338da4a00a37addc2bf7706130169177b01c73318b453a798d14",
+  "replacement_sha256": "54a78fa6375d53339e63bde410e0afbb9d31fa61ba416fa0e5c0fd97c3a76e26",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "rogues",
+  "version": "3.1.3.003+26.2",
+  "jar": "rogues-fabric-3.1.3.003+26.2.jar",
+  "path": "data/rogues/spell/mortal_strike.json",
+  "upstream_sha256": "a65ff216447ea19acda86d03be4b2da82a8256f35db8c8305104265a16fda60c",
+  "replacement_sha256": "5b5d80f56be3a8c6f2632b0c6450276d06a862067dfc872a8613bc4c630a2b4b",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "rogues",
+  "version": "3.1.3.003+26.2",
+  "jar": "rogues-fabric-3.1.3.003+26.2.jar",
+  "path": "data/rogues/spell/mutilate.json",
+  "upstream_sha256": "1210f6df29f0dd26be31f0f891b28b9f5cc2c309b2dc63b91266fe0da04aab49",
+  "replacement_sha256": "182cc44b0b120c67513f890c03bd3bf5899cce431f217886f39a7b36430aaa57",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "rogues",
+  "version": "3.1.3.003+26.2",
+  "jar": "rogues-fabric-3.1.3.003+26.2.jar",
+  "path": "data/rogues/spell/shadow_step.json",
+  "upstream_sha256": "b52f39d281d3b035f858c6f929345b475610e7c0e53a4d84f8948976abcea86b",
+  "replacement_sha256": "4849ce0c9bffcb5f009e96bb42c2b85cef23a76dc0e1b724c298d989a21bdf70",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "rogues",
+  "version": "3.1.3.003+26.2",
+  "jar": "rogues-fabric-3.1.3.003+26.2.jar",
+  "path": "data/rogues/spell/shock_powder.json",
+  "upstream_sha256": "4ca2e20baa1c4acb9c0124b2777ed10eb648091bfe96dfc8c8c47da422e6f49e",
+  "replacement_sha256": "4273a3f2700def81e0ef016719ba572ffa393630516448e37677acfae5a6d7a9",
+  "changes": [
+   "cost.cooldown.haste_affected=false",
+   "impacts[0].action.status_effect.apply_limit 50+2P -> 50+7.5P"
+  ],
+  "workstreams": [
+   "D9",
+   "P1"
+  ]
+ },
+ {
+  "mod": "rogues",
+  "version": "3.1.3.003+26.2",
+  "jar": "rogues-fabric-3.1.3.003+26.2.jar",
+  "path": "data/rogues/spell/shout.json",
+  "upstream_sha256": "30309fe053f65474953a51c399d65d0bd114a8027c1db1171827550653543327",
+  "replacement_sha256": "58738ffec14936fe8f1116cde6ce259183bf70deb02d6e0241db232c07715a36",
+  "changes": [
+   "cost.cooldown.haste_affected=false",
+   "impacts[0].action.status_effect.apply_limit 50+2P -> 50+9.5P"
+  ],
+  "workstreams": [
+   "D9",
+   "P1"
+  ]
+ },
+ {
+  "mod": "rogues",
+  "version": "3.1.3.003+26.2",
+  "jar": "rogues-fabric-3.1.3.003+26.2.jar",
+  "path": "data/rogues/spell/slice_and_dice.json",
+  "upstream_sha256": "7db998548e148df03450cd6baaeed141570bac7b86762acfe7855a48d963b4f0",
+  "replacement_sha256": "d9af957945bcad0e2ecdb883abdb8b999b5fbf5c0b2b993ada4f167f87e3169e",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "rogues",
+  "version": "3.1.3.003+26.2",
+  "jar": "rogues-fabric-3.1.3.003+26.2.jar",
+  "path": "data/rogues/spell/throw.json",
+  "upstream_sha256": "c3f2f91da9cf586d991b22655d48199cddc7e9c04d02809c2c0d9cccb2080300",
+  "replacement_sha256": "02910af828f6010391838d8dede0f15291045e0f1f290e8249c893d0dd02b431",
+  "changes": [
+   "cost.cooldown.haste_affected=false",
+   "impacts[1].action.status_effect.apply_limit 100+2P -> 100+8.5P"
+  ],
+  "workstreams": [
+   "D9",
+   "P1"
+  ]
+ },
+ {
+  "mod": "rogues",
+  "version": "3.1.3.003+26.2",
+  "jar": "rogues-fabric-3.1.3.003+26.2.jar",
+  "path": "data/rogues/spell/throw_net.json",
+  "upstream_sha256": "0954c4025d5f084dbf0d4a60554a04015741681c7f264d11b6db895e06095823",
+  "replacement_sha256": "ecb420462c264ace38e491d7d3b400dc0d64195a8e91d0477cecab3775a0fc52",
+  "changes": [
+   "cost.cooldown.haste_affected=false",
+   "impacts[1].action.status_effect.apply_limit 100+2P -> 100+8.5P"
+  ],
+  "workstreams": [
+   "D9",
+   "P1"
+  ]
+ },
+ {
+  "mod": "rogues",
+  "version": "3.1.3.003+26.2",
+  "jar": "rogues-fabric-3.1.3.003+26.2.jar",
+  "path": "data/rogues/spell/vanish.json",
+  "upstream_sha256": "33314bb34d54a0dc9c916adafaa9f727b3a5e579d49e5ebd3755c14ca73a1523",
+  "replacement_sha256": "3b8c258a9840b7e142373886b6029474e532ad94f8c19490a7ca060ccfa20fca",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "wizards",
+  "version": "3.1.3.003+26.2",
+  "jar": "wizards-fabric-3.1.3.003+26.2.jar",
+  "path": "data/wizards/spell/frost_blizzard.json",
+  "upstream_sha256": "1d3204d22b34efb887fba229b5e5bef5c71c10b0e161b31f7a173991eaddf641",
+  "replacement_sha256": "9a11ae806dfbba9da05538324c964fdcd722b57d4f9df68561b2c3951ec9fab9",
+  "changes": [
+   "impacts[1].action.status_effect.apply_limit 80+4P -> 80+12.5P"
+  ],
+  "workstreams": [
+   "D9"
+  ]
+ },
+ {
+  "mod": "wizards",
+  "version": "3.1.3.003+26.2",
+  "jar": "wizards-fabric-3.1.3.003+26.2.jar",
+  "path": "data/wizards/spell/frost_lance.json",
+  "upstream_sha256": "7e2a00708692ca03ee6f9d9418ab836310309de95940671ffff98e2764151520",
+  "replacement_sha256": "1940c11889865664eb2fbd4d0832f0785b85c05ac0907e173d8fc60425e453f5",
+  "changes": [
+   "impacts[1].action.status_effect.apply_limit 100+4P -> 100+12.5P"
+  ],
+  "workstreams": [
+   "D9"
+  ]
+ },
+ {
+  "mod": "wizards",
+  "version": "3.1.3.003+26.2",
+  "jar": "wizards-fabric-3.1.3.003+26.2.jar",
+  "path": "data/wizards/spell/frost_nova.json",
+  "upstream_sha256": "cf7d6159a4c0a85260e06e901ca38048ed593273b9eaddd385a8b4c9e712856c",
+  "replacement_sha256": "1cdcce48b885a10a18104d85b910e4d6d68ad0e11c94e8e3e9534826a6eae1e0",
+  "changes": [
+   "impacts[1].action.status_effect.apply_limit 60+4P -> 60+13.5P"
+  ],
+  "workstreams": [
+   "D9"
+  ]
+ },
+ {
+  "mod": "wizards",
+  "version": "3.1.3.003+26.2",
+  "jar": "wizards-fabric-3.1.3.003+26.2.jar",
+  "path": "data/wizards/spell/frost_spikes.json",
+  "upstream_sha256": "50d2d9e0e6d4525a1779178d6f70a1b2254ca22f010493f088d165b74e6aa96a",
+  "replacement_sha256": "91a9153e5ae15a76da1ccf57a1181c553042ad3f14794945a1e65830ba6cbf91",
+  "changes": [
+   "impacts[1].action.status_effect.apply_limit 60+4P -> 60+13.5P"
+  ],
+  "workstreams": [
+   "D9"
+  ]
+ },
+ {
+  "mod": "wizards",
+  "version": "3.1.3.003+26.2",
+  "jar": "wizards-fabric-3.1.3.003+26.2.jar",
+  "path": "data/wizards/spell/frostbolt.json",
+  "upstream_sha256": "92d85ac73a1441eeb0e8de4871da5bf7bb0cc27d0a682e30c3c6011c14547477",
+  "replacement_sha256": "f818e5b5ef16fd9e3fcf0ac8e81d77d64c22add75058339b6d5966ea329b7a66",
+  "changes": [
+   "impacts[1].action.status_effect.apply_limit 100+4P -> 100+12.5P"
+  ],
+  "workstreams": [
+   "D9"
+  ]
+ },
+ {
+  "mod": "spell_engine",
+  "version": "1.10.9+26.2",
+  "jar": "spell_engine-fabric-1.10.9+26.2.jar",
+  "path": "data/rpg_series/spell/cleave.json",
+  "upstream_sha256": "4dee409d8601b7c4b7fb9252b578d3a2b1a333732964461d15662cf7f450d533",
+  "replacement_sha256": "8bf65dfff9be7cb1026730a1d2f50f54e1f5a6739a5409dd595ab3635bad7426",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "spell_engine",
+  "version": "1.10.9+26.2",
+  "jar": "spell_engine-fabric-1.10.9+26.2.jar",
+  "path": "data/rpg_series/spell/fan_of_knives.json",
+  "upstream_sha256": "4609da90e39b5f1664abd453f63ba31776af9e99f734f2acc800fda27602364e",
+  "replacement_sha256": "c95a5d8bbe825827c5a63361d893532e1481cdad36cb686ece7e7c12cf2f1719",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "spell_engine",
+  "version": "1.10.9+26.2",
+  "jar": "spell_engine-fabric-1.10.9+26.2.jar",
+  "path": "data/rpg_series/spell/flurry.json",
+  "upstream_sha256": "bc7d7af4b01e83329655955b8333a1fcd48e7ca5cc7752499bf38abcb4b3b56d",
+  "replacement_sha256": "69aaf9186c30d1472379c928f42695022c1fda812b7944dd0c0379102da5308f",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "spell_engine",
+  "version": "1.10.9+26.2",
+  "jar": "spell_engine-fabric-1.10.9+26.2.jar",
+  "path": "data/rpg_series/spell/ground_slam.json",
+  "upstream_sha256": "19dd7d6b30a971342aa4dac655dc867d1e020a3177a095d717a828fd7564c578",
+  "replacement_sha256": "0bca73d1819f0c4a8517fff30e6f4a143ea8442b1e27dd7c90a9f080008d8211",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "spell_engine",
+  "version": "1.10.9+26.2",
+  "jar": "spell_engine-fabric-1.10.9+26.2.jar",
+  "path": "data/rpg_series/spell/impale.json",
+  "upstream_sha256": "9301ad4271bb744c6cdae1306d5296d7d0f803afb47678d04efc8a8951780e29",
+  "replacement_sha256": "56d61cb1c86934b3cf9895f5be06c0d2651576ca30d19ee71eca753834db7ae0",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "spell_engine",
+  "version": "1.10.9+26.2",
+  "jar": "spell_engine-fabric-1.10.9+26.2.jar",
+  "path": "data/rpg_series/spell/smash.json",
+  "upstream_sha256": "fb8b0f72201a2fcdda05d467339c097f12ba72fb20eda23c201631d4ad2129d9",
+  "replacement_sha256": "8a4960ec16da4b759bc1c3fbb6ffde003d4715f27cc2ce28e727c39bd3734bb0",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "spell_engine",
+  "version": "1.10.9+26.2",
+  "jar": "spell_engine-fabric-1.10.9+26.2.jar",
+  "path": "data/rpg_series/spell/swift_strikes.json",
+  "upstream_sha256": "7899863baa2a82a415604cedf4a61f77f2425df006d5c539a4c34dae7bab1ed1",
+  "replacement_sha256": "ff2dd16e98c3dbdac40958da9b1b6fd1663d9629bf34ace31b26d6882da3d513",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "spell_engine",
+  "version": "1.10.9+26.2",
+  "jar": "spell_engine-fabric-1.10.9+26.2.jar",
+  "path": "data/rpg_series/spell/swipe.json",
+  "upstream_sha256": "50d265ce27c3e6e618aa970327f8586a625cff74f4bfef4c3989d578d732c44a",
+  "replacement_sha256": "a11671580be25a42baaf30b777bc245c7f4d7572cb7aff0840774fa74ded9b95",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "spell_engine",
+  "version": "1.10.9+26.2",
+  "jar": "spell_engine-fabric-1.10.9+26.2.jar",
+  "path": "data/rpg_series/spell/thrust.json",
+  "upstream_sha256": "5b4346f7eebe20beb76f8cf1f31b52cbf2fca8a837aeb40d56814f9c9e8dff3b",
+  "replacement_sha256": "b11ee65921e37f7bcf852121809ae5dc13d2ce59b69c60cf3f7fe9157bf1b55e",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "spell_engine",
+  "version": "1.10.9+26.2",
+  "jar": "spell_engine-fabric-1.10.9+26.2.jar",
+  "path": "data/rpg_series/spell/whirlwind.json",
+  "upstream_sha256": "dfa96b6720080946f2fd5213d7cd8fefa0ea20a9e23053c3bfd740d78c67e47c",
+  "replacement_sha256": "2fe13a54ab26f2de9230a0a6ca6809f89fa616f60b48a5bb02bf3935169391d1",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/archer_tier_1_passive_1.json",
+  "upstream_sha256": "ba97a94a0e3bc9920d17a44c4a0cec8c3cd7241ba8c5b5cb318e8ac2d1158352",
+  "replacement_sha256": "7af643286e5f1e02106eb49ac06068b00830911169f330489081aad444d7145d",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/archer_tier_2_passive_1.json",
+  "upstream_sha256": "a660998a1e1645be2d0332b2b4f76264c2768fd1da366ee7965554f6bbedb0c6",
+  "replacement_sha256": "9c30cc55617070e1b0f6f25893f16cbf860f2dddeb039b1d9450d81d9098fe96",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/archer_tier_2_passive_2.json",
+  "upstream_sha256": "9dce597e94ef2324e8305ed92a29e74344ed15c16ff0f96895ce9297d396cdbf",
+  "replacement_sha256": "9356472cecbe83c124810bdc4fbb4fd8d697f9aaebd2eccd7e1713f37ad5b36e",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/archer_tier_3_passive_1.json",
+  "upstream_sha256": "76d9925eb3fdbe4404c29db29ec7bbb308aebef7ea94f6cabc354952d7f64b54",
+  "replacement_sha256": "3d9f18d5e1aa06baab74ccef9578785425c14c68641ce9f3c5af6bf54615f16f",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/archer_tier_3_passive_2.json",
+  "upstream_sha256": "6b98d8eacb90199234a7f29f38673ecb2327d1ea36d02681a3c1ba4747fc44fb",
+  "replacement_sha256": "2d5d7a3dcbfee429f8109f36d8467df860656223c306598818f01b635a2a92a8",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/paladin_tier_1_passive_1.json",
+  "upstream_sha256": "edabee86309d3d3eafc0c52ea5f4a6feb497e7cbbc0e46b2ce380cd5aeb2b549",
+  "replacement_sha256": "bba4b7ee78aeae7c1a34de59c78b8f378fe6a5791421fb02b9475128455920d7",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/paladin_tier_3_passive_2.json",
+  "upstream_sha256": "87caab49c3b400009198ff4e79541ee5682e6ccba18ff6e574a5b6b161872694",
+  "replacement_sha256": "ccae865cdd208f71d535aeb00e537e7be5320292f20820fd90442747bb47d077",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/rogue_tier_1_passive_2.json",
+  "upstream_sha256": "6ecd5b00ab1598fc2c23d5327cb1c0d493ca91c094f58cc7a72c9b494783524c",
+  "replacement_sha256": "c87e839df757696ab4b71c86f88fff6f139b223ffe8d32ccb764751c3c79560c",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/rogue_tier_2_passive_2.json",
+  "upstream_sha256": "a13709a6a6d9585f5eab9459e4a03dda0806b64357f303f9c6847d821129cc35",
+  "replacement_sha256": "e041288ba37061cdbfe099e8f7d90b761c78c2812cafd69ce5e49d98831701c8",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/rogue_tier_3_passive_1.json",
+  "upstream_sha256": "41473ec727c3d2b13ecdf33aadb37bc4bd3a6330725811d87fb0e6432aca9a9f",
+  "replacement_sha256": "d5c13c672a98e69ab03c9a77b9e9cec2dfe6886251552fb26082e81a099cfe12",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/rogue_tier_3_passive_2.json",
+  "upstream_sha256": "a1ad5617bcb70961ee66a492a777efbacda49ee96f339c5a96f14d98fae1458f",
+  "replacement_sha256": "080340e0adad7caaaab9e94cd69babf0ed3f37e69791dd3adc8f16b64f9dbfba",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/warrior_tier_1_passive_1.json",
+  "upstream_sha256": "754bf09a56688923ff383f72911c97ff7e457bb5f53f3ca41a91d29e6a25262b",
+  "replacement_sha256": "f871d76d84df4cc15867cab1c1efb30b7ba77391d82b5a2624121e18b606e099",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/warrior_tier_1_passive_2.json",
+  "upstream_sha256": "d95e1f20ea7ea35bd5588ea3e8701c0634f5833e770fe2752febb3fd359cc77d",
+  "replacement_sha256": "a73ddf1369d31b0116cc75e147e1036a14d167ea4dab279255214a317cbef153",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/warrior_tier_3_passive_1.json",
+  "upstream_sha256": "5398782fb1ec3aaedde7cfdc06e0103d67f6e496de5b64f88fe83c8ad664839d",
+  "replacement_sha256": "fbdf0fa4f2b5cdeb430cc7a98426401c531c13fe6ab8365d9eae85f0eb2e270d",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/warrior_tier_3_passive_2.json",
+  "upstream_sha256": "1d0e9ef8be8153293aa75ad064db250f0d6f11f6caae66ddbdcda3abd2def3b7",
+  "replacement_sha256": "370ded506092db7c2b9b5b05d8cf1845d0694eb59f09597be4bc26bcfdcebc92",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/warrior_tier_3_spell_1_modifier_2.json",
+  "upstream_sha256": "fcbcf060971790521516be5fd651f56179e87520ca07fc0004bd141edefdacdb",
+  "replacement_sha256": "cb09ee7ebc516ebf7684835dc37edb13b29424969752e6a0d45be5513015b6b7",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/weapon_bow_passive_1.json",
+  "upstream_sha256": "0a56ccf989ef6caf9dc8f1fd5694ae1c3f92f2ab1ae3c6b6df7c97c342938365",
+  "replacement_sha256": "547c46d7b2b77786800c761d3fc9163258b5232df25d6494e28c47ec7b19a14d",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/weapon_swipe_modifier_2.json",
+  "upstream_sha256": "72158c5732d410f3d4dd3f342c9e7a277fa0f465c35e02120f9f81ad5f9c25f2",
+  "replacement_sha256": "6e05da79cda1213d8db7272a6bc10baffa9a141799f02cd379a68c5a68f53cd1",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "relics_rpgs",
+  "version": "1.4.1+26.2",
+  "jar": "relics-fabric-1.4.1+26.2.jar",
+  "path": "data/relics_rpgs/spell/greater_perk_defense_danger.json",
+  "upstream_sha256": "343c5d2fe74b4a2ccbbf23b14f9ca6c60cbdd5bc118e85e5edf2f2a6e4a3c20e",
+  "replacement_sha256": "efbcaa1c2fb17d6f917023ea6d081b9534484a1313057b215d2b6628dcbc8376",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "relics_rpgs",
+  "version": "1.4.1+26.2",
+  "jar": "relics-fabric-1.4.1+26.2.jar",
+  "path": "data/relics_rpgs/spell/greater_perk_evasion_attack.json",
+  "upstream_sha256": "d357983ec923e8fdaf456178aa49d1ca8e092917fb723e21126c2c831aec4e70",
+  "replacement_sha256": "796fe83cc84951ab193bc2cf43f835dfe415cf4e87a057e9be1e1d7e4be6b0bb",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "relics_rpgs",
+  "version": "1.4.1+26.2",
+  "jar": "relics-fabric-1.4.1+26.2.jar",
+  "path": "data/relics_rpgs/spell/greater_perk_melee_stun.json",
+  "upstream_sha256": "78131e0de3052abc4b801214d0f586488cdc7730fa752a12a49e6e1e8bb084e3",
+  "replacement_sha256": "be0e37368449687f7bbf3b0240d02e9654dc9dcd3a17c57bcc743d32083a6f22",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "relics_rpgs",
+  "version": "1.4.1+26.2",
+  "jar": "relics-fabric-1.4.1+26.2.jar",
+  "path": "data/relics_rpgs/spell/greater_perk_ranged_levitate.json",
+  "upstream_sha256": "6f17c142beb379aa13e44503eea519b07e415696346d84074f368839297a82ab",
+  "replacement_sha256": "0499263525a1a4c541f122bc89fdc5e494cca300d8a6a549e36e17f6d540628e",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "relics_rpgs",
+  "version": "1.4.1+26.2",
+  "jar": "relics-fabric-1.4.1+26.2.jar",
+  "path": "data/relics_rpgs/spell/greater_proc_physical_trance.json",
+  "upstream_sha256": "270a703789c63eab88f9ee256497a0616e6199c3b74832c3b5078a86c2c72c68",
+  "replacement_sha256": "453d8c5605f712363334bf91ca64ad449cfc1d9688b2271d00b6af87639fcb21",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "relics_rpgs",
+  "version": "1.4.1+26.2",
+  "jar": "relics-fabric-1.4.1+26.2.jar",
+  "path": "data/relics_rpgs/spell/lesser_use_damage.json",
+  "upstream_sha256": "7d0c694f12b82515bc028c66ccae076761272ebaa24658fb6c80cf1ba25fe8b3",
+  "replacement_sha256": "87de9733b296fb10ac1b53001c1b7c40f8b3e5295281258ecde246c55bea4e74",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "relics_rpgs",
+  "version": "1.4.1+26.2",
+  "jar": "relics-fabric-1.4.1+26.2.jar",
+  "path": "data/relics_rpgs/spell/lesser_use_dex.json",
+  "upstream_sha256": "58f111155804deee60fd77df0811b979966c0c5321b9c23325e5ff48d8b2301c",
+  "replacement_sha256": "a64ddf6e9ca3aaa0258a58703bc45f087c24470fdada31200f42fce0f68b413e",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "relics_rpgs",
+  "version": "1.4.1+26.2",
+  "jar": "relics-fabric-1.4.1+26.2.jar",
+  "path": "data/relics_rpgs/spell/lesser_use_ranged.json",
+  "upstream_sha256": "fece6782588d65d10b16f1af03cbeb949026000fcd268546e92ec567f57fbe04",
+  "replacement_sha256": "084bb64a5c664dcba1bee42ab3c97f2d4cbab35159f72dea7236a4e3c6daad9a",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "relics_rpgs",
+  "version": "1.4.1+26.2",
+  "jar": "relics-fabric-1.4.1+26.2.jar",
+  "path": "data/relics_rpgs/spell/medium_proc_attack_damage.json",
+  "upstream_sha256": "259abdbc25fce5deead91c6209b8b4a361485c77c1a589a42bc5976ff9882f55",
+  "replacement_sha256": "0c9ccb50e4b8c894699701f78d63b5e4c604b7634a04b1d7ba77ad3787d60010",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "relics_rpgs",
+  "version": "1.4.1+26.2",
+  "jar": "relics-fabric-1.4.1+26.2.jar",
+  "path": "data/relics_rpgs/spell/medium_proc_attack_speed.json",
+  "upstream_sha256": "bd9a337ccbc19aba3efc206232c10d5283fa8589c33b07dd06b967b0a7c6555f",
+  "replacement_sha256": "1a688dd1500368a1b3db74f3e33363a19ccd056ceceeb87d4439f7474b3e24d4",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "relics_rpgs",
+  "version": "1.4.1+26.2",
+  "jar": "relics-fabric-1.4.1+26.2.jar",
+  "path": "data/relics_rpgs/spell/medium_proc_defense.json",
+  "upstream_sha256": "65fae0be384dae07eaceb04a87f2c49249ab7c5142663dc658f438188f0ee46f",
+  "replacement_sha256": "cc3292e5c35fa8b73e861d46d755161476095854be4b3e5c990c22cbff9a7789",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "relics_rpgs",
+  "version": "1.4.1+26.2",
+  "jar": "relics-fabric-1.4.1+26.2.jar",
+  "path": "data/relics_rpgs/spell/medium_proc_evasion.json",
+  "upstream_sha256": "a289e0db233d0219ebc6a8c8f4f5e6d04ec516c25ce9127ac03812a2273be8f6",
+  "replacement_sha256": "52dba10f2a34fa556ff20aceb75ac763cf52cf4805cf464d1d02450167660481",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "relics_rpgs",
+  "version": "1.4.1+26.2",
+  "jar": "relics-fabric-1.4.1+26.2.jar",
+  "path": "data/relics_rpgs/spell/medium_proc_ranged_damage.json",
+  "upstream_sha256": "646708a6b0d7138e63c4f7ec65ae755465844fbbe3186339c995174c6597eb71",
+  "replacement_sha256": "67b31b6cfbcdbea91b1b9e49ab4e08346cdb3671e3b434bd93080c4aa4b659f7",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ },
+ {
+  "mod": "relics_rpgs",
+  "version": "1.4.1+26.2",
+  "jar": "relics-fabric-1.4.1+26.2.jar",
+  "path": "data/relics_rpgs/spell/superior_use_area_attack_damage.json",
+  "upstream_sha256": "67faabf286bb21bac63f771cae97b283eab0060924befc5bb23ee5fa47bf2a79",
+  "replacement_sha256": "d4694c188b47c45fb3f591c189024ccbb496ad57dc86124f7aab6a44623277fe",
+  "changes": [
+   "cost.cooldown.haste_affected=false"
+  ],
+  "workstreams": [
+   "P1"
+  ]
+ }
+]

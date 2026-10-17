@@ -85,7 +85,17 @@
         "2.0.3": {
           "status": "patched",
           "resources": {
-            "pack.mcmeta": "a43a389339936bfb6171776a5d41dba3acf4aab2087ad8ad1eb84c11d09018c4"
+            "pack.mcmeta": "a43a389339936bfb6171776a5d41dba3acf4aab2087ad8ad1eb84c11d09018c4",
+            "data/grim_kingdoms/structure/plains/glimmervault_fortress_plains.nbt": "ceaad2f0e6d5b1075872c4a9ea117e51d8cd12542b6a913b67df486ab5795651",
+            "data/grim_kingdoms/structure/plains/sandfell_outpost.nbt": "cbdeabe0a9b552f4b605c2686c3f52cd76d12844eb376627ecc10f769939396f",
+            "data/grim_kingdoms/structure/snowy/blackridge_watch.nbt": "008469e97c9ef31779adc77bfec7e0c2c14d92559092f102650a3a62c0f82462",
+            "data/grim_kingdoms/structure/snowy/frozen_onion_fort2.nbt": "26314ba4c97bb852b50867c8f215e101714a9168314663c984b2523fc1e90475",
+            "data/grim_kingdoms/structure/snowy/glimmervault_fortress.nbt": "dec9c010ddf102cde7a6f2188e248705b11776422cec5e149d98954b882c47f4",
+            "data/grim_kingdoms/structure/snowy/winterhold_citadel.nbt": "8c6674cf35602fa52886a2725b5aca69451c0fc28d57fd8221b7a9ab67d1ef7e",
+            "data/grim_kingdoms/structure/taiga/blackridge_watch_taiga.nbt": "46ef7b657cec178141ecf98d00fc8e3f8f65bf0528cca492f7253507e6a20249",
+            "data/grim_kingdoms/structure/taiga/winterhold_citadel_taiga.nbt": "2dc471af463c7df181e0851cfe65f8c85bbc698a7c240a4e6207e0edfe564617",
+            "data/grim_kingdoms/structure/water/ship3.nbt": "241a5a5172d04610627f889395668f456b350f4884d29078b50e80a30fb0afa7",
+            "data/grim_kingdoms/structure/water/ship9.nbt": "d5e0b3fd913cc5cfc48c272346b9c43fb0e64d684f007fff5034023e1fab85aa"
           }
         }
       }
@@ -137,11 +147,159 @@
         "3.1.3.003+26.2": {
           "status": "patched",
           "resources": {
-            "data/minecraft/enchantment/sharpness.json": "fe176357898633059d7e37643e19115d25352725a0015630f92f39b2f96f620e"
+            "data/minecraft/enchantment/sharpness.json": "fe176357898633059d7e37643e19115d25352725a0015630f92f39b2f96f620e",
+            "data/rogues/spell/bear_trap.json": "9fdebb8c04f5d6e149f41b42828d74b9365af18f0076d18c8a36358e0c861f65",
+            "data/rogues/spell/charge.json": "5ec55a59a4f4338da4a00a37addc2bf7706130169177b01c73318b453a798d14",
+            "data/rogues/spell/mortal_strike.json": "a65ff216447ea19acda86d03be4b2da82a8256f35db8c8305104265a16fda60c",
+            "data/rogues/spell/mutilate.json": "1210f6df29f0dd26be31f0f891b28b9f5cc2c309b2dc63b91266fe0da04aab49",
+            "data/rogues/spell/shadow_step.json": "b52f39d281d3b035f858c6f929345b475610e7c0e53a4d84f8948976abcea86b",
+            "data/rogues/spell/shock_powder.json": "4ca2e20baa1c4acb9c0124b2777ed10eb648091bfe96dfc8c8c47da422e6f49e",
+            "data/rogues/spell/shout.json": "30309fe053f65474953a51c399d65d0bd114a8027c1db1171827550653543327",
+            "data/rogues/spell/slice_and_dice.json": "7db998548e148df03450cd6baaeed141570bac7b86762acfe7855a48d963b4f0",
+            "data/rogues/spell/throw.json": "c3f2f91da9cf586d991b22655d48199cddc7e9c04d02809c2c0d9cccb2080300",
+            "data/rogues/spell/throw_net.json": "0954c4025d5f084dbf0d4a60554a04015741681c7f264d11b6db895e06095823",
+            "data/rogues/spell/vanish.json": "33314bb34d54a0dc9c916adafaa9f727b3a5e579d49e5ebd3755c14ca73a1523"
           },
           "artifact_sha256": "77bdff881c01011bff6e6e722a1f47dc01ca7d377a1f08231d305fc11b08f113",
           "probe_evidence": "docs/evidence/rogues-sharpness.json",
-          "verification_limit": "Unit tests cover the exact version and SHA-256 gate and the WARN paths; the production-JAR dedicated-server probe verifies the decoded registry entry and both resource paths with Rogues, Apothic Enchanting and their dependencies. Combat damage, the client-side registry decode and full-pack behavior are unverified."
+          "verification_limit": "Unit tests cover the exact version and SHA-256 gate and the WARN paths; the production-JAR dedicated-server probe verifies the decoded registry entry and both resource paths with Rogues, Apothic Enchanting and their dependencies. Combat damage, the client-side registry decode and full-pack behavior are unverified. The eleven spell resources are D3 P1/D9 patches: Unit tests cover the exact version and SHA-256 gate, the WARN paths and that each replacement changes only the decided keys; with -PserverModsDir they also check every spell in the deployed jar. The dedicated-server probe (docs/evidence/rpg-spell-patches.json) covers the decoded minecraft:spell entries, cooldowns under haste and SpellImpacts.underApplyLimit. Combat with a real player, the client-side registry decode and tooltips, full-pack behavior and elite/invader immunity (lampas-addons) are unverified."
+        }
+      }
+    },
+    "spell_engine": {
+      "name": "Spell Engine (rpg_series weapon skills)",
+      "type": "resource_patch",
+      "versions": {
+        "1.10.9+26.2": {
+          "status": "patched",
+          "resources": {
+            "data/rpg_series/spell/cleave.json": "4dee409d8601b7c4b7fb9252b578d3a2b1a333732964461d15662cf7f450d533",
+            "data/rpg_series/spell/fan_of_knives.json": "4609da90e39b5f1664abd453f63ba31776af9e99f734f2acc800fda27602364e",
+            "data/rpg_series/spell/flurry.json": "bc7d7af4b01e83329655955b8333a1fcd48e7ca5cc7752499bf38abcb4b3b56d",
+            "data/rpg_series/spell/ground_slam.json": "19dd7d6b30a971342aa4dac655dc867d1e020a3177a095d717a828fd7564c578",
+            "data/rpg_series/spell/impale.json": "9301ad4271bb744c6cdae1306d5296d7d0f803afb47678d04efc8a8951780e29",
+            "data/rpg_series/spell/smash.json": "fb8b0f72201a2fcdda05d467339c097f12ba72fb20eda23c201631d4ad2129d9",
+            "data/rpg_series/spell/swift_strikes.json": "7899863baa2a82a415604cedf4a61f77f2425df006d5c539a4c34dae7bab1ed1",
+            "data/rpg_series/spell/swipe.json": "50d265ce27c3e6e618aa970327f8586a625cff74f4bfef4c3989d578d732c44a",
+            "data/rpg_series/spell/thrust.json": "5b4346f7eebe20beb76f8cf1f31b52cbf2fca8a837aeb40d56814f9c9e8dff3b",
+            "data/rpg_series/spell/whirlwind.json": "dfa96b6720080946f2fd5213d7cd8fefa0ea20a9e23053c3bfd740d78c67e47c"
+          },
+          "artifact_sha256": "bfc258875662071d76c448e603f05f0f519bf3e8a0c32207d232d820cab0ab2a",
+          "probe_evidence": "docs/evidence/rpg-spell-patches.json",
+          "verification_limit": "Unit tests cover the exact version and SHA-256 gate, the WARN paths and that each replacement changes only the decided keys; with -PserverModsDir they also check every spell in the deployed jar. The dedicated-server probe (docs/evidence/rpg-spell-patches.json) covers the decoded minecraft:spell entries, cooldowns under haste and SpellImpacts.underApplyLimit. Combat with a real player, the client-side registry decode and tooltips, full-pack behavior and elite/invader immunity (lampas-addons) are unverified."
+        }
+      }
+    },
+    "paladins": {
+      "name": "Paladins & Priests (RPG Series)",
+      "type": "resource_patch",
+      "versions": {
+        "3.1.3.003+26.2": {
+          "status": "patched",
+          "resources": {
+            "data/paladins/spell/judgement.json": "a85576a3d32814d575117a9c82b7780676679add9e36164c73304ecec39a6fc0"
+          },
+          "artifact_sha256": "f36009e6a60fae66ca195fc9165a2d7a59c92bd55fd75b1e2e18620ffa4fc492",
+          "probe_evidence": "docs/evidence/rpg-spell-patches.json",
+          "verification_limit": "Unit tests cover the exact version and SHA-256 gate, the WARN paths and that each replacement changes only the decided keys; with -PserverModsDir they also check every spell in the deployed jar. The dedicated-server probe (docs/evidence/rpg-spell-patches.json) covers the decoded minecraft:spell entries, cooldowns under haste and SpellImpacts.underApplyLimit. Combat with a real player, the client-side registry decode and tooltips, full-pack behavior and elite/invader immunity (lampas-addons) are unverified."
+        }
+      }
+    },
+    "archers": {
+      "name": "Archers (RPG Series)",
+      "type": "resource_patch",
+      "versions": {
+        "3.1.3.003+26.2": {
+          "status": "patched",
+          "resources": {
+            "data/archers/spell/barrage.json": "a0b9787786cf1811793379f990e21d2a42f08db07831818380201fdd2f589ff8",
+            "data/archers/spell/entangling_roots.json": "18125be43cd04274b3904bea2a61240630c10d7397e336a9fb7d895b78ef4c7c",
+            "data/archers/spell/magic_arrow.json": "fe06abd905c430a1b617df5641ed750486fbca5fab21016c03af82381e838053",
+            "data/archers/spell/power_shot.json": "debfd779430db6b48c6b41f0b6d3a4c054d6e04c50090d03142a5ae2e6a7894c",
+            "data/archers/spell/rain_of_arrows.json": "c0861848d520d1bc5e49aab6f73c9a45176010bd7a3eadb0157c03e98bc74b36"
+          },
+          "artifact_sha256": "4ee9c35f54d74f28f742f36a4f0b319d4d3936bc0731bd95cb823c17225db22d",
+          "probe_evidence": "docs/evidence/rpg-spell-patches.json",
+          "verification_limit": "Unit tests cover the exact version and SHA-256 gate, the WARN paths and that each replacement changes only the decided keys; with -PserverModsDir they also check every spell in the deployed jar. The dedicated-server probe (docs/evidence/rpg-spell-patches.json) covers the decoded minecraft:spell entries, cooldowns under haste and SpellImpacts.underApplyLimit. Combat with a real player, the client-side registry decode and tooltips, full-pack behavior and elite/invader immunity (lampas-addons) are unverified."
+        }
+      }
+    },
+    "wizards": {
+      "name": "Wizards (RPG Series)",
+      "type": "resource_patch",
+      "versions": {
+        "3.1.3.003+26.2": {
+          "status": "patched",
+          "resources": {
+            "data/wizards/spell/frost_blizzard.json": "1d3204d22b34efb887fba229b5e5bef5c71c10b0e161b31f7a173991eaddf641",
+            "data/wizards/spell/frost_lance.json": "7e2a00708692ca03ee6f9d9418ab836310309de95940671ffff98e2764151520",
+            "data/wizards/spell/frost_nova.json": "cf7d6159a4c0a85260e06e901ca38048ed593273b9eaddd385a8b4c9e712856c",
+            "data/wizards/spell/frost_spikes.json": "50d2d9e0e6d4525a1779178d6f70a1b2254ca22f010493f088d165b74e6aa96a",
+            "data/wizards/spell/frostbolt.json": "92d85ac73a1441eeb0e8de4871da5bf7bb0cc27d0a682e30c3c6011c14547477"
+          },
+          "artifact_sha256": "ced172215b3f5fb4301252d171e26c621fbebcc579fc67bd639fb2d92a8034a2",
+          "probe_evidence": "docs/evidence/rpg-spell-patches.json",
+          "verification_limit": "Unit tests cover the exact version and SHA-256 gate, the WARN paths and that each replacement changes only the decided keys; with -PserverModsDir they also check every spell in the deployed jar. The dedicated-server probe (docs/evidence/rpg-spell-patches.json) covers the decoded minecraft:spell entries, cooldowns under haste and SpellImpacts.underApplyLimit. Combat with a real player, the client-side registry decode and tooltips, full-pack behavior and elite/invader immunity (lampas-addons) are unverified."
+        }
+      }
+    },
+    "skill_tree_rpgs": {
+      "name": "Skill Tree (RPG Series)",
+      "type": "resource_patch",
+      "versions": {
+        "1.6.2+26.2": {
+          "status": "patched",
+          "resources": {
+            "data/skill_tree_rpgs/spell/archer_tier_1_passive_1.json": "ba97a94a0e3bc9920d17a44c4a0cec8c3cd7241ba8c5b5cb318e8ac2d1158352",
+            "data/skill_tree_rpgs/spell/archer_tier_2_passive_1.json": "a660998a1e1645be2d0332b2b4f76264c2768fd1da366ee7965554f6bbedb0c6",
+            "data/skill_tree_rpgs/spell/archer_tier_2_passive_2.json": "9dce597e94ef2324e8305ed92a29e74344ed15c16ff0f96895ce9297d396cdbf",
+            "data/skill_tree_rpgs/spell/archer_tier_3_passive_1.json": "76d9925eb3fdbe4404c29db29ec7bbb308aebef7ea94f6cabc354952d7f64b54",
+            "data/skill_tree_rpgs/spell/archer_tier_3_passive_2.json": "6b98d8eacb90199234a7f29f38673ecb2327d1ea36d02681a3c1ba4747fc44fb",
+            "data/skill_tree_rpgs/spell/paladin_tier_1_passive_1.json": "edabee86309d3d3eafc0c52ea5f4a6feb497e7cbbc0e46b2ce380cd5aeb2b549",
+            "data/skill_tree_rpgs/spell/paladin_tier_3_passive_2.json": "87caab49c3b400009198ff4e79541ee5682e6ccba18ff6e574a5b6b161872694",
+            "data/skill_tree_rpgs/spell/rogue_tier_1_passive_2.json": "6ecd5b00ab1598fc2c23d5327cb1c0d493ca91c094f58cc7a72c9b494783524c",
+            "data/skill_tree_rpgs/spell/rogue_tier_2_passive_2.json": "a13709a6a6d9585f5eab9459e4a03dda0806b64357f303f9c6847d821129cc35",
+            "data/skill_tree_rpgs/spell/rogue_tier_3_passive_1.json": "41473ec727c3d2b13ecdf33aadb37bc4bd3a6330725811d87fb0e6432aca9a9f",
+            "data/skill_tree_rpgs/spell/rogue_tier_3_passive_2.json": "a1ad5617bcb70961ee66a492a777efbacda49ee96f339c5a96f14d98fae1458f",
+            "data/skill_tree_rpgs/spell/warrior_tier_1_passive_1.json": "754bf09a56688923ff383f72911c97ff7e457bb5f53f3ca41a91d29e6a25262b",
+            "data/skill_tree_rpgs/spell/warrior_tier_1_passive_2.json": "d95e1f20ea7ea35bd5588ea3e8701c0634f5833e770fe2752febb3fd359cc77d",
+            "data/skill_tree_rpgs/spell/warrior_tier_3_passive_1.json": "5398782fb1ec3aaedde7cfdc06e0103d67f6e496de5b64f88fe83c8ad664839d",
+            "data/skill_tree_rpgs/spell/warrior_tier_3_passive_2.json": "1d0e9ef8be8153293aa75ad064db250f0d6f11f6caae66ddbdcda3abd2def3b7",
+            "data/skill_tree_rpgs/spell/warrior_tier_3_spell_1_modifier_2.json": "fcbcf060971790521516be5fd651f56179e87520ca07fc0004bd141edefdacdb",
+            "data/skill_tree_rpgs/spell/weapon_bow_passive_1.json": "0a56ccf989ef6caf9dc8f1fd5694ae1c3f92f2ab1ae3c6b6df7c97c342938365",
+            "data/skill_tree_rpgs/spell/weapon_swipe_modifier_2.json": "72158c5732d410f3d4dd3f342c9e7a277fa0f465c35e02120f9f81ad5f9c25f2"
+          },
+          "artifact_sha256": "405ff761ba518c87a14d8923f0c8db5f01311b86d58ca78c3e1f2731d3469901",
+          "probe_evidence": "docs/evidence/rpg-spell-patches.json",
+          "verification_limit": "Unit tests cover the exact version and SHA-256 gate, the WARN paths and that each replacement changes only the decided keys; with -PserverModsDir they also check every spell in the deployed jar. The dedicated-server probe (docs/evidence/rpg-spell-patches.json) covers the decoded minecraft:spell entries, cooldowns under haste and SpellImpacts.underApplyLimit. Combat with a real player, the client-side registry decode and tooltips, full-pack behavior and elite/invader immunity (lampas-addons) are unverified."
+        }
+      }
+    },
+    "relics_rpgs": {
+      "name": "Relics (RPG Series)",
+      "type": "resource_patch",
+      "versions": {
+        "1.4.1+26.2": {
+          "status": "patched",
+          "resources": {
+            "data/relics_rpgs/spell/greater_perk_defense_danger.json": "343c5d2fe74b4a2ccbbf23b14f9ca6c60cbdd5bc118e85e5edf2f2a6e4a3c20e",
+            "data/relics_rpgs/spell/greater_perk_evasion_attack.json": "d357983ec923e8fdaf456178aa49d1ca8e092917fb723e21126c2c831aec4e70",
+            "data/relics_rpgs/spell/greater_perk_melee_stun.json": "78131e0de3052abc4b801214d0f586488cdc7730fa752a12a49e6e1e8bb084e3",
+            "data/relics_rpgs/spell/greater_perk_ranged_levitate.json": "6f17c142beb379aa13e44503eea519b07e415696346d84074f368839297a82ab",
+            "data/relics_rpgs/spell/greater_proc_physical_trance.json": "270a703789c63eab88f9ee256497a0616e6199c3b74832c3b5078a86c2c72c68",
+            "data/relics_rpgs/spell/lesser_use_damage.json": "7d0c694f12b82515bc028c66ccae076761272ebaa24658fb6c80cf1ba25fe8b3",
+            "data/relics_rpgs/spell/lesser_use_dex.json": "58f111155804deee60fd77df0811b979966c0c5321b9c23325e5ff48d8b2301c",
+            "data/relics_rpgs/spell/lesser_use_ranged.json": "fece6782588d65d10b16f1af03cbeb949026000fcd268546e92ec567f57fbe04",
+            "data/relics_rpgs/spell/medium_proc_attack_damage.json": "259abdbc25fce5deead91c6209b8b4a361485c77c1a589a42bc5976ff9882f55",
+            "data/relics_rpgs/spell/medium_proc_attack_speed.json": "bd9a337ccbc19aba3efc206232c10d5283fa8589c33b07dd06b967b0a7c6555f",
+            "data/relics_rpgs/spell/medium_proc_defense.json": "65fae0be384dae07eaceb04a87f2c49249ab7c5142663dc658f438188f0ee46f",
+            "data/relics_rpgs/spell/medium_proc_evasion.json": "a289e0db233d0219ebc6a8c8f4f5e6d04ec516c25ce9127ac03812a2273be8f6",
+            "data/relics_rpgs/spell/medium_proc_ranged_damage.json": "646708a6b0d7138e63c4f7ec65ae755465844fbbe3186339c995174c6597eb71",
+            "data/relics_rpgs/spell/superior_use_area_attack_damage.json": "67faabf286bb21bac63f771cae97b283eab0060924befc5bb23ee5fa47bf2a79"
+          },
+          "artifact_sha256": "013eae223a352138342e5d629e5fec75ee7f19405b82589435993f403be8469f",
+          "probe_evidence": "docs/evidence/rpg-spell-patches.json",
+          "verification_limit": "Unit tests cover the exact version and SHA-256 gate, the WARN paths and that each replacement changes only the decided keys; with -PserverModsDir they also check every spell in the deployed jar. The dedicated-server probe (docs/evidence/rpg-spell-patches.json) covers the decoded minecraft:spell entries, cooldowns under haste and SpellImpacts.underApplyLimit. Combat with a real player, the client-side registry decode and tooltips, full-pack behavior and elite/invader immunity (lampas-addons) are unverified."
         }
       }
     },

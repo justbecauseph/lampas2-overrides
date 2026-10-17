@@ -1,0 +1,58 @@
+{
+  "school": "spell_power:physical_melee",
+  "range": 0.0,
+  "tier": 1,
+  "type": "PASSIVE",
+  "passive": {
+    "triggers": [
+      {
+        "target_override": "CASTER",
+        "type": "SHIELD_BLOCK",
+        "chance": 0.5
+      }
+    ]
+  },
+  "target": {
+    "type": "FROM_TRIGGER"
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "STATUS_EFFECT",
+        "status_effect": {
+          "effect_id": "skill_tree_rpgs:vitality",
+          "duration": 8.0,
+          "amplifier": 1,
+          "amplifier_cap": 2,
+          "apply_mode": "ADD"
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:magic_spark",
+            "appearance": {
+              "color": 1728014079,
+              "motion": "DECELERATE"
+            },
+            "batch": {
+              "count": 20.0,
+              "shape": "PIPE",
+              "anchor": "ENTITY",
+              "vertical_origin": 0.1,
+              "min_speed": 0.2,
+              "max_speed": 0.3,
+              "width_factor": 2.0
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "cost": {
+    "durability": 0,
+    "cooldown": {
+      "duration": 1.0
+    }
+  }
+}

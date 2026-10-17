@@ -1,0 +1,66 @@
+{
+  "school": "spell_power:physical_melee",
+  "range": 0.0,
+  "tier": 7,
+  "tooltip": {
+    "show_header": false,
+    "name": {
+      "show_in_compact": false,
+      "show_in_details": false
+    },
+    "description": {
+      "color": "dark_green"
+    }
+  },
+  "type": "PASSIVE",
+  "passive": {
+    "triggers": [
+      {
+        "type": "DAMAGE_TAKEN",
+        "chance": 0.12
+      }
+    ]
+  },
+  "release": {
+    "animation": {
+      "id": "spell_engine:dual_handed_weapon_charge"
+    },
+    "visuals": {
+      "particles": [
+        {
+          "id": "spell_engine:magic_spell",
+          "appearance": {
+            "color": 2573664255,
+            "motion": "DECELERATE"
+          },
+          "batch": {
+            "count": 20.0,
+            "shape": "SPHERE",
+            "anchor": "ENTITY",
+            "min_speed": 0.15,
+            "max_speed": 0.15
+          }
+        }
+      ]
+    },
+    "sound": {
+      "id": "relics_rpgs:monkey_activate"
+    }
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "STATUS_EFFECT",
+        "status_effect": {
+          "effect_id": "relics_rpgs:medium_evasion",
+          "duration": 8.0
+        }
+      }
+    }
+  ],
+  "cost": {
+    "cooldown": {
+      "duration": 45.0
+    }
+  }
+}

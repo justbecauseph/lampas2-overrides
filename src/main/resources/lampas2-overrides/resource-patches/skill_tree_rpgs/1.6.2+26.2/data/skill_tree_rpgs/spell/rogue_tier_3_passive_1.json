@@ -1,0 +1,61 @@
+{
+  "school": "spell_power:physical_melee",
+  "range": 0.0,
+  "tier": 1,
+  "type": "PASSIVE",
+  "passive": {
+    "triggers": [
+      {
+        "target_override": "CASTER",
+        "type": "DAMAGE_TAKEN",
+        "stage": "PRE",
+        "damage": {
+          "fatal": true
+        }
+      }
+    ]
+  },
+  "target": {
+    "type": "FROM_TRIGGER"
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "STATUS_EFFECT",
+        "apply_to_caster": true,
+        "status_effect": {
+          "effect_id": "skill_tree_rpgs:cheat_death",
+          "duration": 3.0
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:area_effect_728",
+            "appearance": {
+              "color": 1711341439,
+              "scale": 1.2,
+              "facing": "CAMERA",
+              "attachment": "POSITION"
+            },
+            "batch": {
+              "count": 1.0,
+              "shape": "LINE",
+              "anchor": "ENTITY"
+            }
+          }
+        ]
+      },
+      "sound": {
+        "id": "skill_tree_rpgs:rogue_cheat_death"
+      }
+    }
+  ],
+  "cost": {
+    "durability": 0,
+    "cooldown": {
+      "duration": 60.0,
+      "haste_affected": false
+    }
+  }
+}

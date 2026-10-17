@@ -55,7 +55,8 @@ public class ResourcePatchResolverTest {
 
 	@Test
 	void registryContainsAllTargetPatches() {
-		assertEquals(19, ResourcePatchRegistry.getAllPatches().size());
+		// 19 pack metadata, worldgen and Sharpness patches plus 64 RPG Series spell patches.
+		assertEquals(83, ResourcePatchRegistry.getAllPatches().size());
 
 		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", "pack.mcmeta"));
 		assertNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", "data/formationsoverworld/loot_table/stone_tower/smithing.json"));
@@ -110,6 +111,12 @@ public class ResourcePatchResolverTest {
 					assertEquals(2, config.get("vertical_range").getAsInt());
 				} else if (patch.resourcePath().equals(SHARPNESS)) {
 					assertFlatExclusiveSharpness(json);
+				} else if (patch.resourcePath().contains("/spell/")) {
+					String school = json.get("school").getAsString();
+					if (school.startsWith("spell_power:physical_")) {
+						assertFalse(json.getAsJsonObject("cost").getAsJsonObject("cooldown").get("haste_affected").getAsBoolean(),
+							"Martial cooldown still hasted: " + patch.replacementPath());
+					}
 				}
 			}
 		}
@@ -462,7 +469,7 @@ public class ResourcePatchResolverTest {
 	}
 
 	/** Captures events from the resolver's Log4j logger, the SLF4J binding Minecraft ships. */
-	private static final class LogCapture extends AbstractAppender implements AutoCloseable {
+	static final class LogCapture extends AbstractAppender implements AutoCloseable {
 		private static final String LOGGER_NAME = "lampas2-overrides/resource-fix";
 		private final List<LogEvent> events = new CopyOnWriteArrayList<>();
 		private final org.apache.logging.log4j.core.Logger logger;
@@ -504,7 +511,7 @@ public class ResourcePatchResolverTest {
 		}
 	}
 
-	private static ModContainer createMockModContainer(String modId, String versionString) {
+	static ModContainer createMockModContainer(String modId, String versionString) {
 		Version version;
 		try {
 			version = Version.parse(versionString);
@@ -540,7 +547,7 @@ public class ResourcePatchResolverTest {
 		);
 	}
 
-	private static byte[] readFixtureResource(String resource) throws IOException {
+	static byte[] readFixtureResource(String resource) throws IOException {
 		try (InputStream input = ResourcePatchResolverTest.class.getClassLoader().getResourceAsStream(resource)) {
 			assertNotNull(input, "Missing test fixture: " + resource);
 			byte[] bytes = input.readAllBytes();

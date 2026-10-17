@@ -1,0 +1,71 @@
+{
+  "school": "spell_power:physical_ranged",
+  "range": 0.0,
+  "tier": 7,
+  "tooltip": {
+    "show_header": false,
+    "name": {
+      "show_in_compact": false,
+      "show_in_details": false
+    },
+    "description": {
+      "color": "dark_green"
+    }
+  },
+  "type": "PASSIVE",
+  "passive": {
+    "triggers": [
+      {
+        "type": "ARROW_IMPACT",
+        "chance": 0.12
+      }
+    ]
+  },
+  "target": {
+    "type": "FROM_TRIGGER"
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "STATUS_EFFECT",
+        "status_effect": {
+          "effect_id": "minecraft:levitation",
+          "duration": 2.0,
+          "amplifier": 3
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:magic_spark",
+            "appearance": {
+              "color": 1728014079,
+              "motion": "DECELERATE"
+            },
+            "batch": {
+              "count": 50.0,
+              "shape": "PIPE",
+              "anchor": "ENTITY",
+              "vertical_origin": 0.1,
+              "min_speed": 0.15,
+              "max_speed": 0.5,
+              "width_factor": 2.0
+            }
+          }
+        ]
+      },
+      "sound": {
+        "id": "relics_rpgs:levitate_generic"
+      }
+    }
+  ],
+  "area_impact": {
+    "radius": 2.0
+  },
+  "cost": {
+    "cooldown": {
+      "duration": 20.0,
+      "haste_affected": false
+    }
+  }
+}
