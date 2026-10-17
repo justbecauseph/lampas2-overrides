@@ -72,7 +72,7 @@ DECISION = {
 # BALANCE.md top-band health at level 200: zombie/piglin 20 + 2.5 or 3.0 per level, enderman 40 + 3.5 per level.
 TOP_BAND = {"overworld": 20 + 199 * 2.5, "nether": 20 + 199 * 3.0, "end": 40 + 199 * 3.5}
 # Caster and healer spells keep hasted cooldowns.
-CONTROLS = {"wizards:fire_meteor": "wizards", "wizards:fireball": "wizards", "paladins:flash_heal": "paladins"}
+CONTROLS = {"wizards:fire_meteor": "wizards", "paladins:flash_heal": "paladins"}
 
 PROPERTIES = """\
 online-mode=false

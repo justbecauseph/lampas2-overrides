@@ -25,7 +25,7 @@ The probe mod (`RpgSpellPatchProbe.java`) is compiled against this project's mai
 which `classpath.init.gradle` writes, and reaches Spell Engine and Spell Power by reflection. On the
 first server tick (after Spell Engine has classified movement-impairing effects) it writes
 `rpg-spell-patch-probe.json`: for each spell in `docs/evidence/rpg-spell-patches.manifest.json` and the
-controls `wizards:fire_meteor`, `wizards:fireball` and `paladins:flash_heal`, the decoded school,
+controls `wizards:fire_meteor` and `paladins:flash_heal`, the decoded school,
 cooldown and `haste_affected`; `SpellPower.getHaste` and `SpellParameters.getCooldownDuration` for a
 FakePlayer with attack speed x2, `ranged_weapon:haste` +100 and `spell_power:haste` +100; for the twelve
 D9 spells the decoded `apply_limit`, `SpellImpacts.underApplyLimit` against zombies at the Overworld,

@@ -163,6 +163,12 @@ def main():
                  if not path.is_file() or path.read_bytes() != data]
         if not manifest_current:
             stale.append(str(MANIFEST.relative_to(REPO)))
+        # Spell files the jars no longer produce, e.g. from a release before a re-pin.
+        for tree in (REPLACEMENTS, FIXTURES):
+            for _, mod, _, _ in JARS:
+                for path in sorted((tree / mod).glob("*/data/*/spell/**/*.json")):
+                    if path not in files:
+                        stale.append(str(path.relative_to(REPO)) + " (not produced by the pinned jars)")
         if stale:
             print("Differs from the jars:\n  " + "\n  ".join(stale))
             return 1

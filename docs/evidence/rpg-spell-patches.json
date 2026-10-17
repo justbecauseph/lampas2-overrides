@@ -20,7 +20,7 @@
     "spell_engine_haste_affects_cooldown": true,
     "spell_registry": "ResourceKey[minecraft:root / minecraft:spell]",
     "spell_registry_size": 346,
-    "probe_mod_sha256": "d71ebdea8eae9102c61e929b12564ad3fdfcbf6ddec9446f6257888524e0b677",
+    "probe_mod_sha256": "5b7ebde3d14ad41617bfbd94eba5e9aba70956a923876ca29fa6ca9b2b12012a",
     "haste_setup": "FakePlayer with minecraft:attack_speed +1.0 add_multiplied_total, ranged_weapon:haste +100, spell_power:haste +100",
     "mods": [
       {
@@ -129,7 +129,7 @@
         "file": "lampas2-overrides-1.0.2.jar",
         "id": "lampas2-overrides",
         "version": "1.0.2",
-        "sha256": "8cf8ad43af1a029cc8d952fa4ee1729e0af23696a329ab7271a26785e9f3aa81"
+        "sha256": "3ea6d5569f170aabd4aa1292e584a8e631d3c9fb2a8a63bded2c8ff46f9c1e84"
       }
     ]
   },
@@ -159,11 +159,11 @@
       "applied_lines": 59,
       "expected_applied_lines": 59,
       "not_registered_warnings": [
-        "[20:12:41] [Worker-Main-2/WARN]: Skipping wizards resource patch for data/wizards/spell/frostbolt.json: version 3.1.3.4+26.2 is not registered (patch targets 3.1.3.003+26.2); using upstream resource",
-        "[20:12:41] [Worker-Main-2/WARN]: Skipping wizards resource patch for data/wizards/spell/frost_spikes.json: version 3.1.3.4+26.2 is not registered (patch targets 3.1.3.003+26.2); using upstream resource",
-        "[20:12:41] [Worker-Main-2/WARN]: Skipping wizards resource patch for data/wizards/spell/frost_nova.json: version 3.1.3.4+26.2 is not registered (patch targets 3.1.3.003+26.2); using upstream resource",
-        "[20:12:41] [Worker-Main-2/WARN]: Skipping wizards resource patch for data/wizards/spell/frost_lance.json: version 3.1.3.4+26.2 is not registered (patch targets 3.1.3.003+26.2); using upstream resource",
-        "[20:12:41] [Worker-Main-2/WARN]: Skipping wizards resource patch for data/wizards/spell/frost_blizzard.json: version 3.1.3.4+26.2 is not registered (patch targets 3.1.3.003+26.2); using upstream resource"
+        "[20:27:40] [Worker-Main-2/WARN]: Skipping wizards resource patch for data/wizards/spell/frostbolt.json: version 3.1.3.4+26.2 is not registered (patch targets 3.1.3.003+26.2); using upstream resource",
+        "[20:27:40] [Worker-Main-2/WARN]: Skipping wizards resource patch for data/wizards/spell/frost_spikes.json: version 3.1.3.4+26.2 is not registered (patch targets 3.1.3.003+26.2); using upstream resource",
+        "[20:27:40] [Worker-Main-2/WARN]: Skipping wizards resource patch for data/wizards/spell/frost_nova.json: version 3.1.3.4+26.2 is not registered (patch targets 3.1.3.003+26.2); using upstream resource",
+        "[20:27:40] [Worker-Main-2/WARN]: Skipping wizards resource patch for data/wizards/spell/frost_lance.json: version 3.1.3.4+26.2 is not registered (patch targets 3.1.3.003+26.2); using upstream resource",
+        "[20:27:40] [Worker-Main-2/WARN]: Skipping wizards resource patch for data/wizards/spell/frost_blizzard.json: version 3.1.3.4+26.2 is not registered (patch targets 3.1.3.003+26.2); using upstream resource"
       ],
       "sha256_mismatch_warnings": [],
       "spell_errors": [],
@@ -176,7 +176,7 @@
       "expected_applied_lines": 63,
       "not_registered_warnings": [],
       "sha256_mismatch_warnings": [
-        "[20:13:02] [Worker-Main-2/WARN]: Skipping spell_engine 1.10.9+26.2 resource patch for data/rpg_series/spell/whirlwind.json: SHA-256 mismatch (expected dfa96b6720080946f2fd5213d7cd8fefa0ea20a9e23053c3bfd740d78c67e47c, found d3f19a844907e4a28af6f3e1661774da5a6f1534808c25504cf75b76dda91ffc)"
+        "[20:28:04] [Worker-Main-1/WARN]: Skipping spell_engine 1.10.9+26.2 resource patch for data/rpg_series/spell/whirlwind.json: SHA-256 mismatch (expected dfa96b6720080946f2fd5213d7cd8fefa0ea20a9e23053c3bfd740d78c67e47c, found d3f19a844907e4a28af6f3e1661774da5a6f1534808c25504cf75b76dda91ffc)"
       ],
       "spell_errors": [],
       "failures": [],
@@ -3136,26 +3136,6 @@
       "served_sha256": {
         "baseline": "38e0fd3161058ada06444a1d92ab1d590f7f43df4296bd211c816a0c1c748528",
         "patched": "38e0fd3161058ada06444a1d92ab1d590f7f43df4296bd211c816a0c1c748528"
-      }
-    },
-    {
-      "id": "wizards:fireball",
-      "school": "spell_power:fire",
-      "p1": false,
-      "control": true,
-      "cooldown_duration": 0.0,
-      "haste": 2.0,
-      "effective_cooldown": {
-        "baseline": 0.0,
-        "patched": 0.0
-      },
-      "haste_affected": {
-        "baseline": true,
-        "patched": true
-      },
-      "served_sha256": {
-        "baseline": "be7b3b6d342f22cc18aa30490cddc23a74fc5ae3906f92c9a0f91910be0a146d",
-        "patched": "be7b3b6d342f22cc18aa30490cddc23a74fc5ae3906f92c9a0f91910be0a146d"
       }
     },
     {

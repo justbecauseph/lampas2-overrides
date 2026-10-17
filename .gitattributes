@@ -16,4 +16,4 @@
 # SHA-256 values in docs/evidence/rpg-spell-patches.manifest.json, which keeps the plan's recorded bytes.
 /src/test/resources/upstream/**/spell/**/*.json -text
 /src/main/resources/lampas2-overrides/resource-patches/**/spell/**/*.json -text
-/docs/evidence/rpg-spell-patches.manifest.json -text
+/docs/evidence/rpg-spell-patches.manifest.json -text -whitespace

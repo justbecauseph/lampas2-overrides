@@ -184,8 +184,8 @@ public final class ResourcePatchRegistry {
 	}
 
 	public static ResourcePatch findPatch(String modId, String resourcePath) {
-		String normMod = modId.toLowerCase();
-		String normPath = ResourcePatchResolver.normalizePath(resourcePath).toLowerCase();
+		String normMod = modId.toLowerCase(Locale.ROOT);
+		String normPath = ResourcePatchResolver.normalizePath(resourcePath).toLowerCase(Locale.ROOT);
 		for (Map.Entry<ResourcePatchKey, ResourcePatch> entry : PATCHES.entrySet()) {
 			if (entry.getKey().modId().equals(normMod) && entry.getKey().resourcePath().equals(normPath)) {
 				return entry.getValue();

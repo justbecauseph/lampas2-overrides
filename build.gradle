@@ -63,6 +63,8 @@ test {
 	def serverModsDir = providers.gradleProperty("serverModsDir").orNull
 	if (serverModsDir != null) {
 		systemProperty "lampas2.serverModsDir", file(serverModsDir).absolutePath
+		// Gradle tracks only the path, so a changed jar behind it would leave the test task up to date.
+		outputs.upToDateWhen { false }
 	}
 }
 
