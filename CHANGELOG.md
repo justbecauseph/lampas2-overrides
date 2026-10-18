@@ -2,6 +2,14 @@
 
 Releases before 1.0.2 are recorded only in the git history.
 
+## 1.0.3
+
+- **Hotbar slot resync after respawn.** Debugify's MC-143474 fix restores the pre-death hotbar slot on the client
+  without sending it, so the server stayed on slot 0: Better Combat dropped attacks with `No current attack hand!`
+  and other main-hand actions used the wrong item until the player changed slots. A client mixin resets
+  `MultiPlayerGameMode.carriedIndex` whenever a local player is created, so the next tick sends the real slot. It is
+  not gated on Debugify or any version, and needs the client jar.
+
 ## 1.0.2
 
 - **Martial spell cooldowns ignore haste** (class balance D3 P1). 59 RPG Series spells in the physical_melee,

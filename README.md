@@ -1,7 +1,8 @@
 # lampas2-overrides
 
 A Fabric mod for Minecraft 26.2 holding compatibility fixes between mods that do not know
-about each other. Each feature is gated on the mods it bridges and is inert without them.
+about each other. Each feature is gated on the mods it bridges and is inert without them, except the
+ungated hotbar slot resync after respawn.
 
 | Feature | Needs | What it does |
 |---|---|---|
@@ -25,6 +26,7 @@ about each other. Each feature is gated on the mods it bridges and is inert with
 | [Better Lib demo villager suppression](#better-lib-demo-villager-suppression) | Better Lib | Suppresses hardcoded demo villager registration that causes RemapException registry sync disconnects |
 | [Beautiful item-model reloads](#beautiful-item-model-reloads) | Beautiful Enchanted Books 6.0.0 and/or Beautiful Potions 2.0.1 | Clears stale extra-model keys so each resource reload uses the keys registered for that reload |
 | [IllagerBlabber voice registry](#illagerblabber-voice-registry) | IllagerBlabber 1.1.0 | Releases per-illager voice state on unload, follows illagers across dimensions, and drops per-tick lock and log overhead |
+| [Hotbar slot resync after respawn](#hotbar-slot-resync-after-respawn) | Nothing (triggered by Debugify MC-143474) | Resends the selected hotbar slot after respawn so the server does not keep slot 0 |
 
 ## Beautiful item-model reloads
 
@@ -206,6 +208,28 @@ Lampas2 Overrides implements a client-only override whenever Gravestones is pres
 - **Player skulls/heads on the grave remain untouched**, honoring Gravestones' `SHOW_HEADS` configuration.
 
 The mixin is client-only and is not restricted to a specific Gravestones version.
+
+## Hotbar slot resync after respawn
+
+The client sends `ServerboundSetCarriedItemPacket` only from `MultiPlayerGameMode#ensureHasSentCarriedItem`,
+which runs every client tick and sends only when the selected slot differs from the private `carriedIndex`;
+nothing else writes that field. Respawn keeps the same `MultiPlayerGameMode`. In vanilla the new client player
+starts on slot 0, the stale `carriedIndex` differs from it, and the first tick sends 0, so both sides agree.
+
+Debugify's MC-143474 fix (`dev.isxander.debugify.client.mixins.basic.mc143474.ClientPacketListenerMixin`,
+client-side and enabled by default) copies the old player's selected slot onto the new one inside
+`ClientPacketListener#handleRespawn` without sending a packet. The restored slot equals the stale
+`carriedIndex`, so nothing is sent, while the server's new player stays on slot 0 (without `keepInventory`).
+The client shows and swings the pre-death item; the server sees slot 0. Better Combat then logs
+`No current attack hand!` with `Selected slot server: 0 | client: 4` and drops the attack, and other main-hand
+actions also use the server's slot, until the player selects a different slot.
+
+The client mixin sets `carriedIndex` to `-1` at the return of the five-argument `createPlayer` (the
+three-argument overload delegates to it, and `handleRespawn` calls it before Debugify's injection point), so
+the next client tick sends the real slot. On login and dimension change it resends the current slot once. The
+fix is deliberately not gated on Debugify or any version, so it also covers any other mod that changes the
+client's selected slot during respawn; `defaultRequire: 1` stops startup if a Minecraft update moves
+`createPlayer` or removes `carriedIndex`. Players need the client jar; a server-only install changes nothing.
 
 ## Visual Workbench tag rebinding
 

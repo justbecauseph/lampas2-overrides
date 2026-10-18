@@ -7,8 +7,8 @@ Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-ac
 entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
 Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, the version-gated
-IllagerBlabber 1.1.0 voice-registry leak fix, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3), the Rogues 3.1.3.003+26.2 Sharpness definition, and 64 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised). The first two
-features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, and Beautiful item models are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium datapacks, IllagerBlabber registry fix, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
+IllagerBlabber 1.1.0 voice-registry leak fix, the ungated hotbar slot resync after respawn, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3), the Rogues 3.1.3.003+26.2 Sharpness definition, and 64 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised). The first two
+features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, and the hotbar slot resync are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium datapacks, IllagerBlabber registry fix, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -331,6 +331,17 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   Rebinding tags is permitted only when the target block belongs to the `visualworkbench` namespace;
   Puzzles Lib's strict behavior remains intact for all other callers/targets. Do NOT broaden the
   patch to all `BlockConversionHelper` calls.
+- **Debugify restores the hotbar slot after respawn without telling the server.** `MultiPlayerGameMode#carriedIndex`
+  is written only by `ensureHasSentCarriedItem`, which runs each client tick and sends
+  `ServerboundSetCarriedItemPacket` only when the selected slot differs from it; respawn reuses the game mode. Vanilla
+  self-heals: the new client player starts on slot 0, which differs from the stale index, so the first tick sends 0.
+  Debugify 26.2.0.1's MC-143474 fix (`client.mixins.basic.mc143474.ClientPacketListenerMixin`, on by default) copies
+  the old selected slot onto the new player in `handleRespawn`; that equals the stale index, so nothing is sent and
+  the server's new player stays on 0 (with `keepInventory` the server keeps the old slot through `Inventory.replaceWith`
+  and the sides agree). Better Combat then logs `No current attack hand!` with `Selected slot server: 0 | client: N`.
+  `hotbarsync` sets `carriedIndex = -1` at the RETURN of the five-argument `createPlayer`, which `handleRespawn` calls
+  before Debugify's injection point. It has no plugin, depends on no mod and pins no version, on purpose: it covers
+  any client-side slot restore. Do not remove it as redundant with vanilla.
 - **`TechnicalGravestoneBlockEntityRenderer` constructs sign text dynamically while the grave body is a block model.**
   Overriding `getSignText(TechnicalGravestoneBlockEntity)` to return a blank `SignText` suppresses player name,
   death date, and death time for all death graves without touching aesthetic gravestones (which use `AestheticGravestoneBlockEntityRenderer`).
@@ -468,6 +479,8 @@ visualworkbench/
   VisualWorkbenchMixinPlugin applies only when Visual Workbench + Puzzles Lib exist
   VisualWorkbenchTagFix     policy check and tag rebinding helper
   mixin/                    intercepts copyBoundTags for visualworkbench:* blocks
+hotbarsync/
+  mixin/                    resets MultiPlayerGameMode.carriedIndex after createPlayer (ungated, unpinned; Debugify MC-143474 trigger)
 gravestones/
   GravestonesMixinPlugin    applies whenever Gravestones is present
   OwnedGraveRenderState     duck interface carrying ownership and block state across render phases

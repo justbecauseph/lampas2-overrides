@@ -3,7 +3,7 @@
 	"id": "lampas2-overrides",
 	"version": "${version}",
 	"name": "Lampas2 Overrides",
-	"description": "Compatibility fixes for Figura, ReplayMod, Chatting, Lootr, Fast Item Frames, Better Lib, Underground Village, Additional Lanterns, Mob Filter, Incendium, Visual Workbench, Gravestones, Jade, Custom Name, optional boat water masks, optional beautiful item models, and IllagerBlabber 1.1.0 registry cleanup.",
+	"description": "Compatibility fixes for Figura, ReplayMod, Chatting, Lootr, Fast Item Frames, Better Lib, Underground Village, Additional Lanterns, Mob Filter, Incendium, Visual Workbench, Gravestones, Jade, Custom Name, optional boat water masks, optional beautiful item models, IllagerBlabber 1.1.0 registry cleanup, and the vanilla hotbar slot resync after respawn.",
 	"authors": [
 		"justbecauseph"
 	],
@@ -58,6 +58,10 @@
 		},
 		{
 			"config": "lampas2-overrides.jadecustomname.mixins.json",
+			"environment": "client"
+		},
+		{
+			"config": "lampas2-overrides.hotbarsync.mixins.json",
 			"environment": "client"
 		},
 		{
