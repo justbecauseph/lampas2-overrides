@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "rogues:demoralize",
+      "required": false
+    },
+    {
+      "id": "rogues:shatter",
+      "required": false
+    }
+  ]
+}

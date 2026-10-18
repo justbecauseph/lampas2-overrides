@@ -1,0 +1,15 @@
+{
+  "school": "spell_power:arcane",
+  "impacts": [
+    {
+      "action": {
+        "type": "STATUS_EFFECT",
+        "status_effect": {
+          "effect_id": "spell_engine:immobilize",
+          "duration": 3.0,
+          "apply_mode": "SET"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "lampas2overrides.crowdcontrol.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.crowdcontrol.SpellEngineMixinPlugin",
+	"mixins": [
+		"SpellImpactsCrowdControlMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

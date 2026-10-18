@@ -1,0 +1,19 @@
+{
+  "school": "spell_power:arcane",
+  "impacts": [
+    {
+      "action": {
+        "type": "VELOCITY",
+        "velocity": {
+          "frame": "LOOK",
+          "push": {
+            "x": 0.0,
+            "y": 0.8,
+            "z": 0.0
+          },
+          "reset_velocity": true
+        }
+      }
+    }
+  ]
+}

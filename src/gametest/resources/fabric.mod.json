@@ -1,0 +1,20 @@
+{
+	"schemaVersion": 1,
+	"id": "lampas2-overrides-gametest",
+	"version": "1.0.0",
+	"name": "Lampas2 Overrides Game Tests",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-gametest": [
+			"lampas2overrides.crowdcontrol.CrowdControlImmunityGameTests"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.2",
+		"fabric-api": "*",
+		"lampas2-overrides": "*",
+		"spell_engine": "*",
+		"rogues": "*"
+	}
+}

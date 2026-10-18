@@ -21,6 +21,7 @@ ungated hotbar slot resync after respawn.
 | [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.3.3 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
 | [Rogues Sharpness](#rogues-sharpness) | Rogues 3.1.3.003+26.2 | Restores flat Sharpness in place of Rogues' +8% base attack damage per level |
 | [RPG Series spell patches](#rpg-series-spell-patches) | RPG Series 26.2 (Rogues, Wizards, Paladins, Archers, Spell Engine, Skill Tree, Relics) | Martial spell cooldowns ignore haste; crowd-control apply limits reach Pinnacle mobs |
+| [Spell crowd-control immunity](#spell-crowd-control-immunity) | Spell Engine (any version); Placebo + Apotheosis for markers | Apotheosis invaders and elites, their mounts and `lampas.cc_immune` mobs ignore RPG Series crowd control |
 | [Bee and spawner structure DFU validation](#bee-and-spawner-structure-dfu-validation) | Exact Trek and Stoneholm fixtures | Historical run on the removed Trinkets 4.1.0 profile; re-validation on 4.1.1 is pending |
 | [Boat water-mask compatibility](#boat-water-mask-compatibility) | EMF 3.3.12 + audited boat providers | Restores the vanilla water mask for plain hulls when the selected Fresh Animations mask is incompatible |
 | [Better Lib demo villager suppression](#better-lib-demo-villager-suppression) | Better Lib | Suppresses hardcoded demo villager registration that causes RemapException registry sync disconnects |
@@ -393,7 +394,7 @@ The P values are the audit's scratch models with idealized gear. Roots' power is
 damage (about 1, or 7 with Strength II), so its base is raised instead. Spell Engine refuses
 movement-impairing and AI-disabling effects on `#spell_engine:bosses` regardless of the limit; that
 covers every effect above except Demoralize and Shatter. Apotheosis elites and invaders are not bosses,
-so their immunity comes from lampas-addons, which must ship in the same pack or earlier.
+so their immunity comes from [Spell crowd-control immunity](#spell-crowd-control-immunity) in this mod.
 
 Each patch requires the mod ID, the version the upstream `fabric.mod.json` declares and the upstream
 file's SHA-256; another release or a changed file keeps the upstream spell and logs WARN. The
@@ -421,7 +422,69 @@ FakePlayer at haste 3.0 (melee), 2.0 (ranged) and 2.0 (spell):
 Evidence: `docs/evidence/rpg-spell-patches.json`. Spells are the synced `minecraft:spell` registry, and
 clients decode known-pack entries from their own copy, so the jar must also run on clients; a client
 without it shows hasted cooldowns in tooltips while the server enforces the patched ones. Combat with a
-real player, the client-side decode, full-pack behavior and elite/invader immunity are not covered.
+real player, the client-side decode and full-pack behavior are not covered.
+
+## Spell crowd-control immunity
+
+RPG Series spells cannot crowd-control Apotheosis invaders and elites. Debuffs, damage and damage knockback still land on
+them. This server-side fix reuses Spell Engine's own boss gate in `SpellImpacts.performImpact`, so it covers every spell
+delivery: projectiles, arrows, melee, clouds, area impacts and triggered passives. It moved here from lampas-addons 1.0.5
+unchanged except for the version gate, and keeps its names: the `lampas.cc_immune` tag, the `#lampas:spell_crowd_control`
+effect tag and `/lampas ccimmunity check`.
+
+**Who is protected**
+
+| Mob | Why |
+| :--- | :--- |
+| Apotheosis invader | Placebo data `apoth.boss` is present (`/apoth spawn_boss`, summoner items, natural and gateway invaders) |
+| Apotheosis elite | Placebo data `apoth.miniboss` is `true`. A pending elite, which still holds the elite id as text, is not protected |
+| The mount of a protected mob | A protected mob rides it, such as an elite undead knight's skeleton horse |
+| Any mob tagged `lampas.cc_immune` | `/tag <mob> add lampas.cc_immune`, for staff encounter bosses |
+
+Only non-player mobs are protected; players never are, whatever their tags. A player, armor stand or display entity riding a
+mob does not protect it. Mobs in `#spell_engine:bosses` (the Wither and the Ender Dragon through `#c:bosses`) keep Spell
+Engine's own boss rules unchanged, unless they are also protected, for example tagged `lampas.cc_immune`.
+
+**What is blocked on a protected mob**
+- Status effects that Spell Engine classifies as crowd control, applied in ADD or SET mode: effects with a slowing movement
+  speed, flying speed or gravity modifier (Frozen, Frost Slowness, Bear Trap, Net Trap, Entangling Roots, Immobilize, Nature's
+  Grasp, Slowness and others) and effects that stop mob AI (Stun, Judgement, Shock).
+- Effects in the mob effect tag `#lampas:spell_crowd_control`: Shatter (Throw) and Demoralize (Shout). A datapack can add more
+  with `"replace": false`. Levitation is not in it.
+- Harmful velocity impacts (knock-ups and drags such as Impaling Spikes, Condemn and Flame Whirlpool): the mob reads knockback
+  resistance 1.0 for them, so they move it by nothing.
+
+A refused impact is skipped as it is on a Spell Engine boss: no particles or sound on that mob. When every impact of a spell
+is refused on a mob, Spell Engine also skips what depends on an impact landing there, as it does for bosses: the caster's
+on-impact triggers and an area impact that needs a landed action of that type.
+
+**Checking a mob.** `/lampas ccimmunity check <targets>` (op level 2, read-only, registered only when Spell Engine is
+installed) prints one line per entity:
+
+```
+minecraft:zombie <uuid> protected=true reason=INVADER spellEngineHook=applied placebo=READY
+```
+
+`reason` is `INVADER`, `ELITE`, `ENTITY_TAG`, `RIDDEN_BY_PROTECTED`, `SPELL_ENGINE_BOSS` (not protected by this feature) or
+`NONE`. `spellEngineHook` is `applied`, `enabled` (no spell has been cast since start) or `disabled`. `placebo` is `READY`,
+`MISSING` or `FAILED`.
+
+Limitations:
+- **No version gate; fails loud.** The hooks apply whenever Spell Engine is installed, and startup logs `Enabled Spell Engine
+  <version> crowd-control immunity`. The bytecode contract (`SpellImpactsContractTest`) and the GameTests cover the inspected
+  1.10.9+26.2; other releases activate but are not claimed as inspected or tested. The three hooks are required
+  (`defaultRequire: 1`): if a Spell Engine release, or another mod, moves or changes a wrapped call in `performImpact`, the
+  error comes when `SpellImpacts` loads, at the first spell impact, and spells then fail. A release that keeps the calls but
+  changes their meaning is not detected.
+- **Placebo lookup.** Markers are read through Placebo's `PersistentData.peek` by reflection, with the keys Apotheosis 10.0.4
+  writes. If the lookup fails, including Placebo being installed without that class, it logs one warning, `placebo=FAILED`,
+  and no invader or elite is protected for the session. If Apotheosis renames the keys, nothing is protected and nothing is
+  logged; the check command shows `reason=NONE` on a real invader.
+- **Classification limits.** A new crowd-control effect without a movement or AI modifier needs an entry in
+  `#lampas:spell_crowd_control`.
+- **Not verified on the dev server.** `./gradlew runGameTest` runs real Spell Engine 1.10.9, Spell Power 1.6.2 and Rogues
+  3.1.3.003 jars on a headless server, but a test double stands in for Placebo, and Apotheosis is not loaded. Invaders and
+  elites that Apotheosis itself spawns, and the live log line, still need the dev-server probe.
 
 ## Retired FrozenLib wind compatibility
 
@@ -674,6 +737,7 @@ workflow's artifacts — into your `mods` folder.
 ```bash
 ./gradlew build          # jar lands in build/libs/
 ./gradlew test -PserverModsDir=../lampas-server-fabric/mods   # adds checks against the deployed RPG Series jars
+./gradlew runGameTest    # crowd-control immunity GameTests on a headless server with real Spell Engine, Spell Power and Rogues; check and build run it too
 ./gradlew runClient      # dev client; put figura + replaymod jars in run/mods/ first
 ```
 

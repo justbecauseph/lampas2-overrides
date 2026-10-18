@@ -49,11 +49,50 @@ dependencies {
 	compileOnly "maven.modrinth:illagerblabber:${project.illagerblabber_version}"
 	testRuntimeOnly "maven.modrinth:illagerblabber:${project.illagerblabber_version}"
 
+	// The Spell Engine bytecode contract test reads SpellImpacts from the inspected jar. The crowd-control mixin names
+	// Spell Engine only by string, so it is test-only and never bundled.
+	testRuntimeOnly("maven.modrinth:spell-engine:${project.spell_engine_version}") { transitive = false }
+
 	// Optional mods are compile-only: every compatibility feature is gated by its mixin plugin,
 	// and none of their classes are bundled into the output jar.
 
 	testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
 	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+fabricApi {
+	// Server GameTests in src/gametest: spell crowd-control immunity with real Spell Engine, Spell Power and Rogues jars.
+	configureTests {
+		createSourceSet = true
+		modId = 'lampas2-overrides-gametest'
+		enableGameTests = true
+		enableClientGameTests = false
+		eula = true
+	}
+}
+
+// The gametest source set and its configurations exist only once configureTests above has run. GameTest classpath only;
+// the mod itself has no compile or runtime dependency on any of these.
+dependencies {
+	gametestImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+	gametestCompileOnly("maven.modrinth:spell-engine:${project.spell_engine_version}") { transitive = false }
+	gametestCompileOnly("maven.modrinth:spell-power:${project.spell_power_version}") { transitive = false }
+	gametestRuntimeOnly("maven.modrinth:spell-engine:${project.spell_engine_version}") { transitive = false }
+	gametestRuntimeOnly("maven.modrinth:spell-power:${project.spell_power_version}") { transitive = false }
+	gametestRuntimeOnly("maven.modrinth:cloth-config:${project.cloth_config_version}") { transitive = false }
+	gametestRuntimeOnly("maven.modrinth:player-animation-library:${project.player_animation_library_version}") { transitive = false }
+	gametestRuntimeOnly("maven.modrinth:rogues-and-warriors:${project.rogues_version}") { transitive = false }
+	gametestRuntimeOnly("maven.modrinth:armor-model-api:${project.armor_model_api_version}") { transitive = false }
+	gametestRuntimeOnly("maven.modrinth:structure-pool-api:${project.structure_pool_api_version}") { transitive = false }
+}
+
+def gameTestReportFile = layout.buildDirectory.file('test-results/gameTest/TEST-lampas2-overrides-gametest.xml')
+
+tasks.named('runGameTest') {
+	systemProperty 'fabric-api.gametest.report-file', gameTestReportFile.get().asFile.absolutePath
+	doFirst {
+		gameTestReportFile.get().asFile.parentFile.mkdirs()
+	}
 }
 
 test {

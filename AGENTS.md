@@ -296,7 +296,7 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   movement impairing or AI disabling is refused on `#spell_engine:bosses` whatever the limit. D9 raised twelve
   limits (Frost Nova/Spikes/Bolt/Lance/Blizzard, Judgement, Shout, Throw, Throw Net, Shock Powder, Bear Trap,
   Entangling Roots at a flat 780) so CC reaches End top-band health (736.5) at modelled Pinnacle power.
-  Apotheosis elite and invader immunity is lampas-addons' job (W6) and must ship with or before these limits.
+  Apotheosis elite and invader immunity (W6) lives in `crowdcontrol/` in this mod since 1.0.4.
 - **Spells are the synced `minecraft:spell` registry, decoded by Gson.** Clients decode known-pack entries from
   their own copy, as with Sharpness, so the spell patches also need `side = "both"`. A spell file that needs both
   the P1 and the D9 change has one replacement; the registry throws on a duplicate key. The replacements are
@@ -516,6 +516,14 @@ mobfilter/
   MobFilterMixinPlugin      applies whenever Mob Filter is present (common-side, server-safe); bytecode contract pinned to 0.28.1+26.2
   WorldgenDimensionContext  thread-local dimension scoping during worldgen entity placement
   mixin/                    suppresses worldgen Entity.remove discard and supplies dimension to WorldgenThreadSpawnAttempt
+crowdcontrol/
+  SpellEngineMixinPlugin    applies whenever Spell Engine is present (common-side, server-safe); bytecode contract pinned to 1.10.9+26.2
+  CrowdControlImmunity      who is protected (invader, elite, lampas.cc_immune, mount of a protected mob) and why
+  ApothicBossMarkers        reflective Placebo PersistentData.peek bridge for the Apotheosis marker keys
+  CrowdControlCommands      main entrypoint; /lampas ccimmunity check, only with Spell Engine installed
+  mixin/                    wraps the boss gate, the movement-impairing check and the knockback-resistance read in SpellImpacts.performImpact
+src/gametest/               server GameTests (./gradlew runGameTest, part of check) with real Spell Engine, Spell Power and Rogues;
+                            dev/shadowsoffire/placebo/util/PersistentData there is a TEST DOUBLE, never shipped
 ```
 
 Threading: the client thread owns everything except the recorder's serialisation executor, the

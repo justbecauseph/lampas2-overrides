@@ -1,0 +1,18 @@
+{
+  "school": "spell_power:physical_melee",
+  "impacts": [
+    {
+      "action": {
+        "type": "STATUS_EFFECT",
+        "status_effect": {
+          "effect_id": "rogues:shatter",
+          "duration": 8.0,
+          "apply_limit": {
+            "health_base": 100.0,
+            "spell_power_multiplier": 8.5
+          }
+        }
+      }
+    }
+  ]
+}
