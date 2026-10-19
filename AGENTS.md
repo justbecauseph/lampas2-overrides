@@ -431,6 +431,10 @@ the 26.2 classpath (it adds every JAR under it), `natives/` and `assets/` with i
 2026-10-16 runs hardlinked PrismLauncher's `net.minecraft` 26.2, LWJGL 3.4.1, Fabric Loader 0.19.5 and
 intermediary libraries from `PrismLauncher/meta` into such a root and junctioned its `assets`; never point
 it at Prism's whole `libraries` folder, which holds other Minecraft versions.
+No inventory survives between sessions (`build/` is ignored); build one from `pack.lock.json`. Each
+inventory `path` must end in the lock filename: the pipeline cache's `sha256/` entries have no `.jar`
+extension, the runner copies them under that name, and Fabric Loader silently skips them, which
+surfaces only as a `NoSuchElementException` in the probe's runtime-provenance stage.
 
 ```
 compat/

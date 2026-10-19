@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-19",
+  "pack_version": "2.3.61",
+  "lock_updated": "2026-10-19T07:29:12.078Z",
+  "minecraft": "26.2",
+  "loader": {
+    "type": "fabric",
+    "version": "0.19.5"
+  },
+  "scope": "Boat water-mask BetterX profiles only. A compatibility check of lampas2-overrides 1.0.4 against pack 2.3.61 found every version/SHA gate matching except the BetterEnd and BetterNether boat profiles.",
+  "changed_affecting_overrides": [
+    {
+      "lock_key": "betterend",
+      "from": "26.201.3",
+      "to": "26.201.4",
+      "filename": "better-end-26.201.4.jar",
+      "lock_sha256": "57de78dfc39f23b28d4ef7daea7ea5ec2162f6dd5f05362fe21fb62e7f5d2849",
+      "finding": "Every archive file whose path contains boat is byte-identical to 26.201.3 (112 files). The boat profile moved to 26.201.4 with wover-item 26.201.4; 26.201.3 is retired."
+    },
+    {
+      "lock_key": "betternether",
+      "from": "26.201.3",
+      "to": "26.201.4",
+      "filename": "better-nether-26.201.4.jar",
+      "lock_sha256": "aa282c5c643e590c778b5dc021435b624fadbb281b39bc64c7ea231f9310978f",
+      "finding": "Every archive file whose path contains boat is byte-identical to 26.201.3 (136 files). The boat profile moved to 26.201.4 with wover-item 26.201.4; 26.201.3 is retired."
+    },
+    {
+      "lock_key": "wover",
+      "from": "26.201.3",
+      "to": "26.201.4",
+      "filename": "worldweaver-26.201.4.jar",
+      "lock_sha256": "e35a4c281b8aa1384be79a5f81b8cdfc175b06343dc2143200c76c46e5500218",
+      "finding": "Nested META-INF/jars/wover-item-api-26.201.4.jar has the same entry list as 26.201.3; only fabric.mod.json (version) and de/ambertation/wover/enchantment/api/EnchantmentUtils.class differ. BoatItemDefinition (and its nested classes), BoatRendererBinding, BoatRendererBuilder and ClientBoatRenderBootstrap are byte-identical."
+    }
+  ],
+  "changed_not_affecting_overrides": [
+    {"lock_key": "bclib", "to": "26.201.4", "note": "Selected by the probe fixture; not a gate target."},
+    {"lock_key": "wunderlib", "to": "26.201.2", "note": "Selected by the probe fixture; not a gate target."}
+  ],
+  "boat_water_mask_probe": {
+    "inventory": "build/pipeline-validation-2026-10-19/inventory.json",
+    "inventory_sha256": "d8d2f3baf48c53458a1f17f83dd8a760b66a19003f28a83d6e4056fe3de2b5f7",
+    "minecraft_root": "Launcher-style root assembled with hardlinks from PrismLauncher libraries (net.minecraft 26.2, LWJGL 3.4.1 Windows x64, Fabric Loader 0.19.5, intermediary 26.2) and an assets junction; client 40896ee9..., loader 93044e4d... and Mixin 1f0ae44d... match the 2026-10-16 runs.",
+    "baseline_run": "20261019T074409Z-baseline-1cec9800",
+    "baseline_result_sha256": "5bc44c2ecd99e72c2123785afec3f097771820bc8e4fe9633bcd0a150178f41e",
+    "patched_run": "20261019T074555Z-patched-35841075",
+    "patched_result_sha256": "f5ea869fdf6f94e179299c96247cbeffa0a7c84009c159184acb807b031a743c",
+    "production_jar_sha256": "ce6ddf535f9b258704bed799be78bc9597991f98a013fda921ffcdeacff7bb6f",
+    "baseline": "PASS, exit 0; with FA Extensions enabled all 108 supported hulls (Pyrite 52, Promenade 6, Wilder Wild 10, BetterEnd 18, BetterNether 22) are plain while the water patch is the selected boat_patch.jem EMF root",
+    "patched": "PASS, exit 0; BoatRendererMixin applied; with FA on exactly those 108 renderers changed to vanilla mask geometry; hull signatures equal to baseline for all 134 renderers; rafts, BloomingNature and vanilla boats unchanged; FA-off stages identical to baseline"
+  },
+  "verification_limits": [
+    "Static checks: lock and cached artifact hashes, archive entry diffs of boat files and of wover-item-api.",
+    "Runtime coverage is the isolated boat-mask client probe pair above. No full-pack client ran against pack 2.3.61.",
+    "Gameplay, visual rendering and shader behavior of boats remain unverified."
+  ]
+}

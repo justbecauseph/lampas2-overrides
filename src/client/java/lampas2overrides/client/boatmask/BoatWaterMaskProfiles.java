@@ -226,12 +226,12 @@ public final class BoatWaterMaskProfiles {
 		addProvider(profiles, new ProviderProfile("promenade", "5.6.0", Map.of(), null, boatPairPaths("sakura", "maple", "palm")));
 		addProvider(profiles, new ProviderProfile("wilderwild", "4.3.3", Map.of(), EXPECTED_WILDER_WILD_4_3_3_ARTIFACT_SHA256,
 			boatPairPaths("baobab", "willow", "cypress", "palm", "maple")));
-		addProvider(profiles, new ProviderProfile("betterend", "26.201.3",
-			Map.of("wover-item", "26.201.3"), null, fullItemBoatPairPaths(
+		addProvider(profiles, new ProviderProfile("betterend", "26.201.4",
+			Map.of("wover-item", "26.201.4"), null, fullItemBoatPairPaths(
 				"dragon_tree", "helix_tree", "jellyshroom", "lacugrove", "lucernia", "mossy_glowshroom",
 				"pythadendron", "tenanea", "umbrella_tree")));
-		addProvider(profiles, new ProviderProfile("betternether", "26.201.3",
-			Map.of("wover-item", "26.201.3"), null, fullItemBoatPairPaths(
+		addProvider(profiles, new ProviderProfile("betternether", "26.201.4",
+			Map.of("wover-item", "26.201.4"), null, fullItemBoatPairPaths(
 				"anchor_tree", "crimson", "gloomwood", "mushroom_fir", "nether_mushroom", "nether_sakura",
 				"rubeus", "stalagnate", "warped", "wart", "willow")));
 		return Map.copyOf(profiles);

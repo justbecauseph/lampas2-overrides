@@ -24,11 +24,11 @@ The audited provider profiles are:
   `chest_boat/{sakura,maple,palm}`.
 - Wilder Wild `4.3.3`: `boat/{baobab,willow,cypress,palm,maple}` and
   `chest_boat/{baobab,willow,cypress,palm,maple}`.
-- BetterEnd `26.201.3` with `wover-item` `26.201.3`: `boat/<name>_boat` and
+- BetterEnd `26.201.4` with `wover-item` `26.201.4`: `boat/<name>_boat` and
   `chest_boat/<name>_chest_boat` for `dragon_tree`, `helix_tree`, `jellyshroom`,
   `lacugrove`, `lucernia`, `mossy_glowshroom`, `pythadendron`, `tenanea`, and
   `umbrella_tree`.
-- BetterNether `26.201.3` with `wover-item` `26.201.3`: `boat/<name>_boat` and
+- BetterNether `26.201.4` with `wover-item` `26.201.4`: `boat/<name>_boat` and
   `chest_boat/<name>_chest_boat` for `anchor_tree`, `crimson`, `gloomwood`,
   `mushroom_fir`, `nether_mushroom`, `nether_sakura`, `rubeus`, `stalagnate`,
   `warped`, `wart`, and `willow`.
@@ -192,3 +192,35 @@ geometry signatures matched the baseline for all 134 renderers, and the FA-off s
 the baseline. Rafts, BloomingNature and vanilla boats were unchanged. Gameplay, visual rendering and
 shader behavior remain unverified. The audit is recorded in
 [`docs/evidence/current-pipeline-audit-2026-10-16.json`](evidence/current-pipeline-audit-2026-10-16.json).
+
+## Update — 2026-10-19 BetterX 26.201.4
+
+Pack `2.3.61` moved BetterEnd, BetterNether, BCLib and WorldWeaver from `26.201.3` to `26.201.4` and
+WunderLib from `26.201.0` to `26.201.2`. The profiles above now name `26.201.4` with `wover-item`
+`26.201.4`; `26.201.3` is retired. The lock records `better-end-26.201.4.jar` (SHA-256
+`57de78dfc39f23b28d4ef7daea7ea5ec2162f6dd5f05362fe21fb62e7f5d2849`), `better-nether-26.201.4.jar`
+(SHA-256 `aa282c5c643e590c778b5dc021435b624fadbb281b39bc64c7ea231f9310978f`) and
+`worldweaver-26.201.4.jar` (SHA-256 `e35a4c281b8aa1384be79a5f81b8cdfc175b06343dc2143200c76c46e5500218`).
+
+Every archive file whose path contains `boat` is byte-identical between the `26.201.3` and `26.201.4`
+JARs: 112 in BetterEnd and 136 in BetterNether. The nested `wover-item-api-26.201.4.jar` has the same
+entry list as `26.201.3`; only `fabric.mod.json` (version) and `EnchantmentUtils.class` differ, so
+`BoatItemDefinition`, `BoatRendererBinding`, `BoatRendererBuilder` and `ClientBoatRenderBootstrap` are
+byte-identical.
+
+Both strict probe modes ran against a pack 2.3.61 inventory
+(`build/pipeline-validation-2026-10-19/inventory.json`) with a launcher-style root assembled as in the
+2026-10-16 runs; client (`40896ee9…`), Fabric Loader (`93044e4d…`) and Mixin (`1f0ae44d…`) match. The
+inventory must point at files carrying the lock filename: the pipeline cache's `sha256/` entries have no
+`.jar` extension, and Fabric Loader silently skips them.
+
+The unpatched baseline (`20261019T074409Z-baseline-1cec9800`) completed all four stages with PASS and
+exit `0`; with FA Extensions enabled all 108 supported hulls stayed plain while their water patch was
+the selected `boat_patch.jem` EMF root. The patched run (`20261019T074555Z-patched-35841075`) used the
+production JAR with SHA-256 `ce6ddf535f9b258704bed799be78bc9597991f98a013fda921ffcdeacff7bb6f`.
+`BoatRendererMixin` applied and all four stages passed with exit `0`. With FA enabled, exactly the 108
+supported renderers changed to vanilla mask geometry (Pyrite 52, Promenade 6, Wilder Wild 10,
+BetterEnd 18, BetterNether 22); hull geometry signatures matched the baseline for all 134 renderers,
+and the FA-off stages were identical to the baseline. Gameplay, visual rendering and shader behavior
+remain unverified. The audit is recorded in
+[`docs/evidence/current-pipeline-audit-2026-10-19.json`](evidence/current-pipeline-audit-2026-10-19.json).

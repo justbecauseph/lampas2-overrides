@@ -495,8 +495,8 @@ Lampas2 Overrides applies no FrozenLib wind shim: an unpatched isolated client w
 EMF 3.3.12 can replace Minecraft's shared boat water-patch layer with the Fresh Animations
 `assets/minecraft/optifine/cem/boat_patch.jem` model. That model's animation expects `var.base_*`
 values supplied by Fresh Animations hull models. Plain hulls from the audited Pyrite 0.18.3+26.2,
-Promenade 5.6.0, Wilder Wild 4.3.3, BetterEnd 26.201.3, and BetterNether 26.201.3 providers do not supply those values.
-BetterEnd and BetterNether each require `wover-item` 26.201.3.
+Promenade 5.6.0, Wilder Wild 4.3.3, BetterEnd 26.201.4, and BetterNether 26.201.4 providers do not supply those values.
+BetterEnd and BetterNether each require `wover-item` 26.201.4.
 
 The client-only compatibility hook runs at the end of each `BoatRenderer` construction. It checks
 the exact provider layer, provider version, EMF version, selected resource bytes, and EMF's actual
