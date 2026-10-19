@@ -2,6 +2,13 @@
 
 Releases before 1.0.2 are recorded only in the git history.
 
+## 1.0.5
+
+- **Boat water mask re-pinned to BetterEnd and BetterNether 26.201.4** (with `wover-item` 26.201.4), the versions in
+  pack 2.3.61. Under 1.0.4 the exact-version gate turned the fix off for both mods, so their 40 boat and chest-boat
+  layers rendered the water plane inside the hull with Fresh Animations Extensions. Their boat files and wover-item's boat
+  renderer classes are byte-identical to 26.201.3, which is retired.
+
 ## 1.0.4
 
 - **Spell crowd-control immunity** moved here from lampas-addons 1.0.5. Apotheosis invaders and elites, the mounts they
