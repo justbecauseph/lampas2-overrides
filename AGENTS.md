@@ -7,8 +7,8 @@ Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-ac
 entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
 Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, the version-gated
-IllagerBlabber 1.1.0 voice-registry leak fix, the ungated hotbar slot resync after respawn, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3), the Rogues 3.1.3.003+26.2 Sharpness definition, and 64 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised). The first two
-features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, and the hotbar slot resync are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium datapacks, IllagerBlabber registry fix, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
+IllagerBlabber 1.1.0 voice-registry leak fix, the ungated hotbar slot resync after respawn, Voxy 0.2.19-beta reverse-Z depth under Iris 1.11.4 shader packs, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3), the Rogues 3.1.3.003+26.2 Sharpness definition, and 64 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised). The first two
+features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, and the Voxy reverse-Z fix are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium datapacks, IllagerBlabber registry fix, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -73,6 +73,8 @@ disable an unrelated feature.
 | Apothic Enchanting 3.0.1 | `../lampas-server-fabric/mods/ApothicEnchanting-26.2-3.0.1.jar` (source of the flat Sharpness definition) |
 | RPG Series spell jars | `../lampas-server-fabric/mods/`: `wizards-`, `paladins-`, `archers-fabric-3.1.3.003+26.2.jar`, `spell_engine-fabric-1.10.9+26.2.jar`, `skill_tree-fabric-1.6.2+26.2.jar`, `relics-fabric-1.4.1+26.2.jar`; pins in `tools/generate_rpg_spell_patches.py` |
 | Spell Power 1.6.2 | `../lampas-server-fabric/mods/spell_power-fabric-1.6.2+26.2.jar` (`SpellPower.getHaste`, `SpellPower$Result`) |
+| Voxy 0.2.19-beta | `../lampas-pipeline/.lampas/cache/modrinth/fxxUqruK/LzyXnE51/voxy-0.2.19-beta.jar`; sources at `../voxy` (commit `02dfb1b7` is the 0.2.19-beta build; upstream branch `263` holds the reverse-Z fix) |
+| Iris 1.11.4+mc26.2 | `../lampas-pipeline/.lampas/cache/modrinth/YL57xq9U/gxZWWnKH/iris-fabric-1.11.4+mc26.2.jar`; sources at `../Iris` (`f98544835^` matches the jar's `DepthTransformer`) |
 | Figura sources | `../figura-port/common/src/main/java/org/figuramc/figura/` |
 | ReplayMod sources | `../ReplayMod/src/main/java/com/replaymod/` — preprocessed, read `//#if MC>=…` blocks carefully |
 | Minecraft 26.2 sources | `../figura-port/.mcsources/` — decompiled, authoritative |
@@ -141,6 +143,12 @@ materially beyond the prior failure window while checking watchdog, C2ME sync-lo
 mixin logs. Confirm that the configured disallowed worldgen mobs remain absent, that dimension-scoped
 rules (e.g. Aria) only apply to their designated dimensions, and that allowed mobs (such as Overworld
 village villagers, iron golems, and cats) generate normally.
+
+For the Voxy reverse-Z fix (Sodium 0.9.2, Iris 1.11.4+mc26.2, Voxy 0.2.19-beta and a pack with `voxy.json` in
+`run/`), startup must log `Enabled the version-gated Voxy 0.2.19-beta reverse-Z fix for Iris 1.11.4+mc26.2 shader
+packs`; entering a world with the pack on must apply `RenderPropertiesMixin`, `IrisShaderPatchMixin`,
+`VoxyUniformsMixin` and `ViewportAccessor`, and Voxy must not log `Failed to compile shader patch`. Whether LODs render
+needs a world with LOD data beyond vanilla render distance, checked by the user in game.
 
 **Live testing and deployment** are managed declaratively via `lampas-pipeline` (`../lampas-pipeline`):
 
@@ -342,6 +350,22 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   `hotbarsync` sets `carriedIndex = -1` at the RETURN of the five-argument `createPlayer`, which `handleRespawn` calls
   before Debugify's injection point. It has no plugin, depends on no mod and pins no version, on purpose: it covers
   any client-side slot restore. Do not remove it as redundant with vanilla.
+- **Iris 1.11.4 keeps the game reverse-Z under shader packs; Voxy 0.2.19-beta still forces forward-Z.**
+  Iris up to 1.11.2 switched to forward-Z for packs (its `UndoReverseZ*` mixins); 1.11.4 registers only
+  `UndoReverseZOne`, which is empty. Its `DepthTransformer` instead flips depth-sampler reads (its `DEPTH_SAMPLERS`
+  include `vxDepthTexOpaque` and `vxDepthTexTrans`), `gl_FragCoord.z` and `gl_FragDepth` in pack programs, and packs
+  get forward-Z matrices from `MatrixUtils.undoRevZ` (`gbufferProjection`) and the injected `iris_undoRevZ` helper. Voxy's
+  `RenderProperties.useReverseZ` returns false whenever a pack is on, so packs read LOD depth inverted and draw sky.
+  `voxyreversez` makes Voxy follow `DepthStencilState.DEFAULT`, runs the pack's Voxy patch sources (appended to Voxy's
+  `quads.frag` without Iris's transform, and with no depth in `VoxyFragmentParameters`) through
+  `DepthTransformer.transform(..., FRAGMENT, shadow=false, ...)`, converts `vxProj`/`vxViewProj` with Iris's
+  `iris_undoRevZ` row operation (identity placeholders stay unconverted), and adds `vxNearPlane`/`vxFarPlane`. The
+  `VOXY` shader define stays at 0.2.19-beta's 2, so a pack that gates the plane uniforms on `263`'s 3 ignores them. Upstream's `263` branch uses a 4-argument
+  `invertDepthReads` accessor that does not exist in Iris 1.11.4; the public 6-argument `transform` does. The gate is
+  exact version plus JAR SHA-256 for both mods because Iris 1.11.2 must stay unpatched and a later Voxy should carry
+  the upstream fix. glsl-transformer is compile-only from Maven Central; at runtime Iris's nested copy loads.
+  `NDC_FAR` from `263` is not backported because it equals `FAR` with zero-to-one depth, which 26.2 uses wherever
+  `GL_ARB_clip_control` exists. In-game LOD rendering under a pack is unverified.
 - **`TechnicalGravestoneBlockEntityRenderer` constructs sign text dynamically while the grave body is a block model.**
   Overriding `getSignText(TechnicalGravestoneBlockEntity)` to return a blank `SignText` suppresses player name,
   death date, and death time for all death graves without touching aesthetic gravestones (which use `AestheticGravestoneBlockEntityRenderer`).
@@ -483,6 +507,11 @@ visualworkbench/
   VisualWorkbenchMixinPlugin applies only when Visual Workbench + Puzzles Lib exist
   VisualWorkbenchTagFix     policy check and tag rebinding helper
   mixin/                    intercepts copyBoundTags for visualworkbench:* blocks
+voxyreversez/
+  VoxyReverseZProfiles      exact Voxy 0.2.19-beta and Iris 1.11.4+mc26.2 mod ID, version and JAR SHA-256
+  VoxyReverseZMixinPlugin   applies all four mixins only to that pair; WARNs when both mods are present but differ
+  VoxyReverseZ              Iris DepthTransformer over pack patches, forward-Z matrix conversion, plane values
+  mixin/                    useReverseZ, patch-source getters, VoxyUniforms matrices and plane uniforms, Viewport accessor
 hotbarsync/
   mixin/                    resets MultiPlayerGameMode.carriedIndex after createPlayer (ungated, unpinned; Debugify MC-143474 trigger)
 gravestones/

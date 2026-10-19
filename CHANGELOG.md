@@ -2,6 +2,15 @@
 
 Releases before 1.0.2 are recorded only in the git history.
 
+## 1.0.6
+
+- **Voxy LODs under Iris shader packs.** With Voxy 0.2.19-beta and Iris 1.11.4+mc26.2, shader packs drew LOD terrain
+  as sky ([MCRcortex/voxy#700](https://github.com/MCRcortex/voxy/issues/700)): Iris 1.11.4 keeps the game reverse-Z,
+  while Voxy still forced forward-Z under packs. The client-only fix backports Voxy's upstream `263` branch handling:
+  Voxy stays reverse-Z, the pack's Voxy patch goes through Iris's `DepthTransformer`, `vxProj`/`vxViewProj` are
+  converted to forward-Z, and `vxNearPlane`/`vxFarPlane` are added. It is gated on both exact artifacts (version and
+  JAR SHA-256) and is temporary until Voxy releases the fix for 26.2. In-game LOD rendering is unverified.
+
 ## 1.0.5
 
 - **Boat water mask re-pinned to BetterEnd and BetterNether 26.201.4** (with `wover-item` 26.201.4), the versions in

@@ -48,6 +48,13 @@ dependencies {
 	// IllagerBlabber is compile-only; its bytecode contract test reads the pinned classes at test runtime.
 	compileOnly "maven.modrinth:illagerblabber:${project.illagerblabber_version}"
 	testRuntimeOnly "maven.modrinth:illagerblabber:${project.illagerblabber_version}"
+	// The Voxy reverse-Z fix compiles against the exact Voxy and Iris artifacts it is gated to.
+	compileOnly("maven.modrinth:voxy:${project.voxy_version}") { transitive = false }
+	compileOnly("maven.modrinth:iris:${project.iris_version}") { transitive = false }
+	compileOnly "io.github.douira:glsl-transformer:${project.glsl_transformer_version}"
+	// VoxyReverseZTest runs Iris's real DepthTransformer over a Voxy-style shader patch.
+	testRuntimeOnly("maven.modrinth:iris:${project.iris_version}") { transitive = false }
+	testRuntimeOnly "io.github.douira:glsl-transformer:${project.glsl_transformer_version}"
 
 	// The Spell Engine bytecode contract test reads SpellImpacts from the inspected jar. The crowd-control mixin names
 	// Spell Engine only by string, so it is test-only and never bundled.

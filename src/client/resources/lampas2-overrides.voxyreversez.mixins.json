@@ -1,0 +1,8 @@
+{
+	"required": true,
+	"package": "lampas2overrides.client.voxyreversez.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.client.voxyreversez.VoxyReverseZMixinPlugin",
+	"client": ["IrisShaderPatchMixin", "RenderPropertiesMixin", "ViewportAccessor", "VoxyUniformsMixin"],
+	"injectors": { "defaultRequire": 1 }
+}

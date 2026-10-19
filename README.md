@@ -28,6 +28,42 @@ ungated hotbar slot resync after respawn.
 | [Beautiful item-model reloads](#beautiful-item-model-reloads) | Beautiful Enchanted Books 6.0.0 and/or Beautiful Potions 2.0.1 | Clears stale extra-model keys so each resource reload uses the keys registered for that reload |
 | [IllagerBlabber voice registry](#illagerblabber-voice-registry) | IllagerBlabber 1.1.0 | Releases per-illager voice state on unload, follows illagers across dimensions, and drops per-tick lock and log overhead |
 | [Hotbar slot resync after respawn](#hotbar-slot-resync-after-respawn) | Nothing (triggered by Debugify MC-143474) | Resends the selected hotbar slot after respawn so the server does not keep slot 0 |
+| [Voxy LODs under Iris shader packs](#voxy-lods-under-iris-shader-packs) | Voxy 0.2.19-beta + Iris 1.11.4+mc26.2 | Keeps Voxy's LOD depth reverse-Z so shader packs stop drawing LOD terrain as sky |
+
+## Voxy LODs under Iris shader packs
+
+With Voxy **0.2.19-beta** and Iris **1.11.4+mc26.2** (the Sodium 0.9.2 pair), every shader pack draws Voxy's LOD
+terrain as sky ([MCRcortex/voxy#700](https://github.com/MCRcortex/voxy/issues/700)). Iris up to 1.11.2 switched the
+game to forward-Z depth while a pack was on, and Voxy 0.2.19-beta forces forward-Z whenever a pack is on to match.
+Iris 1.11.4 keeps the depth buffer reverse-Z and rewrites pack shaders with its `DepthTransformer`, whose depth
+samplers include `vxDepthTexOpaque` and `vxDepthTexTrans`. Packs therefore read Voxy's forward-Z depth inverted.
+
+The client-only fix backports the reverse-Z handling from Voxy's upstream `263` branch, which is not released for
+26.2:
+
+- `RenderProperties.useReverseZ` follows vanilla's depth direction with or without a pack.
+- The pack's `voxy_opaque`/`voxy_translucent` patch sources go through Iris's own fragment
+  `DepthTransformer.transform`, so depth-sampler reads, `gl_FragCoord.z` and `gl_FragDepth` writes are forward-Z for
+  the pack's code, as in every other pack program.
+- `vxProj`, `vxViewProj` and their inverse and previous-frame uniforms are converted to forward-Z with Iris's
+  `iris_undoRevZ` row operation.
+- `vxNearPlane` and `vxFarPlane` are added for packs written against the `263` branch. They report Voxy
+  0.2.19-beta's planes (near 8, 16 or 0.1 blocks; far 48,000 blocks). The `VOXY` shader define stays at 2, so a
+  pack that only uses them when `VOXY >= 3` ignores them.
+
+The `263` branch's `NDC_FAR` shader change is not backported: it only differs from `FAR` without zero-to-one depth,
+and 26.2 enables zero-to-one depth on every GPU with `GL_ARB_clip_control`.
+
+The gate requires both artifacts by mod ID, exact version and full JAR SHA-256. Another Voxy or Iris release logs a
+WARN and leaves Voxy unpatched: Iris 1.11.2 and earlier still switch to forward-Z themselves, and a later Voxy is
+expected to carry the upstream fix. A shader patch the transform cannot parse logs an error and Iris fails to create
+the pack pipeline.
+
+Unit tests run Iris 1.11.4's real `DepthTransformer` over a Voxy-style patch and check the matrix conversion against
+JOML's forward-Z projection. A dev client with Sodium 0.9.2, Iris 1.11.4, Voxy 0.2.19-beta and Complementary
+Reimagined r5.8.1 (the pack ships r5.9.3) applied all four mixins, built `IrisVoxyRenderPipeline` from the transformed patches, and compiled
+the patched LOD shader without falling back. Whether LOD terrain renders correctly under a pack has not been seen in
+game.
 
 ## Beautiful item-model reloads
 
