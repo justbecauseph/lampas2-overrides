@@ -1,0 +1,7 @@
+{
+  "pack": {
+    "min_format": [107, 1],
+    "max_format": [107, 1],
+    "description": "Lampas2 performance overrides for Dungeons and Taverns 5.3.2"
+  }
+}

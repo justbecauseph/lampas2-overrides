@@ -14,6 +14,8 @@ ungated hotbar slot resync after respawn.
 | [Mob Filter worldgen safety and dimension context](#mob-filter-worldgen-safety-and-dimension-context) | Mob Filter | Prevents C2ME worldgen deadlock on rejected mobs and provides dimension context for worldgen rules |
 | [Visual Workbench tag rebinding](#visual-workbench-tag-rebinding) | Visual Workbench + Puzzles Lib | Prevents replay loading and tag reload crashes from stale Visual Workbench tags |
 | [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.1 | Removes a redundant 20 Hz entity-ID scan, throttles living-mob initialization, and stops helper markers accumulating in chunk [0, 0] |
+| [Builder's Boundry tick optimization](#builders-boundry-tick-optimization) | Builder's Boundry 0.2 | Replaces 26 full entity scans per tick with one scan every 4 ticks |
+| [Dungeons and Taverns Swift Soar tick](#dungeons-and-taverns-swift-soar-tick) | Dungeons and Taverns 5.3.2 | Limits the per-tick FOV-modifier removal to players that carry it |
 | [Gravestones death inscription and glow](#gravestones-death-inscription-and-glow) | Gravestones | Suppresses technical death grave text and renders a glowing outline only on your own graves |
 | [Jade nameplates and Custom Name](#jade-nameplates-and-custom-name) | Client Jade; server TAB name sync | Suppresses vanilla in-world entity/player nameplates and shows server-synced player display names in Jade |
 | [Custom Name multi-word names](#custom-name-multi-word-names) | Custom Name 0.4.4-26.2 | Permits spaces in nickname, prefix, and suffix commands for non-operators |
@@ -314,6 +316,37 @@ redundant ID check.
 
 A modified or unsupported Incendium release is left untouched and produces a warning in the server
 log instead of receiving potentially stale function overrides.
+
+## Builder's Boundry tick optimization
+
+Builder's Boundry 0.2 (`mr_builders_boundry`) places its furniture as invisible item frames and drives them from
+`diesse:acs/main` in `#minecraft:tick`: two support checks, three facing checks and 21 actions, each its own untyped
+`@e[tag=acs.*]` selector. Every selector walks the whole loaded entity list, so the pack cost 26 full scans per tick
+regardless of how much furniture exists; in the 19 Oct 2026 production profile it was the largest contributor to the
+tick-function cost with one player and 370 entities.
+
+The version-gated `builders_boundry_0_2_optimizations` datapack replaces `acs/main` with a 4-tick counter
+(`$lampas.acs_clock` in the upstream `acs.facing` objective) that runs one `@e[tag=acs.acc.block]` walk and
+dispatches each furniture entity through `diesse:acs/lampas/entity` with `@s[tag=…]` checks. The per-entity order is
+upstream's: support check, facing check, action; the upstream delete, face and action functions are called unchanged,
+and the dispatch returns after any path that kills the entity. Light-block re-placement, clock faces, cutting-board
+rotation and misplaced-item give-back now react within 4 ticks instead of 1. The pack registers only when the mod is
+exactly 0.2 and the seven upstream functions the replacement depends on match their recorded SHA-256; otherwise
+startup logs that the performance datapack remains disabled.
+
+## Dungeons and Taverns Swift Soar tick
+
+Dungeons and Taverns 5.3.2 (`mr_dungeons_andtaverns`) runs `nova_structures:tick` every tick with
+`execute as @a[predicate=!nova_structures:riding_happy_ghast] run attribute @s movement_speed modifier remove
+nova_structures:boost_player_fov`. The modifier exists only while a player sprints on a Swift Soar happy ghast, so
+for everyone else the command fails and builds a `CommandSyntaxException` message every tick: about 24 µs per
+player-tick in the 19 Oct 2026 profile, linear in online players.
+
+The version-gated `dungeons_and_taverns_5_3_2_optimizations` datapack replaces `tick` and `swift_soar_1..3`. The
+enchantment functions are upstream's with one added line that tags passengers `lampas.dnt_fov_boost` when the
+modifier is applied; `tick` removes the modifier and tag only from tagged players who are no longer riding, runs a
+one-time per-player migration (`lampas.dnt_fov_migrated`) that clears a modifier applied before the override, and keeps
+the chart-bundle line verbatim. Gated on the exact version and the SHA-256 of the four upstream functions.
 
 ## Wilder Wild stone pool
 

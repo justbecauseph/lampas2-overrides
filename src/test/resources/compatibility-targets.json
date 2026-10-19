@@ -444,6 +444,45 @@
           "status": "verified"
         }
       }
+    },
+    "mr_builders_boundry": {
+      "name": "Builder's Boundry",
+      "type": "datapack_replacement",
+      "versions": {
+        "0.2": {
+          "status": "patched",
+          "artifact_sha256": "bc2c74687b01d943f3496313eb01f47bd528adc7ed48776ff6c2f8667cdc739d",
+          "pack_id": "lampas2-overrides:builders_boundry_0_2_optimizations",
+          "resources": {
+            "data/diesse/function/acs/main.mcfunction": "b8bd92884d1ef4014305099756f214525dff80b11eb06de0614320ffda6a65df",
+            "data/diesse/function/acs/face/all.mcfunction": "b261598a809be7a22fc198bcdab90a6e4b0f3e234329363777ec21851997b94c",
+            "data/diesse/function/acs/actions/all.mcfunction": "a18fe12b6edf5b3417eda09d76791e9609c29bea158add12191629095fce1998",
+            "data/diesse/function/acs/face/top.mcfunction": "cf9bbc4a20d203e5cfacb9738e1a33dba7e7f23c140cd14047ddbe0889da0f54",
+            "data/diesse/function/acs/face/side.mcfunction": "f7322194b3a159259f6b6f74dd7f169d24f0f66d825bcfefdb08a1e6623cf59a",
+            "data/diesse/function/acs/delete/all.mcfunction": "6278b8d0aa8206fdd995b92f385b11e45dbc1b839a9ba50c5df7517b80eda151",
+            "data/diesse/function/acs/reset.mcfunction": "7429ff359c9f734b2e92713fe138c807422e23accef67da7d2b6de46e8f4293b"
+          },
+          "verification_limit": "Unit tests verify the exact version gate, the upstream fingerprints and the packaged function structure. Furniture behaviour (light re-placement, clock faces, cutting-board rotation, support and facing give-back within a 4-tick window) is verified only by a dedicated-server runtime probe."
+        }
+      }
+    },
+    "mr_dungeons_andtaverns": {
+      "name": "Dungeons and Taverns",
+      "type": "datapack_replacement",
+      "versions": {
+        "5.3.2": {
+          "status": "patched",
+          "artifact_sha256": "7a1abeacfd6b973d9753928889d765e4002a086f4cb23756d8586e7d347d4bba",
+          "pack_id": "lampas2-overrides:dungeons_and_taverns_5_3_2_optimizations",
+          "resources": {
+            "data/nova_structures/function/tick.mcfunction": "9d831f0686565286a7b13729e95d7af9ab4973955daa98a1561ae9c3451bb48e",
+            "data/nova_structures/function/swift_soar_1.mcfunction": "8bd5fd81b51cd1d87925bb3878b1a8577b8dcea187616b4000a7f5b46c795a2c",
+            "data/nova_structures/function/swift_soar_2.mcfunction": "7bb22d468fc0031b98d1cfbc1e6215e75542e558ff985b3bafb3e748b45b5363",
+            "data/nova_structures/function/swift_soar_3.mcfunction": "486bfd5df1bc2b5dacaf233e9352c25387fd1572cbf49b8496230f2442593c2a"
+          },
+          "verification_limit": "Unit tests verify the exact version gate, the upstream fingerprints and that the packaged swift_soar functions differ from upstream only by the lampas.dnt_fov_boost tag line. Swift Soar FOV behaviour on a happy ghast and the one-time migration are verified only by a dedicated-server runtime probe."
+        }
+      }
     }
   }
 }

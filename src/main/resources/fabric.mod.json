@@ -19,6 +19,8 @@
 		"main": [
 			"lampas2overrides.protocol.LampasProtocolServer",
 			"lampas2overrides.incendium.IncendiumOptimization",
+			"lampas2overrides.buildersboundry.BuildersBoundryOptimization",
+			"lampas2overrides.dungeonstaverns.DungeonsTavernsOptimization",
 			"lampas2overrides.stoneholm.StoneholmDataFixes",
 			"lampas2overrides.illagerblabber.IllagerBlabberFixes",
 			"lampas2overrides.crowdcontrol.CrowdControlCommands"

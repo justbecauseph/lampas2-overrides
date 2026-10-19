@@ -2,6 +2,28 @@
 
 Releases before 1.0.2 are recorded only in the git history.
 
+## 1.0.7
+
+- **Builder's Boundry 0.2 tick functions.** Upstream `diesse:acs/main` ran 26 untyped `@e[tag=acs.*]` selectors every
+  tick, each a full walk of the loaded entity list; it was the largest single contributor to the `#minecraft:tick`
+  function cost in the 19 Oct production profile (lampas-two-planning `docs/records/profiles/2026-10-19-spark-profile.md`).
+  The version-gated `builders_boundry_0_2_optimizations` datapack replaces `acs/main` with one
+  `@e[tag=acs.acc.block]` walk every 4 ticks that dispatches per furniture entity with `@s` checks, calling the
+  upstream delete, face and action functions in the upstream order and stopping after one removes the entity. Light
+  re-placement, clock faces, cutting-board rotation and support/facing give-back now react within 4 ticks instead of 1.
+  Gated on the exact `mr_builders_boundry` version and the SHA-256 of the seven upstream functions it depends on.
+- **Dungeons and Taverns 5.3.2 Swift Soar tick.** Upstream `nova_structures:tick` ran
+  `attribute @s movement_speed modifier remove nova_structures:boost_player_fov` for every player every tick; it
+  fails for everyone not riding a sprinting happy ghast and built a `CommandSyntaxException` message each time
+  (~24 µs per player-tick in the profile). The version-gated `dungeons_and_taverns_5_3_2_optimizations` datapack
+  tags passengers in `swift_soar_1..3` when the modifier is added (`lampas.dnt_fov_boost`) and limits the per-tick
+  removal to tagged players who are no longer riding, with a one-time per-player migration (`lampas.dnt_fov_migrated`)
+  for modifiers applied before the override. The chart-bundle line and the three enchantment functions are otherwise
+  verbatim.
+- Shared `lampas2overrides.datapack` package (`DatapackReplacement`, `ResourceFingerprint`) for version- and
+  fingerprint-gated built-in datapacks; the Incendium code is unchanged and still carries its own copy.
+- Runtime behaviour of both packs on a dedicated server is unverified at release time; see `compatibility-targets.json`.
+
 ## 1.0.6
 
 - **Voxy LODs under Iris shader packs.** With Voxy 0.2.19-beta and Iris 1.11.4+mc26.2, shader packs drew LOD terrain

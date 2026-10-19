@@ -6,9 +6,9 @@ heads, Lootr item frames converted into Fast Item Frames blocks, Underground Vil
 Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-activated threaded-worldgen
 entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
-Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, the version-gated
+Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, version-gated Builder's Boundry 0.2 and Dungeons and Taverns 5.3.2 tick-function optimizations, the version-gated
 IllagerBlabber 1.1.0 voice-registry leak fix, the ungated hotbar slot resync after respawn, Voxy 0.2.19-beta reverse-Z depth under Iris 1.11.4 shader packs, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3), the Rogues 3.1.3.003+26.2 Sharpness definition, and 64 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised). The first two
-features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, and the Voxy reverse-Z fix are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium datapacks, IllagerBlabber registry fix, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
+features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, and the Voxy reverse-Z fix are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium, Builder's Boundry and Dungeons and Taverns datapacks, IllagerBlabber registry fix, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -64,6 +64,8 @@ disable an unrelated feature.
 | Custom Name 0.4.4 | `../lampas-server-fabric/mods/customname-fabric-0.4.4-26.2.jar` |
 | Gravestones 1.4.2 | `../lampas-server-fabric/mods/gravestones-1.4.2+26.2+A.jar` |
 | Incendium Legacy 5.5.1 | `../lampas-server-fabric/mods/Incendium_26.2_v5.5.1.jar` |
+| Builder's Boundry 0.2 (`mr_builders_boundry`) | `../lampas-server-fabric/mods/builders-boundry-0.2.jar` |
+| Dungeons and Taverns 5.3.2 (`mr_dungeons_andtaverns`) | `../lampas-server-fabric/mods/dungeons-and-taverns-5.3.2.jar` |
 | Mob Filter 0.28.1+26.2 | `../lampas-server-fabric/mods/mobfilter-fabric-0.28.1+26.2.jar` |
 | Formations Overworld 1.0.5+c | `../lampas-server-fabric/mods/formationsoverworld-1.0.5c-mc1.21+.jar` |
 | Grim Kingdoms 2.0.3 | `../lampas-server-fabric/mods/grim-kingdoms-lost-structures-ruins-2.0.3.jar` |
@@ -130,6 +132,15 @@ fingerprint mismatch must instead log that the performance datapack remains disa
 For the helper marker, `/forceload query 0 0` in the overworld must report the chunk as force-loaded, and
 `/execute store result score #n in.dummy if entity @e[type=marker,tag=in.helper_entity]` must settle at 1
 within two 7-second clock cycles, including on a world that already holds duplicate markers.
+
+For Builder's Boundry and Dungeons and Taverns, dedicated-server startup must log
+`Enabled the version-gated Builder's Boundry 0.2 performance datapack` and
+`Enabled the version-gated Dungeons and Taverns 5.3.2 performance datapack`, and `/datapack list enabled` must show both
+Lampas2 packs. Builder's Boundry: place a lamp, break its support block, and confirm the item drops within 4 ticks;
+place a wall clock on the ground and confirm it is returned; `/scoreboard players get $lampas.acs_clock acs.facing`
+must cycle 0..4. Dungeons and Taverns: sprint on a Swift Soar happy ghast, dismount, and confirm
+`/attribute @s movement_speed modifier value get nova_structures:boost_player_fov` fails (modifier gone) and the
+`lampas.dnt_fov_boost` tag is cleared; every online player must gain `lampas.dnt_fov_migrated` once.
 
 For Mob Filter, dedicated-server startup must succeed and, once the Mob Filter target
 classes are loaded by an entity-add or worldgen path, `MixinServiceMixin` and `WorldgenThreadSpawnAttemptMixin`
@@ -258,6 +269,17 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   removes or blocks it is unidentified, and a Fabric API + Incendium server keeps it), so every call summoned
   another marker into the unloaded chunk (94,300 markers). The override re-adds the force-load before each
   count rather than skipping the summon, because `misc/aim` needs a helper to compute launch vectors.
+- **Builder's Boundry furniture is item frames tagged `acs.acc.block` plus one type tag and a face tag.** Upstream's
+  `acs/main` scans with 26 separate `@e[tag=…]` selectors; every selector walks the whole loaded entity list even when
+  `type=` is present, because `EntityLookup.getEntities` filters after iteration. The override does one walk and
+  dispatches with `@s[tag=…]`. Its delete/face functions `kill @s`, and `@s` still resolves a removed entity, so the
+  per-entity function uses `return run` after any path that can remove it. The `acs.place` reset must stay after the
+  scan: `face/top` and `face/side` give the item back to `@p[scores={acs.place=1..}]`. Upstream's `acs.tall_lamp`
+  action never matches (tall lamps are tagged `acs.<colour>_tall_lamp`); the override keeps the line as-is.
+- **Dungeons and Taverns applies the Swift Soar FOV modifier from `swift_soar_1..3`, run by the enchantment on the
+  ghast.** `attribute … modifier remove` on an absent modifier throws, and the exception message is built eagerly, so
+  a per-player per-tick removal costs ~24 µs per player-tick even when nothing is removed. The override tags
+  passengers when the modifier is added and only clears tagged players.
 - **Resource patches are keyed by mod ID, exact version, and resource path.** `ResourcePatchKey` and
   `ResourcePatchRegistry` index each patch by all three, so a patch for one release never applies to another
   release, and each patch fails closed on a changed SHA-256. Formations Overworld 1.0.5+c requires only the root
@@ -527,6 +549,15 @@ incendium/
   IncendiumCompatibility    version profiles and upstream-function fingerprint gate
 resourcepacks/incendium_5_5_1_optimizations/
   data/incendium/function/  clock and entity-ID overrides for verified Incendium 5.5.1
+datapack/
+  DatapackReplacement       version- and fingerprint-gated built-in datapack registration
+  ResourceFingerprint       SHA-256 of upstream resources
+buildersboundry/            Builder's Boundry 0.2 profile and initializer
+dungeonstaverns/            Dungeons and Taverns 5.3.2 profile and initializer
+resourcepacks/builders_boundry_0_2_optimizations/
+  data/diesse/function/acs/ main replacement and lampas/ dispatch for verified Builder's Boundry 0.2
+resourcepacks/dungeons_and_taverns_5_3_2_optimizations/
+  data/nova_structures/function/ tick and swift_soar_1..3 replacements for verified Dungeons and Taverns 5.3.2
 resourcefix/
   ResourcePatchKey          composite key (modId, version, resourcePath) for multi-version patches
   ResourcePatchRegistry     registry of defective mod resources with SHA-256 fingerprints

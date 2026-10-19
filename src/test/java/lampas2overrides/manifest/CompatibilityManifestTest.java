@@ -16,6 +16,9 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import lampas2overrides.buildersboundry.BuildersBoundryCompatibility;
+import lampas2overrides.datapack.DatapackReplacement;
+import lampas2overrides.dungeonstaverns.DungeonsTavernsCompatibility;
 import lampas2overrides.incendium.IncendiumCompatibility;
 import lampas2overrides.resourcefix.ResourcePatch;
 import lampas2overrides.resourcefix.ResourcePatchKey;
@@ -41,6 +44,10 @@ public class CompatibilityManifestTest {
 		JsonObject incendium = targets.getAsJsonObject("incendium").getAsJsonObject("versions");
 		assertTrue(incendium.has("5.5.1"));
 		assertTrue(IncendiumCompatibility.supportsVersion("5.5.1"));
+
+		// Datapack replacements built on DatapackReplacement list exactly their fingerprinted upstream resources.
+		assertDatapackReplacement(targets, BuildersBoundryCompatibility.MOD_ID, BuildersBoundryCompatibility.getProfiles());
+		assertDatapackReplacement(targets, DungeonsTavernsCompatibility.MOD_ID, DungeonsTavernsCompatibility.getProfiles());
 
 		// Formations Overworld 1.0.5+c is metadata-only; its loot tables are upstream-owned.
 		JsonObject formations = targets.getAsJsonObject("formationsoverworld").getAsJsonObject("versions");
@@ -115,6 +122,25 @@ public class CompatibilityManifestTest {
 			Map<String, String> listed = new HashMap<>();
 			resources.entrySet().forEach(resource -> listed.put(resource.getKey(), resource.getValue().getAsString()));
 			assertEquals(entry.getValue(), listed, "Manifest resources differ from the registry for " + entry.getKey());
+		}
+	}
+
+	private static void assertDatapackReplacement(JsonObject targets, String modId,
+			Map<String, DatapackReplacement.Profile> profiles) {
+		assertTrue(targets.has(modId), "Manifest missing target: " + modId);
+		JsonObject target = targets.getAsJsonObject(modId);
+		assertEquals("datapack_replacement", target.get("type").getAsString());
+		JsonObject versions = target.getAsJsonObject("versions");
+		assertEquals(profiles.size(), versions.size(), "Manifest version count differs for " + modId);
+		for (Map.Entry<String, DatapackReplacement.Profile> entry : profiles.entrySet()) {
+			JsonObject version = versions.getAsJsonObject(entry.getKey());
+			assertNotNull(version, "Manifest missing version " + entry.getKey() + " for mod " + modId);
+			assertEquals(entry.getValue().packId().toString(), version.get("pack_id").getAsString());
+			Map<String, String> listed = new HashMap<>();
+			version.getAsJsonObject("resources").entrySet()
+				.forEach(resource -> listed.put(resource.getKey(), resource.getValue().getAsString()));
+			assertEquals(entry.getValue().expectedResources(), listed,
+				"Manifest resources differ from the profile for " + modId + " " + entry.getKey());
 		}
 	}
 }
