@@ -6,7 +6,8 @@
 	"environment": "*",
 	"entrypoints": {
 		"fabric-gametest": [
-			"lampas2overrides.crowdcontrol.CrowdControlImmunityGameTests"
+			"lampas2overrides.crowdcontrol.CrowdControlImmunityGameTests",
+			"lampas2overrides.tridentcrits.ThrownTridentCritGameTests"
 		]
 	},
 	"depends": {
@@ -15,6 +16,7 @@
 		"fabric-api": "*",
 		"lampas2-overrides": "*",
 		"spell_engine": "*",
-		"rogues": "*"
+		"rogues": "*",
+		"critical_strike": "*"
 	}
 }

@@ -2,6 +2,20 @@
 
 Releases before 1.0.2 are recorded only in the git history.
 
+## 1.0.8
+
+- **Thrown-trident crits.** Critical Strike rolls ranged crits in `AbstractArrow.onHitEntity`, which `ThrownTrident`
+  overrides without calling, so thrown tridents never crit and a trident's crit affixes, gems and enchantments only
+  helped melee hits (lampas-two-planning crit compatibility audit, 25 Oct 2026). `tridentcrits` takes the thrower's
+  Critical Strike chance and multiplier in `TridentItem.releaseUsing`, while the trident is still in hand, and rolls the
+  crit around the trident's own `hurtOrSimulate` call: the damage is multiplied by the multiplier and
+  `balance_ranged_damage_multiplier`, the damage source is marked critical as Critical Strike's own crits are, and
+  Critical Strike's crit sound and particles play. `enable_ranged_criticals: false` turns it off. The thrower's Spell
+  Engine on-crit passives still do not fire from a trident, and a trident that changes dimension or is saved in flight
+  loses its snapshot. Applies whenever Critical Strike is installed; its members are resolved by name, and
+  `CriticalStrikeContractTest` pins the inspected 1.0.6+26.2. Covered by a GameTest with the real Critical Strike jar,
+  including a trident whose own modifier gives the crit chance; crit FX and dev-server play are unverified.
+
 ## 1.0.7
 
 - **Builder's Boundry 0.2 tick functions.** Upstream `diesse:acs/main` ran 26 untyped `@e[tag=acs.*]` selectors every

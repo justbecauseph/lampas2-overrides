@@ -3,7 +3,7 @@
 	"id": "lampas2-overrides",
 	"version": "${version}",
 	"name": "Lampas2 Overrides",
-	"description": "Compatibility fixes for Figura, ReplayMod, Chatting, Lootr, Fast Item Frames, Better Lib, Underground Village, Additional Lanterns, Mob Filter, Incendium, Visual Workbench, Gravestones, Jade, Custom Name, optional boat water masks, optional beautiful item models, IllagerBlabber 1.1.0 registry cleanup, Spell Engine crowd-control immunity for Apotheosis elites and invaders, the vanilla hotbar slot resync after respawn, and Voxy 0.2.19-beta LOD depth under Iris 1.11.4 shader packs.",
+	"description": "Compatibility fixes for Figura, ReplayMod, Chatting, Lootr, Fast Item Frames, Better Lib, Underground Village, Additional Lanterns, Mob Filter, Incendium, Visual Workbench, Gravestones, Jade, Custom Name, optional boat water masks, optional beautiful item models, IllagerBlabber 1.1.0 registry cleanup, Spell Engine crowd-control immunity for Apotheosis elites and invaders, Critical Strike crits for thrown tridents, the vanilla hotbar slot resync after respawn, and Voxy 0.2.19-beta LOD depth under Iris 1.11.4 shader packs.",
 	"authors": [
 		"justbecauseph"
 	],
@@ -96,6 +96,9 @@
 			"config": "lampas2-overrides.crowdcontrol.mixins.json"
 		},
 		{
+			"config": "lampas2-overrides.tridentcrits.mixins.json"
+		},
+		{
 			"config": "lampas2-overrides.resourcefix.mixins.json"
 		},
 		{
@@ -124,6 +127,7 @@
 		"illagerblabber": "*",
 		"spell_engine": "*",
 		"placebo": "*",
+		"critical_strike": "*",
 		"voxy": "0.2.19-beta",
 		"iris": "1.11.4+mc26.2"
 	}

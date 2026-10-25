@@ -7,8 +7,8 @@ Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-ac
 entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
 Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, version-gated Builder's Boundry 0.2 and Dungeons and Taverns 5.3.2 tick-function optimizations, the version-gated
-IllagerBlabber 1.1.0 voice-registry leak fix, the ungated hotbar slot resync after respawn, Voxy 0.2.19-beta reverse-Z depth under Iris 1.11.4 shader packs, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3), the Rogues 3.1.3.003+26.2 Sharpness definition, and 64 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised). The first two
-features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, and the Voxy reverse-Z fix are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium, Builder's Boundry and Dungeons and Taverns datapacks, IllagerBlabber registry fix, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
+IllagerBlabber 1.1.0 voice-registry leak fix, Critical Strike crits for thrown tridents, the ungated hotbar slot resync after respawn, Voxy 0.2.19-beta reverse-Z depth under Iris 1.11.4 shader packs, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3), the Rogues 3.1.3.003+26.2 Sharpness definition, and 64 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised). The first two
+features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, and the Voxy reverse-Z fix are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium, Builder's Boundry and Dungeons and Taverns datapacks, IllagerBlabber registry fix, thrown-trident crits, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -75,6 +75,7 @@ disable an unrelated feature.
 | Apothic Enchanting 3.0.1 | `../lampas-server-fabric/mods/ApothicEnchanting-26.2-3.0.1.jar` (source of the flat Sharpness definition) |
 | RPG Series spell jars | `../lampas-server-fabric/mods/`: `wizards-`, `paladins-`, `archers-fabric-3.1.3.003+26.2.jar`, `spell_engine-fabric-1.10.9+26.2.jar`, `skill_tree-fabric-1.6.2+26.2.jar`, `relics-fabric-1.4.1+26.2.jar`; pins in `tools/generate_rpg_spell_patches.py` |
 | Spell Power 1.6.2 | `../lampas-server-fabric/mods/spell_power-fabric-1.6.2+26.2.jar` (`SpellPower.getHaste`, `SpellPower$Result`) |
+| Critical Strike 1.0.6+26.2 | `../lampas-server-fabric/mods/critical_strike-fabric-1.0.6+26.2.jar` (SHA-256 `69872634…1234`, Modrinth version `eozhJvBr`); nests Tiny Config 4.0.1 (`net.tiny_config.ConfigManager`) |
 | Voxy 0.2.19-beta | `../lampas-pipeline/.lampas/cache/modrinth/fxxUqruK/LzyXnE51/voxy-0.2.19-beta.jar`; sources at `../voxy` (commit `02dfb1b7` is the 0.2.19-beta build; upstream branch `263` holds the reverse-Z fix) |
 | Iris 1.11.4+mc26.2 | `../lampas-pipeline/.lampas/cache/modrinth/YL57xq9U/gxZWWnKH/iris-fabric-1.11.4+mc26.2.jar`; sources at `../Iris` (`f98544835^` matches the jar's `DepthTransformer`) |
 | Figura sources | `../figura-port/common/src/main/java/org/figuramc/figura/` |
@@ -160,6 +161,11 @@ For the Voxy reverse-Z fix (Sodium 0.9.2, Iris 1.11.4+mc26.2, Voxy 0.2.19-beta a
 packs`; entering a world with the pack on must apply `RenderPropertiesMixin`, `IrisShaderPatchMixin`,
 `VoxyUniformsMixin` and `ViewportAccessor`, and Voxy must not log `Failed to compile shader patch`. Whether LODs render
 needs a world with LOD data beyond vanilla render distance, checked by the user in game.
+
+For thrown-trident crits (Critical Strike installed), dedicated-server startup must log `Enabled Critical Strike <version>
+crits for thrown tridents`, and `ThrownTridentMixin` and `TridentItemMixin` must appear as applying (`./gradlew runGameTest`
+writes both to `build/run/gameTest/logs/`). No `Critical Strike member … unavailable` warning may follow the first throw.
+In game, a thrown trident with Critical Strike chance enchanted on it should crit, with Critical Strike's crit sound.
 
 **Live testing and deployment** are managed declaratively via `lampas-pipeline` (`../lampas-pipeline`):
 
@@ -327,6 +333,18 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   limits (Frost Nova/Spikes/Bolt/Lance/Blizzard, Judgement, Shout, Throw, Throw Net, Shock Powder, Bear Trap,
   Entangling Roots at a flat 780) so CC reaches End top-band health (736.5) at modelled Pinnacle power.
   Apotheosis elite and invader immunity (W6) lives in `crowdcontrol/` in this mod since 1.0.4.
+- **Critical Strike never sees a thrown trident.** Its ranged crit is a `@WrapOperation` on the `hurtOrSimulate` call in
+  `AbstractArrow.onHitEntity`; vanilla 26.2 `ThrownTrident.onHitEntity` overrides that method, calls `hurtOrSimulate` itself
+  and never calls super, so a mixin on the superclass method cannot reach it. `tridentcrits` wraps the trident's own call.
+  The crit stats must be taken in `TridentItem.releaseUsing`, not at the hit: by the hit the trident has left the hand, so
+  reading the player then (as Critical Strike does for arrows, where the bow is still held) would drop the trident's own
+  affixes, gems and enchantments. Equipment modifiers only change in `LivingEntity` ticks, and releasing happens after at
+  least 10 ticks of charging, so at `releaseUsing` HEAD the main-hand trident's modifiers are on the player. The snapshot
+  rides a thread-local from the `releaseUsing` wrap into the `ThrownTrident(Level, LivingEntity, ItemStack)` constructor,
+  matched by thrower identity, and lives in an unsaved field. Critical Strike's attributes sit on a base of 100: chance is
+  `(value - 100) / 100` and the multiplier `value / 100`, with an innate `critical_strike:innate_bonus` of +0.05 and +0.5
+  (`add_multiplied_base`) on every player; the GameTest removes it to get exact values. Critical Strike's crits are
+  player-only (`CriticalStriker` is mixed into `Player`).
 - **Spells are the synced `minecraft:spell` registry, decoded by Gson.** Clients decode known-pack entries from
   their own copy, as with Sharpness, so the spell patches also need `side = "both"`. A spell file that needs both
   the P1 and the D9 change has one replacement; the registry throws on a duplicate key. The replacements are
@@ -586,7 +604,11 @@ crowdcontrol/
   ApothicBossMarkers        reflective Placebo PersistentData.peek bridge for the Apotheosis marker keys
   CrowdControlCommands      main entrypoint; /lampas ccimmunity check, only with Spell Engine installed
   mixin/                    wraps the boss gate, the movement-impairing check and the knockback-resistance read in SpellImpacts.performImpact
-src/gametest/               server GameTests (./gradlew runGameTest, part of check) with real Spell Engine, Spell Power and Rogues;
+tridentcrits/
+  CriticalStrikeMixinPlugin applies whenever Critical Strike is present (common-side, server-safe); member contract pinned to 1.0.6+26.2
+  TridentCriticalStrikes    reflective Critical Strike bridge: throw snapshot, crit roll, damage source mark, crit FX
+  mixin/                    wraps TridentItem.releaseUsing (snapshot) and the hurtOrSimulate call in ThrownTrident.onHitEntity (crit)
+src/gametest/               server GameTests (./gradlew runGameTest, part of check) with real Spell Engine, Spell Power, Rogues and Critical Strike;
                             dev/shadowsoffire/placebo/util/PersistentData there is a TEST DOUBLE, never shipped
 ```
 

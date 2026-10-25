@@ -59,6 +59,9 @@ dependencies {
 	// The Spell Engine bytecode contract test reads SpellImpacts from the inspected jar. The crowd-control mixin names
 	// Spell Engine only by string, so it is test-only and never bundled.
 	testRuntimeOnly("maven.modrinth:spell-engine:${project.spell_engine_version}") { transitive = false }
+	// CriticalStrikeContractTest reads the thrown-trident crit bridge's members from the inspected Critical Strike jar. The
+	// bridge names Critical Strike only by string, so it is test-only and never bundled.
+	testRuntimeOnly("maven.modrinth:critical-strike:${project.critical_strike_version}") { transitive = false }
 
 	// Optional mods are compile-only: every compatibility feature is gated by its mixin plugin,
 	// and none of their classes are bundled into the output jar.
@@ -68,7 +71,8 @@ dependencies {
 }
 
 fabricApi {
-	// Server GameTests in src/gametest: spell crowd-control immunity with real Spell Engine, Spell Power and Rogues jars.
+	// Server GameTests in src/gametest: spell crowd-control immunity with real Spell Engine, Spell Power and Rogues jars, and
+	// thrown-trident crits with the real Critical Strike jar.
 	configureTests {
 		createSourceSet = true
 		modId = 'lampas2-overrides-gametest'
@@ -91,6 +95,8 @@ dependencies {
 	gametestRuntimeOnly("maven.modrinth:rogues-and-warriors:${project.rogues_version}") { transitive = false }
 	gametestRuntimeOnly("maven.modrinth:armor-model-api:${project.armor_model_api_version}") { transitive = false }
 	gametestRuntimeOnly("maven.modrinth:structure-pool-api:${project.structure_pool_api_version}") { transitive = false }
+	gametestCompileOnly("maven.modrinth:critical-strike:${project.critical_strike_version}") { transitive = false }
+	gametestRuntimeOnly("maven.modrinth:critical-strike:${project.critical_strike_version}") { transitive = false }
 }
 
 def gameTestReportFile = layout.buildDirectory.file('test-results/gameTest/TEST-lampas2-overrides-gametest.xml')

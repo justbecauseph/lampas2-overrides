@@ -24,6 +24,7 @@ ungated hotbar slot resync after respawn.
 | [Rogues Sharpness](#rogues-sharpness) | Rogues 3.1.3.003+26.2 | Restores flat Sharpness in place of Rogues' +8% base attack damage per level |
 | [RPG Series spell patches](#rpg-series-spell-patches) | RPG Series 26.2 (Rogues, Wizards, Paladins, Archers, Spell Engine, Skill Tree, Relics) | Martial spell cooldowns ignore haste; crowd-control apply limits reach Pinnacle mobs |
 | [Spell crowd-control immunity](#spell-crowd-control-immunity) | Spell Engine (any version); Placebo + Apotheosis for markers | Apotheosis invaders and elites, their mounts and `lampas.cc_immune` mobs ignore RPG Series crowd control |
+| [Thrown-trident crits](#thrown-trident-crits) | Critical Strike (any version) | Thrown tridents roll Critical Strike crits with the thrower's stats from the moment of the throw |
 | [Bee and spawner structure DFU validation](#bee-and-spawner-structure-dfu-validation) | Exact Trek and Stoneholm fixtures | Historical run on the removed Trinkets 4.1.0 profile; re-validation on 4.1.1 is pending |
 | [Boat water-mask compatibility](#boat-water-mask-compatibility) | EMF 3.3.12 + audited boat providers | Restores the vanilla water mask for plain hulls when the selected Fresh Animations mask is incompatible |
 | [Better Lib demo villager suppression](#better-lib-demo-villager-suppression) | Better Lib | Suppresses hardcoded demo villager registration that causes RemapException registry sync disconnects |
@@ -555,6 +556,37 @@ Limitations:
   3.1.3.003 jars on a headless server, but a test double stands in for Placebo, and Apotheosis is not loaded. Invaders and
   elites that Apotheosis itself spawns, and the live log line, still need the dev-server probe.
 
+## Thrown-trident crits
+
+Critical Strike rolls ranged crits in `AbstractArrow.onHitEntity`, which `ThrownTrident` overrides without calling, so a
+thrown trident never crit, and the crit affixes, gems and Critical Strike enchantments on a trident counted only for melee
+hits with it. This server-side fix gives thrown tridents the crit Critical Strike gives arrows:
+
+- The crit chance and multiplier are the thrower's at the moment the trident leaves their hand (`TridentItem.releaseUsing`),
+  so the trident's own crit stats count. Critical Strike's arrows read the player when the arrow lands instead.
+- On a crit the damage is multiplied by the multiplier and by `balance_ranged_damage_multiplier`, the damage source is
+  marked critical as Critical Strike's own crits are, and Critical Strike's crit sound and particles play at
+  `sound_ranged_crit_volume`.
+- `enable_ranged_criticals: false` in Critical Strike's config turns it off along with Critical Strike's arrow crits.
+
+Limitations:
+- **No version gate; fails loud.** The two vanilla hooks apply whenever Critical Strike is installed, and startup logs
+  `Enabled Critical Strike <version> crits for thrown tridents`. They are required (`defaultRequire: 1`). Critical Strike's
+  members are resolved by name on the first throw; if one is missing, one warning names it and thrown tridents deal plain
+  damage for the session. `CriticalStrikeContractTest` and the GameTest cover the inspected 1.0.6+26.2.
+- **Players only.** Tridents thrown by drowned never crit, as Critical Strike's crits are player-only.
+- **Off-hand throws** use the stats the player has at the throw. A trident's own stats apply from the main hand only, so a
+  trident thrown from the off hand crits with the main-hand item's stats.
+- **No on-crit procs for the thrower.** Spell Engine fires the thrower's arrow and melee impact triggers from
+  `AbstractArrow.onHitEntity` and the player's attack, neither of which a thrown trident goes through, so the thrower's
+  on-crit passives (Paladin, Rogue) do not fire from a trident crit. The critical mark is seen only by triggers on a player
+  the trident hits.
+- **In memory only.** A trident that is saved, unloaded or moved to another dimension in flight loses its snapshot and
+  hits without a crit.
+- **One roll per hit.** Critical Strike's `enable_critical_strike_batching` (off by default) is not honoured.
+- **Not verified on the dev server.** `./gradlew runGameTest` throws real tridents with the real Critical Strike jar on a
+  headless server; the crit sound and particles, and play on the dev server, are unverified.
+
 ## Retired FrozenLib wind compatibility
 
 Lampas2 Overrides applies no FrozenLib wind shim: an unpatched isolated client with FrozenLib 3.0 and Wilder Wild 4.3 showed no missing-extension failure. FrozenLib still changes the wind singleton during worker decoding, so general thread safety is not established. The probe and evidence for this observation were removed after commit `d8d84f1` (`docs/wind-state.md`).
@@ -806,7 +838,7 @@ workflow's artifacts — into your `mods` folder.
 ```bash
 ./gradlew build          # jar lands in build/libs/
 ./gradlew test -PserverModsDir=../lampas-server-fabric/mods   # adds checks against the deployed RPG Series jars
-./gradlew runGameTest    # crowd-control immunity GameTests on a headless server with real Spell Engine, Spell Power and Rogues; check and build run it too
+./gradlew runGameTest    # crowd-control immunity and thrown-trident crit GameTests on a headless server with real Spell Engine, Spell Power, Rogues and Critical Strike; check and build run it too
 ./gradlew runClient      # dev client; put figura + replaymod jars in run/mods/ first
 ```
 

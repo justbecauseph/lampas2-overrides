@@ -313,6 +313,18 @@
         }
       }
     },
+    "critical_strike": {
+      "name": "Critical Strike",
+      "type": "presence_mixin",
+      "versions": {
+        "1.0.6+26.2": {
+          "modrinth_version_id": "eozhJvBr",
+          "artifact_sha256": "69872634bcd03e8cb0c8d39d5371a83693b9444a5305f63be972f63de3791234",
+          "status": "bytecode-reviewed",
+          "verification_limit": "CriticalStrikeContractTest pins the reflective members; the GameTest throws real tridents with the real jar on a headless server. Crit sound and particles, and play on the dev server, are unverified."
+        }
+      }
+    },
     "additionallanterns": {
       "name": "Additional Lanterns",
       "type": "exact_mixin_gate",

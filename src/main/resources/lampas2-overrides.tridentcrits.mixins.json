@@ -1,0 +1,13 @@
+{
+	"required": true,
+	"package": "lampas2overrides.tridentcrits.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.tridentcrits.CriticalStrikeMixinPlugin",
+	"mixins": [
+		"ThrownTridentMixin",
+		"TridentItemMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
