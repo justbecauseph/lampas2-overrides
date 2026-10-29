@@ -1,4 +1,5 @@
-"""Disposable dedicated-server probe for the RPG Series spell patches (D3 P1 cooldown haste, D9 apply limits).
+"""Disposable dedicated-server probe for the RPG Series spell patches (D3 P1 cooldown haste, D9 apply limits,
+Fire Wall and burning ground damage coefficients).
 
 Builds a fresh server under build/rpg-spell-patch-probe/<label>/ with the seven pinned RPG Series jars, their
 dependency closure taken from the deployed server's mods directory, a small probe mod and, unless --baseline,
@@ -12,6 +13,9 @@ spell in docs/evidence/rpg-spell-patches.manifest.json and the hasted controls:
   health is the Overworld, Nether or End top band, at threshold -/+ 0.5 and at the modelled Pinnacle power,
   plus whether Spell Engine's boss gate classifies the effect as movement impairing or AI disabling;
 - the SHA-256 and source pack the resource manager serves through getResource and listResources.
+
+The probe does not decode the damage coefficient of the two fire patches; it checks them only through that served
+SHA-256.
 
 Expected values come from DECISION and TOP_BAND below and the manifest's upstream/replacement SHA-256
 values, never from the overrides jar. results.json lists every mismatch under "failures".
@@ -35,6 +39,9 @@ REPO = pathlib.Path(__file__).resolve().parents[2]
 PROBE_DIR = pathlib.Path(__file__).resolve().parent
 DEFAULT_RUNTIME = REPO / "run" / "phase2a-server-smoke"
 DEFAULT_MODS = REPO.parent / "lampas-server-fabric" / "mods"
+MOD_VERSION = next(line.split("=", 1)[1].strip()
+                   for line in (REPO / "gradle.properties").read_text(encoding="utf-8").splitlines()
+                   if line.startswith("mod_version="))
 
 ROOTS = {
     "rogues": ("rogues-fabric-3.1.3.003+26.2.jar", "3.1.3.003+26.2",
@@ -55,12 +62,13 @@ ROOTS = {
 PLATFORM_IDS = {"minecraft", "java", "fabricloader", "fabric-loader"}
 
 # D9 decision: spell id -> (impact index, upstream base, upstream k, new base, new k, modelled Pinnacle power).
+# Frost k and power are the 29 Oct 2026 caster loot calibration's (realistic Pinnacle frost power with Apotheosis loot).
 DECISION = {
-    "wizards:frost_nova": (1, 60, 4, 60, 13.5, 56.99),
-    "wizards:frost_spikes": (1, 60, 4, 60, 13.5, 56.99),
-    "wizards:frostbolt": (1, 100, 4, 100, 12.5, 56.99),
-    "wizards:frost_lance": (1, 100, 4, 100, 12.5, 56.99),
-    "wizards:frost_blizzard": (1, 80, 4, 80, 12.5, 56.99),
+    "wizards:frost_nova": (1, 60, 4, 60, 6.5, 119.19),
+    "wizards:frost_spikes": (1, 60, 4, 60, 6.5, 119.19),
+    "wizards:frostbolt": (1, 100, 4, 100, 6.0, 119.19),
+    "wizards:frost_lance": (1, 100, 4, 100, 6.0, 119.19),
+    "wizards:frost_blizzard": (1, 80, 4, 80, 6.5, 119.19),
     "paladins:judgement": (1, 50, 2, 50, 7.5, 103.04),
     "rogues:shout": (0, 50, 2, 50, 9.5, 84.0),
     "rogues:throw": (1, 100, 2, 100, 8.5, 84.0),
@@ -260,7 +268,7 @@ def main():
     parser.add_argument("--mods-dir", default=str(DEFAULT_MODS))
     parser.add_argument("--runtime-source", default=str(DEFAULT_RUNTIME),
                         help="server directory providing the Fabric launcher, libraries and versions")
-    parser.add_argument("--overrides", default=str(REPO / "build" / "libs" / "lampas2-overrides-1.0.2.jar"))
+    parser.add_argument("--overrides", default=str(REPO / "build" / "libs" / f"lampas2-overrides-{MOD_VERSION}.jar"))
     parser.add_argument("--manifest", default=str(REPO / "docs" / "evidence" / "rpg-spell-patches.manifest.json"))
     parser.add_argument("--declare-version", action="append", default=[], metavar="MOD=VERSION",
                         help="control run: rewrite the version in the fixture's copy of that mod's fabric.mod.json")

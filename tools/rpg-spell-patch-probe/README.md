@@ -1,7 +1,8 @@
 # RPG Series spell patch probe
 
-Launches a disposable Fabric dedicated server to check the 64 RPG Series spell patches (D3 P1 cooldown
-haste, D9 apply limits) with production JARs. Run from the repository root after `./gradlew build`:
+Launches a disposable Fabric dedicated server to check the 66 RPG Series spell patches (D3 P1 cooldown
+haste, D9 apply limits, Fire Wall and burning ground damage coefficients) with production JARs. Run from
+the repository root after `./gradlew build`:
 
 ```powershell
 python -I tools/rpg-spell-patch-probe/run.py --label patched
@@ -16,10 +17,11 @@ From a worktree, pass `--mods-dir <lampas-server-fabric/mods>` and `--runtime-so
 Each run recreates `build/rpg-spell-patch-probe/<label>/`. It copies the Fabric server launcher,
 libraries and version files from the runtime source, checks the SHA-256 and declared version of the
 seven RPG Series jars, and copies them with the dependency closure of their `depends` entries and
-Fabric API. Unless `--baseline` is set, it adds `build/libs/lampas2-overrides-1.0.2.jar` (override with
-`--overrides`). `--declare-version` rewrites only the version in the fixture's copy of that mod's
-`fabric.mod.json`; `--tamper` appends a space to one entry of the fixture's copy of the jar. The server
-is a flat, offline, player-less world on `127.0.0.1:25682`.
+Fabric API. Unless `--baseline` is set, it adds `build/libs/lampas2-overrides-<mod_version>.jar`, with
+`mod_version` read from `gradle.properties` (override with `--overrides`). `--declare-version` rewrites
+only the version in the fixture's copy of that mod's `fabric.mod.json`; `--tamper` appends a space to one
+entry of the fixture's copy of the jar. The server is a flat, offline, player-less world on
+`127.0.0.1:25682`.
 
 The probe mod (`RpgSpellPatchProbe.java`) is compiled against this project's main compile classpath,
 which `classpath.init.gradle` writes, and reaches Spell Engine and Spell Power by reflection. On the
@@ -31,7 +33,8 @@ FakePlayer with attack speed x2, `ranged_weapon:haste` +100 and `spell_power:has
 D9 spells the decoded `apply_limit`, `SpellImpacts.underApplyLimit` against zombies at the Overworld,
 Nether and End top-band health (517.5, 617, 736.5) at threshold -/+ 0.5 and at modelled Pinnacle
 power, and the effect's boss-gate classification; and the SHA-256 and pack the resource manager serves
-through `getResource` and `listResources`.
+through `getResource` and `listResources`. The two fire coefficient patches are checked only through that
+served SHA-256; the probe does not decode their damage coefficient.
 
 `results.json` compares all of that, plus the count of `Applied …/spell/…` lines and of
 `is not registered` and `SHA-256 mismatch` WARNs, with values computed in `run.py` from the decision

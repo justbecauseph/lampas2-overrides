@@ -43,3 +43,7 @@ replay_*.log
 # local phase planning and evidence
 PLAN.md
 PROGRESS.md
+
+# python
+
+__pycache__/

@@ -3,14 +3,18 @@ package lampas2overrides.resourcefix;
 import java.util.function.Consumer;
 
 /**
- * RPG Series spell data patches for the Lampas class balance decisions of 17 Oct 2026.
+ * RPG Series spell data patches for the Lampas class balance decisions of 17 Oct 2026 and the caster loot scaling
+ * calibration of 29 Oct 2026.
  * <p>
  * D3 P1: every spell in these jars whose school is physical_melee, physical_melee_dual or physical_ranged and whose
  * cost.cooldown.duration is above 0 gets cost.cooldown.haste_affected=false, so attack-speed, spell and ranged haste
  * no longer shorten martial cooldowns ({@code SpellParameters.getCooldownDuration}). D9: twelve status-effect apply
  * limits ({@code health_base + spell_power_multiplier x non-critical power >= target max health}) are raised so crowd
- * control reaches End top-band mobs (736.5 health at level 200) for an optimized Pinnacle user. Each replacement is the
- * upstream JSON with only those keys changed, and a file that needs both changes has a single replacement.
+ * control reaches End top-band mobs (736.5 health at level 200) for an optimized Pinnacle user; the five frost
+ * multipliers are the smallest multiples of 0.5 that reach 1.1 x 736.5 at the modelled Pinnacle frost power with
+ * Apotheosis caster loot (119.19). Fire: Fire Wall and the Meteor burning ground ({@code fire_tier_3_spell_1_modifier_2})
+ * deal 0.4 x their upstream damage spell_power_coefficient. Each replacement is the upstream JSON with only those keys
+ * changed, and a file that needs both P1 and D9 has a single replacement.
  * {@code tools/generate_rpg_spell_patches.py} rebuilds the replacements from the pinned jars; the upstream and
  * replacement SHA-256 of every entry are in {@code docs/evidence/rpg-spell-patches.manifest.json}.
  */
@@ -55,11 +59,12 @@ final class RpgSeriesSpellPatches {
 		archers.spell("rain_of_arrows", "c0861848d520d1bc5e49aab6f73c9a45176010bd7a3eadb0157c03e98bc74b36");
 
 		Target wizards = new Target(register, "wizards", "3.1.3.003+26.2", "wizards"); // wizards-fabric-3.1.3.003+26.2.jar
-		wizards.spell("frost_blizzard", "1d3204d22b34efb887fba229b5e5bef5c71c10b0e161b31f7a173991eaddf641"); // D9 impacts[1] apply_limit 80+4P -> 80+12.5P, no P1 (caster)
-		wizards.spell("frost_lance", "7e2a00708692ca03ee6f9d9418ab836310309de95940671ffff98e2764151520"); // D9 impacts[1] apply_limit 100+4P -> 100+12.5P, no P1 (caster)
-		wizards.spell("frost_nova", "cf7d6159a4c0a85260e06e901ca38048ed593273b9eaddd385a8b4c9e712856c"); // D9 impacts[1] apply_limit 60+4P -> 60+13.5P, no P1 (caster)
-		wizards.spell("frost_spikes", "50d2d9e0e6d4525a1779178d6f70a1b2254ca22f010493f088d165b74e6aa96a"); // D9 impacts[1] apply_limit 60+4P -> 60+13.5P, no P1 (caster)
-		wizards.spell("frostbolt", "92d85ac73a1441eeb0e8de4871da5bf7bb0cc27d0a682e30c3c6011c14547477"); // D9 impacts[1] apply_limit 100+4P -> 100+12.5P, no P1 (caster)
+		wizards.spell("fire_wall", "11de90f3f0f887af7321a9dc4102fb8cd4501dd7cfc1007404c63dd5388e54bd"); // impacts[0] damage spell_power_coefficient 0.8 -> 0.32, no P1 (caster)
+		wizards.spell("frost_blizzard", "1d3204d22b34efb887fba229b5e5bef5c71c10b0e161b31f7a173991eaddf641"); // D9 impacts[1] apply_limit 80+4P -> 80+6.5P, no P1 (caster)
+		wizards.spell("frost_lance", "7e2a00708692ca03ee6f9d9418ab836310309de95940671ffff98e2764151520"); // D9 impacts[1] apply_limit 100+4P -> 100+6P, no P1 (caster)
+		wizards.spell("frost_nova", "cf7d6159a4c0a85260e06e901ca38048ed593273b9eaddd385a8b4c9e712856c"); // D9 impacts[1] apply_limit 60+4P -> 60+6.5P, no P1 (caster)
+		wizards.spell("frost_spikes", "50d2d9e0e6d4525a1779178d6f70a1b2254ca22f010493f088d165b74e6aa96a"); // D9 impacts[1] apply_limit 60+4P -> 60+6.5P, no P1 (caster)
+		wizards.spell("frostbolt", "92d85ac73a1441eeb0e8de4871da5bf7bb0cc27d0a682e30c3c6011c14547477"); // D9 impacts[1] apply_limit 100+4P -> 100+6P, no P1 (caster)
 
 		Target skillTree = new Target(register, "skill_tree_rpgs", "1.6.2+26.2", "skill_tree_rpgs"); // skill_tree-fabric-1.6.2+26.2.jar
 		skillTree.spell("archer_tier_1_passive_1", "ba97a94a0e3bc9920d17a44c4a0cec8c3cd7241ba8c5b5cb318e8ac2d1158352");
@@ -67,6 +72,7 @@ final class RpgSeriesSpellPatches {
 		skillTree.spell("archer_tier_2_passive_2", "9dce597e94ef2324e8305ed92a29e74344ed15c16ff0f96895ce9297d396cdbf");
 		skillTree.spell("archer_tier_3_passive_1", "76d9925eb3fdbe4404c29db29ec7bbb308aebef7ea94f6cabc354952d7f64b54");
 		skillTree.spell("archer_tier_3_passive_2", "6b98d8eacb90199234a7f29f38673ecb2327d1ea36d02681a3c1ba4747fc44fb");
+		skillTree.spell("fire_tier_3_spell_1_modifier_2", "2544bbb53753ef276caa1488deb430b60010cf39842cc88a8d07219cb36a2ad1"); // Meteor burning ground: impacts[0] damage spell_power_coefficient 0.3 -> 0.12
 		skillTree.spell("paladin_tier_1_passive_1", "edabee86309d3d3eafc0c52ea5f4a6feb497e7cbbc0e46b2ce380cd5aeb2b549");
 		skillTree.spell("paladin_tier_3_passive_2", "87caab49c3b400009198ff4e79541ee5682e6ccba18ff6e574a5b6b161872694");
 		skillTree.spell("rogue_tier_1_passive_2", "6ecd5b00ab1598fc2c23d5327cb1c0d493ca91c094f58cc7a72c9b494783524c");

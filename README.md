@@ -22,7 +22,7 @@ ungated hotbar slot resync after respawn.
 | [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Rogues 3.1.3.003+26.2, RPG Series spells | Transparently repairs malformed `pack.mcmeta` formats, worldgen resources, Rogues' Sharpness and RPG Series spell data at runtime |
 | [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.3.3 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
 | [Rogues Sharpness](#rogues-sharpness) | Rogues 3.1.3.003+26.2 | Restores flat Sharpness in place of Rogues' +8% base attack damage per level |
-| [RPG Series spell patches](#rpg-series-spell-patches) | RPG Series 26.2 (Rogues, Wizards, Paladins, Archers, Spell Engine, Skill Tree, Relics) | Martial spell cooldowns ignore haste; crowd-control apply limits reach Pinnacle mobs |
+| [RPG Series spell patches](#rpg-series-spell-patches) | RPG Series 26.2 (Rogues, Wizards, Paladins, Archers, Spell Engine, Skill Tree, Relics) | Martial spell cooldowns ignore haste; crowd-control apply limits reach Pinnacle mobs; Fire Wall and the Meteor burning ground deal 40% of their upstream damage |
 | [Spell crowd-control immunity](#spell-crowd-control-immunity) | Spell Engine (any version); Placebo + Apotheosis for markers | Apotheosis invaders and elites, their mounts and `lampas.cc_immune` mobs ignore RPG Series crowd control |
 | [Thrown-trident crits](#thrown-trident-crits) | Critical Strike (any version) | Thrown tridents roll Critical Strike crits with the thrower's stats from the moment of the throw |
 | [Bee and spawner structure DFU validation](#bee-and-spawner-structure-dfu-validation) | Exact Trek and Stoneholm fixtures | Historical run on the removed Trinkets 4.1.0 profile; re-validation on 4.1.1 is pending |
@@ -417,9 +417,10 @@ the server deals flat damage. The client-side path has not been probed.
 
 ## RPG Series spell patches
 
-Two class balance decisions of 17 October 2026 (D3 P1 and D9) change RPG Series spell data. Both are
-version- and SHA-gated resource patches: 64 spell files in seven jars, one replacement per file even
-where a file gets both changes.
+Two class balance decisions of 17 October 2026 (D3 P1 and D9) and the caster loot scaling calibration of
+29 October 2026 (frost multipliers and fire damage) change RPG Series spell data. All are version- and
+SHA-gated resource patches: 66 spell files in seven jars, one replacement per file even where a file gets
+both P1 and D9.
 
 **Martial cooldowns ignore haste (D3 P1).** Spell Engine 1.10.9's `SpellParameters.getCooldownDuration`
 divides a spell's cooldown by the caster's haste for its school when the server's
@@ -446,13 +447,15 @@ hasted.
 
 **Crowd-control apply limits reach Pinnacle (D9).** A status effect with an `apply_limit` lands only when
 `health_base + power x spell_power_multiplier >= target max health`. Twelve limits are raised so a
-modelled Pinnacle user reaches the End top band (736.5 health at level 200) with at least 5% margin:
+modelled Pinnacle user reaches the End top band (736.5 health at level 200) with at least 5% margin. The
+frost multipliers (1.0.9) keep the upstream base and take the smallest multiple of 0.5 that reaches
+1.1 x 736.5 = 810.15 at the modelled Pinnacle frost power with Apotheosis caster loot, P = 119.19:
 
 | Spell (impact) | Effect | Upstream | Patched | Modelled Pinnacle limit |
 |---|---|---|---|---|
-| Frost Nova, Frost Spikes [1] | wizards:frozen | 60+4P | 60+13.5P | 829 |
-| Frostbolt, Frost Lance [1] | wizards:frost_slowness | 100+4P | 100+12.5P | 812 |
-| Frost Blizzard [1] | wizards:frost_slowness | 80+4P | 80+12.5P | 792 |
+| Frost Nova, Frost Spikes [1] | wizards:frozen | 60+4P | 60+6.5P | 835 |
+| Frostbolt, Frost Lance [1] | wizards:frost_slowness | 100+4P | 100+6P | 815 |
+| Frost Blizzard [1] | wizards:frost_slowness | 80+4P | 80+6.5P | 855 |
 | Judgement [1] | paladins:judgement | 50+2P | 50+7.5P | 823 |
 | Shout [0] | rogues:demoralize | 50+2P | 50+9.5P | 848 |
 | Throw, Throw Net [1] | rogues:shatter, rogues:net_trap | 100+2P | 100+8.5P | 814 |
@@ -460,11 +463,27 @@ modelled Pinnacle user reaches the End top band (736.5 health at level 200) with
 | Bear Trap [1] | rogues:bear_trap | 100+2P | 100+5.5P | 835 |
 | Entangling Roots [0] | archers:entangling_roots | 50+5P | 780+5P | 785-815 at every tier |
 
-The P values are the audit's scratch models with idealized gear. Roots' power is the archer's attack
-damage (about 1, or 7 with Strength II), so its base is raised instead. Spell Engine refuses
+The frost P is the calibration's realistic Pinnacle frost wizard (searched Apotheosis staff affixes and
+gems); the others are the audit's scratch models with idealized gear. At each tier's realistic frost power
+(22.15, 40.54, 67.38, 112.32, 119.19 from Haven to Pinnacle) every frost limit holds that tier's Overworld
+top band (67.5, 142.5, 267.5, 392.5, 517.5). A frost wizard without Apotheosis loot (P 67.27 at Pinnacle)
+now holds 497-517 health; the 1.0.8 multipliers held 921-968 at that power. Roots' power is the archer's
+attack damage (about 1, or 7 with Strength II), so its base is raised instead. Spell Engine refuses
 movement-impairing and AI-disabling effects on `#spell_engine:bosses` regardless of the limit; that
 covers every effect above except Demoralize and Shatter. Apotheosis elites and invaders are not bosses,
 so their immunity comes from [Spell crowd-control immunity](#spell-crowd-control-immunity) in this mod.
+
+**Fire Wall and burning ground deal 40% damage (1.0.9).** The caster loot calibration could not hold a fire
+wizard at 80% Fire Wall uptime at or below 70% of the warrior's damage at Haven through loot and World Tier
+augments alone, so both cloud spells' damage `spell_power_coefficient` is multiplied by 0.4:
+
+| Spell (impact) | Upstream | Patched |
+|---|---|---|
+| `wizards:fire_wall` [0] | 0.8 | 0.32 |
+| `skill_tree_rpgs:fire_tier_3_spell_1_modifier_2` (Meteor burning ground) [0] | 0.3 | 0.12 |
+
+Only the coefficient changes, so the hits still land, roll crit and trigger on-hit passives. Meteor's own
+hit is unchanged.
 
 Each patch requires the mod ID, the version the upstream `fabric.mod.json` declares and the upstream
 file's SHA-256; another release or a changed file keeps the upstream spell and logs WARN. The
@@ -474,11 +493,19 @@ Every upstream spell file is written exactly as `json.dumps(indent=2)` writes it
 differs from upstream only in the decided keys. Per-file SHA-256 values are in
 `docs/evidence/rpg-spell-patches.manifest.json`.
 
-Verification on 17 October 2026: unit tests check that the registry holds exactly the decided spells,
-that each replacement is its upstream jar entry with only the decided keys changed (byte for byte), the
-limit margins, the Loader-normalized version gate, and the WARN on an unregistered version or changed
-file. `./gradlew test -PserverModsDir=../lampas-server-fabric/mods` also scans every spell in the
-deployed jars for an unpatched hasted martial cooldown or apply limit. The dedicated-server probe
+1.0.9 on 29 October 2026: lampas-yggdrasil's balance GameTests ran the 1.0.9 jar (SHA-256 ef14f50d...) on a
+Fabric GameTest server. All 66 spell patches logged as applied with no WARN, and Fire Wall cast by a mock
+player landed spell power x 0.32 in all 40 hit checks (Haven to Pinnacle, zombie and piglin, crit on and
+off). The frost multipliers and the burning-ground coefficient have unit tests only, including the
+per-tier frost check; the probe below was not rerun for 1.0.9, and the client-side registry decode is
+unverified.
+
+Verification on 17 October 2026: unit tests check that
+the registry holds exactly the decided spells, that each replacement is its upstream jar entry with only
+the decided keys changed (byte for byte), the limit margins, the Loader-normalized version gate, and the
+WARN on an unregistered version or changed file. `./gradlew test -PserverModsDir=../lampas-server-fabric/mods`
+also scans every spell in the deployed jars for an unpatched hasted martial cooldown or apply limit and
+checks that both fire spells match their fixtures. The dedicated-server probe
 (`tools/rpg-spell-patch-probe/run.py`) ran the seven jars and their dependency closure, with a
 FakePlayer at haste 3.0 (melee), 2.0 (ranged) and 2.0 (spell):
 
@@ -697,7 +724,7 @@ Patched mods and resources:
    - **Fix**: Replaces `pack.mcmeta` with valid `supported_formats: [48, 107]`.
 5. **Wilder Wild (4.3)**: The stone-pool radius repair is described in [Wilder Wild stone pool](#wilder-wild-stone-pool).
 6. **Rogues (3.1.3.003+26.2)**: The Sharpness replacement is described in [Rogues Sharpness](#rogues-sharpness).
-7. **RPG Series spells**: 64 spell files across seven jars, described in [RPG Series spell patches](#rpg-series-spell-patches).
+7. **RPG Series spells**: 66 spell files across seven jars, described in [RPG Series spell patches](#rpg-series-spell-patches).
 
 A registered patch whose mod is installed at a different version is skipped with a WARN naming both
 versions, as a changed SHA-256 is. Fabric Loader reports versions without leading zeros in numeric

@@ -158,8 +158,9 @@ public final class ResourcePatchRegistry {
 			"lampas2-overrides/resource-patches/rogues/3.1.3.003+26.2/data/minecraft/enchantment/sharpness.json"
 		));
 
-		// 7. RPG Series 26.2 spells - martial cooldowns stop scaling with haste (D3 P1) and twelve crowd-control
-		// apply limits reach the End top band at Pinnacle (D9). 64 patches across seven jars.
+		// 7. RPG Series 26.2 spells - martial cooldowns stop scaling with haste (D3 P1), twelve crowd-control
+		// apply limits reach the End top band at Pinnacle (D9), and Fire Wall and the Meteor burning ground deal
+		// 0.4 x their upstream damage. 66 patches across seven jars.
 		RpgSeriesSpellPatches.registerAll(ResourcePatchRegistry::register);
 
 		VERSIONS.replaceAll((resource, versions) -> versions.stream().sorted().toList());

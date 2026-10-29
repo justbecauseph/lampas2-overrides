@@ -2,6 +2,28 @@
 
 Releases before 1.0.2 are recorded only in the git history.
 
+## 1.0.9
+
+- **Fire Wall and the Meteor burning ground deal 40% of their upstream damage.** The caster loot scaling calibration
+  (29 Oct 2026) could not hold a Haven fire wizard at 80% Fire Wall uptime at or below 70% of the warrior's damage
+  through Apotheosis loot and World Tier augments alone, so both clouds' damage `spell_power_coefficient` is multiplied
+  by 0.4: `wizards:fire_wall` 0.8 -> 0.32 and `skill_tree_rpgs:fire_tier_3_spell_1_modifier_2` (Meteor's burning
+  ground) 0.3 -> 0.12. Hits still land, crit and trigger on-hit passives; Meteor's own hit is unchanged. Gated on
+  Wizards 3.1.3.003+26.2 and Skill Tree 1.6.2+26.2 and each file's upstream SHA-256, like the other spell patches.
+- **Frost crowd-control multipliers re-derived for Apotheosis caster loot.** With staff affixes, staff gems and the
+  new tier augments, the modelled Pinnacle frost power is 119.19 (D9 used 56.99). Keeping each health_base and taking the
+  smallest multiple of 0.5 with base + k x 119.19 >= 1.1 x 736.5: Frost Nova and Frost Spikes k 13.5 -> 6.5
+  (60 + 6.5P, 834.7 at P 119.19), Frostbolt and Frost Lance 12.5 -> 6 (100 + 6P, 815.1) and Frost Blizzard
+  12.5 -> 6.5 (80 + 6.5P, 854.7), all above the End top band (736.5). A frost wizard without Apotheosis loot
+  (modelled P 67.27 at Pinnacle) now holds smaller mobs: 497-517 health instead of 921-968, below the Overworld
+  top band (517.5).
+- Unit tests cover the new values, the frost rule at every tier's modelled frost power and both fire files against the
+  deployed jars. On 29 Oct 2026 lampas-yggdrasil's balance GameTests ran this build (SHA-256 ef14f50d...) on a
+  Fabric GameTest server: all 66 spell patches logged as applied with no WARN, and Fire Wall cast by a mock player
+  landed spell power x 0.32 in all 40 hit checks (Haven to Pinnacle, zombie and piglin, crit on and off). The frost
+  apply limits and the burning-ground coefficient have unit tests only, `tools/rpg-spell-patch-probe` was not rerun,
+  and the client-side registry decode is unverified.
+
 ## 1.0.8
 
 - **Thrown-trident crits.** Critical Strike rolls ranged crits in `AbstractArrow.onHitEntity`, which `ThrownTrident`

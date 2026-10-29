@@ -255,11 +255,25 @@
   "mod": "wizards",
   "version": "3.1.3.003+26.2",
   "jar": "wizards-fabric-3.1.3.003+26.2.jar",
+  "path": "data/wizards/spell/fire_wall.json",
+  "upstream_sha256": "11de90f3f0f887af7321a9dc4102fb8cd4501dd7cfc1007404c63dd5388e54bd",
+  "replacement_sha256": "c1a73121f75fdb2f368ac2dca2eb0a31cca8484761cf60f52f4e2f5eab77d53d",
+  "changes": [
+   "impacts[0].action.damage.spell_power_coefficient 0.8 -> 0.32"
+  ],
+  "workstreams": [
+   "FIRE"
+  ]
+ },
+ {
+  "mod": "wizards",
+  "version": "3.1.3.003+26.2",
+  "jar": "wizards-fabric-3.1.3.003+26.2.jar",
   "path": "data/wizards/spell/frost_blizzard.json",
   "upstream_sha256": "1d3204d22b34efb887fba229b5e5bef5c71c10b0e161b31f7a173991eaddf641",
-  "replacement_sha256": "9a11ae806dfbba9da05538324c964fdcd722b57d4f9df68561b2c3951ec9fab9",
+  "replacement_sha256": "22af0b6c76ec29fd8372c1902ad2a98ef95491973bfb74466d7177322f4ee018",
   "changes": [
-   "impacts[1].action.status_effect.apply_limit 80+4P -> 80+12.5P"
+   "impacts[1].action.status_effect.apply_limit 80+4P -> 80+6.5P"
   ],
   "workstreams": [
    "D9"
@@ -271,9 +285,9 @@
   "jar": "wizards-fabric-3.1.3.003+26.2.jar",
   "path": "data/wizards/spell/frost_lance.json",
   "upstream_sha256": "7e2a00708692ca03ee6f9d9418ab836310309de95940671ffff98e2764151520",
-  "replacement_sha256": "1940c11889865664eb2fbd4d0832f0785b85c05ac0907e173d8fc60425e453f5",
+  "replacement_sha256": "0b498ab4aa9da6078b4725cf0f7ac09eff3470fb386a6097686c565099bd6f85",
   "changes": [
-   "impacts[1].action.status_effect.apply_limit 100+4P -> 100+12.5P"
+   "impacts[1].action.status_effect.apply_limit 100+4P -> 100+6P"
   ],
   "workstreams": [
    "D9"
@@ -285,9 +299,9 @@
   "jar": "wizards-fabric-3.1.3.003+26.2.jar",
   "path": "data/wizards/spell/frost_nova.json",
   "upstream_sha256": "cf7d6159a4c0a85260e06e901ca38048ed593273b9eaddd385a8b4c9e712856c",
-  "replacement_sha256": "1cdcce48b885a10a18104d85b910e4d6d68ad0e11c94e8e3e9534826a6eae1e0",
+  "replacement_sha256": "d9a2bd982e0db81630aedf54807dee69f4cccfe0fa1c44690f92f2d3350a65ca",
   "changes": [
-   "impacts[1].action.status_effect.apply_limit 60+4P -> 60+13.5P"
+   "impacts[1].action.status_effect.apply_limit 60+4P -> 60+6.5P"
   ],
   "workstreams": [
    "D9"
@@ -299,9 +313,9 @@
   "jar": "wizards-fabric-3.1.3.003+26.2.jar",
   "path": "data/wizards/spell/frost_spikes.json",
   "upstream_sha256": "50d2d9e0e6d4525a1779178d6f70a1b2254ca22f010493f088d165b74e6aa96a",
-  "replacement_sha256": "91a9153e5ae15a76da1ccf57a1181c553042ad3f14794945a1e65830ba6cbf91",
+  "replacement_sha256": "850ff4216d5b2764fbda7c825127d9e5dd9150f59037dd12d333a797741bf055",
   "changes": [
-   "impacts[1].action.status_effect.apply_limit 60+4P -> 60+13.5P"
+   "impacts[1].action.status_effect.apply_limit 60+4P -> 60+6.5P"
   ],
   "workstreams": [
    "D9"
@@ -313,9 +327,9 @@
   "jar": "wizards-fabric-3.1.3.003+26.2.jar",
   "path": "data/wizards/spell/frostbolt.json",
   "upstream_sha256": "92d85ac73a1441eeb0e8de4871da5bf7bb0cc27d0a682e30c3c6011c14547477",
-  "replacement_sha256": "f818e5b5ef16fd9e3fcf0ac8e81d77d64c22add75058339b6d5966ea329b7a66",
+  "replacement_sha256": "9fc73406c9959027658b1c24c2c5fac3746f0dc1175efeac22f9cdd378571157",
   "changes": [
-   "impacts[1].action.status_effect.apply_limit 100+4P -> 100+12.5P"
+   "impacts[1].action.status_effect.apply_limit 100+4P -> 100+6P"
   ],
   "workstreams": [
    "D9"
@@ -529,6 +543,20 @@
   ],
   "workstreams": [
    "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/fire_tier_3_spell_1_modifier_2.json",
+  "upstream_sha256": "2544bbb53753ef276caa1488deb430b60010cf39842cc88a8d07219cb36a2ad1",
+  "replacement_sha256": "b3b159fe4dfbeb2d83ccd11bbe1ffa568a7ae1be81d638ac3ae17afacb248a39",
+  "changes": [
+   "impacts[0].action.damage.spell_power_coefficient 0.3 -> 0.12"
+  ],
+  "workstreams": [
+   "FIRE"
   ]
  },
  {

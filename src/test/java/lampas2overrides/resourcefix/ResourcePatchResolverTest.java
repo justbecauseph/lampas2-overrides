@@ -55,8 +55,8 @@ public class ResourcePatchResolverTest {
 
 	@Test
 	void registryContainsAllTargetPatches() {
-		// 19 pack metadata, worldgen and Sharpness patches plus 64 RPG Series spell patches.
-		assertEquals(83, ResourcePatchRegistry.getAllPatches().size());
+		// 19 pack metadata, worldgen and Sharpness patches plus 66 RPG Series spell patches.
+		assertEquals(85, ResourcePatchRegistry.getAllPatches().size());
 
 		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", "pack.mcmeta"));
 		assertNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", "data/formationsoverworld/loot_table/stone_tower/smithing.json"));

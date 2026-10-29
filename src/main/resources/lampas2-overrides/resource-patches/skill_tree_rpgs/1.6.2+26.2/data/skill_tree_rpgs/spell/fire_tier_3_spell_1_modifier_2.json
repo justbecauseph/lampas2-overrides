@@ -1,0 +1,142 @@
+{
+  "school": "spell_power:fire",
+  "range": 0.0,
+  "tier": 1,
+  "tooltip": {
+    "show_activation": false
+  },
+  "type": "PASSIVE",
+  "passive": {
+    "triggers": [
+      {
+        "type": "SPELL_AREA_IMPACT",
+        "spell": {
+          "id": "wizards:fire_meteor"
+        }
+      }
+    ]
+  },
+  "target": {
+    "type": "FROM_TRIGGER"
+  },
+  "deliver": {
+    "type": "CLOUD",
+    "delay": 10,
+    "clouds": [
+      {
+        "volume": {
+          "radius": 3.0,
+          "area": {
+            "vertical_range_multiplier": 0.3
+          },
+          "sound": {
+            "id": "spell_engine:generic_fire_impact_2"
+          }
+        },
+        "time_to_live_seconds": 6.0,
+        "impact_tick_interval": 8,
+        "client_data": {
+          "light_level": 15,
+          "particles": [
+            {
+              "id": "spell_engine:flame_ground",
+              "appearance": {},
+              "batch": {
+                "count": 3.0,
+                "shape": "PILLAR",
+                "anchor": "ENTITY",
+                "vertical_origin": 0.1
+              }
+            },
+            {
+              "id": "spell_engine:flame_medium_a",
+              "appearance": {},
+              "batch": {
+                "count": 2.0,
+                "shape": "PILLAR",
+                "anchor": "ENTITY",
+                "vertical_origin": 0.1,
+                "min_speed": 0.02,
+                "max_speed": 0.1
+              }
+            },
+            {
+              "id": "spell_engine:flame_medium_b",
+              "appearance": {},
+              "batch": {
+                "count": 1.0,
+                "shape": "PILLAR",
+                "anchor": "ENTITY",
+                "vertical_origin": 0.1,
+                "min_speed": 0.02,
+                "max_speed": 0.1
+              }
+            },
+            {
+              "id": "spell_engine:flame_spark",
+              "appearance": {},
+              "batch": {
+                "count": 3.0,
+                "shape": "PILLAR",
+                "anchor": "ENTITY",
+                "vertical_origin": 0.1,
+                "min_speed": 0.03,
+                "max_speed": 0.2
+              }
+            }
+          ]
+        },
+        "spawn": {
+          "sound": {
+            "id": "spell_engine:generic_fire_ignite"
+          }
+        }
+      }
+    ]
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "DAMAGE",
+        "damage": {
+          "spell_power_coefficient": 0.12,
+          "knockback": 0.2
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:flame",
+            "appearance": {},
+            "batch": {
+              "count": 20.0,
+              "shape": "PILLAR",
+              "anchor": "ENTITY",
+              "vertical_origin": 0.1,
+              "min_speed": 0.05,
+              "max_speed": 0.15
+            }
+          },
+          {
+            "id": "spell_engine:flame_medium_a",
+            "appearance": {},
+            "batch": {
+              "count": 20.0,
+              "shape": "PILLAR",
+              "anchor": "ENTITY",
+              "vertical_origin": 0.1,
+              "min_speed": 0.05,
+              "max_speed": 0.15
+            }
+          }
+        ]
+      },
+      "sound": {
+        "id": "spell_engine:generic_fire_impact_1"
+      }
+    }
+  ],
+  "cost": {
+    "durability": 0
+  }
+}

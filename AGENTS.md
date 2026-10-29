@@ -7,7 +7,7 @@ Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-ac
 entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
 Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, version-gated Builder's Boundry 0.2 and Dungeons and Taverns 5.3.2 tick-function optimizations, the version-gated
-IllagerBlabber 1.1.0 voice-registry leak fix, Critical Strike crits for thrown tridents, the ungated hotbar slot resync after respawn, Voxy 0.2.19-beta reverse-Z depth under Iris 1.11.4 shader packs, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3), the Rogues 3.1.3.003+26.2 Sharpness definition, and 64 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised). The first two
+IllagerBlabber 1.1.0 voice-registry leak fix, Critical Strike crits for thrown tridents, the ungated hotbar slot resync after respawn, Voxy 0.2.19-beta reverse-Z depth under Iris 1.11.4 shader packs, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3), the Rogues 3.1.3.003+26.2 Sharpness definition, and 66 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised; Fire Wall and Meteor burning ground damage x0.4). The first two
 features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, and the Voxy reverse-Z fix are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium, Builder's Boundry and Dungeons and Taverns datapacks, IllagerBlabber registry fix, thrown-trident crits, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
@@ -331,8 +331,24 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   impact filters), clamped to `min_power` 1. Separately, any effect that `StatusEffectClassification` flags as
   movement impairing or AI disabling is refused on `#spell_engine:bosses` whatever the limit. D9 raised twelve
   limits (Frost Nova/Spikes/Bolt/Lance/Blizzard, Judgement, Shout, Throw, Throw Net, Shock Powder, Bear Trap,
-  Entangling Roots at a flat 780) so CC reaches End top-band health (736.5) at modelled Pinnacle power.
+  Entangling Roots at a flat 780) so CC reaches End top-band health (736.5) at modelled Pinnacle power. Since 1.0.9 the
+  five frost multipliers follow the caster loot calibration (29 Oct 2026): upstream health_base, k the smallest multiple
+  of 0.5 with base + k x 119.19 >= 1.1 x 736.5, where 119.19 is the realistic Pinnacle frost power with Apotheosis
+  staff loot. That gives Frost Nova and Frost Spikes 60 + 6.5P (was 13.5), Frostbolt and Frost Lance 100 + 6P (was
+  12.5) and Frost Blizzard 80 + 6.5P (was 12.5). Upstream 60 + 4P at P 119.19 is 536.76, above the Overworld top band
+  517.5, so `RpgSeriesSpellPatchTest` compares upstream limits with the End top band. The generator does not derive
+  k: the frost k values are literals in its `D9` table. When the modelled Pinnacle frost power changes, recompute k
+  by the rule above, update the power and k by hand in `D9` in `tools/generate_rpg_spell_patches.py`, in
+  `RpgSeriesSpellPatchTest` (the frost `limit(...)` rows and `FROST_TIER_POWER`) and in `DECISION` in
+  `tools/rpg-spell-patch-probe/run.py`, then rerun the generator and `./gradlew test`.
+  `frostLimitsAreTheSmallestHalfStepReachingTenPercentOverEndTopBand` is the only check of the rule; the generator's
+  `--check` only compares the committed files with its own table.
   Apotheosis elite and invader immunity (W6) lives in `crowdcontrol/` in this mod since 1.0.4.
+- **Fire Wall and the Meteor burning ground deal 0.4 x their upstream damage (1.0.9).** The caster loot calibration
+  could not keep Haven fire at 80% Fire Wall uptime at or below 70% of the warrior through loot and augments, so the
+  generator's `FIRE` table multiplies the damage `spell_power_coefficient` of `wizards:fire_wall` (0.8 -> 0.32) and
+  `skill_tree_rpgs:fire_tier_3_spell_1_modifier_2` (0.3 -> 0.12). The new values are written as literals because
+  0.8 * 0.4 is 0.32000000000000006 in floating point; the generator asserts each equals upstream x 0.4.
 - **Critical Strike never sees a thrown trident.** Its ranged crit is a `@WrapOperation` on the `hurtOrSimulate` call in
   `AbstractArrow.onHitEntity`; vanilla 26.2 `ThrownTrident.onHitEntity` overrides that method, calls `hurtOrSimulate` itself
   and never calls super, so a mixin on the superclass method cannot reach it. `tridentcrits` wraps the trident's own call.
@@ -581,7 +597,7 @@ resourcefix/
   ResourcePatchRegistry     registry of defective mod resources with SHA-256 fingerprints
   ResourcePatchResolver     runtime virtual patch resolver
   ResourcePatch             immutable patch rule record
-  RpgSeriesSpellPatches     64 RPG Series spell patches (D3 P1 cooldown haste, D9 apply limits), one Target per jar
+  RpgSeriesSpellPatches     66 RPG Series spell patches (D3 P1 cooldown haste, D9 apply limits, fire coefficients), one Target per jar
   Includes the version- and SHA-gated Wilder Wild 4.3.3 stone-pool radius repair and Rogues Sharpness replacement
 lampas2-overrides/resource-patches/
   <mod>/<version>/          replacement resource assets, e.g. wilderwild/4.3.3/, rogues/3.1.3.003+26.2/

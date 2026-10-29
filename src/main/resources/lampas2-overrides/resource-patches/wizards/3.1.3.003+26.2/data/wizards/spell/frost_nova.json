@@ -124,7 +124,7 @@
           "apply_mode": "ADD",
           "apply_limit": {
             "health_base": 60.0,
-            "spell_power_multiplier": 13.5
+            "spell_power_multiplier": 6.5
           }
         }
       },

@@ -1,11 +1,15 @@
-"""Generates the RPG Series spell resource patches (class balance decisions D3 P1 and D9, 17 Oct 2026).
+"""Generates the RPG Series spell resource patches (class balance decisions D3 P1 and D9, 17 Oct 2026, and the
+caster loot scaling calibration, 29 Oct 2026).
 
 Reads the seven pinned RPG Series jars and, for every data/<ns>/spell/*.json entry:
 
 - P1: a spell whose school is physical_melee, physical_melee_dual or physical_ranged, whose
   cost.cooldown.duration is above 0 and whose cost.cooldown.haste_affected is not already false gets
   "haste_affected": false appended as the last key of cost.cooldown;
-- D9: the twelve audited status-effect apply limits get the decided health_base and spell_power_multiplier.
+- D9: the twelve audited status-effect apply limits get the decided health_base and spell_power_multiplier
+  (the five frost multipliers re-derived by the caster loot calibration);
+- FIRE: Fire Wall and the Meteor burning ground (Skill Tree fire_tier_3_spell_1_modifier_2) get their damage
+  spell_power_coefficient multiplied by 0.4.
 
 Every upstream spell file round-trips byte-exactly through json.dumps(indent=2, ensure_ascii=False) with no
 trailing newline (asserted below), so each replacement differs from upstream only in the decided keys.
@@ -54,12 +58,14 @@ JARS = [
 PHYSICAL = {"spell_power:physical_melee", "spell_power:physical_melee_dual", "spell_power:physical_ranged"}
 
 # (mod, path) -> (impact index, upstream health_base, upstream k, new health_base, new k)
+# Frost k (29 Oct 2026): the smallest multiple of 0.5 with base + k x 119.19 >= 1.1 x 736.5, where 119.19 is the
+# modelled Pinnacle frost power with realistic gear and Apotheosis caster loot.
 D9 = {
-    ("wizards", "data/wizards/spell/frost_nova.json"): (1, 60.0, 4.0, 60.0, 13.5),
-    ("wizards", "data/wizards/spell/frost_spikes.json"): (1, 60.0, 4.0, 60.0, 13.5),
-    ("wizards", "data/wizards/spell/frostbolt.json"): (1, 100.0, 4.0, 100.0, 12.5),
-    ("wizards", "data/wizards/spell/frost_lance.json"): (1, 100.0, 4.0, 100.0, 12.5),
-    ("wizards", "data/wizards/spell/frost_blizzard.json"): (1, 80.0, 4.0, 80.0, 12.5),
+    ("wizards", "data/wizards/spell/frost_nova.json"): (1, 60.0, 4.0, 60.0, 6.5),
+    ("wizards", "data/wizards/spell/frost_spikes.json"): (1, 60.0, 4.0, 60.0, 6.5),
+    ("wizards", "data/wizards/spell/frostbolt.json"): (1, 100.0, 4.0, 100.0, 6.0),
+    ("wizards", "data/wizards/spell/frost_lance.json"): (1, 100.0, 4.0, 100.0, 6.0),
+    ("wizards", "data/wizards/spell/frost_blizzard.json"): (1, 80.0, 4.0, 80.0, 6.5),
     ("paladins", "data/paladins/spell/judgement.json"): (1, 50.0, 2.0, 50.0, 7.5),
     ("rogues", "data/rogues/spell/shout.json"): (0, 50.0, 2.0, 50.0, 9.5),
     ("rogues", "data/rogues/spell/throw.json"): (1, 100.0, 2.0, 100.0, 8.5),
@@ -67,6 +73,14 @@ D9 = {
     ("rogues", "data/rogues/spell/shock_powder.json"): (0, 50.0, 2.0, 50.0, 7.5),
     ("rogues", "data/rogues/spell/bear_trap.json"): (1, 100.0, 2.0, 100.0, 5.5),
     ("archers", "data/archers/spell/entangling_roots.json"): (0, 50.0, 5.0, 780.0, 5.0),
+}
+
+FIRE_FACTOR = 0.4
+# (mod, path) -> (impact index, upstream spell_power_coefficient, new coefficient); new = upstream x FIRE_FACTOR,
+# written out because 0.8 * 0.4 is 0.32000000000000006 in floating point.
+FIRE = {
+    ("wizards", "data/wizards/spell/fire_wall.json"): (0, 0.8, 0.32),
+    ("skill_tree_rpgs", "data/skill_tree_rpgs/spell/fire_tier_3_spell_1_modifier_2.json"): (0, 0.3, 0.12),
 }
 
 
@@ -106,13 +120,31 @@ def patch_spell(mod, path, raw):
                        f"{old_base:g}+{old_k:g}P -> {new_base:g}+{new_k:g}P")
     elif b'"apply_limit"' in raw:
         raise SystemExit(f"{mod} {path} has an apply_limit outside the decided D9 table")
+    coefficient = FIRE.get((mod, path))
+    if coefficient is not None:
+        index, old, new = coefficient
+        if abs(new - old * FIRE_FACTOR) > 1e-9:
+            raise SystemExit(f"{mod} {path}: {new:g} is not {old:g} x {FIRE_FACTOR:g}")
+        damage = spell["impacts"][index]["action"]["damage"]
+        if damage["spell_power_coefficient"] != old:
+            raise SystemExit(f"{mod} {path}: upstream spell_power_coefficient {damage['spell_power_coefficient']} "
+                             f"is not {old:g}")
+        damage["spell_power_coefficient"] = new
+        changes.append(f"impacts[{index}].action.damage.spell_power_coefficient {old:g} -> {new:g}")
     return (dump(spell), changes) if changes else (None, [])
+
+
+def workstream(change):
+    if change.startswith("cost"):
+        return "P1"
+    return "FIRE" if ".damage." in change else "D9"
 
 
 def build(mods_dir):
     entries = []
     files = {}
     seen_limits = set()
+    seen_coefficients = set()
     for jar_name, mod, version, jar_sha in JARS:
         jar = mods_dir / jar_name
         if sha256(jar.read_bytes()) != jar_sha:
@@ -128,17 +160,22 @@ def build(mods_dir):
                     continue
                 if (mod, name) in D9:
                     seen_limits.add((mod, name))
+                if (mod, name) in FIRE:
+                    seen_coefficients.add((mod, name))
                 files[REPLACEMENTS / mod / version / name] = replacement
                 files[FIXTURES / mod / version / name] = raw
                 entries.append({
                     "mod": mod, "version": version, "jar": jar_name, "path": name,
                     "upstream_sha256": sha256(raw), "replacement_sha256": sha256(replacement),
                     "changes": changes,
-                    "workstreams": sorted({"P1" if c.startswith("cost") else "D9" for c in changes}),
+                    "workstreams": sorted({workstream(c) for c in changes}),
                 })
     missing = set(D9) - seen_limits
     if missing:
         raise SystemExit(f"Decided apply limits not found in the jars: {sorted(missing)}")
+    missing = set(FIRE) - seen_coefficients
+    if missing:
+        raise SystemExit(f"Decided fire coefficients not found in the jars: {sorted(missing)}")
     return entries, files
 
 
@@ -152,7 +189,8 @@ def main():
     p1 = sum("P1" in e["workstreams"] for e in entries)
     d9 = sum("D9" in e["workstreams"] for e in entries)
     both = sum(e["workstreams"] == ["D9", "P1"] for e in entries)
-    print(f"{len(entries)} replacements; {p1} P1; {d9} D9; {both} both")
+    fire = sum("FIRE" in e["workstreams"] for e in entries)
+    print(f"{len(entries)} replacements; {p1} P1; {d9} D9; {both} both; {fire} FIRE")
 
     committed = json.loads(MANIFEST.read_text(encoding="utf-8")) if MANIFEST.is_file() else None
     key = lambda e: (e["mod"], e["path"])

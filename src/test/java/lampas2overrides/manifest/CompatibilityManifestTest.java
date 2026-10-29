@@ -75,13 +75,13 @@ public class CompatibilityManifestTest {
 			rogues.get("artifact_sha256").getAsString());
 		assertEquals(12, rogues.getAsJsonObject("resources").size(), "Sharpness plus eleven spells");
 
-		// RPG Series spell patches (D3 P1, D9): jar SHA-256 and resource count per target.
+		// RPG Series spell patches (D3 P1, D9, fire coefficients): jar SHA-256 and resource count per target.
 		String[][] spellTargets = {
 			{"spell_engine", "1.10.9+26.2", "bfc258875662071d76c448e603f05f0f519bf3e8a0c32207d232d820cab0ab2a", "10"},
 			{"paladins", "3.1.3.003+26.2", "f36009e6a60fae66ca195fc9165a2d7a59c92bd55fd75b1e2e18620ffa4fc492", "1"},
 			{"archers", "3.1.3.003+26.2", "4ee9c35f54d74f28f742f36a4f0b319d4d3936bc0731bd95cb823c17225db22d", "5"},
-			{"wizards", "3.1.3.003+26.2", "ced172215b3f5fb4301252d171e26c621fbebcc579fc67bd639fb2d92a8034a2", "5"},
-			{"skill_tree_rpgs", "1.6.2+26.2", "405ff761ba518c87a14d8923f0c8db5f01311b86d58ca78c3e1f2731d3469901", "18"},
+			{"wizards", "3.1.3.003+26.2", "ced172215b3f5fb4301252d171e26c621fbebcc579fc67bd639fb2d92a8034a2", "6"},
+			{"skill_tree_rpgs", "1.6.2+26.2", "405ff761ba518c87a14d8923f0c8db5f01311b86d58ca78c3e1f2731d3469901", "19"},
 			{"relics_rpgs", "1.4.1+26.2", "013eae223a352138342e5d629e5fec75ee7f19405b82589435993f403be8469f", "14"}
 		};
 		for (String[] target : spellTargets) {

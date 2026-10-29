@@ -37,12 +37,13 @@ import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.server.packs.resources.IoSupplier;
 
 /**
- * RPG Series spell patches for the 17 Oct 2026 class balance decisions D3 P1 and D9.
+ * RPG Series spell patches for the 17 Oct 2026 class balance decisions D3 P1 and D9, with the frost multipliers and
+ * fire damage coefficients of the 29 Oct 2026 caster loot scaling calibration.
  * <p>
  * Expected values are the decisions written out here, not values read back from the replacements:
- * the decided spell lists, P1 (haste_affected false on every martial spell with a cooldown) and the D9 apply-limit
- * table. Top-band health uses BALANCE.md's per-level health (+2.5 Overworld, +3.0 Nether, +3.5 End) on 20 (zombie,
- * piglin) and 40 (enderman) base health at level 200.
+ * the decided spell lists, P1 (haste_affected false on every martial spell with a cooldown), the D9 apply-limit
+ * table and the fire coefficient table. Top-band health uses BALANCE.md's per-level health (+2.5 Overworld, +3.0
+ * Nether, +3.5 End) on 20 (zombie, piglin) and 40 (enderman) base health at level 200.
  */
 public class RpgSeriesSpellPatchTest {
 
@@ -82,15 +83,21 @@ public class RpgSeriesSpellPatchTest {
 
 	/** D9: "mod version path" -> {impact index, upstream base, upstream k, new base, new k}. Q8 default: flat Roots 780. */
 	private static final Map<String, double[]> LIMITS = new LinkedHashMap<>();
-	/** Optimized Pinnacle power of each D9 spell's user (audit scratch models, unblended, no tree node). */
+	/**
+	 * Pinnacle power of each D9 spell's user: the audit's optimized scratch models (unblended, no tree node), except
+	 * frost, which is the caster loot calibration's realistic Pinnacle frost power with Apotheosis loot.
+	 */
 	private static final Map<String, Double> PINNACLE_POWER = new LinkedHashMap<>();
+	/** Fire Wall and burning ground: "mod version path" -> {impact index, upstream coefficient, new coefficient}. */
+	private static final Map<String, double[]> FIRE = new LinkedHashMap<>();
 
 	static {
-		limit("wizards", RPG, "data/wizards/spell/frost_nova.json", 1, 60, 4, 60, 13.5, 56.99);
-		limit("wizards", RPG, "data/wizards/spell/frost_spikes.json", 1, 60, 4, 60, 13.5, 56.99);
-		limit("wizards", RPG, "data/wizards/spell/frostbolt.json", 1, 100, 4, 100, 12.5, 56.99);
-		limit("wizards", RPG, "data/wizards/spell/frost_lance.json", 1, 100, 4, 100, 12.5, 56.99);
-		limit("wizards", RPG, "data/wizards/spell/frost_blizzard.json", 1, 80, 4, 80, 12.5, 56.99);
+		// Frost k: the smallest multiple of 0.5 with base + k x 119.19 >= 1.1 x 736.5 (caster loot calibration).
+		limit("wizards", RPG, "data/wizards/spell/frost_nova.json", 1, 60, 4, 60, 6.5, 119.19);
+		limit("wizards", RPG, "data/wizards/spell/frost_spikes.json", 1, 60, 4, 60, 6.5, 119.19);
+		limit("wizards", RPG, "data/wizards/spell/frostbolt.json", 1, 100, 4, 100, 6.0, 119.19);
+		limit("wizards", RPG, "data/wizards/spell/frost_lance.json", 1, 100, 4, 100, 6.0, 119.19);
+		limit("wizards", RPG, "data/wizards/spell/frost_blizzard.json", 1, 80, 4, 80, 6.5, 119.19);
 		limit("paladins", RPG, "data/paladins/spell/judgement.json", 1, 50, 2, 50, 7.5, 103.04);
 		limit("rogues", RPG, "data/rogues/spell/shout.json", 0, 50, 2, 50, 9.5, 84.0);
 		limit("rogues", RPG, "data/rogues/spell/throw.json", 1, 100, 2, 100, 8.5, 84.0);
@@ -98,6 +105,11 @@ public class RpgSeriesSpellPatchTest {
 		limit("rogues", RPG, "data/rogues/spell/shock_powder.json", 0, 50, 2, 50, 7.5, 105.65);
 		limit("rogues", RPG, "data/rogues/spell/bear_trap.json", 1, 100, 2, 100, 5.5, 133.7);
 		limit("archers", RPG, "data/archers/spell/entangling_roots.json", 0, 50, 5, 780, 5, 1.0);
+
+		// Damage spell_power_coefficient x 0.4. Upstream values as read from the deployed jars: Fire Wall 0.8 (0.8 x 0.4 =
+		// 0.32), burning ground 0.3 (0.3 x 0.4 = 0.12; the balance model also uses 0.3).
+		coefficient("wizards", RPG, "data/wizards/spell/fire_wall.json", 0, 0.8, 0.32);
+		coefficient("skill_tree_rpgs", "1.6.2+26.2", "data/skill_tree_rpgs/spell/fire_tier_3_spell_1_modifier_2.json", 0, 0.3, 0.12);
 	}
 
 	private static final Set<String> PHYSICAL = Set.of(
@@ -106,6 +118,11 @@ public class RpgSeriesSpellPatchTest {
 	private static final double OVERWORLD_TOP = 20 + 199 * 2.5;
 	private static final double NETHER_TOP = 20 + 199 * 3.0;
 	private static final double END_TOP = 40 + 199 * 3.5;
+
+	/** Realistic frost power per World Tier, Haven to Pinnacle (caster loot calibration, 29 Oct 2026). */
+	private static final double[] FROST_TIER_POWER = {22.15, 40.54, 67.38, 112.32, 119.19};
+	/** Overworld top-band max health per World Tier, Haven to Pinnacle. */
+	private static final double[] OVERWORLD_TIER_TOP = {67.5, 142.5, 267.5, 392.5, 517.5};
 
 	/** Python json.dumps(indent=2, ensure_ascii=False), the format every upstream spell file is written in. */
 	private static final Gson PRETTY = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
@@ -119,9 +136,11 @@ public class RpgSeriesSpellPatchTest {
 	void registersExactlyTheDecidedSpells() {
 		assertEquals(59, P1.size());
 		assertEquals(12, LIMITS.size());
+		assertEquals(2, FIRE.size());
 		Set<String> decided = new HashSet<>(P1);
 		decided.addAll(LIMITS.keySet());
-		assertEquals(64, decided.size(), "Seven files carry both changes in one replacement");
+		decided.addAll(FIRE.keySet());
+		assertEquals(66, decided.size(), "Seven files carry both P1 and D9 in one replacement");
 		assertEquals(decided, spellPatches().stream().map(RpgSeriesSpellPatchTest::id).collect(Collectors.toSet()));
 
 		assertNotNull(ResourcePatchRegistry.findPatch("spell_engine", "1.10.9+26.2", "data/rpg_series/spell/whirlwind.json"));
@@ -161,6 +180,13 @@ public class RpgSeriesSpellPatchTest {
 				applyLimit.addProperty("health_base", limit[3]);
 				applyLimit.addProperty("spell_power_multiplier", limit[4]);
 			}
+			double[] coefficient = FIRE.get(id);
+			if (coefficient != null) {
+				JsonObject damage = expected.getAsJsonArray("impacts").get((int) coefficient[0]).getAsJsonObject()
+					.getAsJsonObject("action").getAsJsonObject("damage");
+				assertEquals(coefficient[1], damage.get("spell_power_coefficient").getAsDouble(), id);
+				damage.addProperty("spell_power_coefficient", coefficient[2]);
+			}
 			assertEquals(PRETTY.toJson(expected), new String(replacement(patch), StandardCharsets.UTF_8), id);
 		}
 	}
@@ -177,15 +203,66 @@ public class RpgSeriesSpellPatchTest {
 			double power = PINNACLE_POWER.get(entry.getKey());
 			double upstream = limit[1] + limit[2] * power;
 			double raised = limit[3] + limit[4] * power;
-			assertTrue(upstream < OVERWORLD_TOP, "Upstream limit already reached the Pinnacle band: " + entry.getKey());
+			// The raise is needed only if the upstream limit misses the End top band it targets. The Overworld top band
+			// is no bound for every spell: with Apotheosis caster loot the frost power is 119.19, and upstream Frost Nova
+			// already holds 60 + 4 x 119.19 = 536.76 health, above the Overworld 517.5.
+			assertTrue(upstream < END_TOP, "Upstream limit already reached the End top band: " + entry.getKey());
 			assertTrue(raised >= END_TOP * 1.05, entry.getKey() + " reaches only " + raised);
 			if (!entry.getKey().equals(roots)) {
 				lowestScaled = Math.min(lowestScaled, raised);
 			}
 		}
-		// Lowest power-scaled limit: Frost Blizzard, 80 + 12.5 x 56.99. Roots is flat: 780 + 5 x 1 attack damage.
-		assertEquals(792.375, lowestScaled, 1e-9);
+		// Lowest power-scaled limit: Throw and Throw Net, 100 + 8.5 x 84 (Frostbolt and Frost Lance are next at
+		// 100 + 6 x 119.19 = 815.14). Roots is flat: 780 + 5 x 1 attack damage.
+		assertEquals(814.0, lowestScaled, 1e-9);
 		assertEquals(785.0, LIMITS.get(roots)[3] + LIMITS.get(roots)[4] * PINNACLE_POWER.get(roots), 1e-9);
+	}
+
+	/**
+	 * Caster loot calibration rule for the frost limits: keep the upstream health_base and take the smallest multiple of
+	 * 0.5 for k with base + k x 119.19 >= 1.1 x 736.5. Each tier's realistic frost power then still holds that tier's
+	 * Overworld top band, and Pinnacle also holds the Nether and End top bands.
+	 */
+	@Test
+	void frostLimitsAreTheSmallestHalfStepReachingTenPercentOverEndTopBand() {
+		double target = 1.1 * END_TOP;
+		assertEquals(810.15, target, 1e-9);
+		assertEquals(OVERWORLD_TOP, OVERWORLD_TIER_TOP[4]);
+		int frost = 0;
+		for (Map.Entry<String, double[]> entry : LIMITS.entrySet()) {
+			if (!entry.getKey().startsWith("wizards ")) {
+				continue;
+			}
+			frost++;
+			String id = entry.getKey();
+			double[] limit = entry.getValue();
+			double base = limit[3];
+			double k = limit[4];
+			assertEquals(limit[1], base, "Frost keeps the upstream health_base: " + id);
+			assertEquals(FROST_TIER_POWER[4], PINNACLE_POWER.get(id), id);
+			assertEquals(0.0, k % 0.5, id);
+			assertTrue(base + k * FROST_TIER_POWER[4] >= target, id + " reaches only " + (base + k * FROST_TIER_POWER[4]));
+			assertTrue(base + (k - 0.5) * FROST_TIER_POWER[4] < target, id + " would reach the target with k - 0.5");
+			for (int tier = 0; tier < FROST_TIER_POWER.length; tier++) {
+				double reached = base + k * FROST_TIER_POWER[tier];
+				assertTrue(reached >= OVERWORLD_TIER_TOP[tier], id + " at tier " + tier + " reaches only " + reached);
+			}
+			assertTrue(base + k * FROST_TIER_POWER[4] >= NETHER_TOP, id);
+			assertTrue(base + k * FROST_TIER_POWER[4] >= END_TOP, id);
+		}
+		assertEquals(5, frost);
+	}
+
+	/** Fire Wall and the Meteor burning ground deal 0.4 x their upstream damage; Meteor's own hit is unchanged. */
+	@Test
+	void fireCoefficientsAreUpstreamTimesFactor() {
+		for (Map.Entry<String, double[]> entry : FIRE.entrySet()) {
+			String[] id = entry.getKey().split(" ");
+			double[] coefficient = entry.getValue();
+			assertEquals(coefficient[1] * 0.4, coefficient[2], 1e-12, entry.getKey());
+			assertNotNull(ResourcePatchRegistry.findPatch(id[0], id[1], id[2]), entry.getKey());
+		}
+		assertNull(ResourcePatchRegistry.findPatch("wizards", RPG, "data/wizards/spell/fire_meteor.json"));
 	}
 
 	@Test
@@ -249,10 +326,10 @@ public class RpgSeriesSpellPatchTest {
 	}
 
 	/**
-	 * Completeness guard read from the deployed jars rather than the registry: every hasted martial cooldown and every
-	 * apply_limit in the pinned releases has a registered patch for the jar's exact bytes, every apply_limit is in the
-	 * decided D9 table, and no registered spell patch is stale. Reads jars outside the repository, so it runs only
-	 * when {@value #SERVER_MODS_PROPERTY} names the dev server's mods directory.
+	 * Completeness guard read from the deployed jars rather than the registry: every hasted martial cooldown, every
+	 * apply_limit and both fire coefficient spells in the pinned releases have a registered patch for the jar's exact
+	 * bytes, every apply_limit is in the decided D9 table, and no registered spell patch is stale. Reads jars outside the
+	 * repository, so it runs only when {@value #SERVER_MODS_PROPERTY} names the dev server's mods directory.
 	 */
 	@Test
 	void deployedJarsHaveNoUnpatchedMartialCooldownOrApplyLimit() throws IOException {
@@ -285,7 +362,7 @@ public class RpgSeriesSpellPatchTest {
 					String id = jar[1] + " " + jar[2] + " " + name;
 					assertEquals(hastedMartial, P1.contains(id), "P1 list disagrees with the deployed jar: " + id);
 					assertEquals(limited, LIMITS.containsKey(id), "D9 table disagrees with the deployed jar: " + id);
-					if (hastedMartial || limited) {
+					if (hastedMartial || limited || FIRE.containsKey(id)) {
 						found.add(id);
 						ResourcePatch patch = ResourcePatchRegistry.findPatch(jar[1], jar[2], name);
 						assertNotNull(patch, "Unpatched " + id);
@@ -295,7 +372,7 @@ public class RpgSeriesSpellPatchTest {
 				}
 			}
 		}
-		assertEquals(64, found.size());
+		assertEquals(66, found.size());
 		assertEquals(found, spellPatches().stream().map(RpgSeriesSpellPatchTest::id).collect(Collectors.toSet()));
 	}
 
@@ -323,6 +400,10 @@ public class RpgSeriesSpellPatchTest {
 		String id = modId + " " + version + " " + path;
 		LIMITS.put(id, new double[] {impact, base, k, newBase, newK});
 		PINNACLE_POWER.put(id, pinnaclePower);
+	}
+
+	private static void coefficient(String modId, String version, String path, int impact, double upstream, double patched) {
+		FIRE.put(modId + " " + version + " " + path, new double[] {impact, upstream, patched});
 	}
 
 	private static JsonObject applyLimit(JsonObject spell, int impact) {
