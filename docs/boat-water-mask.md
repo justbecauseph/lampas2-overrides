@@ -24,11 +24,11 @@ The audited provider profiles are:
   `chest_boat/{sakura,maple,palm}`.
 - Wilder Wild `4.3.3`: `boat/{baobab,willow,cypress,palm,maple}` and
   `chest_boat/{baobab,willow,cypress,palm,maple}`.
-- BetterEnd `26.201.4` with `wover-item` `26.201.4`: `boat/<name>_boat` and
+- BetterEnd (any version): `boat/<name>_boat` and
   `chest_boat/<name>_chest_boat` for `dragon_tree`, `helix_tree`, `jellyshroom`,
   `lacugrove`, `lucernia`, `mossy_glowshroom`, `pythadendron`, `tenanea`, and
   `umbrella_tree`.
-- BetterNether `26.201.4` with `wover-item` `26.201.4`: `boat/<name>_boat` and
+- BetterNether (any version): `boat/<name>_boat` and
   `chest_boat/<name>_chest_boat` for `anchor_tree`, `crimson`, `gloomwood`,
   `mushroom_fir`, `nether_mushroom`, `nether_sakura`, `rubeus`, `stalagnate`,
   `warped`, `wart`, and `willow`.
@@ -224,3 +224,22 @@ BetterEnd 18, BetterNether 22); hull geometry signatures matched the baseline fo
 and the FA-off stages were identical to the baseline. Gameplay, visual rendering and shader behavior
 remain unverified. The audit is recorded in
 [`docs/evidence/current-pipeline-audit-2026-10-19.json`](evidence/current-pipeline-audit-2026-10-19.json).
+
+## Update — 2026-11-01 BetterEnd and BetterNether unpinned
+
+Pack `2.5.4` moved BetterEnd, BetterNether, BCLib and WorldWeaver from `26.201.4` to `26.201.5`, which
+dropped both providers from the exact-version gate. Every archive file whose path contains `boat` is
+byte-identical between `26.201.4` and `26.201.5` (112 files in BetterEnd, 136 in BetterNether), and the nested
+`wover-item-api-26.201.5.jar` differs from `26.201.4` only in `fabric.mod.json`. BetterX boat code has not
+changed in a functional way since `26.201.2` (the `26.201.3` `BoatRendererBuilder` differed only outside
+`javap -c`), so the BetterEnd and BetterNether profiles no longer pin a version
+and the `wover-item` companion requirement is removed. Their layer allowlist and every runtime check (plain
+vanilla hull root, active EMF `boat_patch.jem` root, selected resource SHA-256, EMF 3.3.12 artifact) still
+apply; Pyrite, Promenade and Wilder Wild stay pinned. A BetterX release that changes its boat hulls to EMF
+models is left untouched by the hull check, but one that renames or adds layers is not covered until the
+allowlist is updated.
+
+Fresh Animations Extensions moved to `v1.10` in the same pack; its `boat_patch.jem` still has SHA-256
+`4d924242a3787ca708b0165961078bcf91bd455d0bb881a10b9a28a0a3fa725b`. No boat probe ran for this change.
+The audit is recorded in
+[`docs/evidence/current-pipeline-audit-2026-11-01.json`](evidence/current-pipeline-audit-2026-11-01.json).

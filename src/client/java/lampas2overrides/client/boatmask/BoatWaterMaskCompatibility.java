@@ -21,7 +21,8 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 /**
- * Exact, fail-closed policy and optional-EMF inspection for the boat water-mask shim.
+ * Fail-closed policy and optional-EMF inspection for the boat water-mask shim; every provider is
+ * version-pinned except BetterEnd and BetterNether.
  *
  * <p>EMF is intentionally resolved through reflection. It remains an optional client mod and is
  * never placed on this mod's compile or runtime class path.</p>
@@ -69,10 +70,6 @@ public final class BoatWaterMaskCompatibility {
 	public static boolean isAuditedLayer(String modId, String version, ModelLayerLocation modelId) {
 		return BoatWaterMaskProfiles.isAuditedLayer(
 			modId, version, modelId.layer(), modelId.model().getNamespace(), modelId.model().getPath());
-	}
-
-	public static boolean requiredModsMatch(FabricLoader loader, String modId) {
-		return BoatWaterMaskProfiles.requiredModsMatch(loader, modId);
 	}
 
 	/**

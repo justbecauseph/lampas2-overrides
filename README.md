@@ -623,16 +623,15 @@ Lampas2 Overrides applies no FrozenLib wind shim: an unpatched isolated client w
 EMF 3.3.12 can replace Minecraft's shared boat water-patch layer with the Fresh Animations
 `assets/minecraft/optifine/cem/boat_patch.jem` model. That model's animation expects `var.base_*`
 values supplied by Fresh Animations hull models. Plain hulls from the audited Pyrite 0.18.3+26.2,
-Promenade 5.6.0, Wilder Wild 4.3.3, BetterEnd 26.201.4, and BetterNether 26.201.4 providers do not supply those values.
-BetterEnd and BetterNether each require `wover-item` 26.201.4.
+Promenade 5.6.0, Wilder Wild 4.3.3, BetterEnd, and BetterNether providers do not supply those values.
+BetterEnd and BetterNether are not version-pinned: their layer allowlist applies to any installed release.
 
 The client-only compatibility hook runs at the end of each `BoatRenderer` construction. It checks
-the exact provider layer, provider version, EMF version, selected resource bytes, and EMF's actual
+the exact provider layer, provider version (except for BetterEnd and BetterNether), EMF version, selected resource bytes, and EMF's actual
 `minecraft:optifine/cem/boat_patch.jem` root. It replaces the water patch with the vanilla
 `BoatModel.createWaterPatch()` geometry only when the hull root is ordinary vanilla geometry.
-Custom EMF hulls or animations, disabled or different resource packs, absent or mismatched versions,
-the BetterEnd/BetterNether `wover-item` companion mismatch, and unlisted boat layers remain
-untouched. The explicit provider list and verification limits are recorded in
+Custom EMF hulls or animations, disabled or different resource packs, absent or mismatched versions
+of the pinned providers, and unlisted boat layers remain untouched. The explicit provider list and verification limits are recorded in
 [docs/boat-water-mask.md](docs/boat-water-mask.md). The audited EMF 3.3.12 identity and probe runs are recorded in
 [the 2026-10-16 pipeline audit](docs/evidence/current-pipeline-audit-2026-10-16.json).
 
@@ -686,7 +685,7 @@ Worldgen data fixes are packaged in an always-enabled built-in datapack (`stoneh
 
 ## Better Lib demo villager suppression
 
-Better Lib **2.1.2** bundles `data/better_lib/villagers/andesite_worker.json` and calls
+Better Lib **2.1.2** and **2.1.3** bundle `data/better_lib/villagers/andesite_worker.json` and call
 `registerJsonVillagers()` at startup. That registers the demo `better_lib:andesite_worker` profession in
 `POINT_OF_INTEREST_TYPE` and `VILLAGER_PROFESSION`. When Better Lib runs on a dedicated server, which
 Underground Village depends on, and a connecting client lacks the mod, Fabric Registry Sync aborts with
@@ -694,7 +693,7 @@ Underground Village depends on, and a connecting client lacks the mod, Fabric Re
 
 The common-side `betterlib` mixin cancels `CommonClass.registerJsonVillagers()` at HEAD, so the demo
 entries never enter the registries. It applies whenever Better Lib is installed and runs on dedicated
-servers as well as clients. Better Lib 2.1.2 already fixed its ZIP filesystem startup and POI tag
+servers as well as clients. Better Lib 2.1.2 (and 2.1.3) already fixed its ZIP filesystem startup and POI tag
 defects upstream, so this mixin is the only Better Lib override.
 
 ## Virtual Resource & Datapack Patches
@@ -732,7 +731,7 @@ components (Rogues `3.1.3.003+26.2` appears as `3.1.3.3+26.2` in the mod list); 
 compared in that form, so register the version the upstream `fabric.mod.json` declares.
 
 Moog's Voyager Structures 5.1.3 and Moog's Nether Structures 3.1.1 declare `supported_formats: [48, 121]` upstream,
-which covers 26.2's data format 107.1, so neither needs a virtual patch. Better Lib 2.1.2 fixed its POI tag
+which covers 26.2's data format 107.1, so neither needs a virtual patch. Better Lib 2.1.2 (and 2.1.3) fixed its POI tag
 upstream and needs no virtual patch.
 
 ## Lootr ↔ Fast Item Frames
@@ -769,7 +768,7 @@ face calls share one scope, which ends even if drawing throws. Players without a
 their skin face.
 
 Activation requires Figura and Chatting. There is no Chatting version or artifact-hash gate.
-The required draw descriptors were inspected in Chatting 3.2.3 with `javap` on 2026-10-13; a changed target causes a clear
+The required draw descriptors were inspected in Chatting 3.2.5 with `javap` on 2026-11-01; a changed target causes a clear
 mixin failure at startup. Authenticated avatar rendering still requires a live client check.
 
 Chatting's sender detector is also enhanced with `ChatPlayerResolver` to associate multi-word,

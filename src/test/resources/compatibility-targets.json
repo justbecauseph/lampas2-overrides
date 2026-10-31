@@ -61,8 +61,10 @@
       "name": "Better Library",
       "type": "mixin",
       "versions": {
-        "2.1.2": {
-          "status": "patched"
+        "2.1.3": {
+          "status": "patched",
+          "artifact_sha256": "8cd34485187106718463a4185f31389a3d73dbc1e767c14fd539086873943c91",
+          "verification_limit": "CommonClass still calls registerJsonVillagers() and bundles data/better_lib/villagers/andesite_worker.json; the suppression mixin target is unchanged. Not run on a dedicated server against 2.1.3."
         }
       }
     },
@@ -397,11 +399,11 @@
       "name": "Chatting",
       "type": "structural_mixin",
       "versions": {
-        "3.2.3": {
+        "3.2.5": {
           "status": "bytecode-reviewed",
-          "artifact_sha256": "3aedf7e79229932f1652775636ba20fc2ba1f64b8affd8c946a16b1068de7843",
+          "artifact_sha256": "6960175c0a387a2d4a37d54a40b964b89299d922d5d6be77f10800ac93629315",
           "activation_policy": "Presence of Figura and Chatting; no Chatting version or artifact gate.",
-          "verification_limit": "draw, drawFace and detect(String) descriptors match ChattingHeadContract. Mixin application and authenticated avatar rendering were not run against 3.2.3."
+          "verification_limit": "draw, drawFace, detect(String) and HeadTextures$Head#getSize match ChattingHeadContract and ChattingHeadTextures. Mixin application and authenticated avatar rendering were not run against 3.2.5."
         }
       }
     },
@@ -444,9 +446,9 @@
       "versions": {
         "0.1.6-rc.1+26.2": {
           "status": "bytecode-reviewed",
-          "artifact_sha256": "75637f0e0b9fb81ac9c7cab43343c65efbc795cc3da82a5934e9d983ce6c0107",
-          "build": "423f93c7",
-          "verification_limit": "All reflective members, mixin target methods and the four TimeController Util.getMillis call sites are present; rendering is a live-client check."
+          "artifact_sha256": "6f99db9d548926bf56e5bbb2666c1cf1b7ac5f7184ac7f4fc6c5ef06e39b79cd",
+          "build": "11f80e6a",
+          "verification_limit": "All reflective members, mixin target methods and the four TimeController Util.getMillis call sites are present; a seven-argument renderPortrait overload was added and the six-argument one used by chat heads remains. Rendering is a live-client check."
         }
       }
     },
@@ -454,8 +456,10 @@
       "name": "ReplayMod",
       "type": "bridge",
       "versions": {
-        "26.2-2.6.27": {
-          "status": "verified"
+        "26.2-2.6.28": {
+          "status": "bytecode-reviewed",
+          "artifact_sha256": "ec260e2452b7413b5b04f5fac20eee20b3c8101b3b40af5704abe6a04ee6506a",
+          "verification_limit": "All 14 ReplayModApi members, ZipReplayFile get/write and the MarkerProcessor.apply, PacketListener.channelInactive and VideoRenderer.updateForNextFrame targets match. Recording and post-processing were not run against 2.6.28."
         }
       }
     },

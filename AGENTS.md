@@ -50,14 +50,14 @@ disable an unrelated feature.
 
 | What | Where |
 |---|---|
-| Figura 0.1.6-rc.1+26.2 (build 423f93c7) | `../lampas-pipeline/pack/custom/figura-0.1.6-rc.1+26.2.jar` — pipeline artifact; sources at `../figura-port` |
-| ReplayMod 26.2-2.6.27 | `C:\Users\markj\AppData\Roaming\PrismLauncher\instances\26.2\minecraft\mods\replaymod-26.2-2.6.27.jar` |
-| Chatting 3.2.3+26.2 | `../lampas-pipeline/.lampas/cache/modrinth/8pJYUDNi/OMqUxcsb/chatting-3.2.3+26.2.jar`; sources at `../Chatting` (stonecutter — trust the built jar) |
+| Figura 0.1.6-rc.1+26.2 (build 11f80e6a) | `../lampas-pipeline/pack/custom/figura-0.1.6-rc.1+26.2.jar` — pipeline artifact; sources at `../figura-port` |
+| ReplayMod 26.2-2.6.28 | `../lampas-pipeline/.lampas/cache/modrinth/Nv2fQJo5/eHbYuA7P/replaymod-26.2-2.6.28.jar` (2.6.27 remains in the Prism instance) |
+| Chatting 3.2.5+26.2 | `../lampas-pipeline/.lampas/cache/modrinth/8pJYUDNi/X1qLkbIN/chatting-3.2.5+26.2.jar`; sources at `../Chatting` (stonecutter — trust the built jar) |
 | Lootr 1.24.41.124 | `../lampas-pipeline/.lampas/cache/modrinth/EltpO5cN/HegkPUoM/lootr-fabric-26.2-1.24.41.124.jar`; sources at `../Lootr` |
 | Fast Item Frames 26.2.1 | `../lampas-server-fabric/mods/FastItemFrames-v26.2.1-mc26.2.x-Fabric.jar`; sources at `../fast-item-frames` |
 | Puzzles Lib 26.2.5 | `../lampas-pipeline/.lampas/cache/modrinth/QAGBst4M/TXPuVSH3/puzzleslib-v26.2.5-mc26.2.x+fabric.jar` |
 | Fabric API 0.161.0+26.2 | `../lampas-pipeline/.lampas/cache/modrinth/P7dR8mSH/ewUK83HI/fabric-api-0.161.0+26.2.jar` |
-| Better Lib 2.1.2 | `../lampas-server-fabric/mods/better_lib-fabric-26.1-2.1.2.jar` (POI and filesystem defects fixed upstream; demo villager mixin still applies) |
+| Better Lib 2.1.3 | `../lampas-pipeline/.lampas/cache/modrinth/2x0ULgTj/AX5DjaUW/better_lib-fabric-26.1-2.1.3.jar` (POI and filesystem defects fixed upstream; demo villager mixin still applies) |
 | Underground Village 2.1.1 | `../lampas-server-fabric/mods/underground_village-fabric-26.1-2.1.1.jar` |
 | Additional Lanterns 1.1.2 | `../lampas-server-fabric/mods/additionallanterns-1.1.2-fabric-mc26.2.jar` |
 | Jade 26.2.11 | `../lampas-server-fabric/mods/Jade-mc26.2-Fabric-26.2.11.jar` |
@@ -84,7 +84,7 @@ disable an unrelated feature.
 
 > **ReplayMod cannot be built from its repo on this machine.** `libs/ReplayStudio` uses
 > `xyz.wagyourtail.jvmdowngrader` 0.7.2, whose `ShadeTransform` fails to configure under a Java 25
-> Gradle daemon. Use the Prism jar above; it serves for both `javap` and `run/mods/`.
+> Gradle daemon. Use the jar above; it serves for both `javap` and `run/mods/`.
 
 Minecraft 26.2 ships deobfuscated—no intermediary, no refmap, no remapping. `remap = false` on
 external-mod mixins is documentation rather than necessity, but keep it.
@@ -208,13 +208,13 @@ Zip-level and format work can be tested outside the game entirely; that is how `
 - **Video export never enters `Minecraft#runTick`**, which is why the bridge counts ticks with its
   own `Minecraft#tick` mixin rather than Fabric's lifecycle event, and drives animations from
   `VideoRenderer#updateForNextFrame`.
-- **Chatting 3.2.3 draws cached heads directly.** `ChatHeads.draw` passes the owner `PlayerInfo`
+- **Chatting 3.2.5 draws cached heads directly.** `ChatHeads.draw` passes the owner `PlayerInfo`
   through `drawHead` into `drawFace`; both cached textures and skin fallbacks use that boundary.
   The previous `PlayerFaceExtractor` hooks miss cached heads and must not be restored as the
   main route. Scope state to the full draw with cleanup in `finally`; shadow and main calls must
   draw the avatar once. Gate only on Figura and Chatting presence, with no Chatting version or
   artifact-hash gate. Keep required descriptor checks fail-loud when the upstream contract moves.
-  The `draw`, `drawFace` and `detect(String)` descriptors were confirmed against 3.2.3 with `javap` on 2026-10-13.
+  The `draw`, `drawFace` and `detect(String)` descriptors were confirmed against 3.2.5 with `javap` on 2026-11-01.
 - **Injecting into another mod's `@Unique` method needs a higher `priority`**, since the method only
   exists once that mod's mixin has been applied — Mixin applies higher priority values later. Pair
   it with `require = 0` when the feature is cosmetic: losing a path beats refusing to start.
@@ -247,7 +247,7 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   serialized by the helper. Missing this implementation crashes when Lootr's tick path calls the
   new interface member on a converted frame.
 - **Better Lib 2.1.2 fixed its ZIP filesystem startup and POI tag defects upstream, but still registers a demo villager.** Better Lib
-  2.1.2 reuses Fabric Loader's open filesystem via `FileSystems.getFileSystem(uri)` before attempting
+  2.1.2 (and 2.1.3, checked 2026-11-01) reuses Fabric Loader's open filesystem via `FileSystems.getFileSystem(uri)` before attempting
   `newFileSystem`, and only closes the filesystem if newly created. It also replaced its malformed POI
   tag comments with an empty values array. However, it still bundles `data/better_lib/villagers/andesite_worker.json`
   and executes `registerJsonVillagers()`, registering `better_lib:andesite_worker` into `POINT_OF_INTEREST_TYPE`
@@ -486,7 +486,8 @@ Zip-level and format work can be tested outside the game entirely; that is how `
 ## Structure
 
 The client-only `boatmask` feature repairs the audited FA/EMF water mask for 108 boat
-layers from Pyrite, Promenade, Wilder Wild, BetterEnd, and BetterNether. Keep plugin
+layers from Pyrite, Promenade, Wilder Wild, BetterEnd, and BetterNether. BetterEnd and BetterNether are
+unpinned (any version, no `wover-item` requirement); the other providers stay exact. Keep plugin
 gates in `BoatWaterMaskProfiles` free of Minecraft model classes. EMF artifact policy is
 an immutable exact version-to-hash map for 3.3.12 only; never accept a digest
 independently of its metadata version. Fingerprints of loaded artifacts may be cached;

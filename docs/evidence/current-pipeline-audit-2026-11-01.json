@@ -1,0 +1,91 @@
+{
+  "date": "2026-11-01",
+  "pack_version": "2.5.4 (2.5.5 checked: no artifact changes)",
+  "lock_updated": "2026-10-31T20:13:08.686Z",
+  "minecraft": "26.2",
+  "loader": {
+    "type": "fabric",
+    "version": "0.19.5"
+  },
+  "scope": "Compatibility check of lampas2-overrides 1.0.9 against pack 2.5.4 (333 artifacts). Every version, artifact and resource gate matched except the BetterEnd and BetterNether boat profiles.",
+  "changed_affecting_overrides": [
+    {
+      "mod_id": "betterend",
+      "from": "26.201.4",
+      "to": "26.201.5",
+      "filename": "better-end-26.201.5.jar",
+      "lock_sha256": "922ffbadec56eaa999760c16b3917c50190da0522f4177c2216acc7bc4da46ac",
+      "finding": "Every archive file whose path contains boat is byte-identical to 26.201.4 (112 files). The boat profile is now unpinned (any version, no wover-item requirement)."
+    },
+    {
+      "mod_id": "betternether",
+      "from": "26.201.4",
+      "to": "26.201.5",
+      "filename": "better-nether-26.201.5.jar",
+      "lock_sha256": "b837a0ed81a7a19dad8157b92715bec2663275022df4a18798e660b28910e9a1",
+      "finding": "Every archive file whose path contains boat is byte-identical to 26.201.4 (136 files). The boat profile is now unpinned (any version, no wover-item requirement)."
+    },
+    {
+      "mod_id": "wover",
+      "from": "26.201.4",
+      "to": "26.201.5",
+      "filename": "worldweaver-26.201.5.jar",
+      "lock_sha256": "d8b0e1277694c36905b039b1679aa2507d4e6761e04f90062b56b70bdc8ec80d",
+      "finding": "Nested wover-item-api-26.201.5.jar differs from 26.201.4 only in fabric.mod.json. The wover-item companion requirement was removed with the BetterX version pin."
+    }
+  ],
+  "changed_still_compatible": [
+    {
+      "mod_id": "chatting",
+      "from": "3.2.3",
+      "to": "3.2.5",
+      "filename": "chatting-3.2.5+26.2.jar",
+      "lock_sha256": "6960175c0a387a2d4a37d54a40b964b89299d922d5d6be77f10800ac93629315",
+      "finding": "draw, drawFace, detect(String) and HeadTextures$Head#getSize match ChattingHeadContract and ChattingHeadTextures (javap)."
+    },
+    {
+      "mod_id": "figura",
+      "from": "0.1.6-rc.1+26.2-423f93c7",
+      "to": "0.1.6-rc.1+26.2-11f80e6a",
+      "filename": "figura-0.1.6-rc.1+26.2.jar",
+      "lock_sha256": "6f99db9d548926bf56e5bbb2666c1cf1b7ac5f7184ac7f4fc6c5ef06e39b79cd",
+      "finding": "All reflective members, mixin targets and the four TimeController Util.getMillis call sites are present; a seven-argument renderPortrait overload was added beside the six-argument one."
+    },
+    {
+      "mod_id": "replaymod",
+      "from": "26.2-2.6.27",
+      "to": "26.2-2.6.28",
+      "filename": "replaymod-26.2-2.6.28.jar",
+      "lock_sha256": "ec260e2452b7413b5b04f5fac20eee20b3c8101b3b40af5704abe6a04ee6506a",
+      "finding": "All 14 ReplayModApi members, ZipReplayFile get/write and the MarkerProcessor, PacketListener and VideoRenderer targets match (javap)."
+    },
+    {
+      "mod_id": "better_lib",
+      "from": "2.1.2",
+      "to": "2.1.3",
+      "filename": "better_lib-fabric-26.1-2.1.3.jar",
+      "lock_sha256": "8cd34485187106718463a4185f31389a3d73dbc1e767c14fd539086873943c91",
+      "finding": "CommonClass still calls registerJsonVillagers() and data/better_lib/villagers/andesite_worker.json is still bundled; the suppression mixin is still needed."
+    },
+    {
+      "mod_id": "apotheosis",
+      "from": "10.0.1",
+      "to": "10.0.11",
+      "filename": "Apotheosis-26.2-10.0.11.jar",
+      "lock_sha256": "9e43542c354106dcbe3c6404594c0e25745802b7d3b097315118f394455c6bd4",
+      "finding": "apoth.boss and apoth.miniboss keys are still written; Placebo 11.0.1 PersistentData.peek(Entity) is unchanged, so the crowd-control bridge still resolves."
+    }
+  ],
+  "fingerprints_still_matching": {
+    "resource_patches": "19/19 (Formations 1.0.5+c, Grim 2.0.3 11/11, Pyrite 4/4, Easter's Delight 1.3.1, Wilder Wild 4.3.3, Rogues Sharpness)",
+    "rpg_spell_patches": "66/66 (generate_rpg_spell_patches.py --check against the 2.5.4 jars)",
+    "datapacks": "Incendium 5.5.1 4/4, Underground Village 2.1.1 6/6, Builder's Boundry 0.2 7/7, Dungeons and Taverns 5.3.2 4/4",
+    "artifact_gates": "Beautiful Enchanted Books 6.0.0, Beautiful Potions 2.0.1, IllagerBlabber 1.1.0, EMF 3.3.12, Pyrite, Wilder Wild 4.3.3, Voxy 0.2.19-beta, Iris 1.11.4+mc26.2, Trinkets 4.1.1 V1460 class",
+    "fresh_animations_extensions": "FA+All_Extensions-v1.10.zip boat_patch.jem SHA-256 4d924242a3787ca708b0165961078bcf91bd455d0bb881a10b9a28a0a3fa725b (unchanged)"
+  },
+  "verification_limits": [
+    "Static artifact, resource and bytecode checks only. No boat probe, client or dedicated server ran against pack 2.5.4.",
+    "../lampas-server-fabric/mods lags the lock by 18 jars, including BetterX 26.201.5; checks used the lock's own jars."
+  ],
+  "lock_updated_2_5_5": "2026-10-31T20:50:39.804Z"
+}

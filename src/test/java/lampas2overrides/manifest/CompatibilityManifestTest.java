@@ -98,7 +98,7 @@ public class CompatibilityManifestTest {
 		assertTrue(puzzles.has("26.2.5"));
 
 		JsonObject chatting = targets.getAsJsonObject("chatting").getAsJsonObject("versions");
-		assertTrue(chatting.has("3.2.3"));
+		assertTrue(chatting.has("3.2.5"));
 
 		// Verify all registered ResourcePatch entries exist in manifest
 		Map<String, Map<String, String>> registered = new HashMap<>();

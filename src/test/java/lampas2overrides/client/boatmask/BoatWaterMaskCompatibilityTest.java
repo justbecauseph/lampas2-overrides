@@ -68,19 +68,14 @@ class BoatWaterMaskCompatibilityTest {
 			"red_mushroom", "red_stained", "rose_stained", "star_stained", "white_stained", "yellow_stained"}, false);
 		assertLayers("promenade", "5.6.0", new String[] {"sakura", "maple", "palm"}, false);
 		assertLayers("wilderwild", "4.3.3", new String[] {"baobab", "willow", "cypress", "palm", "maple"}, false);
-		assertLayers("betterend", "26.201.4", new String[] {
-			"dragon_tree", "helix_tree", "jellyshroom", "lacugrove", "lucernia", "mossy_glowshroom",
-			"pythadendron", "tenanea", "umbrella_tree"}, true);
-		assertLayers("betternether", "26.201.4", new String[] {
-			"anchor_tree", "crimson", "gloomwood", "mushroom_fir", "nether_mushroom", "nether_sakura",
-			"rubeus", "stalagnate", "warped", "wart", "willow"}, true);
-	}
-
-	@Test
-	void betterXProvidersRequireMatchingWoverItem() {
-		assertFalse(BoatWaterMaskProfiles.requiredModsMatch(loader(Map.of(
-			"betterend", metadataContainer("betterend", "26.201.4"),
-			"wover-item", metadataContainer("wover-item", "26.201.3"))), "betterend"));
+		for (String version : List.of("26.201.4", "26.201.5", "27.0.0")) {
+			assertLayers("betterend", version, new String[] {
+				"dragon_tree", "helix_tree", "jellyshroom", "lacugrove", "lucernia", "mossy_glowshroom",
+				"pythadendron", "tenanea", "umbrella_tree"}, true);
+			assertLayers("betternether", version, new String[] {
+				"anchor_tree", "crimson", "gloomwood", "mushroom_fir", "nether_mushroom", "nether_sakura",
+				"rubeus", "stalagnate", "warped", "wart", "willow"}, true);
+		}
 	}
 
 	@Test
@@ -88,9 +83,9 @@ class BoatWaterMaskCompatibilityTest {
 		assertFalse(BoatWaterMaskCompatibility.isAuditedLayer(
 			"pyrite", "0.18.3+26.2", layer("pyrite", "cyan_stained_boat")));
 		assertFalse(BoatWaterMaskCompatibility.isAuditedLayer(
-			"betterend", "26.201.4", layer("betterend", "boat/end_lotus_boat")));
+			"betterend", "26.201.5", layer("betterend", "boat/end_lotus_boat")));
 		assertFalse(BoatWaterMaskCompatibility.isAuditedLayer(
-			"betternether", "26.201.4", layer("betternether", "chest_boat/nether_reed_chest_boat")));
+			"betternether", "26.201.5", layer("betternether", "chest_boat/nether_reed_chest_boat")));
 		assertFalse(BoatWaterMaskCompatibility.isAuditedLayer(
 			"pyrite", "0.18.3+26.2", new ModelLayerLocation(Identifier.parse("pyrite:boat/cyan_stained"), "alt")));
 		assertFalse(BoatWaterMaskCompatibility.isAuditedLayer(
@@ -172,27 +167,28 @@ class BoatWaterMaskCompatibilityTest {
 	}
 
 	@Test
-	void providerPresenceVersionAndCompanionGatesFailClosed() {
+	void providerPresenceAndVersionGatesFailClosed() {
 		FabricLoader promenadeLoader = loader(Map.of("promenade", metadataContainer("promenade", "5.6.0")));
 		assertTrue(BoatWaterMaskProfiles.installedProviderMatches(promenadeLoader, "promenade"));
 		assertTrue(BoatWaterMaskProfiles.hasSupportedProvider(promenadeLoader));
 		assertFalse(BoatWaterMaskProfiles.installedProviderMatches(
 			loader(Map.of("promenade", metadataContainer("promenade", "5.6.1"))), "promenade"));
 		assertFalse(BoatWaterMaskProfiles.installedProviderMatches(loader(Map.of()), "promenade"));
+		assertTrue(BoatWaterMaskProfiles.supportedProviderVersion("pyrite", "0.18.3+26.2"));
+		assertFalse(BoatWaterMaskProfiles.supportedProviderVersion("pyrite", "0.18.4+26.2"));
+		assertFalse(BoatWaterMaskProfiles.supportedProviderVersion("wilderwild", "4.3.4"));
+		for (String pinned : new String[] {"pyrite", "promenade", "wilderwild"}) {
+			assertFalse(BoatWaterMaskProfiles.supportedProviderVersion(pinned, "*"));
+		}
 
-		Map<String, ModContainer> betterEnd = Map.of(
-			"betterend", metadataContainer("betterend", "26.201.4"),
-			"wover-item", metadataContainer("wover-item", "26.201.4"));
-		assertTrue(BoatWaterMaskProfiles.requiredModsMatch(loader(betterEnd), "betterend"));
-		assertFalse(BoatWaterMaskProfiles.requiredModsMatch(loader(
-			Map.of("betterend", metadataContainer("betterend", "26.201.4"))), "betterend"));
-		assertFalse(BoatWaterMaskProfiles.requiredModsMatch(loader(Map.of(
-			"betterend", metadataContainer("betterend", "26.201.4"),
-			"wover-item", metadataContainer("wover-item", "26.201.1"))), "betterend"));
-		assertFalse(BoatWaterMaskProfiles.installedProviderMatches(
-			loader(Map.of("betterend", metadataContainer("betterend", "26.201.3"))), "betterend"));
-		assertFalse(BoatWaterMaskProfiles.installedProviderMatches(
-			loader(Map.of("betternether", metadataContainer("betternether", "26.201.3"))), "betternether"));
+		FabricLoader betterEndLoader = loader(Map.of("betterend", metadataContainer("betterend", "26.201.5")));
+		assertTrue(BoatWaterMaskProfiles.installedProviderMatches(betterEndLoader, "betterend"));
+		assertTrue(BoatWaterMaskProfiles.hasSupportedProvider(betterEndLoader));
+		assertTrue(BoatWaterMaskProfiles.installedProviderMatches(
+			loader(Map.of("betternether", metadataContainer("betternether", "27.0.0"))), "betternether"));
+		assertFalse(BoatWaterMaskProfiles.installedProviderMatches(loader(Map.of()), "betterend"));
+		assertFalse(BoatWaterMaskProfiles.installedProviderMatches(loader(Map.of()), "betternether"));
+		assertFalse(BoatWaterMaskCompatibility.isAuditedLayer("betterend", null, layer("betterend", "boat/dragon_tree_boat")));
 	}
 
 	@Test

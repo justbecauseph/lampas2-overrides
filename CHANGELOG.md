@@ -2,6 +2,17 @@
 
 Releases before 1.0.2 are recorded only in the git history.
 
+## 1.0.10
+
+- **BetterEnd and BetterNether boat water masks are no longer version-pinned.** Pack 2.5.4 moved BetterX to
+  26.201.5, which dropped both providers (40 boat layers) from the exact-version gate. Their boat files and
+  wover-item's boat classes are byte-identical to 26.201.4, and the boat code has not changed functionally since 26.201.2, so both
+  profiles now accept any release and the wover-item companion requirement is removed. The layer allowlist,
+  the plain-hull and EMF `boat_patch.jem` root checks, the selected resource SHA-256 and the EMF 3.3.12 gate
+  are unchanged; Pyrite, Promenade and Wilder Wild stay pinned. No boat probe ran for this change.
+- Compatibility records updated for Chatting 3.2.5, Figura build 11f80e6a, ReplayMod 2.6.28 and Better Lib 2.1.3,
+  each checked with `javap` against pack 2.5.4.
+
 ## 1.0.9
 
 - **Fire Wall and the Meteor burning ground deal 40% of their upstream damage.** The caster loot scaling calibration

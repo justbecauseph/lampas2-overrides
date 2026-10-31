@@ -43,8 +43,7 @@ public abstract class BoatRendererMixin {
 			.orElse(null);
 		if (!BoatWaterMaskCompatibility.supportedEmfVersion(emfVersion)
 			|| !BoatWaterMaskCompatibility.isAuditedLayer(modId, providerVersion, modelId)
-			|| !BoatWaterMaskCompatibility.installedProviderMatches(loader, modId)
-			|| !BoatWaterMaskCompatibility.requiredModsMatch(loader, modId)) {
+			|| !BoatWaterMaskCompatibility.installedProviderMatches(loader, modId)) {
 			return;
 		}
 
