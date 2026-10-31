@@ -2,6 +2,18 @@
 
 Releases before 1.0.2 are recorded only in the git history.
 
+## 1.0.11
+
+- **Aeternium weapons can be crafted again.** Seven BetterEnd-gated Paladins and Rogues 3.1.3.003+26.2 recipes wrote the
+  handle key as `["#c:wood_sticks", "minecraft:stick"]`, which the 26.2 ingredient codec rejects, so the server dropped
+  them at every start. Version- and SHA-gated resource patches replace the key with `"minecraft:stick"`, matching
+  upstream 3.1.4.1+26.3. Crafting in-game is unverified.
+- **Builder's Boundry wall clocks change face again.** `diesse:acs/actions/clock/all` failed to load on 26.2 because
+  `time query daytime` now reads `daytime` as a timeline id. The Builder's Boundry datapack replaces it with
+  `time of minecraft:overworld query day`, which works in every dimension, and fixes the upstream `18000..18099` and
+  `15000999` ranges. The 0.2 profile now also
+  fingerprints the upstream clock function. The query was run over RCON on the production server; the clock faces were not checked in-game.
+
 ## 1.0.10
 
 - **BetterEnd and BetterNether boat water masks are no longer version-pinned.** Pack 2.5.4 moved BetterX to

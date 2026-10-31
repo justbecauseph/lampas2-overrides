@@ -160,11 +160,15 @@
             "data/rogues/spell/slice_and_dice.json": "7db998548e148df03450cd6baaeed141570bac7b86762acfe7855a48d963b4f0",
             "data/rogues/spell/throw.json": "c3f2f91da9cf586d991b22655d48199cddc7e9c04d02809c2c0d9cccb2080300",
             "data/rogues/spell/throw_net.json": "0954c4025d5f084dbf0d4a60554a04015741681c7f264d11b6db895e06095823",
-            "data/rogues/spell/vanish.json": "33314bb34d54a0dc9c916adafaa9f727b3a5e579d49e5ebd3755c14ca73a1523"
+            "data/rogues/spell/vanish.json": "33314bb34d54a0dc9c916adafaa9f727b3a5e579d49e5ebd3755c14ca73a1523",
+            "data/rogues/recipe/aeternium_dagger.json": "50d78f25dda5b29943529d6ca91225e4fceb403cdb387cce6d3e85353420e1e8",
+            "data/rogues/recipe/aeternium_double_axe.json": "25abbc0b23f2aa5485351370763990f008d4af0bb424d0b30ed8ea675824a648",
+            "data/rogues/recipe/aeternium_glaive.json": "b2da2ec235865b2f1e9613f764199904db61d00718bc5ef1c4a7e02ecef89fdf",
+            "data/rogues/recipe/aeternium_sickle.json": "2277d4e7cb73b661c964dad281e116c86c9dbeb08e7abe0abc6784fa38613483"
           },
           "artifact_sha256": "77bdff881c01011bff6e6e722a1f47dc01ca7d377a1f08231d305fc11b08f113",
           "probe_evidence": "docs/evidence/rogues-sharpness.json",
-          "verification_limit": "Unit tests cover the exact version and SHA-256 gate and the WARN paths; the production-JAR dedicated-server probe verifies the decoded registry entry and both resource paths with Rogues, Apothic Enchanting and their dependencies. Combat damage, the client-side registry decode and full-pack behavior are unverified. The eleven spell resources are D3 P1/D9 patches: Unit tests cover the exact version and SHA-256 gate, the WARN paths and that each replacement changes only the decided keys; with -PserverModsDir they also check every spell in the deployed jar. The dedicated-server probe (docs/evidence/rpg-spell-patches.json) covers the decoded minecraft:spell entries, cooldowns under haste and SpellImpacts.underApplyLimit. Combat with a real player, the client-side registry decode and tooltips, full-pack behavior and elite/invader immunity (lampas-addons) are unverified."
+          "verification_limit": "Unit tests cover the exact version and SHA-256 gate and the WARN paths; the production-JAR dedicated-server probe verifies the decoded registry entry and both resource paths with Rogues, Apothic Enchanting and their dependencies. Combat damage, the client-side registry decode and full-pack behavior are unverified. The eleven spell resources are D3 P1/D9 patches: Unit tests cover the exact version and SHA-256 gate, the WARN paths and that each replacement changes only the decided keys; with -PserverModsDir they also check every spell in the deployed jar. The dedicated-server probe (docs/evidence/rpg-spell-patches.json) covers the decoded minecraft:spell entries, cooldowns under haste and SpellImpacts.underApplyLimit. Combat with a real player, the client-side registry decode and tooltips, full-pack behavior and elite/invader immunity (lampas-addons) are unverified. The aeternium recipe resources replace the [\"#c:wood_sticks\", \"minecraft:stick\"] handle key with \"minecraft:stick\": unit tests cover the version and SHA-256 gate and that only that key changes; crafting in-game and the BetterEnd-loaded recipe decode on a dedicated server are unverified."
         }
       }
     },
@@ -199,11 +203,14 @@
         "3.1.3.003+26.2": {
           "status": "patched",
           "resources": {
-            "data/paladins/spell/judgement.json": "a85576a3d32814d575117a9c82b7780676679add9e36164c73304ecec39a6fc0"
+            "data/paladins/spell/judgement.json": "a85576a3d32814d575117a9c82b7780676679add9e36164c73304ecec39a6fc0",
+            "data/paladins/recipe/aeternium_claymore.json": "fa5e637b0bc9a4c9a44d38e42cd1fa846d9430e76e835a3c8c283975b431c82c",
+            "data/paladins/recipe/aeternium_great_hammer.json": "820b2782dbf37a61ddf3722eb1a40354fad5ef75a015cc08b50bb0dbcff33622",
+            "data/paladins/recipe/aeternium_mace.json": "67265d2248c2c53c82217fed21f3f75b3bf449a936fa5f1ad423629cf8dd07fa"
           },
           "artifact_sha256": "f36009e6a60fae66ca195fc9165a2d7a59c92bd55fd75b1e2e18620ffa4fc492",
           "probe_evidence": "docs/evidence/rpg-spell-patches.json",
-          "verification_limit": "Unit tests cover the exact version and SHA-256 gate, the WARN paths and that each replacement changes only the decided keys; with -PserverModsDir they also check every spell in the deployed jar. The dedicated-server probe (docs/evidence/rpg-spell-patches.json) covers the decoded minecraft:spell entries, cooldowns under haste and SpellImpacts.underApplyLimit. Combat with a real player, the client-side registry decode and tooltips, full-pack behavior and elite/invader immunity (lampas-addons) are unverified."
+          "verification_limit": "Unit tests cover the exact version and SHA-256 gate, the WARN paths and that each replacement changes only the decided keys; with -PserverModsDir they also check every spell in the deployed jar. The dedicated-server probe (docs/evidence/rpg-spell-patches.json) covers the decoded minecraft:spell entries, cooldowns under haste and SpellImpacts.underApplyLimit. Combat with a real player, the client-side registry decode and tooltips, full-pack behavior and elite/invader immunity (lampas-addons) are unverified. The aeternium recipe resources replace the [\"#c:wood_sticks\", \"minecraft:stick\"] handle key with \"minecraft:stick\": unit tests cover the version and SHA-256 gate and that only that key changes; crafting in-game and the BetterEnd-loaded recipe decode on a dedicated server are unverified."
         }
       }
     },
@@ -478,9 +485,10 @@
             "data/diesse/function/acs/face/top.mcfunction": "cf9bbc4a20d203e5cfacb9738e1a33dba7e7f23c140cd14047ddbe0889da0f54",
             "data/diesse/function/acs/face/side.mcfunction": "f7322194b3a159259f6b6f74dd7f169d24f0f66d825bcfefdb08a1e6623cf59a",
             "data/diesse/function/acs/delete/all.mcfunction": "6278b8d0aa8206fdd995b92f385b11e45dbc1b839a9ba50c5df7517b80eda151",
-            "data/diesse/function/acs/reset.mcfunction": "7429ff359c9f734b2e92713fe138c807422e23accef67da7d2b6de46e8f4293b"
+            "data/diesse/function/acs/reset.mcfunction": "7429ff359c9f734b2e92713fe138c807422e23accef67da7d2b6de46e8f4293b",
+            "data/diesse/function/acs/actions/clock/all.mcfunction": "79dabbdcd35ef2b45da23b371f6868e868b71193c29d8fdae1d1f621fea09c87"
           },
-          "verification_limit": "Unit tests verify the exact version gate, the upstream fingerprints and the packaged function structure. Furniture behaviour (light re-placement, clock faces, cutting-board rotation, support and facing give-back within a 4-tick window) is verified only by a dedicated-server runtime probe."
+          "verification_limit": "Unit tests verify the exact version gate, the upstream fingerprints and the packaged function structure. Furniture behaviour (light re-placement, clock faces, cutting-board rotation, support and facing give-back within a 4-tick window) is verified only by a dedicated-server runtime probe. The clock/all replacement's `time of minecraft:overworld query day` was run over RCON on the 26.2 production server from the Overworld, Nether, End and lampas:aria, and returns the day timeline modulo 24000; the function loading and clock faces changing in-game are unverified."
         }
       }
     },

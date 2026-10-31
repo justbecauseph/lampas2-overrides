@@ -34,7 +34,10 @@ public final class BuildersBoundryCompatibility {
 					"data/diesse/function/acs/delete/all.mcfunction",
 					"6278b8d0aa8206fdd995b92f385b11e45dbc1b839a9ba50c5df7517b80eda151",
 					"data/diesse/function/acs/reset.mcfunction",
-					"7429ff359c9f734b2e92713fe138c807422e23accef67da7d2b6de46e8f4293b"
+					"7429ff359c9f734b2e92713fe138c807422e23accef67da7d2b6de46e8f4293b",
+					// Replaced: upstream's `time query daytime` does not parse on 26.2.
+					"data/diesse/function/acs/actions/clock/all.mcfunction",
+					"79dabbdcd35ef2b45da23b371f6868e868b71193c29d8fdae1d1f621fea09c87"
 			)
 	);
 

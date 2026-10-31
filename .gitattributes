@@ -17,3 +17,7 @@
 /src/test/resources/upstream/**/spell/**/*.json -text
 /src/main/resources/lampas2-overrides/resource-patches/**/spell/**/*.json -text
 /docs/evidence/rpg-spell-patches.manifest.json -text -whitespace
+# Paladins and Rogues aeternium recipe patches: fixtures are byte-exact jar entries and replacements change only the
+# stick key, so both keep the jars' LF line endings.
+/src/test/resources/upstream/**/recipe/*.json -text
+/src/main/resources/lampas2-overrides/resource-patches/**/recipe/*.json -text

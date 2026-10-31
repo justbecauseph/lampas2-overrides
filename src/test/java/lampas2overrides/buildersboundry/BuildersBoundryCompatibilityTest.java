@@ -37,10 +37,39 @@ public class BuildersBoundryCompatibilityTest {
 		assertEquals("0.2", profile.get().version());
 		assertEquals(Identifier.fromNamespaceAndPath("lampas2-overrides", "builders_boundry_0_2_optimizations"),
 				profile.get().packId());
-		// main (replaced) plus every upstream function the replacement calls or re-implements.
-		assertEquals(7, profile.get().expectedResources().size());
+		// main and clock/all (replaced) plus every upstream function the replacement calls or re-implements.
+		assertEquals(8, profile.get().expectedResources().size());
 		assertTrue(profile.get().expectedResources().containsKey("data/diesse/function/acs/main.mcfunction"));
 		assertTrue(profile.get().expectedResources().containsKey("data/diesse/function/acs/actions/all.mcfunction"));
+		assertEquals("79dabbdcd35ef2b45da23b371f6868e868b71193c29d8fdae1d1f621fea09c87",
+				profile.get().expectedResources().get("data/diesse/function/acs/actions/clock/all.mcfunction"));
+	}
+
+	@Test
+	void clockQueriesTheDayTimelineAndCoversEveryHour() throws IOException {
+		String clock = readPackResource("data/diesse/function/acs/actions/clock/all.mcfunction");
+		List<String> commands = clock.lines().map(String::strip).filter(line -> !line.isEmpty() && !line.startsWith("#")).toList();
+
+		// 26.2 `time query` takes gametime or a minecraft:timeline id; `daytime` resolves to the missing minecraft:daytime.
+		// `time of minecraft:overworld` keeps the query off the source dimension's default clock, which the Nether lacks.
+		assertEquals("execute store result score $daytime acs.daytime run time of minecraft:overworld query day", commands.get(0));
+		assertTrue(commands.stream().noneMatch(command -> command.contains("time query daytime")));
+
+		// Upstream's 24 one-hour ranges, each 1000 ticks wide, so every tick of the day sets a face.
+		Pattern range = Pattern.compile("^execute if score \\$daytime acs\\.daytime matches (\\d+)\\.\\.(\\d+) run data merge entity @s .*\"minecraft:clock/(\\d+)\"");
+		boolean[] hours = new boolean[24];
+		for (String command : commands.subList(1, commands.size())) {
+			Matcher matcher = range.matcher(command);
+			assertTrue(matcher.find(), command);
+			int from = Integer.parseInt(matcher.group(1));
+			assertEquals(0, from % 1000, command);
+			assertEquals(from + 999, Integer.parseInt(matcher.group(2)), command);
+			assertFalse(hours[from / 1000], command);
+			hours[from / 1000] = true;
+		}
+		for (int hour = 0; hour < 24; hour++) {
+			assertTrue(hours[hour], "No clock face for ticks " + hour * 1000);
+		}
 	}
 
 	@Test

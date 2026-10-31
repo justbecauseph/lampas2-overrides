@@ -14,12 +14,12 @@ ungated hotbar slot resync after respawn.
 | [Mob Filter worldgen safety and dimension context](#mob-filter-worldgen-safety-and-dimension-context) | Mob Filter | Prevents C2ME worldgen deadlock on rejected mobs and provides dimension context for worldgen rules |
 | [Visual Workbench tag rebinding](#visual-workbench-tag-rebinding) | Visual Workbench + Puzzles Lib | Prevents replay loading and tag reload crashes from stale Visual Workbench tags |
 | [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.1 | Removes a redundant 20 Hz entity-ID scan, throttles living-mob initialization, and stops helper markers accumulating in chunk [0, 0] |
-| [Builder's Boundry tick optimization](#builders-boundry-tick-optimization) | Builder's Boundry 0.2 | Replaces 26 full entity scans per tick with one scan every 4 ticks |
+| [Builder's Boundry tick optimization](#builders-boundry-tick-optimization) | Builder's Boundry 0.2 | Replaces 26 full entity scans per tick with one scan every 4 ticks and repairs the wall-clock function for 26.2 |
 | [Dungeons and Taverns Swift Soar tick](#dungeons-and-taverns-swift-soar-tick) | Dungeons and Taverns 5.3.2 | Limits the per-tick FOV-modifier removal to players that carry it |
 | [Gravestones death inscription and glow](#gravestones-death-inscription-and-glow) | Gravestones | Suppresses technical death grave text and renders a glowing outline only on your own graves |
 | [Jade nameplates and Custom Name](#jade-nameplates-and-custom-name) | Client Jade; server TAB name sync | Suppresses vanilla in-world entity/player nameplates and shows server-synced player display names in Jade |
 | [Custom Name multi-word names](#custom-name-multi-word-names) | Custom Name 0.4.4-26.2 | Permits spaces in nickname, prefix, and suffix commands for non-operators |
-| [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Rogues 3.1.3.003+26.2, RPG Series spells | Transparently repairs malformed `pack.mcmeta` formats, worldgen resources, Rogues' Sharpness and RPG Series spell data at runtime |
+| [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Paladins and Rogues 3.1.3.003+26.2, RPG Series spells | Transparently repairs malformed `pack.mcmeta` formats, worldgen resources, Rogues' Sharpness, the aeternium weapon recipes and RPG Series spell data at runtime |
 | [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.3.3 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
 | [Rogues Sharpness](#rogues-sharpness) | Rogues 3.1.3.003+26.2 | Restores flat Sharpness in place of Rogues' +8% base attack damage per level |
 | [RPG Series spell patches](#rpg-series-spell-patches) | RPG Series 26.2 (Rogues, Wizards, Paladins, Archers, Spell Engine, Skill Tree, Relics) | Martial spell cooldowns ignore haste; crowd-control apply limits reach Pinnacle mobs; Fire Wall and the Meteor burning ground deal 40% of their upstream damage |
@@ -332,8 +332,17 @@ dispatches each furniture entity through `diesse:acs/lampas/entity` with `@s[tag
 upstream's: support check, facing check, action; the upstream delete, face and action functions are called unchanged,
 and the dispatch returns after any path that kills the entity. Light-block re-placement, clock faces, cutting-board
 rotation and misplaced-item give-back now react within 4 ticks instead of 1. The pack registers only when the mod is
-exactly 0.2 and the seven upstream functions the replacement depends on match their recorded SHA-256; otherwise
+exactly 0.2 and the eight upstream functions the replacement depends on match their recorded SHA-256; otherwise
 startup logs that the performance datapack remains disabled.
+
+The pack also replaces `diesse:acs/actions/clock/all`. In 26.2 `time query` takes `gametime` or a `minecraft:timeline`
+id, so upstream's `time query daytime` looked up the missing `minecraft:daytime` and the function failed to load
+(`Failed to load function diesse:acs/actions/clock/all` at every start), leaving wall clocks on one face. The
+replacement runs `time of minecraft:overworld query day`, the Overworld clock's 24000-tick day timeline, and fixes two
+upstream ranges (`18000..18099` and `15000999`) so every hour sets a face. Naming the clock matters: a bare
+`time query day` uses the source dimension's default clock, which the Nether lacks and the End sets to
+`minecraft:the_end`, so clocks there would fail the query, store 0 and stay on one face. On the production server the
+named query answers from the Overworld, Nether, End and `lampas:aria`, as upstream's global `daytime` did.
 
 ## Dungeons and Taverns Swift Soar tick
 
@@ -724,6 +733,13 @@ Patched mods and resources:
 5. **Wilder Wild (4.3)**: The stone-pool radius repair is described in [Wilder Wild stone pool](#wilder-wild-stone-pool).
 6. **Rogues (3.1.3.003+26.2)**: The Sharpness replacement is described in [Rogues Sharpness](#rogues-sharpness).
 7. **RPG Series spells**: 66 spell files across seven jars, described in [RPG Series spell patches](#rpg-series-spell-patches).
+8. **Paladins and Rogues (3.1.3.003+26.2) aeternium weapons**:
+   - **Defect**: The BetterEnd-gated recipes for the aeternium claymore, great hammer and mace (Paladins) and dagger,
+     double axe, glaive and sickle (Rogues) write the handle key as `["#c:wood_sticks", "minecraft:stick"]`. A 26.2
+     ingredient list holds item ids only, so the server logs `Not a valid resource location: #c:wood_sticks` and drops
+     all seven recipes. The kite shield has no stick and loads.
+   - **Fix**: Each replacement is the upstream file with that key set to `"minecraft:stick"`, as upstream 3.1.4.1+26.3
+     does; the `betterend` load condition is unchanged. Crafting in-game is unverified.
 
 A registered patch whose mod is installed at a different version is skipped with a WARN naming both
 versions, as a changed SHA-256 is. Fabric Loader reports versions without leading zeros in numeric

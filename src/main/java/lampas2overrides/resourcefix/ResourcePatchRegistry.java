@@ -158,7 +158,18 @@ public final class ResourcePatchRegistry {
 			"lampas2-overrides/resource-patches/rogues/3.1.3.003+26.2/data/minecraft/enchantment/sharpness.json"
 		));
 
-		// 7. RPG Series 26.2 spells - martial cooldowns stop scaling with haste (D3 P1), twelve crowd-control
+		// 7. Paladins and Rogues 3.1.3.003+26.2 aeternium weapons (BetterEnd-gated) - the handle key is the list
+		// ["#c:wood_sticks", "minecraft:stick"]; a 26.2 ingredient list holds item ids only, so the tag entry fails to
+		// parse and the recipe is dropped. The replacement uses "minecraft:stick", as upstream 3.1.4.1+26.3 does.
+		aeterniumRecipe("paladins", "claymore", "fa5e637b0bc9a4c9a44d38e42cd1fa846d9430e76e835a3c8c283975b431c82c");
+		aeterniumRecipe("paladins", "great_hammer", "820b2782dbf37a61ddf3722eb1a40354fad5ef75a015cc08b50bb0dbcff33622");
+		aeterniumRecipe("paladins", "mace", "67265d2248c2c53c82217fed21f3f75b3bf449a936fa5f1ad423629cf8dd07fa");
+		aeterniumRecipe("rogues", "dagger", "50d78f25dda5b29943529d6ca91225e4fceb403cdb387cce6d3e85353420e1e8");
+		aeterniumRecipe("rogues", "double_axe", "25abbc0b23f2aa5485351370763990f008d4af0bb424d0b30ed8ea675824a648");
+		aeterniumRecipe("rogues", "glaive", "b2da2ec235865b2f1e9613f764199904db61d00718bc5ef1c4a7e02ecef89fdf");
+		aeterniumRecipe("rogues", "sickle", "2277d4e7cb73b661c964dad281e116c86c9dbeb08e7abe0abc6784fa38613483");
+
+		// 8. RPG Series 26.2 spells - martial cooldowns stop scaling with haste (D3 P1), twelve crowd-control
 		// apply limits reach the End top band at Pinnacle (D9), and Fire Wall and the Meteor burning ground deal
 		// 0.4 x their upstream damage. 66 patches across seven jars.
 		RpgSeriesSpellPatches.registerAll(ResourcePatchRegistry::register);
@@ -174,6 +185,12 @@ public final class ResourcePatchRegistry {
 		}
 		VERSIONS.computeIfAbsent(resourceKey(key.modId(), key.resourcePath()), resource -> new ArrayList<>())
 			.add(patch.expectedVersion());
+	}
+
+	private static void aeterniumRecipe(String modId, String weapon, String upstreamSha256) {
+		String path = "data/" + modId + "/recipe/aeternium_" + weapon + ".json";
+		register(new ResourcePatch(modId, "3.1.3.003+26.2", path, upstreamSha256,
+			"lampas2-overrides/resource-patches/" + modId + "/3.1.3.003+26.2/" + path));
 	}
 
 	private static String resourceKey(String normalizedModId, String normalizedPath) {
