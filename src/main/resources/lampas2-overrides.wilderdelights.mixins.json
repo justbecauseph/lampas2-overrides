@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "lampas2overrides.wilderdelights.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.wilderdelights.WilderDelightsMixinPlugin",
+	"mixins": [
+		"WilderDelightsTabIconMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

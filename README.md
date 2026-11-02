@@ -19,6 +19,7 @@ ungated hotbar slot resync after respawn.
 | [Gravestones death inscription and glow](#gravestones-death-inscription-and-glow) | Gravestones | Suppresses technical death grave text and renders a glowing outline only on your own graves |
 | [Jade nameplates and Custom Name](#jade-nameplates-and-custom-name) | Client Jade; server TAB name sync | Suppresses vanilla in-world entity/player nameplates and shows server-synced player display names in Jade |
 | [Custom Name multi-word names](#custom-name-multi-word-names) | Custom Name 0.4.4-26.2 | Permits spaces in nickname, prefix, and suffix commands for non-operators |
+| [Wilder Delights tab icon](#wilder-delights-tab-icon) | Wilder Delights 1.0.0-26.2 | Stops the creative inventory crashing when it draws the Wilder Delights tab under Wilder Wild 4.3 |
 | [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Paladins and Rogues 3.1.3.003+26.2, RPG Series spells | Transparently repairs malformed `pack.mcmeta` formats, worldgen resources, Rogues' Sharpness, the aeternium weapon recipes and RPG Series spell data at runtime |
 | [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.3.3 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
 | [Rogues Sharpness](#rogues-sharpness) | Rogues 3.1.3.003+26.2 | Restores flat Sharpness in place of Rogues' +8% base attack damage per level |
@@ -231,6 +232,24 @@ Lampas2 Overrides applies a server-safe, common mixin to `CustomNameUtil` that s
 `playerNameArgumentToComponent`. This allows non-operator players to set multi-word nicknames, prefixes, and suffixes
 while keeping name length limits, regex validation, and blacklist enforcement fully active.
 The mixin is common-side (runs on both dedicated servers and clients) and is version-gated to Custom Name `0.4.4-26.2`.
+
+## Wilder Delights tab icon
+
+Wilder Delights 1.0.0-26.2 was built before Wilder Wild 4.3 and builds its creative tab icon from
+`WWItems.SPLIT_COCONUT` read as an `Item`. Wilder Wild 4.3 changed that field to FrozenLib's `DeferredItem<Item>`, so
+the reference no longer resolves and drawing the tab crashes the client:
+```text
+java.lang.NoSuchFieldError: Class net.frozenblock.wilderwild.registry.WWItems does not have member field
+'net.minecraft.world.item.Item SPLIT_COCONUT'
+```
+The tab is drawn when the creative inventory shows the page that holds it. Wilder Delights declares `"wilderwild": "*"`,
+so Fabric Loader does not catch the mismatch.
+
+A common mixin redirects that one `GETSTATIC` in `WilderDelights.lambda$onInitialize$0` to an item registry lookup of
+`wilderwild:split_coconut`, which does not depend on the field's type. It is the only Wilder Wild member Wilder Delights
+reads at runtime; its data generators also read Wilder Wild item ids, which still match in Wilder Wild 4.3.3. The gate is the exact Wilder Delights version `1.0.0-26.2`, and
+`defaultRequire: 1` stops startup if that build's icon supplier or field reference moves.
+`WilderDelightsTabIconContractTest` pins the jar's SHA-256 and checks the redirect target against its bytecode.
 
 ## Gravestones death inscription and glow
 

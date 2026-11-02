@@ -354,6 +354,18 @@
         }
       }
     },
+    "wilderdelights": {
+      "name": "Wilder Delights",
+      "type": "exact_mixin_gate",
+      "versions": {
+        "1.0.0-26.2": {
+          "modrinth_version_id": "eeUXfbLN",
+          "artifact_sha256": "b21035bd8587761a7530300fb99cbe20057eeae7cb119d17c592d1f78f5ac543",
+          "status": "bytecode-reviewed",
+          "verification_limit": "WilderDelightsTabIconContractTest pins the jar and the redirect target; the dev client applied the mixin with Wilder Wild 4.3.3. The creative tab icon was not checked in game."
+        }
+      }
+    },
     "underground_village": {
       "name": "Underground Village (Stoneholm)",
       "type": "mixin_and_datapack_replacement",

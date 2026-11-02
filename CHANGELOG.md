@@ -2,6 +2,15 @@
 
 Releases before 1.0.2 are recorded only in the git history.
 
+## 1.0.12
+
+- **The creative inventory no longer crashes on the Wilder Delights tab.** Wilder Delights 1.0.0-26.2 builds its tab
+  icon from `WWItems.SPLIT_COCONUT` read as an `Item`, but Wilder Wild 4.3 declares that field as `DeferredItem<Item>`,
+  so drawing the tab threw `NoSuchFieldError`. A version-gated redirect replaces that field read with a registry lookup
+  of `wilderwild:split_coconut`. `WilderDelightsTabIconContractTest` pins the Wilder Delights jar and checks the redirect
+  against its bytecode. In the dev client with Wilder Wild 4.3.3 the mixin applied at startup; the tab icon was not
+  checked in game.
+
 ## 1.0.11
 
 - **Aeternium weapons can be crafted again.** Seven BetterEnd-gated Paladins and Rogues 3.1.3.003+26.2 recipes wrote the

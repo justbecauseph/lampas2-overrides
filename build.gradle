@@ -62,6 +62,8 @@ dependencies {
 	// CriticalStrikeContractTest reads the thrown-trident crit bridge's members from the inspected Critical Strike jar. The
 	// bridge names Critical Strike only by string, so it is test-only and never bundled.
 	testRuntimeOnly("maven.modrinth:critical-strike:${project.critical_strike_version}") { transitive = false }
+	// Wilder Delights 1.0.0-26.2, read by WilderDelightsTabIconContractTest; not bundled.
+	testRuntimeOnly("maven.modrinth:2r4rp5Ns:eeUXfbLN") { transitive = false }
 
 	// Optional mods are compile-only: every compatibility feature is gated by its mixin plugin,
 	// and none of their classes are bundled into the output jar.

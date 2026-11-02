@@ -6,9 +6,9 @@ heads, Lootr item frames converted into Fast Item Frames blocks, Underground Vil
 Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-activated threaded-worldgen
 entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
-Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, version-gated Builder's Boundry 0.2 and Dungeons and Taverns 5.3.2 tick-function optimizations, the version-gated
+Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, the version-gated Wilder Delights 1.0.0-26.2 creative tab icon under Wilder Wild 4.3, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, version-gated Builder's Boundry 0.2 and Dungeons and Taverns 5.3.2 tick-function optimizations, the version-gated
 IllagerBlabber 1.1.0 voice-registry leak fix, Critical Strike crits for thrown tridents, the ungated hotbar slot resync after respawn, Voxy 0.2.19-beta reverse-Z depth under Iris 1.11.4 shader packs, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3), the Rogues 3.1.3.003+26.2 Sharpness definition, the seven Paladins and Rogues 3.1.3.003+26.2 aeternium weapon recipes, and 66 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised; Fire Wall and Meteor burning ground damage x0.4). The first two
-features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, and the Voxy reverse-Z fix are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium, Builder's Boundry and Dungeons and Taverns datapacks, IllagerBlabber registry fix, thrown-trident crits, and virtual resource patcher are common-side and must also run on a dedicated server; the Lootr ↔ Fast Item Frames bridge has common server
+features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, and the Voxy reverse-Z fix are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium, Builder's Boundry and Dungeons and Taverns datapacks, IllagerBlabber registry fix, thrown-trident crits, and virtual resource patcher are common-side and must also run on a dedicated server; the Wilder Delights tab icon fix is registered common-side because it targets Wilder Delights' main entrypoint class, though only the client runs the icon supplier; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -62,6 +62,7 @@ disable an unrelated feature.
 | Additional Lanterns 1.1.2 | `../lampas-server-fabric/mods/additionallanterns-1.1.2-fabric-mc26.2.jar` |
 | Jade 26.2.11 | `../lampas-server-fabric/mods/Jade-mc26.2-Fabric-26.2.11.jar` |
 | Custom Name 0.4.4 | `../lampas-server-fabric/mods/customname-fabric-0.4.4-26.2.jar` |
+| Wilder Delights 1.0.0-26.2 | `../lampas-server-fabric/mods/wilderdelights-1.0.0-26.2.jar` (SHA-256 `b21035bd…c543`, Modrinth version `eeUXfbLN`) |
 | Gravestones 1.4.2 | `../lampas-server-fabric/mods/gravestones-1.4.2+26.2+A.jar` |
 | Incendium Legacy 5.5.1 | `../lampas-server-fabric/mods/Incendium_26.2_v5.5.1.jar` |
 | Builder's Boundry 0.2 (`mr_builders_boundry`) | `../lampas-server-fabric/mods/builders-boundry-0.2.jar` |
@@ -166,6 +167,13 @@ For thrown-trident crits (Critical Strike installed), dedicated-server startup m
 crits for thrown tridents`, and `ThrownTridentMixin` and `TridentItemMixin` must appear as applying (`./gradlew runGameTest`
 writes both to `build/run/gameTest/logs/`). No `Critical Strike member … unavailable` warning may follow the first throw.
 In game, a thrown trident with Critical Strike chance enchanted on it should crit, with Critical Strike's crit sound.
+
+For the Wilder Delights tab icon (Wilder Delights 1.0.0-26.2, Wilder Wild 4.3.x, FrozenLib, Farmer's Delight Refabricated
+and DelightLib in `run/mods/`), `WilderDelightsTabIconMixin` must appear applying into
+`com.lilithelder.wilderdelights.WilderDelights` during startup, before the title screen. In game, paging the creative
+inventory to the Wilder Delights tab must show the split coconut icon without a `NoSuchFieldError`. `figura-0.1.6+26.2`
+in `run/mods/` currently crashes the dev client before mod initialization (`LivingEntityAccessor`: `@Intrinsic method
+must be prefixed interface method`), so move it out for this check.
 
 **Live testing and deployment** are managed declaratively via `lampas-pipeline` (`../lampas-pipeline`):
 
@@ -454,6 +462,16 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   max-name-length and blacklist enforcement must remain active. The patch intentionally affects `PREFIX`, `NICKNAME`, and
   `SUFFIX` because all three use the same `playerNameArgumentToComponent` path. Spaces are syntax, not a bypass.
   Do not move this fix into `jadecustomname`; Jade is only a display consumer and is unrelated to command parsing.
+- **Wilder Delights 1.0.0-26.2 reads `WWItems.SPLIT_COCONUT` as an `Item`; Wilder Wild 4.3 made it `DeferredItem<Item>`.**
+  The JVM resolves field references lazily, so startup succeeds and the `NoSuchFieldError` fires only when
+  `CreativeModeTab.getIconItem` first runs the tab's icon supplier `lambda$onInitialize$0`, i.e. when the creative
+  inventory draws that tab. `wilderdelights` redirects that `GETSTATIC` to
+  `BuiltInRegistries.ITEM.getValue(wilderwild:split_coconut)`; the redirect removes the instruction, so the stale
+  constant-pool reference is never resolved. It is the only runtime reference into Wilder Wild: `WDBlockTagsProvider`
+  and `WDItemTagsProvider` read `WWBlockItemIds` hibiscus/prickly pear fields and `WWItemIds.PEELED_PRICKLY_PEAR`, but
+  only the `fabric-datagen` entrypoint loads them, and all seven fields keep their descriptors in Wilder Wild 4.3.3
+  (`javap` over every class, 2 Nov 2026). A later Wilder Delights build compiled against Wilder Wild 4.3 would not need the fix, and the
+  exact-version gate drops it.
 - **IllagerBlabber 1.1.0's `IllagerVoiceRegistry` never forgets an illager.** Its static UUID-keyed
   `ConcurrentHashMap`s (`voiceManagers`, `hadTargetLastTick`, `victoryTimers`, `combatDebounceTimers`,
   `lastProcessedTick`, `lastPillagerTargets`, `lastVindicatorTargets`, `lastEvokerTargets`) have no
@@ -605,6 +623,9 @@ lampas2-overrides/resource-patches/
 customname/
   CustomNameMixinPlugin     applies only to Custom Name 0.4.4-26.2 (common-side, server-safe)
   mixin/                    forces spaceAllowed=true in playerNameArgumentToComponent's nameArgumentToComponent call
+wilderdelights/
+  WilderDelightsMixinPlugin applies only to Wilder Delights 1.0.0-26.2 (common-side, server-safe)
+  mixin/                    redirects the WWItems.SPLIT_COCONUT read in the tab icon supplier to a registry lookup
 illagerblabber/
   IllagerBlabberProfile     exact mod ID, version and JAR SHA-256 gate; names vendor classes only as strings
   IllagerBlabberMixinPlugin applies only to the audited 1.1.0 artifact (common-side, server-safe)
