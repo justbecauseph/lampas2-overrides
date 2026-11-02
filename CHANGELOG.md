@@ -2,6 +2,13 @@
 
 Releases before 1.0.2 are recorded only in the git history.
 
+## 1.0.13
+
+- **Figura avatars lie flat for elytra flight and swimming under Punchy! Moves.** Punchy! Moves tilts the body through
+  the player model's root part and turns off vanilla's tilt; Figura never applied the root part, so avatars stood
+  upright. Figura's `Avatar#render` now runs under the player model's root transform. Checked in a client gametest with
+  a local avatar; not checked on a live server with authenticated avatars.
+
 ## 1.0.12
 
 - **The creative inventory no longer crashes on the Wilder Delights tab.** Wilder Delights 1.0.0-26.2 builds its tab

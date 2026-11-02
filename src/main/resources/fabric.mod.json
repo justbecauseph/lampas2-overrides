@@ -44,6 +44,10 @@
 			"environment": "client"
 		},
 		{
+			"config": "lampas2-overrides.figurapunchy.mixins.json",
+			"environment": "client"
+		},
+		{
 			"config": "lampas2-overrides.chatheads.mixins.json",
 			"environment": "client"
 		},
@@ -132,6 +136,7 @@
 		"spell_engine": "*",
 		"placebo": "*",
 		"critical_strike": "*",
+		"punchy_moves": "*",
 		"voxy": "0.2.19-beta",
 		"iris": "1.11.4+mc26.2"
 	}

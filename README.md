@@ -8,6 +8,7 @@ ungated hotbar slot resync after respawn.
 |---|---|---|
 | [Figura in ReplayMod](#figura--replaymod) | Figura + ReplayMod | Makes Figura avatars survive into recordings, playback and video exports |
 | [Figura chat heads](#figura-chat-heads) | Figura + Chatting | Draws the Figura avatar's face in Chatting's chat heads instead of the vanilla skin |
+| [Figura avatars under Punchy! Moves](#figura-avatars-under-punchy-moves) | Figura + Punchy! Moves | Lays Figura avatars flat for elytra flight and swimming, as Punchy! Moves lays the vanilla model |
 | [Lootr fast item frames](#lootr--fast-item-frames) | Lootr + Fast Item Frames | Converts Lootr item-frame entities into blocks while preserving per-player loot |
 | [Underground Village fixes](#underground-village-fixes) | Underground Village 2.1.1 | Repairs obsolete/absent-mod loot tables and worldgen structure/pool data defects |
 | [Additional Lanterns chunk loading](#additional-lanterns-chunk-loading) | Additional Lanterns 1.1.2 | Prevents redstone neighbor checks from synchronously loading unloaded chunks |
@@ -813,6 +814,22 @@ are used strictly to discover the player; the player's real UUID remains the ide
 lookups and permissions.
 
 Chat screenshots pick it up too, since they resolve the head owner the same way.
+
+## Figura avatars under Punchy! Moves
+
+Punchy! Moves lays the player flat for elytra flight and swimming by rotating the player model's root part, and
+switches off vanilla's matching tilt in `AvatarRenderer#setupRotations`. Figura draws an avatar from the PoseStack
+`LivingEntityRenderer#submit` holds after `setupAnim` and copies the head, body, arm and leg poses, but not the root
+part they hang from, so an avatar stood upright while gliding and swimming.
+
+`AvatarRootPoseMixin` wraps Figura's `Avatar#render` for players: it pushes the PoseStack, applies the player model's
+`root().translateAndRotate`, as vanilla does before drawing the model's children, and pops it on return. With the root
+at rest the transform is the identity, so avatars render as before when Punchy! Moves leaves the root alone.
+
+Activation requires Figura and Punchy! Moves; there is no version gate. The `Avatar#render` descriptor was checked with
+`javap` against Figura build 11f80e6a (pack 2.5.17), and a changed descriptor fails at startup. A client gametest
+(Punchy! Moves 1.0.4, Fluid & Foolish 1.0.1, Figura and a local avatar that hides the vanilla model) showed the
+avatar upright while gliding and swimming without the mixin and lying flat with it; standing was unchanged.
 
 ## Figura ↔ ReplayMod
 
