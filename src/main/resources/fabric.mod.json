@@ -48,6 +48,10 @@
 			"environment": "client"
 		},
 		{
+			"config": "lampas2-overrides.punchymovesupdates.mixins.json",
+			"environment": "client"
+		},
+		{
 			"config": "lampas2-overrides.chatheads.mixins.json",
 			"environment": "client"
 		},

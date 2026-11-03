@@ -9,6 +9,7 @@ ungated hotbar slot resync after respawn.
 | [Figura in ReplayMod](#figura--replaymod) | Figura + ReplayMod | Makes Figura avatars survive into recordings, playback and video exports |
 | [Figura chat heads](#figura-chat-heads) | Figura + Chatting | Draws the Figura avatar's face in Chatting's chat heads instead of the vanilla skin |
 | [Figura avatars under Punchy! Moves](#figura-avatars-under-punchy-moves) | Figura + Punchy! Moves | Lays Figura avatars flat for elytra flight and swimming, as Punchy! Moves lays the vanilla model |
+| [Punchy! Moves update check](#punchy-moves-update-check) | Punchy! Moves | Stops the Modrinth update request and the update toast |
 | [Lootr fast item frames](#lootr--fast-item-frames) | Lootr + Fast Item Frames | Converts Lootr item-frame entities into blocks while preserving per-player loot |
 | [Underground Village fixes](#underground-village-fixes) | Underground Village 2.1.1 | Repairs obsolete/absent-mod loot tables and worldgen structure/pool data defects |
 | [Additional Lanterns chunk loading](#additional-lanterns-chunk-loading) | Additional Lanterns 1.1.2 | Prevents redstone neighbor checks from synchronously loading unloaded chunks |
@@ -829,7 +830,20 @@ at rest the transform is the identity, so avatars render as before when Punchy! 
 Activation requires Figura and Punchy! Moves; there is no version gate. The `Avatar#render` descriptor was checked with
 `javap` against Figura build 11f80e6a (pack 2.5.17), and a changed descriptor fails at startup. A client gametest
 (Punchy! Moves 1.0.4, Fluid & Foolish 1.0.1, Figura and a local avatar that hides the vanilla model) showed the
-avatar upright while gliding and swimming without the mixin and lying flat with it; standing was unchanged.
+avatar upright while gliding and swimming without the mixin and lying flat with it; standing was unchanged. With Punchy!
+Moves 1.0.5, which brings back vanilla's elytra pitch, the avatar still stood upright without the mixin and followed the
+vanilla model's glide angle with it.
+
+## Punchy! Moves update check
+
+Punchy! Moves' client entrypoint calls `UpdateNotification#initialize`, which starts a background request to
+`api.modrinth.com` on every launch. When Modrinth lists a newer release it draws a clickable toast linking to the project
+page on every screen. Punchy! Moves has no setting for either. The pack pins the version, so `UpdateNotificationMixin`
+cancels `initialize` before the request starts; with no result, the toast never draws.
+
+Activation requires Punchy! Moves; there is no version gate. The `initialize(String, String, String)` descriptor was
+checked with `javap` in Punchy! Moves 1.0.4 and 1.0.5, and a changed descriptor fails at startup. Punchy! (first person)
+3.1a and 3.1b make no update request, so nothing is needed for it.
 
 ## Figura ↔ ReplayMod
 

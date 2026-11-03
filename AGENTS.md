@@ -2,7 +2,7 @@
 
 This repo is a Fabric mod for Minecraft 26.2 holding compatibility fixes between mods that do not
 know about each other: the Figura ↔ ReplayMod avatar bridge, Figura avatars in Chatting's chat
-heads, Figura avatars under Punchy! Moves' root-part body tilt, Lootr item frames converted into Fast Item Frames blocks, Underground Village's stale loot data and 2.1.1 worldgen structure/pool defects,
+heads, Figura avatars under Punchy! Moves' root-part body tilt, the Punchy! Moves update check, Lootr item frames converted into Fast Item Frames blocks, Underground Village's stale loot data and 2.1.1 worldgen structure/pool defects,
 Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-activated threaded-worldgen
 entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under

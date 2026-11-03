@@ -2,6 +2,17 @@
 
 Releases before 1.0.2 are recorded only in the git history.
 
+## 1.0.14
+
+- **Punchy! Moves no longer checks Modrinth for updates.** Its client entrypoint starts a Modrinth API request on every
+  launch and draws a clickable update toast when it finds a newer release, with no setting to turn it off. The pack pins
+  the version, so `UpdateNotification#initialize` is cancelled before the request starts. The descriptor was checked with
+  `javap` in Punchy! Moves 1.0.4 and 1.0.5. A client gametest read `UpdateChecker#started` as false with this mixin and
+  true without it.
+- **The Figura root-pose fix still holds on Punchy! Moves 1.0.5.** 1.0.5 brings back vanilla's elytra pitch alongside its
+  root-part pose. In the client gametest the avatar still stood upright without the 1.0.13 mixin, and with it followed
+  the vanilla model's glide angle.
+
 ## 1.0.13
 
 - **Figura avatars lie flat for elytra flight and swimming under Punchy! Moves.** Punchy! Moves tilts the body through
