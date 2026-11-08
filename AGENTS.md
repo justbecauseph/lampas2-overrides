@@ -6,9 +6,9 @@ heads, Figura avatars under Punchy! Moves' root-part body tilt, the Punchy! Move
 Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-activated threaded-worldgen
 entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
-Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, the version-gated Wilder Delights 1.0.0-26.2 creative tab icon under Wilder Wild 4.3, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, version-gated Builder's Boundry 0.2 and Dungeons and Taverns 5.3.2 tick-function optimizations, the version-gated
+Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, the version-gated Wilder Delights 1.0.0-26.2 creative tab icon under Wilder Wild 4.3, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, version-gated Builder's Boundry 0.2 and Dungeons and Taverns 5.3.2 tick-function optimizations, the version-gated Lootr 1.24.41.124 container tick-delay gate, the version-gated
 IllagerBlabber 1.1.0 voice-registry leak fix, Critical Strike crits for thrown tridents, the ungated hotbar slot resync after respawn, Voxy 0.2.19-beta reverse-Z depth under Iris 1.11.4 shader packs, Just Enough Filters 3.2.0 `@Inject` parameter-slot corruption under R8-shrunk JEI 30.48.0.244, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3), the Rogues 3.1.3.003+26.2 Sharpness definition, the seven Paladins and Rogues 3.1.3.003+26.2 aeternium weapon recipes, and 66 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised; Fire Wall and Meteor burning ground damage x0.4). The first two
-features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, the Voxy reverse-Z fix, and the Just Enough Filters + JEI fix are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium, Builder's Boundry and Dungeons and Taverns datapacks, IllagerBlabber registry fix, thrown-trident crits, and virtual resource patcher are common-side and must also run on a dedicated server; the Wilder Delights tab icon fix is registered common-side because it targets Wilder Delights' main entrypoint class, though only the client runs the icon supplier; the Lootr ↔ Fast Item Frames bridge has common server
+features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, the Voxy reverse-Z fix, and the Just Enough Filters + JEI fix are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium, Builder's Boundry and Dungeons and Taverns datapacks, IllagerBlabber registry fix, Lootr tick-delay gate, thrown-trident crits, and virtual resource patcher are common-side and must also run on a dedicated server; the Wilder Delights tab icon fix is registered common-side because it targets Wilder Delights' main entrypoint class, though only the client runs the icon supplier; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -119,6 +119,15 @@ successful conversion removes the entity and leaves a block entity:
 ```mcfunction
 /data get entity @e[type=lootr:item_frame,sort=nearest,limit=1] Pos
 ```
+
+For the Lootr tick-delay gate, dedicated-server startup must log `Enabled version-gated Lootr 1.24.41.124
+tick-delay gate`, and `LootrAPITickGateMixin` must apply to `noobanidus.mods.lootr.common.api.LootrAPI`
+(with `-Dmixin.debug.export=true`, the exported `LootrAPI#handleInstanceTick` calls
+`handler$…$lampas2$skipUntilLootrTickDelay` before anything else). Any other Lootr version logs `Lootr <version> is
+installed but is not the audited 1.24.41.124 artifact; the tick-delay gate remains disabled`. A test server needs
+Fast Item Frames, Puzzles Lib and Forge Config API Port beside Lootr: the `lootrfastframes` service registrations
+under `META-INF/services/` are not behind its mixin gate, so Lootr's `LootrServiceRegistry` fails with
+`NoClassDefFoundError: fuzs/fastitemframes/common/init/ModRegistry` and the server does not start without them.
 
 For Stoneholm, no parse errors should remain for `andesite_worker`, `brass_worker`,
 `copper_worker`, or `cleric`; the compatibility logger should name all four repairs. Dedicated-server
@@ -256,6 +265,7 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   same `0..19` offset for that live instance. Lootr uses the value for tick scheduling; it is not
   serialized by the helper. Missing this implementation crashes when Lootr's tick path calls the
   new interface member on a converted frame.
+- **Lootr fetches container data before its own tick schedule.** In 1.24.41.124 `ILootrAPI#handleInstanceTick` calls `LootrAPI.getData` before `getCurrentTicks() % (getTickDelay() + getRandomOffset())`, so `tick_delay` throttles decay/refresh but not the lookup. `lootrtickgate` moves the check ahead of the lookup; the converted item-frame hook in `lootrfastframes` calls the same static method and is covered. Re-audit the bytecode shape (`LootrTickGateVendorContractTest`) before widening the version gate.
 - **Better Lib 2.1.2 fixed its ZIP filesystem startup and POI tag defects upstream, but still registers a demo villager.** Better Lib
   2.1.2 (and 2.1.3, checked 2026-11-01) reuses Fabric Loader's open filesystem via `FileSystems.getFileSystem(uri)` before attempting
   `newFileSystem`, and only closes the filesystem if newly created. It also replaced its malformed POI
@@ -570,6 +580,11 @@ lootrfastframes/
   LootrFastItemFrameType      Lootr data type registered through ServiceLoader
   LootrFastItemFrameWrapper   resolves marked Fast Item Frames block entities for Lootr
   mixin/                      conversion, state persistence, interaction and client rendering hooks
+lootrtickgate/
+  LootrTickGateProfile      exact Lootr 1.24.41.124 mod ID, version and JAR SHA-256
+  LootrTickGateMixinPlugin  applies the gate only to that artifact; WARNs on any other Lootr
+  LootrTickGate             Lootr's tick schedule arithmetic, no vendor types
+  mixin/                    HEAD inject on static LootrAPI#handleInstanceTick, cancels off-schedule server ticks
 stoneholm/
   StoneholmMixinPlugin      gated on Underground Village 2.1.1
   StoneholmCompatibility    version and resource fingerprint gate

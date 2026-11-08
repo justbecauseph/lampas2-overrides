@@ -20,6 +20,7 @@ import lampas2overrides.buildersboundry.BuildersBoundryCompatibility;
 import lampas2overrides.datapack.DatapackReplacement;
 import lampas2overrides.dungeonstaverns.DungeonsTavernsCompatibility;
 import lampas2overrides.incendium.IncendiumCompatibility;
+import lampas2overrides.lootrtickgate.LootrTickGateProfile;
 import lampas2overrides.resourcefix.ResourcePatch;
 import lampas2overrides.resourcefix.ResourcePatchKey;
 import lampas2overrides.resourcefix.ResourcePatchRegistry;
@@ -48,6 +49,13 @@ public class CompatibilityManifestTest {
 		// Datapack replacements built on DatapackReplacement list exactly their fingerprinted upstream resources.
 		assertDatapackReplacement(targets, BuildersBoundryCompatibility.MOD_ID, BuildersBoundryCompatibility.getProfiles());
 		assertDatapackReplacement(targets, DungeonsTavernsCompatibility.MOD_ID, DungeonsTavernsCompatibility.getProfiles());
+
+		JsonObject lootr = targets.getAsJsonObject(LootrTickGateProfile.MOD_ID).getAsJsonObject("versions")
+			.getAsJsonObject(LootrTickGateProfile.VERSION);
+		assertNotNull(lootr, "the tick gate's audited Lootr version needs a manifest record");
+		assertEquals(LootrTickGateProfile.JAR_SHA256, lootr.get("artifact_sha256").getAsString());
+		assertEquals("HegkPUoM", lootr.get("modrinth_version_id").getAsString());
+		assertEquals("patched", lootr.getAsJsonObject("tick_gate").get("status").getAsString());
 
 		JsonObject jef = targets.getAsJsonObject("justenoughfilters").getAsJsonObject("versions").getAsJsonObject("3.2.0");
 		assertEquals("patched", jef.get("status").getAsString());

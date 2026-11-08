@@ -48,6 +48,8 @@ dependencies {
 	// IllagerBlabber is compile-only; its bytecode contract test reads the pinned classes at test runtime.
 	compileOnly "maven.modrinth:illagerblabber:${project.illagerblabber_version}"
 	testRuntimeOnly "maven.modrinth:illagerblabber:${project.illagerblabber_version}"
+	// LootrTickGateVendorContractTest reads the pinned Lootr classes; the mod compiles against them and never bundles them.
+	testRuntimeOnly("maven.modrinth:lootr:${project.lootr_version}") { transitive = false }
 	// The Voxy reverse-Z fix compiles against the exact Voxy and Iris artifacts it is gated to.
 	compileOnly("maven.modrinth:voxy:${project.voxy_version}") { transitive = false }
 	compileOnly("maven.modrinth:iris:${project.iris_version}") { transitive = false }

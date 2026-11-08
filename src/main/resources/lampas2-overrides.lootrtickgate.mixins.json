@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "lampas2overrides.lootrtickgate.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.lootrtickgate.LootrTickGateMixinPlugin",
+	"mixins": [
+		"LootrAPITickGateMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

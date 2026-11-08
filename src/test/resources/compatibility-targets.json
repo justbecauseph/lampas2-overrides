@@ -433,7 +433,14 @@
         "1.24.41.124": {
           "status": "bytecode-and-compile-reviewed",
           "artifact_sha256": "6669f8415aa4280eae0959d6e8cac0bb0dab02dbfd3efd6a153c1fad02e80a6b",
-          "verification_limit": "All 51 packaged bridge member references resolve and inspected interaction contracts match; current-version conversion, looting and refresh remain live acceptance checks."
+          "verification_limit": "All 51 packaged bridge member references resolve and inspected interaction contracts match; current-version conversion, looting and refresh remain live acceptance checks.",
+          "modrinth_project_id": "EltpO5cN",
+          "modrinth_version_id": "HegkPUoM",
+          "tick_gate": {
+            "type": "common_tick_gate_mixin",
+            "status": "patched",
+            "verification_limit": "Unit and contract tests verify the gate's schedule arithmetic, the exact version and SHA-256 gate, that the test classpath carries the deployed Fabric artifact, and the pinned bytecode the gate depends on (LootrAPI#handleInstanceTick only delegates; no class on the Fabric LootrAPIImpl chain overrides it; only the null/client checks, getData and the schedule reads run before the modulo, which computes getCurrentTicks() % (getTickDelay() + getRandomOffset()) and returns when non-zero). The production per-tick saving is not measured by these tests."
+          }
         }
       }
     },
