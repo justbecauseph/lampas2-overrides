@@ -1,0 +1,13 @@
+{
+	"required": true,
+	"package": "lampas2overrides.client.justenoughfilters.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.client.justenoughfilters.JustEnoughFiltersMixinPlugin",
+	"client": [
+		"IngredientFilterMixin",
+		"IngredientListOverlayControllerMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

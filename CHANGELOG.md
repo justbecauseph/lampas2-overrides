@@ -2,6 +2,10 @@
 
 Releases before 1.0.2 are recorded only in the git history.
 
+## 1.0.15
+
+- **JEI no longer aborts GUI startup with `VerifyError` when Just Enough Filters 3.2.0 is installed ([pSUNSET/JustEnoughFilters#11](https://github.com/pSUNSET/JustEnoughFilters/issues/11)).** Starting in JEI 30.47.0.239 (`mezz/JustEnoughItems@44bf26e`), JEI's published jar is shrunk with R8, which reuses dead parameter local-variable slots inside `IngredientFilter#getIngredientListUncached(String)` and `IngredientListOverlayController#updateBounds(IGuiProperties, Set)`. Just Enough Filters 3.2.0 declares those target parameters in `jef$applyFilters` and `jef$updateJefBounds` without reading them, so Mixin emitted `aload_1` at `RETURN`/`TAIL` and `IngredientFilter` failed JVM bytecode verification (`Type 'java/util/List' is not assignable to 'java/lang/String'`). A client mixin plugin gated on the exact Just Enough Filters 3.2.0 jar and any installed JEI version replaces the unused parameter `ALOAD` instructions before both injected handler calls with `ACONST_NULL` in `postApply`. `JustEnoughFiltersContractTest` inspects JEI 30.48.0.244, reproduces the `VerifyError` on the unpatched woven bytecode, and verifies that the patched classes pass the JVM verifier; in-game JEI overlay rendering is unverified.
+
 ## 1.0.14
 
 - **Punchy! Moves no longer checks Modrinth for updates.** Its client entrypoint starts a Modrinth API request on every

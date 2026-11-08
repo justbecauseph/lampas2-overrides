@@ -49,6 +49,16 @@ public class CompatibilityManifestTest {
 		assertDatapackReplacement(targets, BuildersBoundryCompatibility.MOD_ID, BuildersBoundryCompatibility.getProfiles());
 		assertDatapackReplacement(targets, DungeonsTavernsCompatibility.MOD_ID, DungeonsTavernsCompatibility.getProfiles());
 
+		JsonObject jef = targets.getAsJsonObject("justenoughfilters").getAsJsonObject("versions").getAsJsonObject("3.2.0");
+		assertEquals("patched", jef.get("status").getAsString());
+		assertEquals("488ae982d99de57cb1505f63bcafb5d97d57e764988ac6e348209b8d0f7b0733",
+			jef.get("artifact_sha256").getAsString());
+
+		JsonObject jei = targets.getAsJsonObject("jei").getAsJsonObject("versions").getAsJsonObject("30.48.0.244");
+		assertEquals("bytecode-reviewed", jei.get("status").getAsString());
+		assertEquals("0f4adcbd1cfc69288d62cee490ce2a28a7794e28d694f21dbd24596c76a15a96",
+			jei.get("artifact_sha256").getAsString());
+
 		// Formations Overworld 1.0.5+c is metadata-only; its loot tables are upstream-owned.
 		JsonObject formations = targets.getAsJsonObject("formationsoverworld").getAsJsonObject("versions");
 		assertTrue(formations.has("1.0.5+c"));

@@ -80,6 +80,10 @@
 			"environment": "client"
 		},
 		{
+			"config": "lampas2-overrides.justenoughfilters.mixins.json",
+			"environment": "client"
+		},
+		{
 			"config": "lampas2-overrides.lootrfastframes.mixins.json"
 		},
 		{
@@ -142,6 +146,8 @@
 		"critical_strike": "*",
 		"punchy_moves": "*",
 		"voxy": "0.2.19-beta",
-		"iris": "1.11.4+mc26.2"
+		"iris": "1.11.4+mc26.2",
+		"justenoughfilters": "3.2.0",
+		"jei": "*"
 	}
 }

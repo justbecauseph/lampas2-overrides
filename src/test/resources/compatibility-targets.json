@@ -521,6 +521,30 @@
           "verification_limit": "Unit tests verify the exact version gate, the upstream fingerprints and that the packaged swift_soar functions differ from upstream only by the lampas.dnt_fov_boost tag line. Swift Soar FOV behaviour on a happy ghast and the one-time migration are verified only by a dedicated-server runtime probe."
         }
       }
+    },
+    "justenoughfilters": {
+      "name": "Just Enough Filters",
+      "type": "exact_mixin_gate",
+      "versions": {
+        "3.2.0": {
+          "status": "patched",
+          "artifact_sha256": "488ae982d99de57cb1505f63bcafb5d97d57e764988ac6e348209b8d0f7b0733",
+          "companion_mod": "jei",
+          "verification_limit": "JustEnoughFiltersContractTest verifies the exact version and JAR SHA-256 gate for Just Enough Filters 3.2.0 with any installed JEI version, reproduces the JVM VerifyError on the unpatched Mixin-woven IngredientFilter bytecode from JEI 30.48.0.244, and proves that JustEnoughFiltersBytecodePatcher makes both woven classes pass JVM bytecode verification. Live in-game JEI overlay and filter button rendering remain unverified."
+        }
+      }
+    },
+    "jei": {
+      "name": "Just Enough Items",
+      "type": "structural_mixin",
+      "versions": {
+        "30.48.0.244": {
+          "status": "bytecode-reviewed",
+          "artifact_sha256": "0f4adcbd1cfc69288d62cee490ce2a28a7794e28d694f21dbd24596c76a15a96",
+          "activation_policy": "Presence of JEI alongside the audited Just Enough Filters 3.2.0 artifact; no JEI version or artifact gate.",
+          "verification_limit": "JustEnoughFiltersContractTest inspects 30.48.0.244, reproduces the JVM VerifyError on the unpatched Mixin-woven IngredientFilter bytecode, and proves that JustEnoughFiltersBytecodePatcher makes both woven classes pass JVM bytecode verification. Live in-game JEI overlay and filter button rendering remain unverified."
+        }
+      }
     }
   }
 }

@@ -64,6 +64,9 @@ dependencies {
 	testRuntimeOnly("maven.modrinth:critical-strike:${project.critical_strike_version}") { transitive = false }
 	// Wilder Delights 1.0.0-26.2, read by WilderDelightsTabIconContractTest; not bundled.
 	testRuntimeOnly("maven.modrinth:2r4rp5Ns:eeUXfbLN") { transitive = false }
+	// Just Enough Filters 3.2.0 and JEI 30.48.0.244, read by JustEnoughFiltersContractTest; not bundled.
+	testRuntimeOnly("maven.modrinth:Ka9cnIsF:${project.just_enough_filters_version}") { transitive = false }
+	testRuntimeOnly("maven.modrinth:u6dRKJwZ:${project.jei_version}") { transitive = false }
 
 	// Optional mods are compile-only: every compatibility feature is gated by its mixin plugin,
 	// and none of their classes are bundled into the output jar.

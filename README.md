@@ -35,6 +35,18 @@ ungated hotbar slot resync after respawn.
 | [IllagerBlabber voice registry](#illagerblabber-voice-registry) | IllagerBlabber 1.1.0 | Releases per-illager voice state on unload, follows illagers across dimensions, and drops per-tick lock and log overhead |
 | [Hotbar slot resync after respawn](#hotbar-slot-resync-after-respawn) | Nothing (triggered by Debugify MC-143474) | Resends the selected hotbar slot after respawn so the server does not keep slot 0 |
 | [Voxy LODs under Iris shader packs](#voxy-lods-under-iris-shader-packs) | Voxy 0.2.19-beta + Iris 1.11.4+mc26.2 | Keeps Voxy's LOD depth reverse-Z so shader packs stop drawing LOD terrain as sky |
+| [Just Enough Filters under R8-shrunk JEI](#just-enough-filters-under-r8-shrunk-jei) | Just Enough Filters 3.2.0 + JEI | Replaces corrupted parameter `ALOAD`s in Just Enough Filters' JEI mixins so `IngredientFilter` does not fail with `VerifyError` |
+
+## Just Enough Filters under R8-shrunk JEI
+
+Starting in JEI **30.47.0.239** ([`mezz/JustEnoughItems@44bf26e`](https://github.com/mezz/JustEnoughItems/commit/44bf26ee6086942a875622dc5904b97c52bd3682)), JEI's published jar is shrunk with R8 (`shrink.set(true)`), which reuses dead parameter local-variable slots inside methods. Just Enough Filters **3.2.0** declares the target method parameters in two of its `@Inject` handlers even though neither handler reads them ([pSUNSET/JustEnoughFilters#11](https://github.com/pSUNSET/JustEnoughFilters/issues/11)):
+
+- `JeiIngredientFilterMixin#jef$applyFilters(String, CallbackInfoReturnable)` injects at `RETURN` of `IngredientFilter#getIngredientListUncached(String)`. R8 overwrites slot 1 (`String filterText`) with a `java.util.List` at offset 39 (`astore_1`). Mixin emits `aload_1` to pass `filterText` to the handler, so loading `IngredientFilter` fails JVM bytecode verification with `VerifyError: Type 'java/util/List' (current frame, stack[2]) is not assignable to 'java/lang/String'` and aborts JEI GUI startup.
+- `JeiIngredientListOverlayControllerMixin#jef$updateJefBounds(IGuiProperties, Set, CallbackInfo)` injects at `TAIL` of `IngredientListOverlayController#updateBounds(IGuiProperties, Set)`. R8 overwrites slot 1 (`IGuiProperties guiProperties`) with `istore_1`, `astore_1` (`Layout`), and `astore_1` (`SearchAndConfigAreas`), so Mixin's `aload_1` passes `SearchAndConfigAreas` into the `IGuiProperties` parameter.
+
+The client-only `JustEnoughFiltersMixinPlugin` registers priority-1100 mixins on `IngredientFilter` and `IngredientListOverlayController`. In `postApply`, after Just Enough Filters (priority 1000) has woven its handlers, `JustEnoughFiltersBytecodePatcher` checks that the merged `handler$*$jef$applyFilters` and `handler$*$jef$updateJefBounds` methods do not touch those parameter slots and replaces the captured parameter `ALOAD` instructions before each handler call with `ACONST_NULL`. Any missing target method, missing handler call, unexpected local-slot access in the handler, or altered argument load sequence throws `IllegalStateException`.
+
+The gate requires `jei` (any version) and `justenoughfilters` `3.2.0` (exact version and full JAR SHA-256); another Just Enough Filters release logs a `WARN` and leaves the classes unpatched. `JustEnoughFiltersContractTest` inspects JEI `30.48.0.244`, reproduces the JVM `VerifyError` on the unpatched Mixin-woven `IngredientFilter` bytecode from the real jars, and verifies that the patched `IngredientFilter` and `IngredientListOverlayController` classes pass JVM bytecode verification. Live in-game JEI overlay and filter button rendering remain unverified.
 
 ## Voxy LODs under Iris shader packs
 
