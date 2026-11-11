@@ -69,6 +69,9 @@ dependencies {
 	// Just Enough Filters 3.2.0 and JEI 30.48.0.244, read by JustEnoughFiltersContractTest; not bundled.
 	testRuntimeOnly("maven.modrinth:Ka9cnIsF:${project.just_enough_filters_version}") { transitive = false }
 	testRuntimeOnly("maven.modrinth:u6dRKJwZ:${project.jei_version}") { transitive = false }
+	// StatusEffectBarsContractTest reads StatusEffectBarRenderer from the pinned Status Effect Bars jar. The VanillaHUD
+	// alignment mixins name it only by string, so it is test-only and never bundled.
+	testRuntimeOnly("maven.modrinth:x02cBj9Y:${project.status_effect_bars_version}") { transitive = false }
 
 	// Optional mods are compile-only: every compatibility feature is gated by its mixin plugin,
 	// and none of their classes are bundled into the output jar.

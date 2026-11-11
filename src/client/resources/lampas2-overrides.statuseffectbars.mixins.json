@@ -1,0 +1,8 @@
+{
+	"required": true,
+	"package": "lampas2overrides.client.statuseffectbars.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.client.statuseffectbars.StatusEffectBarsMixinPlugin",
+	"client": ["HudEffectsMixin", "GuiGraphicsExtractorMixin", "StatusEffectBarRendererMixin"],
+	"injectors": { "defaultRequire": 1 }
+}

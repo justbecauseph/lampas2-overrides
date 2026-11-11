@@ -336,6 +336,30 @@
         }
       }
     },
+    "status-effect-bars": {
+      "name": "Status Effect Bars",
+      "type": "presence_mixin",
+      "versions": {
+        "1.0.12": {
+          "modrinth_version_id": "aAXJqboy",
+          "artifact_sha256": "8cb64d13fb73ae1dff415734b980bca0f858311ffa010c8a21522113a9dddee5",
+          "status": "bytecode-reviewed",
+          "verification_limit": "StatusEffectBarsContractTest pins the StatusEffectBarRenderer.render descriptor and its x and y local names, the HudMixin injection that calls render, and the vanilla Hud#extractEffects blit order. The mixins apply only when Status Effect Bars and VanillaHUD are both loaded. Checked on 11 Nov 2026 in a dev client with Status Effect Bars 1.0.12, VanillaHUD 3.5.10 and OneConfig 1.6.2: all three mixins applied and, with Poison as the only effect, the bar sat on the icon in the top row. Not checked in the full pack."
+        }
+      }
+    },
+    "vanillahud": {
+      "name": "VanillaHUD",
+      "type": "presence_mixin",
+      "versions": {
+        "3.5.10+26.2": {
+          "modrinth_version_id": "rcdwsU6K",
+          "artifact_sha256": "ce1143f3619f94342f230075bee645de7246a7b25d50904f39961ce5ab6c8bcb",
+          "status": "bytecode-reviewed",
+          "verification_limit": "No test reads VanillaHUD's classes; only the vanilla Hud#extractEffects blit order is pinned. Checked on 11 Nov 2026 in a dev client with Status Effect Bars 1.0.12, VanillaHUD 3.5.10 and OneConfig 1.6.2: all three mixins applied and, with Poison as the only effect, the bar sat on the icon in the top row. Not checked in the full pack."
+        }
+      }
+    },
     "additionallanterns": {
       "name": "Additional Lanterns",
       "type": "exact_mixin_gate",

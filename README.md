@@ -37,6 +37,15 @@ ungated hotbar slot resync after respawn.
 | [Voxy LODs under Iris shader packs](#voxy-lods-under-iris-shader-packs) | Voxy 0.2.19-beta + Iris 1.11.4+mc26.2 | Keeps Voxy's LOD depth reverse-Z so shader packs stop drawing LOD terrain as sky |
 | [Just Enough Filters under R8-shrunk JEI](#just-enough-filters-under-r8-shrunk-jei) | Just Enough Filters 3.2.0 + JEI | Replaces corrupted parameter `ALOAD`s in Just Enough Filters' JEI mixins so `IngredientFilter` does not fail with `VerifyError` |
 | [Lootr container tick delay](#lootr-container-tick-delay) | Lootr 1.24.41.124 | Skips Lootr's per-tick container data lookup on the ticks where Lootr's own schedule does nothing with it |
+| [Status Effect Bars under VanillaHUD](#status-effect-bars-under-vanillahud) | Status Effect Bars + VanillaHUD | Draws the duration bars on the status effect icons where VanillaHUD puts them |
+
+## Status Effect Bars under VanillaHUD
+
+VanillaHUD **3.5.10** wraps the two effect background `blitSprite` calls in `Hud#extractEffects` with `@WrapOperation` and shifts their x/y arguments, for example moving the harmful row up 26 px when there are no beneficial effects. The method's `x` and `y` locals do not change. Status Effect Bars **1.0.12** injects at `getMobEffectSprite` in the same method and passes those unshifted locals to `StatusEffectBarRenderer#render`, so its duration bar is drawn where vanilla would have put the icon, not where VanillaHUD drew it.
+
+The client-only `StatusEffectBarsMixinPlugin` applies three mixins from `lampas2overrides.client.statuseffectbars.mixin`. `HudEffectsMixin` clears the recorded position at the head and return of `extractEffects`, and wraps each background `blitSprite` (the six-argument overload, `require = 2`) to open and close a capture window around it. `GuiGraphicsExtractorMixin` records the x and y that the six-argument `blitSprite` receives while that window is open, after every shift applied by other wrappers, so the record is where the background was drawn. `StatusEffectBarRendererMixin` replaces the x and y arguments of `StatusEffectBarRenderer#render` with the recorded position. Status Effect Bars also calls `render` from the inventory screen, where nothing is recorded, so those arguments pass through unchanged.
+
+The mixins apply whenever both `status-effect-bars` and `vanillahud` are installed, with no version gate, and reference both mods by name only. Verification is by tests only: `EffectIconPositionTest` covers the recording state, and `StatusEffectBarsContractTest` reads `StatusEffectBarRenderer` from Status Effect Bars 1.0.12 and checks the `render` descriptor and the mixin's `@ModifyVariable` targets. Checked on 11 Nov 2026 in a dev client with Status Effect Bars 1.0.12, VanillaHUD 3.5.10 and OneConfig 1.6.2: all three mixins applied and, with Poison as the only effect, the bar sat on the icon in the top row. Not checked in the full pack.
 
 ## Lootr container tick delay
 

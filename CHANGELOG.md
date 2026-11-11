@@ -2,6 +2,10 @@
 
 Releases before 1.0.2 are recorded only in the git history.
 
+## 1.0.17
+
+- **Status Effect Bars' duration bars now sit on the icons VanillaHUD draws.** VanillaHUD 3.5.10 wraps the two effect background `blitSprite` calls in `Hud#extractEffects` and shifts their x/y arguments (the harmful row moves up 26 px when there are no beneficial effects), but leaves the method's `x` and `y` locals unchanged. Status Effect Bars 1.0.12 draws its bar from those unshifted locals, so the bar sat where vanilla would have put the icon. The client-only `statuseffectbars` mixins record where each background blit is actually drawn and pass that position to Status Effect Bars. The alignment applies whenever both mods are installed, with no version gate. Unit and contract tests pass. Checked on 11 Nov 2026 in a dev client with Status Effect Bars 1.0.12, VanillaHUD 3.5.10 and OneConfig 1.6.2: all three mixins applied and, with Poison as the only effect, the bar sat on the icon in the top row. Not checked in the full pack.
+
 ## 1.0.16
 
 - **Lootr containers no longer fetch their saved data every tick.** Lootr 1.24.41.124's `ILootrAPI#handleInstanceTick` looks up each loaded container's `LootrInventoryStore` (`LootrAPI.getData`) before checking its own `tick_delay` schedule, then discards it on every tick but one in 20–39. A common `HEAD` inject on `LootrAPI#handleInstanceTick`, gated on the exact Lootr 1.24.41.124 jar, returns early on those ticks; decay and refresh timing are unchanged. The 8 Nov 2026 production spark profile sampled the lookup at 0.44 ms/tick with one player. `LootrTickGateVendorContractTest` pins the upstream bytecode the gate relies on; the production saving is not yet measured. The `lootr_version` compile pin moves from the version number, which resolved to Lootr's NeoForge build, to the Fabric build's Modrinth version ID `HegkPUoM`; the `lootrfastframes` classes compile byte-identical.

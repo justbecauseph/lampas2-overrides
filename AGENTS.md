@@ -7,8 +7,8 @@ Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-ac
 entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
 Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, the version-gated Wilder Delights 1.0.0-26.2 creative tab icon under Wilder Wild 4.3, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, version-gated Builder's Boundry 0.2 and Dungeons and Taverns 5.3.2 tick-function optimizations, the version-gated Lootr 1.24.41.124 container tick-delay gate, the version-gated
-IllagerBlabber 1.1.0 voice-registry leak fix, Critical Strike crits for thrown tridents, the ungated hotbar slot resync after respawn, Voxy 0.2.19-beta reverse-Z depth under Iris 1.11.4 shader packs, Just Enough Filters 3.2.0 `@Inject` parameter-slot corruption under R8-shrunk JEI 30.48.0.244, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3), the Rogues 3.1.3.003+26.2 Sharpness definition, the seven Paladins and Rogues 3.1.3.003+26.2 aeternium weapon recipes, and 66 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised; Fire Wall and Meteor burning ground damage x0.4). The first two
-features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, the Voxy reverse-Z fix, and the Just Enough Filters + JEI fix are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium, Builder's Boundry and Dungeons and Taverns datapacks, IllagerBlabber registry fix, Lootr tick-delay gate, thrown-trident crits, and virtual resource patcher are common-side and must also run on a dedicated server; the Wilder Delights tab icon fix is registered common-side because it targets Wilder Delights' main entrypoint class, though only the client runs the icon supplier; the Lootr ↔ Fast Item Frames bridge has common server
+IllagerBlabber 1.1.0 voice-registry leak fix, Critical Strike crits for thrown tridents, the ungated hotbar slot resync after respawn, Voxy 0.2.19-beta reverse-Z depth under Iris 1.11.4 shader packs, Status Effect Bars duration bars placed on VanillaHUD's effect icons, Just Enough Filters 3.2.0 `@Inject` parameter-slot corruption under R8-shrunk JEI 30.48.0.244, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3), the Rogues 3.1.3.003+26.2 Sharpness definition, the seven Paladins and Rogues 3.1.3.003+26.2 aeternium weapon recipes, and 66 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised; Fire Wall and Meteor burning ground damage x0.4). The first two
+features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, the Voxy reverse-Z fix, the Status Effect Bars alignment under VanillaHUD, and the Just Enough Filters + JEI fix are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium, Builder's Boundry and Dungeons and Taverns datapacks, IllagerBlabber registry fix, Lootr tick-delay gate, thrown-trident crits, and virtual resource patcher are common-side and must also run on a dedicated server; the Wilder Delights tab icon fix is registered common-side because it targets Wilder Delights' main entrypoint class, though only the client runs the icon supplier; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -81,6 +81,8 @@ disable an unrelated feature.
 | Iris 1.11.4+mc26.2 | `../lampas-pipeline/.lampas/cache/modrinth/YL57xq9U/gxZWWnKH/iris-fabric-1.11.4+mc26.2.jar`; sources at `../Iris` (`f98544835^` matches the jar's `DepthTransformer`) |
 | Just Enough Filters 3.2.0 | `../lampas-pipeline/.lampas/cache/modrinth/Ka9cnIsF/UHcUj9wX/justenoughfilters-3.2.0+fabric-26.2.jar` (SHA-256 `488ae982…0733`) |
 | JEI 30.48.0.244 | `../lampas-pipeline/.lampas/cache/modrinth/u6dRKJwZ/j62WSkzi/jei-26.2-fabric-30.48.0.244.jar` (SHA-256 `0f4adcbd…5a96`, shrunk with R8 9.5.26) |
+| Status Effect Bars 1.0.12 | `../lampas-pipeline/.lampas/cache/modrinth/x02cBj9Y/aAXJqboy/status-effect-bars-1.0.12.jar` |
+| VanillaHUD 3.5.10+26.2 | `../lampas-pipeline/.lampas/cache/modrinth/pWXJaKrX/rcdwsU6K/vanillahud-3.5.10+26.2.jar` |
 | Figura sources | `../figura-port/common/src/main/java/org/figuramc/figura/` |
 | ReplayMod sources | `../ReplayMod/src/main/java/com/replaymod/` — preprocessed, read `//#if MC>=…` blocks carefully |
 | Minecraft 26.2 sources | `../figura-port/.mcsources/` — decompiled, authoritative |
@@ -185,6 +187,13 @@ and DelightLib in `run/mods/`), `WilderDelightsTabIconMixin` must appear applyin
 inventory to the Wilder Delights tab must show the split coconut icon without a `NoSuchFieldError`. `figura-0.1.6+26.2`
 in `run/mods/` currently crashes the dev client before mod initialization (`LivingEntityAccessor`: `@Intrinsic method
 must be prefixed interface method`), so move it out for this check.
+
+For the Status Effect Bars alignment (Status Effect Bars 1.0.12 and VanillaHUD 3.5.10+26.2 in `run/mods/`, plus VanillaHUD's
+dependencies), the client must log `Enabled Status Effect Bars alignment with VanillaHUD's status effect icons`.
+`HudEffectsMixin` and `GuiGraphicsExtractorMixin` apply at startup, but `StatusEffectBarRendererMixin` applies only when
+Status Effect Bars' renderer class first loads, which is the first time an effect bar is drawn. Give the player an effect
+(`/effect give @s poison 60`) before reading `run/logs/debug.log`. With only a harmful effect, the bar must sit on the icon
+in the top row. This passed on 11 Nov 2026 in a dev client with Status Effect Bars 1.0.12, VanillaHUD 3.5.10 and OneConfig 1.6.2; the full pack has not been checked.
 
 **Live testing and deployment** are managed declaratively via `lampas-pipeline` (`../lampas-pipeline`):
 
@@ -668,6 +677,12 @@ tridentcrits/
   CriticalStrikeMixinPlugin applies whenever Critical Strike is present (common-side, server-safe); member contract pinned to 1.0.6+26.2
   TridentCriticalStrikes    reflective Critical Strike bridge: throw snapshot, crit roll, damage source mark, crit FX
   mixin/                    wraps TridentItem.releaseUsing (snapshot) and the hurtOrSimulate call in ThrownTrident.onHitEntity (crit)
+statuseffectbars/
+  EffectIconPosition                  records the x/y where VanillaHUD's effect background was blitted, for the bar to read
+  StatusEffectBarsMixinPlugin         applies only when Status Effect Bars and VanillaHUD are both loaded (client-side)
+  mixin/HudEffectsMixin               opens a capture window around the two background blits in Hud#extractEffects
+  mixin/GuiGraphicsExtractorMixin     records the drawn x/y of the six-argument blitSprite while that window is open
+  mixin/StatusEffectBarRendererMixin  replaces the x and y of Status Effect Bars' render with the recorded position
 src/gametest/               server GameTests (./gradlew runGameTest, part of check) with real Spell Engine, Spell Power, Rogues and Critical Strike;
                             dev/shadowsoffire/placebo/util/PersistentData there is a TEST DOUBLE, never shipped
 ```
