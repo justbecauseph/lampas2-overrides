@@ -38,6 +38,15 @@ ungated hotbar slot resync after respawn.
 | [Just Enough Filters under R8-shrunk JEI](#just-enough-filters-under-r8-shrunk-jei) | Just Enough Filters 3.2.0 + JEI | Replaces corrupted parameter `ALOAD`s in Just Enough Filters' JEI mixins so `IngredientFilter` does not fail with `VerifyError` |
 | [Lootr container tick delay](#lootr-container-tick-delay) | Lootr 1.24.41.124 | Skips Lootr's per-tick container data lookup on the ticks where Lootr's own schedule does nothing with it |
 | [Status Effect Bars under VanillaHUD](#status-effect-bars-under-vanillahud) | Status Effect Bars + VanillaHUD | Draws the duration bars on the status effect icons where VanillaHUD puts them |
+| [Fancy World Animations under EntityCulling](#fancy-world-animations-under-entityculling) | Fancy World Animations 1.3.4 + EntityCulling 1.12.0 | Stops the client crashing at startup and keeps Fancy World Animations' animation occlusion culling working |
+
+## Fancy World Animations under EntityCulling
+
+Fancy World Animations **1.3.4** ships `CullTaskMixin`, which shadows EntityCulling's `CullTask.culling` as `com.logisticscraft.occlusionculling.OcclusionCullingInstance`. EntityCulling **1.12.0** moved its occlusion library into the mod and retyped that field to its own `dev.tr7zw.entityculling.versionless.occlusionculling.OcclusionCulling`. The shadow no longer resolves. Fancy World Animations' `fwa.client.mixins.json` is `required`, so the client stops at startup with `@Shadow field culling was not located`.
+
+For that exact pair, the common `FwaCullTaskMixinCanceller`, registered through the `mixinsquared` entrypoint, cancels only that mixin. The client-only `CullTaskAnimationCullingMixin` re-adds the same animation culling at the TAIL of `CullTask#cullEntities`, using the 1.12.0 types. An animation whose bounding box is missing or wider than EntityCulling's hitbox limit is left visible, as in Fancy World Animations. The client mixin plugin logs whether the pair matched. Any other version of either mod leaves Fancy World Animations' own mixin unchanged, and the plugin logs a `WARN` when both mods are present. MixinSquared 0.3.7-beta.3 is bundled into the mod jar as a nested jar; no other library is bundled for this feature.
+
+The gate is exact. A new release of either mod disables the fix, so re-audit the vendor types when Fancy World Animations adopts EntityCulling's API or EntityCulling changes `CullTask`. `FwaEntityCullingContractTest` reads both jars with ASM and checks the descriptors the mixin depends on. In-game behaviour has not been verified yet.
 
 ## Status Effect Bars under VanillaHUD
 

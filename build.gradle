@@ -15,6 +15,13 @@ repositories {
 			includeGroup "maven.modrinth"
 		}
 	}
+	maven {
+		name = "Bawnorton"
+		url = "https://maven.bawnorton.com/releases"
+		content {
+			includeGroup "com.github.bawnorton.mixinsquared"
+		}
+	}
 }
 
 loom {
@@ -73,8 +80,18 @@ dependencies {
 	// alignment mixins name it only by string, so it is test-only and never bundled.
 	testRuntimeOnly("maven.modrinth:x02cBj9Y:${project.status_effect_bars_version}") { transitive = false }
 
-	// Optional mods are compile-only: every compatibility feature is gated by its mixin plugin,
-	// and none of their classes are bundled into the output jar.
+	// Fancy World Animations 1.3.4 and EntityCulling 1.12.0 are compile-only. The fwaentityculling feature
+	// names fwa's CullTaskMixin only by string and reads both jars in FwaEntityCullingContractTest.
+	compileOnly("maven.modrinth:IAzUFvS6:${project.fwa_version}") { transitive = false }
+	compileOnly("maven.modrinth:NNAgCjsB:${project.entityculling_version}") { transitive = false }
+	testRuntimeOnly("maven.modrinth:IAzUFvS6:${project.fwa_version}") { transitive = false }
+	testRuntimeOnly("maven.modrinth:NNAgCjsB:${project.entityculling_version}") { transitive = false }
+	// MixinSquared runs the fwaentityculling canceller that removes fwa's CullTaskMixin, which fails against
+	// EntityCulling 1.12.0. It is the only library nested into the output jar; Fabric loads it from the mod jar.
+	include(implementation("com.github.bawnorton.mixinsquared:mixinsquared-fabric:${project.mixinsquared_version}"))
+
+	// Optional mods are compile-only: every compatibility feature is gated by its mixin plugin, and none of their
+	// classes are bundled into the output jar. MixinSquared, nested above, is the exception.
 
 	testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
 	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
