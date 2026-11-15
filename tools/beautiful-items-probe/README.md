@@ -1,6 +1,6 @@
 # Beautiful Items production-JAR client probe
 
-This probe launches a fresh, isolated Fabric client fixture to verify actual loader mixin application and model lookup behavior for the installed Beautiful Enchanted Books 6.0.0 and BeautifulPotions 2.0.1 JARs. It uses the installed Minecraft 26.2 client JAR, Fabric Loader 0.19.5, Java 25, and installed Fabric API 0.161.0+26.2. It does not use the Gradle development runtime.
+This probe launches a fresh, isolated Fabric client fixture to verify actual loader mixin application and model lookup behavior for the installed Beautiful Enchanted Books 6.0.0 and BeautifulPotions 2.0.1 JARs. It uses the installed Minecraft 26.2 client JAR, Fabric Loader 0.20.1, Java 25, and installed Fabric API 0.161.0+26.2. It does not use the Gradle development runtime.
 
 Run from the repository root:
 

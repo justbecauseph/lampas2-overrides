@@ -21,3 +21,10 @@
 # stick key, so both keep the jars' LF line endings.
 /src/test/resources/upstream/**/recipe/*.json -text
 /src/main/resources/lampas2-overrides/resource-patches/**/recipe/*.json -text
+# Structory: Towers, Dungeons and Taverns and Trek waystone template pools: fixtures are byte-exact jar entries
+# (Dungeons and Taverns and Trek ship CRLF) and replacements are the upstream pool with an empty element (Trek: a repointed location), in LF.
+/src/test/resources/upstream/**/template_pool/**/*.json -text
+/src/main/resources/lampas2-overrides/resource-patches/**/template_pool/**/*.json -text
+# Trek village plaza templates: Waystones 26.2.0.13 village templates with the two waystone blocks set to air.
+/src/main/resources/data/lampas/structure/**/*.nbt binary
+/src/test/resources/upstream/waystones/**/*.nbt binary

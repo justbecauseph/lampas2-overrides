@@ -34,8 +34,8 @@ DEFAULT_MODS = REPO.parent / "lampas-server-fabric" / "mods"
 ROOTS = {
     "rogues": ("rogues-fabric-3.1.3.003+26.2.jar", "3.1.3.003+26.2",
                "77bdff881c01011bff6e6e722a1f47dc01ca7d377a1f08231d305fc11b08f113"),
-    "apothic_enchanting": ("ApothicEnchanting-26.2-3.0.1.jar", "3.0.1",
-                           "0280f58b6b95951e265ca82aac8528e4c8d5f508b4acdc6fec466a52556cdc4c"),
+    "apothic_enchanting": ("ApothicEnchanting-26.2-3.0.3.jar", "3.0.3",
+                           "6823d3454e7f63a0bd56b8d3f9cb1e69c35013e0d07b6a42e0d521d1d55c73af"),
 }
 PLATFORM_IDS = {"minecraft", "java", "fabricloader", "fabric-loader"}
 APPLIED_LINE = "Applied rogues 3.1.3.003+26.2 compatibility resource: data/minecraft/enchantment/sharpness.json"

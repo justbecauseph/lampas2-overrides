@@ -174,6 +174,51 @@ public final class ResourcePatchRegistry {
 		// 0.4 x their upstream damage. 66 patches across seven jars.
 		RpgSeriesSpellPatches.registerAll(ResourcePatchRegistry::register);
 
+		// 9. Waystone template pools. These pools are the only places Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2
+		// and Trek B0.6.2 place Waystones blocks (the four Structory *fwaystone pools place Fabric Waystones blocks).
+		// The Structory and Dungeons pools are emptied: each replacement is the upstream pool with its single element
+		// replaced by minecraft:empty_pool_element, which JigsawPlacement skips without the "Empty or non-existent pool"
+		// warning, leaving the jigsaw's final_state. Trek's eight pools place Waystones' 6x6x6 village plaza
+		// (waystones:village/*), so each is repointed to lampas:village/waystone_plaza/common or
+		// lampas:village/waystone_plaza/desert, copies of those plaza templates without the two waystone blocks.
+		String structoryDir = "data/structory_towers/worldgen/template_pool/waystones/";
+		waystonePool("structory_towers", "1.0.17", structoryDir + "deepslate_brick_fwaystone.json",
+			"414c87b5791dc3024701f32bbacb671e3d283eac8d9746c0f48edc4a7e349dc5");
+		waystonePool("structory_towers", "1.0.17", structoryDir + "desert_fwaystone.json",
+			"df3c673cacc178d663608c4d2486ecedadf951933449f3aeb0838514749fa831");
+		waystonePool("structory_towers", "1.0.17", structoryDir + "fwaystone.json",
+			"3d6286a4feabb69a1d732adeca90c6596e61e8b1db2016d7b187c830cd3740be");
+		waystonePool("structory_towers", "1.0.17", structoryDir + "mossy_waystone.json",
+			"b19f8302dd87c95ef7d68d5e73a3023fbc39b536b6dfaa968f7cd83d281bcdf6");
+		waystonePool("structory_towers", "1.0.17", structoryDir + "sandy_waystone.json",
+			"05d6a77429eccaa0a0b47e4ead47de8da5070443d32d05a64d887345ee32062f");
+		waystonePool("structory_towers", "1.0.17", structoryDir + "stone_brick_fwaystone.json",
+			"a2954c63280174b461cee4759de15c807cdfa2ba442a7344ede8640c8bcac9a4");
+		waystonePool("structory_towers", "1.0.17", structoryDir + "waystone.json",
+			"4894004faeaa002d735c334777ec72227758e7f5a5adfddf8d8b429c9db402ee");
+
+		String dungeonsDir = "data/nova_structures/worldgen/template_pool/shrine/waystone/";
+		waystonePool("mr_dungeons_andtaverns", "5.3.2", dungeonsDir + "waystone.json",
+			"b103d4054cde7d17c49cc65bdf2b328997368f9323f7d4dac2a366e2f2186df1");
+
+		String trekDir = "data/trek/worldgen/template_pool/village/waystone/";
+		waystonePool("mr_trek", "1-B0.6.2", trekDir + "cherry.json",
+			"850017bd0e275709407cda7e963c645c959a295de194512ce6b1b70647f61f4a");
+		waystonePool("mr_trek", "1-B0.6.2", trekDir + "desert.json",
+			"f7ae2a4357695fcf59a65a172173472dfc2d00e9cdbe6d59e341a28074e80eb5");
+		waystonePool("mr_trek", "1-B0.6.2", trekDir + "plains.json",
+			"0331ef5ca14d7ea87eeb07d391d0b796e81f839b00b5577bdd47fd997a760e92");
+		waystonePool("mr_trek", "1-B0.6.2", trekDir + "savanna.json",
+			"1296c2e4f8c2e60780f6c2d0b5d78e2f6b54a8265741e7b13bb4e41311ec3cbf");
+		waystonePool("mr_trek", "1-B0.6.2", trekDir + "snowy.json",
+			"b26d176c1195cc1878ad8aed82738533a54550cb033d5298d4224ec13def068a");
+		waystonePool("mr_trek", "1-B0.6.2", trekDir + "swamp.json",
+			"08cd294d0e03f6aa3d9752eca5e372ecc4f3924bbba9fefb2c641d7887804529");
+		waystonePool("mr_trek", "1-B0.6.2", trekDir + "swamp_vanilla.json",
+			"7bcb0ac8c4a5155371faf811fc6eb720892b4c3f12eb1f3f731f9a38eefa0585");
+		waystonePool("mr_trek", "1-B0.6.2", trekDir + "taiga.json",
+			"272f6f0e894f8fe61fa811856cb3af93baa6e33a2ad4db25c022cbe3b021a8c6");
+
 		VERSIONS.replaceAll((resource, versions) -> versions.stream().sorted().toList());
 	}
 
@@ -191,6 +236,11 @@ public final class ResourcePatchRegistry {
 		String path = "data/" + modId + "/recipe/aeternium_" + weapon + ".json";
 		register(new ResourcePatch(modId, "3.1.3.003+26.2", path, upstreamSha256,
 			"lampas2-overrides/resource-patches/" + modId + "/3.1.3.003+26.2/" + path));
+	}
+
+	private static void waystonePool(String modId, String version, String path, String upstreamSha256) {
+		register(new ResourcePatch(modId, version, path, upstreamSha256,
+			"lampas2-overrides/resource-patches/" + modId + "/" + version + "/" + path));
 	}
 
 	private static String resourceKey(String normalizedModId, String normalizedPath) {

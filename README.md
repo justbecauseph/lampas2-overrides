@@ -22,7 +22,7 @@ ungated hotbar slot resync after respawn.
 | [Jade nameplates and Custom Name](#jade-nameplates-and-custom-name) | Client Jade; server TAB name sync | Suppresses vanilla in-world entity/player nameplates and shows server-synced player display names in Jade |
 | [Custom Name multi-word names](#custom-name-multi-word-names) | Custom Name 0.4.4-26.2 | Permits spaces in nickname, prefix, and suffix commands for non-operators |
 | [Wilder Delights tab icon](#wilder-delights-tab-icon) | Wilder Delights 1.0.0-26.2 | Stops the creative inventory crashing when it draws the Wilder Delights tab under Wilder Wild 4.3 |
-| [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Paladins and Rogues 3.1.3.003+26.2, RPG Series spells | Transparently repairs malformed `pack.mcmeta` formats, worldgen resources, Rogues' Sharpness, the aeternium weapon recipes and RPG Series spell data at runtime |
+| [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Paladins and Rogues 3.1.3.003+26.2, RPG Series spells, Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2, Trek B0.6.2 | Transparently repairs malformed `pack.mcmeta` formats, worldgen resources, Rogues' Sharpness, the aeternium weapon recipes and RPG Series spell data at runtime |
 | [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.3.3 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
 | [Rogues Sharpness](#rogues-sharpness) | Rogues 3.1.3.003+26.2 | Restores flat Sharpness in place of Rogues' +8% base attack damage per level |
 | [RPG Series spell patches](#rpg-series-spell-patches) | RPG Series 26.2 (Rogues, Wizards, Paladins, Archers, Spell Engine, Skill Tree, Relics) | Martial spell cooldowns ignore haste; crowd-control apply limits reach Pinnacle mobs; Fire Wall and the Meteor burning ground deal 40% of their upstream damage |
@@ -39,6 +39,7 @@ ungated hotbar slot resync after respawn.
 | [Lootr container tick delay](#lootr-container-tick-delay) | Lootr 1.24.41.124 | Skips Lootr's per-tick container data lookup on the ticks where Lootr's own schedule does nothing with it |
 | [Status Effect Bars under VanillaHUD](#status-effect-bars-under-vanillahud) | Status Effect Bars + VanillaHUD | Draws the duration bars on the status effect icons where VanillaHUD puts them |
 | [Fancy World Animations under EntityCulling](#fancy-world-animations-under-entityculling) | Fancy World Animations 1.3.4 + EntityCulling 1.12.0 | Stops the client crashing at startup and keeps Fancy World Animations' animation occlusion culling working |
+| [Waystone-free structures](#waystone-free-structures) | Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2, Trek B0.6.2 | Empties the Structory: Towers and Dungeons and Taverns waystone pools and repoints Trek's to a plaza without the waystone, so new structures generate without waystones |
 
 ## Fancy World Animations under EntityCulling
 
@@ -454,7 +455,7 @@ alphabetically by mod ID unless a mod declares `fabric:resource_load_order`, so 
 Apothic Enchanting's and vanilla's. A version- and SHA-gated resource patch replaces it instead of a
 later-loading pack, so a Rogues update is detected rather than silently overridden.
 
-The virtual resource patch replaces Rogues' file with Apothic Enchanting 3.0.1's Sharpness (flat
+The virtual resource patch replaces Rogues' file with Apothic Enchanting 3.0.3's Sharpness (flat
 `minecraft:damage` add, 1.0 + 0.5 per level above the first; Apothic Enchanting's costs, weight and
 max level 5) plus `"exclusive_set": "#minecraft:exclusive_set/damage"`, which Apothic Enchanting's file
 omits. The result is semantically equal to vanilla 26.2 Sharpness. Apothic Enchanting also ships an
@@ -765,6 +766,35 @@ entries never enter the registries. It applies whenever Better Lib is installed 
 servers as well as clients. Better Lib 2.1.2 (and 2.1.3) already fixed its ZIP filesystem startup and POI tag
 defects upstream, so this mixin is the only Better Lib override.
 
+## Waystone-free structures
+
+Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2 and Trek B0.6.2 place waystones from 16 template
+pools. Lampas2 Overrides replaces those pools so that newly generated structures stop placing waystones:
+
+- **Structory: Towers** uses seven pools under `structory_towers:waystones/*`, which 23 tower structures reference.
+  `waystone`, `mossy_waystone` and `sandy_waystone` place Waystones blocks. The four `*fwaystone` pools place Fabric
+  Waystones (`fwaystones:`) blocks, which decode to air because that mod is not in the pack; they are emptied too.
+  Each template is only the waystone and a jigsaw.
+- **Dungeons and Taverns** uses `nova_structures:shrine/waystone/waystone`, which 11 shrine entry pieces reference.
+- **Trek** has eight pools under `trek:village/waystone/*` (21 town centers reference seven; none references `swamp`).
+  They place Waystones' `waystones:village/*` plaza templates and are not governed by Waystones' `spawnInVillages`
+  config. The patch repoints each pool to `lampas:village/waystone_plaza/common` or
+  `lampas:village/waystone_plaza/desert`, which this mod ships as copies of Waystones 26.2.0.13's templates with the
+  two waystone blocks set to air. The plaza is meant to generate as before (Trek's processors still apply) with
+  nothing on its center. Waystones skips a `village/*/waystone` piece that is within 100 blocks of one placed earlier (`SinglePoolElementMixin`, which matches on the template path); the repointed plaza no longer matches, so it is placed in every Trek town center that has room for it. The templates are always present in the mod's data but only referenced when the Trek patch applies.
+
+Each Structory and Dungeons replacement is the upstream pool with its single element replaced by `minecraft:empty_pool_element`; `name`
+and `fallback` are unchanged. `JigsawPlacement` skips the empty element without the "Empty or non-existent pool"
+warning that a zero-size pool logs, and the jigsaw keeps its `final_state`.
+
+Each patch is gated on the exact mod version and the upstream SHA-256. Any other version of these mods keeps its
+upstream pools and logs a WARN.
+
+Structures that start generating after the update change. Waystones stay in existing chunks, and a structure whose start was computed before the update keeps its stored waystone piece and still places it when its remaining chunks generate.
+
+Unit tests in `WaystonePoolPatchTest` cover the version and SHA-256 gate, the WARN paths, the replacement contents and the
+plaza templates. `tools/waystone-structures-probe` (15 Nov 2026, disposable flat-world dedicated server, seed 1, production jars, lampas2-overrides 1.0.19) placed each of the 21 Structory: Towers structures, 12 Dungeons and Taverns shrine structures and 8 Trek villages three times through the `/place structure` code path. Without this mod, 80 of 120 valid placements held Waystones blocks (160 blocks); with it, none did, all 16 `Applied` lines were logged, and the six Trek village types that placed a waystone plaza in the baseline (cherry, desert, plains, savanna, snowy, taiga) each placed the `lampas:village/waystone_plaza` piece in all three attempts with no template load error. Not covered: `nova_structures:shrine_tower` (invalid placement in the flat world in both runs), `trek:village/swamp_vanilla` (no waystone or plaza piece in either run), natural generation in real terrain and biomes, and how the structures look, which no client has checked.
+
 ## Virtual Resource & Datapack Patches
 
 Minecraft 26.2 enforces strict pack format metadata checks via `PackMetadataSection` and `PackFormat`.
@@ -800,6 +830,8 @@ Patched mods and resources:
      all seven recipes. The kite shield has no stick and loads.
    - **Fix**: Each replacement is the upstream file with that key set to `"minecraft:stick"`, as upstream 3.1.4.1+26.3
      does; the `betterend` load condition is unchanged. Crafting in-game is unverified.
+9. **Waystone template pools (Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2, Trek B0.6.2)**: The 16 waystone pools are changed. Structory and Dungeons pools become empty pools; Trek's are repointed to plaza
+   templates without the waystone. See [Waystone-free structures](#waystone-free-structures).
 
 A registered patch whose mod is installed at a different version is skipped with a WARN naming both
 versions, as a changed SHA-256 is. Fabric Loader reports versions without leading zeros in numeric

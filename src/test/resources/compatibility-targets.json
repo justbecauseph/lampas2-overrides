@@ -142,6 +142,47 @@
         }
       }
     },
+    "structory_towers": {
+      "name": "Structory: Towers",
+      "type": "resource_patch",
+      "versions": {
+        "1.0.17": {
+          "status": "patched",
+          "resources": {
+            "data/structory_towers/worldgen/template_pool/waystones/deepslate_brick_fwaystone.json": "414c87b5791dc3024701f32bbacb671e3d283eac8d9746c0f48edc4a7e349dc5",
+            "data/structory_towers/worldgen/template_pool/waystones/desert_fwaystone.json": "df3c673cacc178d663608c4d2486ecedadf951933449f3aeb0838514749fa831",
+            "data/structory_towers/worldgen/template_pool/waystones/fwaystone.json": "3d6286a4feabb69a1d732adeca90c6596e61e8b1db2016d7b187c830cd3740be",
+            "data/structory_towers/worldgen/template_pool/waystones/mossy_waystone.json": "b19f8302dd87c95ef7d68d5e73a3023fbc39b536b6dfaa968f7cd83d281bcdf6",
+            "data/structory_towers/worldgen/template_pool/waystones/sandy_waystone.json": "05d6a77429eccaa0a0b47e4ead47de8da5070443d32d05a64d887345ee32062f",
+            "data/structory_towers/worldgen/template_pool/waystones/stone_brick_fwaystone.json": "a2954c63280174b461cee4759de15c807cdfa2ba442a7344ede8640c8bcac9a4",
+            "data/structory_towers/worldgen/template_pool/waystones/waystone.json": "4894004faeaa002d735c334777ec72227758e7f5a5adfddf8d8b429c9db402ee"
+          },
+          "artifact_sha256": "226d8cb187e0d4fb75571db017c0abb26176aec16586c337a1b5620f3805a372",
+          "verification_limit": "Unit tests cover the exact version and SHA-256 gate, the WARN paths and that each replacement changes only the pool elements. Not run on a server: registry decode of the replaced pools and structure generation without waystones are unverified."
+        }
+      }
+    },
+    "mr_trek": {
+      "name": "Trek",
+      "type": "resource_patch",
+      "versions": {
+        "1-B0.6.2": {
+          "status": "patched",
+          "resources": {
+            "data/trek/worldgen/template_pool/village/waystone/cherry.json": "850017bd0e275709407cda7e963c645c959a295de194512ce6b1b70647f61f4a",
+            "data/trek/worldgen/template_pool/village/waystone/desert.json": "f7ae2a4357695fcf59a65a172173472dfc2d00e9cdbe6d59e341a28074e80eb5",
+            "data/trek/worldgen/template_pool/village/waystone/plains.json": "0331ef5ca14d7ea87eeb07d391d0b796e81f839b00b5577bdd47fd997a760e92",
+            "data/trek/worldgen/template_pool/village/waystone/savanna.json": "1296c2e4f8c2e60780f6c2d0b5d78e2f6b54a8265741e7b13bb4e41311ec3cbf",
+            "data/trek/worldgen/template_pool/village/waystone/snowy.json": "b26d176c1195cc1878ad8aed82738533a54550cb033d5298d4224ec13def068a",
+            "data/trek/worldgen/template_pool/village/waystone/swamp.json": "08cd294d0e03f6aa3d9752eca5e372ecc4f3924bbba9fefb2c641d7887804529",
+            "data/trek/worldgen/template_pool/village/waystone/swamp_vanilla.json": "7bcb0ac8c4a5155371faf811fc6eb720892b4c3f12eb1f3f731f9a38eefa0585",
+            "data/trek/worldgen/template_pool/village/waystone/taiga.json": "272f6f0e894f8fe61fa811856cb3af93baa6e33a2ad4db25c022cbe3b021a8c6"
+          },
+          "artifact_sha256": "5ea0837a4b1ef02cc702d7e7e49a245f4857591696183b9d2fe56c574cbfc022",
+          "verification_limit": "Unit tests cover the exact version and SHA-256 gate, the WARN paths, that each replacement changes only the element location to lampas:village/waystone_plaza/common or .../desert, and that the two plaza templates equal Waystones 26.2.0.13's with the two waystone blocks set to air and their block entity data removed. Not run on a server: registry decode of the replaced pools, template load and DataFixer upgrade of the DataVersion-1976 templates, and village generation are unverified."
+        }
+      }
+    },
     "rogues": {
       "name": "Rogues (RPG Series)",
       "type": "resource_patch",
@@ -424,8 +465,9 @@
       "name": "Gravestones",
       "type": "structural_mixin",
       "versions": {
-        "1.4.2+26.2+A": {
-          "status": "verified"
+        "1.4.3+26.2+A": {
+          "status": "bytecode-reviewed",
+          "verification_limit": "The three mixin target descriptors match 1.4.2 (javap, 15 Nov 2026); grave text suppression and the outline have not been checked in game on 1.4.3."
         }
       }
     },
@@ -549,7 +591,10 @@
             "data/nova_structures/function/swift_soar_2.mcfunction": "7bb22d468fc0031b98d1cfbc1e6215e75542e558ff985b3bafb3e748b45b5363",
             "data/nova_structures/function/swift_soar_3.mcfunction": "486bfd5df1bc2b5dacaf233e9352c25387fd1572cbf49b8496230f2442593c2a"
           },
-          "verification_limit": "Unit tests verify the exact version gate, the upstream fingerprints and that the packaged swift_soar functions differ from upstream only by the lampas.dnt_fov_boost tag line. Swift Soar FOV behaviour on a happy ghast and the one-time migration are verified only by a dedicated-server runtime probe."
+          "resource_patches": {
+            "data/nova_structures/worldgen/template_pool/shrine/waystone/waystone.json": "b103d4054cde7d17c49cc65bdf2b328997368f9323f7d4dac2a366e2f2186df1"
+          },
+          "verification_limit": "Unit tests verify the exact version gate, the upstream fingerprints and that the packaged swift_soar functions differ from upstream only by the lampas.dnt_fov_boost tag line. Swift Soar FOV behaviour on a happy ghast and the one-time migration are verified only by a dedicated-server runtime probe. Unit tests cover the exact version and SHA-256 gate, the WARN paths and that the waystone pool replacement changes only the pool elements. Not run on a server: registry decode of the replaced pool and structure generation without waystones are unverified."
         }
       }
     },

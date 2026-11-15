@@ -18,7 +18,7 @@ REPO = Path(__file__).resolve().parents[2]
 APPDATA_ROOT = Path(os.environ.get("APPDATA", Path.home() / "AppData" / "Roaming"))
 ACTIVE_ROOT = APPDATA_ROOT / ".minecraft-lampas"
 MC_VERSION = "26.2"
-LOADER_VERSION = "0.19.5"
+LOADER_VERSION = "0.20.1"
 ARTIFACTS = {
     "beb": {
         "filename": "BEB-Fabric-26.1.2-6.0.0.jar",
@@ -482,7 +482,7 @@ def main() -> int:
     print(f"Mode: {args.mode}")
     print(f"Fixture: {fixture}")
     print(f"Logs: {process_log}")
-    print("Launching plain Fabric KnotClient with installed Minecraft 26.2 and Fabric Loader 0.19.5.")
+    print("Launching plain Fabric KnotClient with installed Minecraft 26.2 and Fabric Loader 0.20.1.")
     try:
         with process_log.open("w", encoding="utf-8") as log:
             completed = subprocess.run(

@@ -7,7 +7,7 @@ Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-ac
 entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
 Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, the version-gated Wilder Delights 1.0.0-26.2 creative tab icon under Wilder Wild 4.3, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, version-gated Builder's Boundry 0.2 and Dungeons and Taverns 5.3.2 tick-function optimizations, the version-gated Lootr 1.24.41.124 container tick-delay gate, the version-gated
-IllagerBlabber 1.1.0 voice-registry leak fix, Critical Strike crits for thrown tridents, the ungated hotbar slot resync after respawn, Voxy 0.2.19-beta reverse-Z depth under Iris 1.11.4 shader packs, Status Effect Bars duration bars placed on VanillaHUD's effect icons, Fancy World Animations 1.3.4 animation culling under EntityCulling 1.12.0, Just Enough Filters 3.2.0 `@Inject` parameter-slot corruption under R8-shrunk JEI 30.48.0.244, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3), the Rogues 3.1.3.003+26.2 Sharpness definition, the seven Paladins and Rogues 3.1.3.003+26.2 aeternium weapon recipes, and 66 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised; Fire Wall and Meteor burning ground damage x0.4). The first two
+IllagerBlabber 1.1.0 voice-registry leak fix, Critical Strike crits for thrown tridents, the ungated hotbar slot resync after respawn, Voxy 0.2.19-beta reverse-Z depth under Iris 1.11.4 shader packs, Status Effect Bars duration bars placed on VanillaHUD's effect icons, Fancy World Animations 1.3.4 animation culling under EntityCulling 1.12.0, Just Enough Filters 3.2.0 `@Inject` parameter-slot corruption under R8-shrunk JEI 30.48.0.244, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2 and Trek B0.6.2 waystone pools), the Rogues 3.1.3.003+26.2 Sharpness definition, the seven Paladins and Rogues 3.1.3.003+26.2 aeternium weapon recipes, and 66 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised; Fire Wall and Meteor burning ground damage x0.4). The first two
 features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, the Voxy reverse-Z fix, the Status Effect Bars alignment under VanillaHUD, the Fancy World Animations culling under EntityCulling (its canceller is common-side), and the Just Enough Filters + JEI fix are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium, Builder's Boundry and Dungeons and Taverns datapacks, IllagerBlabber registry fix, Lootr tick-delay gate, thrown-trident crits, and virtual resource patcher are common-side and must also run on a dedicated server; the Wilder Delights tab icon fix is registered common-side because it targets Wilder Delights' main entrypoint class, though only the client runs the icon supplier; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
@@ -63,17 +63,20 @@ disable an unrelated feature.
 | Jade 26.2.11 | `../lampas-server-fabric/mods/Jade-mc26.2-Fabric-26.2.11.jar` |
 | Custom Name 0.4.4 | `../lampas-server-fabric/mods/customname-fabric-0.4.4-26.2.jar` |
 | Wilder Delights 1.0.0-26.2 | `../lampas-server-fabric/mods/wilderdelights-1.0.0-26.2.jar` (SHA-256 `b21035bd…c543`, Modrinth version `eeUXfbLN`) |
-| Gravestones 1.4.2 | `../lampas-server-fabric/mods/gravestones-1.4.2+26.2+A.jar` |
+| Gravestones 1.4.3 | `../lampas-server-fabric/mods/gravestones-1.4.3+26.2+A.jar` |
 | Incendium Legacy 5.5.1 | `../lampas-server-fabric/mods/Incendium_26.2_v5.5.1.jar` |
 | Builder's Boundry 0.2 (`mr_builders_boundry`) | `../lampas-server-fabric/mods/builders-boundry-0.2.jar` |
 | Dungeons and Taverns 5.3.2 (`mr_dungeons_andtaverns`) | `../lampas-server-fabric/mods/dungeons-and-taverns-5.3.2.jar` |
+| Structory: Towers 1.0.17 (`structory_towers`) | `../lampas-server-fabric/mods/Structory_Towers_26.2_v1.0.17.jar` (SHA-256 `226d8cb1…a372`) |
+| Trek B0.6.2 (`mr_trek`, declared version `1-B0.6.2`) | `../lampas-server-fabric/mods/trek-B0.6.2.jar` (SHA-256 `5ea0837a…c022`) |
+| Waystones 26.2.0.13 (`waystones`) | `../lampas-server-fabric/mods/waystones-fabric-26.2-26.2.0.13.jar` (SHA-256 `d6cb9d9f…eff0`); source of the plaza templates in `src/test/resources/upstream/waystones/26.2.0.13/` and of the shipped copies in `src/main/resources/data/lampas/structure/village/waystone_plaza/` |
 | Mob Filter 0.28.1+26.2 | `../lampas-server-fabric/mods/mobfilter-fabric-0.28.1+26.2.jar` |
 | Formations Overworld 1.0.5+c | `../lampas-server-fabric/mods/formationsoverworld-1.0.5c-mc1.21+.jar` |
 | Grim Kingdoms 2.0.3 | `../lampas-server-fabric/mods/grim-kingdoms-lost-structures-ruins-2.0.3.jar` |
 | Pyrite 0.18.3+26.2 | `../lampas-server-fabric/mods/pyrite-0.18.3+26.2-fabric.jar` |
 | Easter's Delight 1.3.1 | `../lampas-server-fabric/mods/eastersdelight-fabric-26.2-1.3.1.jar` |
 | Rogues 3.1.3.003+26.2 | `../lampas-server-fabric/mods/rogues-fabric-3.1.3.003+26.2.jar` |
-| Apothic Enchanting 3.0.1 | `../lampas-server-fabric/mods/ApothicEnchanting-26.2-3.0.1.jar` (source of the flat Sharpness definition) |
+| Apothic Enchanting 3.0.3 | `../lampas-server-fabric/mods/ApothicEnchanting-26.2-3.0.3.jar` (source of the flat Sharpness definition) |
 | RPG Series spell jars | `../lampas-server-fabric/mods/`: `wizards-`, `paladins-`, `archers-fabric-3.1.3.003+26.2.jar`, `spell_engine-fabric-1.10.9+26.2.jar`, `skill_tree-fabric-1.6.2+26.2.jar`, `relics-fabric-1.4.1+26.2.jar`; pins in `tools/generate_rpg_spell_patches.py` |
 | Spell Power 1.6.2 | `../lampas-server-fabric/mods/spell_power-fabric-1.6.2+26.2.jar` (`SpellPower.getHaste`, `SpellPower$Result`) |
 | Critical Strike 1.0.6+26.2 | `../lampas-server-fabric/mods/critical_strike-fabric-1.0.6+26.2.jar` (SHA-256 `69872634…1234`, Modrinth version `eozhJvBr`); nests Tiny Config 4.0.1 (`net.tiny_config.ConfigManager`) |
@@ -84,7 +87,7 @@ disable an unrelated feature.
 | Status Effect Bars 1.0.12 | `../lampas-pipeline/.lampas/cache/modrinth/x02cBj9Y/aAXJqboy/status-effect-bars-1.0.12.jar` |
 | VanillaHUD 3.5.10+26.2 | `../lampas-pipeline/.lampas/cache/modrinth/pWXJaKrX/rcdwsU6K/vanillahud-3.5.10+26.2.jar` |
 | Fancy World Animations 1.3.4 | `../lampas-pipeline/.lampas/cache/modrinth/IAzUFvS6/cSXDNo3Z/fwa+26.2-1.3.4.jar` (SHA-256 `c1b8cbf2…3e02`) |
-| EntityCulling 1.12.0 | `../lampas-pipeline/.lampas/cache/modrinth/NNAgCjsB/WISXYrMc/entityculling-fabric-1.12.0-mc26.2.jar` (SHA-256 `457a6535…d953`; sources https://github.com/tr7zw/EntityCulling) |
+| EntityCulling 1.12.0 | `../lampas-pipeline/.lampas/cache/modrinth/NNAgCjsB/WISXYrMc/entityculling-fabric-1.12.0-mc26.2.jar` (SHA-256 `457a6535…a953`; sources https://github.com/tr7zw/EntityCulling) |
 | MixinSquared 0.3.7-beta.3 | Bundled as `META-INF/jars/mixinsquared-fabric-0.3.7-beta.3.jar` (nested jar-in-jar). C2ME 0.4.2-alpha.0.67 (`environment` `*`) nests `mixinsquared-fabric-0.3.7-beta.1.jar`, so a dedicated server with C2ME already loads that copy through C2ME; Fabric Loader is expected to select this mod's 0.3.7-beta.3 there (not run on a server). AsyncParticles 26.2.2.11+26.2 (`environment` `client`) nests `mixinsquared-fabric-0.3.7-beta.3.jar` and `mixinsquared-neoforge-0.3.7-beta.3.jar`. |
 | Figura sources | `../figura-port/common/src/main/java/org/figuramc/figura/` |
 | ReplayMod sources | `../ReplayMod/src/main/java/com/replaymod/` — preprocessed, read `//#if MC>=…` blocks carefully |
@@ -327,6 +330,8 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   provenance is recorded in `docs/evidence/formations-overworld-1.0.5c.json`.
   A registered patch whose mod is present at another version logs WARN, like a SHA-256 mismatch, so an
   upstream update cannot silently drop a patch.
+- **Waystone pools use `minecraft:empty_pool_element` rather than an empty `elements` list.** `JigsawPlacement` logs `Empty or non-existent pool` for a zero-size pool that is not `minecraft:empty`, and it breaks out silently on the empty element.
+- **Trek's waystone pools are repointed, not emptied.** Their element is Waystones' whole 6x6x6 village plaza (`waystones:village/*`), so an empty pool would also remove the plaza. Each Trek replacement points at `lampas:village/waystone_plaza/common` or `lampas:village/waystone_plaza/desert`, copies of Waystones 26.2.0.13's plaza templates with the two waystone blocks set to air. The templates live in `src/main/resources/data/lampas/structure/village/waystone_plaza/`. Waystones skips a `village/*/waystone` piece that is within 100 blocks of one placed earlier (`SinglePoolElementMixin`, which matches on the template path); the repointed plaza no longer matches, so it is placed in every Trek town center that has room for it.
 - **Fabric Loader drops leading zeros from version components.** It rebuilds a semantic version's
   friendly string from parsed integers, so Rogues' declared `3.1.3.003+26.2` reaches the resolver as
   `3.1.3.3+26.2` (that is what the server's mod list prints). `ResourcePatchKey` normalizes registered

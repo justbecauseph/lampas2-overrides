@@ -55,8 +55,9 @@ public class ResourcePatchResolverTest {
 
 	@Test
 	void registryContainsAllTargetPatches() {
-		// 19 pack metadata, worldgen and Sharpness patches, 7 aeternium recipe patches and 66 RPG Series spell patches.
-		assertEquals(92, ResourcePatchRegistry.getAllPatches().size());
+		// 19 pack metadata, worldgen and Sharpness patches, 7 aeternium recipe patches, 66 RPG Series spell patches
+		// and 16 waystone template pool patches.
+		assertEquals(108, ResourcePatchRegistry.getAllPatches().size());
 
 		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", "pack.mcmeta"));
 		assertNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", "data/formationsoverworld/loot_table/stone_tower/smithing.json"));
@@ -70,7 +71,7 @@ public class ResourcePatchResolverTest {
 			"data/wilderwild/worldgen/configured_feature/stone_pool.json"));
 		assertNotNull(ResourcePatchRegistry.findPatch(ROGUES, ROGUES_VERSION, SHARPNESS));
 		assertNull(ResourcePatchRegistry.findPatch(ROGUES, "3.1.3.004+26.2", SHARPNESS));
-		assertNull(ResourcePatchRegistry.findPatch("apothic_enchanting", "3.0.1", SHARPNESS));
+		assertNull(ResourcePatchRegistry.findPatch("apothic_enchanting", "3.0.3", SHARPNESS));
 	}
 
 	@Test
@@ -278,14 +279,14 @@ public class ResourcePatchResolverTest {
 
 	@Test
 	void roguesSharpnessReplacementIsApothicEnchantingDefinitionWithDamageExclusiveSet() throws IOException {
-		Path aeJar = Path.of("../lampas-server-fabric/mods/ApothicEnchanting-26.2-3.0.1.jar");
-		assumeTrue(Files.exists(aeJar), "Apothic Enchanting 3.0.1 jar not present at " + aeJar);
+		Path aeJar = Path.of("../lampas-server-fabric/mods/ApothicEnchanting-26.2-3.0.3.jar");
+		assumeTrue(Files.exists(aeJar), "Apothic Enchanting 3.0.3 jar not present at " + aeJar);
 		JsonObject expected;
 		try (ZipFile zf = new ZipFile(aeJar.toFile());
 				InputStream in = zf.getInputStream(zf.getEntry(SHARPNESS))) {
 			expected = JsonParser.parseString(new String(in.readAllBytes(), StandardCharsets.UTF_8)).getAsJsonObject();
 		}
-		assertFalse(expected.has("exclusive_set"), "Apothic Enchanting 3.0.1 Sharpness is expected to omit exclusive_set");
+		assertFalse(expected.has("exclusive_set"), "Apothic Enchanting 3.0.3 Sharpness is expected to omit exclusive_set");
 		expected.addProperty("exclusive_set", "#minecraft:exclusive_set/damage");
 
 		ResourcePatch patch = ResourcePatchRegistry.findPatch(ROGUES, ROGUES_VERSION, SHARPNESS);

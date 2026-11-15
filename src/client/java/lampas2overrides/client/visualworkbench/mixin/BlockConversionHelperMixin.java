@@ -30,6 +30,7 @@ public abstract class BlockConversionHelperMixin {
 			method = "copyBoundTags",
 			at = @At("HEAD"),
 			cancellable = true)
+	@SuppressWarnings("deprecation") // intrusive holder; see VisualWorkbenchTagFix#rebindTags
 	private static void lampas2$allowVisualWorkbenchTagRebind(Block from, Block to, CallbackInfo ci) {
 		if (from == null || to == null) {
 			return;

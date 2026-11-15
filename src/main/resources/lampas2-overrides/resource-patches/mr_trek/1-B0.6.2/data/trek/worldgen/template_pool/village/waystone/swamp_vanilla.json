@@ -1,0 +1,15 @@
+{
+  "name": "swamp_vanilla",
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "lampas:village/waystone_plaza/common",
+        "processors": "trek:village/waystone_swamp_vanilla",
+        "projection": "rigid"
+      },
+      "weight": 1
+    }
+  ],
+  "fallback": "trek:village/waystone/swamp_vanilla"
+}

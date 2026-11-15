@@ -1,0 +1,15 @@
+{
+  "name": "desert",
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "lampas:village/waystone_plaza/desert",
+        "processors": "minecraft:empty",
+        "projection": "rigid"
+      },
+      "weight": 1
+    }
+  ],
+  "fallback": "trek:village/waystone/desert"
+}

@@ -1,0 +1,15 @@
+{
+  "name": "plains",
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "lampas:village/waystone_plaza/common",
+        "processors": "trek:village/waystone_plains",
+        "projection": "rigid"
+      },
+      "weight": 1
+    }
+  ],
+  "fallback": "trek:village/waystone/plains"
+}

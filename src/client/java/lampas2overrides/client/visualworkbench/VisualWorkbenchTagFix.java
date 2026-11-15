@@ -53,6 +53,8 @@ public final class VisualWorkbenchTagFix {
 		}
 	}
 
+	// Block#builtInRegistryHolder is the intrusive holder that tags are bound on; vanilla has no non-deprecated accessor.
+	@SuppressWarnings("deprecation")
 	public static void rebindTags(Block from, Block to, Identifier targetId) {
 		Set<TagKey<Block>> sourceTags = from.builtInRegistryHolder()
 				.tags()

@@ -131,12 +131,16 @@ public class CompatibilityManifestTest {
 				.put(patch.resourcePath(), patch.expectedSha256());
 		}
 
-		// Each patched version's resources map lists exactly the registered paths and upstream SHA-256 values.
+		// Each patched version's resources map lists exactly the registered paths and upstream SHA-256 values. A version
+		// that is also a datapack_replacement lists its resource patches under resource_patches, because its resources
+		// map holds the datapack files.
 		for (Map.Entry<String, Map<String, String>> entry : registered.entrySet()) {
 			String[] modAndVersion = entry.getKey().split(" ");
-			JsonObject resources = targets.getAsJsonObject(modAndVersion[0]).getAsJsonObject("versions")
-				.getAsJsonObject(modAndVersion[1]).getAsJsonObject("resources");
-			assertNotNull(resources, "Manifest missing resources for " + entry.getKey());
+			JsonObject patched = targets.getAsJsonObject(modAndVersion[0]).getAsJsonObject("versions")
+				.getAsJsonObject(modAndVersion[1]);
+			String key = patched.has("resource_patches") ? "resource_patches" : "resources";
+			JsonObject resources = patched.getAsJsonObject(key);
+			assertNotNull(resources, "Manifest missing " + key + " for " + entry.getKey());
 			Map<String, String> listed = new HashMap<>();
 			resources.entrySet().forEach(resource -> listed.put(resource.getKey(), resource.getValue().getAsString()));
 			assertEquals(entry.getValue(), listed, "Manifest resources differ from the registry for " + entry.getKey());
