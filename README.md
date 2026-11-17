@@ -18,6 +18,7 @@ ungated hotbar slot resync after respawn.
 | [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.1 | Removes a redundant 20 Hz entity-ID scan, throttles living-mob initialization, and stops helper markers accumulating in chunk [0, 0] |
 | [Builder's Boundry tick optimization](#builders-boundry-tick-optimization) | Builder's Boundry 0.2 | Replaces 26 full entity scans per tick with one scan every 4 ticks and repairs the wall-clock function for 26.2 |
 | [Dungeons and Taverns Swift Soar tick](#dungeons-and-taverns-swift-soar-tick) | Dungeons and Taverns 5.3.2 | Limits the per-tick FOV-modifier removal to players that carry it |
+| [Gardener's Dream pot-break check](#gardeners-dream-pot-break-check) | Gardener's Dream 2.6 | Runs the scheduled pot-break check once per firing instead of once per online player |
 | [Gravestones death inscription and glow](#gravestones-death-inscription-and-glow) | Gravestones | Suppresses technical death grave text and renders a glowing outline only on your own graves |
 | [Jade nameplates and Custom Name](#jade-nameplates-and-custom-name) | Client Jade; server TAB name sync | Suppresses vanilla in-world entity/player nameplates and shows server-synced player display names in Jade |
 | [Custom Name multi-word names](#custom-name-multi-word-names) | Custom Name 0.4.4-26.2 | Permits spaces in nickname, prefix, and suffix commands for non-operators |
@@ -418,6 +419,30 @@ enchantment functions are upstream's with one added line that tags passengers `l
 modifier is applied; `tick` removes the modifier and tag only from tagged players who are no longer riding, runs a
 one-time per-player migration (`lampas.dnt_fov_migrated`) that clears a modifier applied before the override, and keeps
 the chart-bundle line verbatim. Gated on the exact version and the SHA-256 of the four upstream functions.
+
+## Gardener's Dream pot-break check
+
+Gardener's Dream 2.6 (`mr_gardeners_dream`) schedules `gardenersdream:pot_break_check` every 2.0 s (the default
+`#gd_setting gd_check_delay` 3; 1.0 s and 0.3 s at settings 2 and 1). Upstream runs `execute as @a run function
+gardenersdream:pot_broken`, and each of `pot_broken`'s four lines is `execute align xyz as
+@e[type=block_display,tag=<smallpp|bigpp|widepp|gd_halfpot_pot>] at @s unless block ... run function ...`. The
+selectors carry no `distance`, `x/y/z` or `dx/dy/dz`, so each one walks every loaded entity in every level, and the
+function did that four times per online player. In the 200-player load test (spread layout, about 36,000 loaded
+entities) one firing took 0.9–1.0 s, a stall every 40 ticks averaging 23–31 ms/tick.
+
+The version-gated `gardeners_dream_2_6_optimizations` datapack replaces `pot_break_check` with one
+`execute if entity @a[limit=1] run function gardenersdream:pot_broken` followed by upstream's three reschedule
+lines unchanged. `pot_broken` never reads the player it runs as: every line rebinds the executor with `as @e[...]`
+and the position and dimension with `at @s`, and `plant_break` and `destroy_halfpot` read only that display entity
+(`@s[gamemode=creative]` in `destroy_halfpot` is the display, so it never matches). Upstream's first pass kills every
+display whose pot is gone, so passes 2..N found nothing. Running from the scheduler's source (server, Overworld)
+instead of a player's does not narrow the search, because a selector without positional options is not world-limited
+in 26.2 (`EntitySelector.findEntitiesRaw` loops over `getAllLevels()`). The `@a[limit=1]` test keeps upstream's
+behaviour of not checking while nobody is online. The pack registers only when the mod is exactly 2.6 and
+`pot_break_check`, `pot_broken`, `plant_break` and `destroy_halfpot` match their recorded SHA-256.
+
+On 17 Nov 2026 a temporary, uncommitted GameTest on this repo's GameTest server, with the real Gardener's Dream 2.6 jar in its `mods/` folder, logged `Enabled the version-gated Gardener's Dream 2.6 performance datapack`, found the pack selected after `mr_gardeners_dream`, and with one mock player online ran `function gardenersdream:pot_break_check` once: orphaned `smallpp` and `gd_halfpot_pot` displays in the Overworld and a `widepp` display in the Nether were removed and dropped their plant, and a `smallpp` display on a flower pot stayed. Not checked: a real server with real players and player-placed pots, and the tick-time saving, which the
+load test has to measure.
 
 ## Wilder Wild stone pool
 

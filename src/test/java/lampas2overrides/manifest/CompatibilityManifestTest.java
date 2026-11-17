@@ -19,6 +19,7 @@ import com.google.gson.JsonParser;
 import lampas2overrides.buildersboundry.BuildersBoundryCompatibility;
 import lampas2overrides.datapack.DatapackReplacement;
 import lampas2overrides.dungeonstaverns.DungeonsTavernsCompatibility;
+import lampas2overrides.gardenersdream.GardenersDreamCompatibility;
 import lampas2overrides.incendium.IncendiumCompatibility;
 import lampas2overrides.lootrtickgate.LootrTickGateProfile;
 import lampas2overrides.resourcefix.ResourcePatch;
@@ -49,6 +50,7 @@ public class CompatibilityManifestTest {
 		// Datapack replacements built on DatapackReplacement list exactly their fingerprinted upstream resources.
 		assertDatapackReplacement(targets, BuildersBoundryCompatibility.MOD_ID, BuildersBoundryCompatibility.getProfiles());
 		assertDatapackReplacement(targets, DungeonsTavernsCompatibility.MOD_ID, DungeonsTavernsCompatibility.getProfiles());
+		assertDatapackReplacement(targets, GardenersDreamCompatibility.MOD_ID, GardenersDreamCompatibility.getProfiles());
 
 		JsonObject lootr = targets.getAsJsonObject(LootrTickGateProfile.MOD_ID).getAsJsonObject("versions")
 			.getAsJsonObject(LootrTickGateProfile.VERSION);

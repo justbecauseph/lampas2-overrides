@@ -598,6 +598,24 @@
         }
       }
     },
+    "mr_gardeners_dream": {
+      "name": "Gardener's Dream",
+      "type": "datapack_replacement",
+      "versions": {
+        "2.6": {
+          "status": "patched",
+          "artifact_sha256": "e8969dc76b067fe1bef64c948db13a4d43d1c2a8f92975002e8a707635f1c376",
+          "pack_id": "lampas2-overrides:gardeners_dream_2_6_optimizations",
+          "resources": {
+            "data/gardenersdream/function/pot_break_check.mcfunction": "87ba3baeb6b5c8979abb5bf4271ca620757be3760a88cedea5cf08e5afeb7538",
+            "data/gardenersdream/function/pot_broken.mcfunction": "151ae3e59a190b97ac47c7b55be9e1149ae30cc294386029f0055a8d2907bede",
+            "data/gardenersdream/function/plant_break.mcfunction": "d43df0365c966ac7e07f92071aef8c1d0657a09f1c1add4ac53641805bf0bfe6",
+            "data/gardenersdream/function/destroy_halfpot.mcfunction": "6a597481b65a2b0f33efb1a949f94a68d524c589bc441e5e4bbe6b8b0fcf1e73"
+          },
+          "verification_limit": "Unit tests verify the exact version gate, the upstream fingerprints, that the replacement runs pot_broken once per firing only while a player is online, and that the three reschedule lines are upstream's verbatim. The equivalence argument (pot_broken, plant_break and destroy_halfpot never read the executing player, and un-ranged @e selectors search every level) was checked by reading the 2.6 functions and the 26.2 EntitySelector sources. On 17 Nov 2026 a temporary, uncommitted GameTest on this repo's GameTest server, with the real Gardener's Dream 2.6 jar in its mods/ folder, logged Enabled the version-gated Gardener's Dream 2.6 performance datapack, found the pack selected after mr_gardeners_dream, and with one mock player online ran function gardenersdream:pot_break_check once: orphaned smallpp and gd_halfpot_pot displays in the Overworld and a widepp display in the Nether were removed and dropped their plant, and a smallpp display on a flower pot stayed. Not checked: a real server with player-placed pots, and the tick-time saving."
+        }
+      }
+    },
     "justenoughfilters": {
       "name": "Just Enough Filters",
       "type": "exact_mixin_gate",

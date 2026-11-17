@@ -6,9 +6,9 @@ heads, Figura avatars under Punchy! Moves' root-part body tilt, the Punchy! Move
 Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-activated threaded-worldgen
 entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
-Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, the version-gated Wilder Delights 1.0.0-26.2 creative tab icon under Wilder Wild 4.3, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, version-gated Builder's Boundry 0.2 and Dungeons and Taverns 5.3.2 tick-function optimizations, the version-gated Lootr 1.24.41.124 container tick-delay gate, the version-gated
+Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, the version-gated Wilder Delights 1.0.0-26.2 creative tab icon under Wilder Wild 4.3, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, version-gated Builder's Boundry 0.2 and Dungeons and Taverns 5.3.2 tick-function optimizations, the version-gated Gardener's Dream 2.6 pot-break-check optimization, the version-gated Lootr 1.24.41.124 container tick-delay gate, the version-gated
 IllagerBlabber 1.1.0 voice-registry leak fix, Critical Strike crits for thrown tridents, the ungated hotbar slot resync after respawn, Voxy 0.2.19-beta reverse-Z depth under Iris 1.11.4 shader packs, Status Effect Bars duration bars placed on VanillaHUD's effect icons, Fancy World Animations 1.3.4 animation culling under EntityCulling 1.12.0, Just Enough Filters 3.2.0 `@Inject` parameter-slot corruption under R8-shrunk JEI 30.48.0.244, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2 and Trek B0.6.2 waystone pools), the Rogues 3.1.3.003+26.2 Sharpness definition, the seven Paladins and Rogues 3.1.3.003+26.2 aeternium weapon recipes, and 66 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised; Fire Wall and Meteor burning ground damage x0.4). The first two
-features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, the Voxy reverse-Z fix, the Status Effect Bars alignment under VanillaHUD, the Fancy World Animations culling under EntityCulling (its canceller is common-side), and the Just Enough Filters + JEI fix are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium, Builder's Boundry and Dungeons and Taverns datapacks, IllagerBlabber registry fix, Lootr tick-delay gate, thrown-trident crits, and virtual resource patcher are common-side and must also run on a dedicated server; the Wilder Delights tab icon fix is registered common-side because it targets Wilder Delights' main entrypoint class, though only the client runs the icon supplier; the Lootr ↔ Fast Item Frames bridge has common server
+features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, the Voxy reverse-Z fix, the Status Effect Bars alignment under VanillaHUD, the Fancy World Animations culling under EntityCulling (its canceller is common-side), and the Just Enough Filters + JEI fix are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium, Builder's Boundry, Dungeons and Taverns and Gardener's Dream datapacks, IllagerBlabber registry fix, Lootr tick-delay gate, thrown-trident crits, and virtual resource patcher are common-side and must also run on a dedicated server; the Wilder Delights tab icon fix is registered common-side because it targets Wilder Delights' main entrypoint class, though only the client runs the icon supplier; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -67,6 +67,7 @@ disable an unrelated feature.
 | Incendium Legacy 5.5.1 | `../lampas-server-fabric/mods/Incendium_26.2_v5.5.1.jar` |
 | Builder's Boundry 0.2 (`mr_builders_boundry`) | `../lampas-server-fabric/mods/builders-boundry-0.2.jar` |
 | Dungeons and Taverns 5.3.2 (`mr_dungeons_andtaverns`) | `../lampas-server-fabric/mods/dungeons-and-taverns-5.3.2.jar` |
+| Gardener's Dream 2.6 (`mr_gardeners_dream`) | `../lampas-server-fabric/mods/gardeners-dream-2.6.jar` (SHA-256 `e8969dc7…c376`) |
 | Structory: Towers 1.0.17 (`structory_towers`) | `../lampas-server-fabric/mods/Structory_Towers_26.2_v1.0.17.jar` (SHA-256 `226d8cb1…a372`) |
 | Trek B0.6.2 (`mr_trek`, declared version `1-B0.6.2`) | `../lampas-server-fabric/mods/trek-B0.6.2.jar` (SHA-256 `5ea0837a…c022`) |
 | Waystones 26.2.0.13 (`waystones`) | `../lampas-server-fabric/mods/waystones-fabric-26.2-26.2.0.13.jar` (SHA-256 `d6cb9d9f…eff0`); source of the plaza templates in `src/test/resources/upstream/waystones/26.2.0.13/` and of the shipped copies in `src/main/resources/data/lampas/structure/village/waystone_plaza/` |
@@ -162,6 +163,12 @@ place a wall clock on the ground and confirm it is returned; `/scoreboard player
 must cycle 0..4. Dungeons and Taverns: sprint on a Swift Soar happy ghast, dismount, and confirm
 `/attribute @s movement_speed modifier value get nova_structures:boost_player_fov` fails (modifier gone) and the
 `lampas.dnt_fov_boost` tag is cleared; every online player must gain `lampas.dnt_fov_migrated` once.
+
+For Gardener's Dream, dedicated-server startup must log `Enabled the version-gated Gardener's Dream 2.6 performance datapack`
+and `/datapack list enabled` must show the Lampas2 Gardener's Dream pack after `mr_gardeners_dream`. Plant a flower in a
+flower pot, a big plant in a decorated pot and fill a half-pot, break each pot block, and confirm within one check delay
+(2.0 s by default) that the display entity is gone and the plant and pot items drop; repeat in the Nether to cover the
+scheduler's Overworld source.
 
 For Mob Filter, dedicated-server startup must succeed and, once the Mob Filter target
 classes are loaded by an entity-add or worldgen path, `MixinServiceMixin` and `WorldgenThreadSpawnAttemptMixin`
@@ -323,6 +330,14 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   ghast.** `attribute … modifier remove` on an absent modifier throws, and the exception message is built eagerly, so
   a per-player per-tick removal costs ~24 µs per player-tick even when nothing is removed. The override tags
   passengers when the modifier is added and only clears tagged players.
+- **Gardener's Dream 2.6's `pot_break_check` ran `pot_broken` once per online player for nothing.** `pot_broken`'s four
+  `as @e[type=block_display,tag=…] at @s` lines rebind executor, position and dimension, and `plant_break` and
+  `destroy_halfpot` read only the display (`@s[gamemode=creative]` there is the display and never matches), so the
+  player is never read and passes 2..N find nothing the first pass left. The override runs it once, from the
+  scheduler's source. That source is the server in the Overworld, which does not narrow the search: in 26.2 only
+  `distance`, `x/y/z` and `dx/dy/dz` call `EntitySelectorParser.setWorldLimited`, and an unlimited selector loops over
+  `getAllLevels()`. If a later release reads the player anywhere in that chain, the override is wrong; the fingerprint
+  gate covers all four functions for that reason.
 - **Resource patches are keyed by mod ID, exact version, and resource path.** `ResourcePatchKey` and
   `ResourcePatchRegistry` index each patch by all three, so a patch for one release never applies to another
   release, and each patch fails closed on a changed SHA-256. Formations Overworld 1.0.5+c requires only the root
@@ -649,10 +664,13 @@ datapack/
   ResourceFingerprint       SHA-256 of upstream resources
 buildersboundry/            Builder's Boundry 0.2 profile and initializer
 dungeonstaverns/            Dungeons and Taverns 5.3.2 profile and initializer
+gardenersdream/             Gardener's Dream 2.6 profile and initializer
 resourcepacks/builders_boundry_0_2_optimizations/
   data/diesse/function/acs/ main replacement and lampas/ dispatch for verified Builder's Boundry 0.2
 resourcepacks/dungeons_and_taverns_5_3_2_optimizations/
   data/nova_structures/function/ tick and swift_soar_1..3 replacements for verified Dungeons and Taverns 5.3.2
+resourcepacks/gardeners_dream_2_6_optimizations/
+  data/gardenersdream/function/ pot_break_check replacement for verified Gardener's Dream 2.6
 resourcefix/
   ResourcePatchKey          composite key (modId, version, resourcePath) for multi-version patches
   ResourcePatchRegistry     registry of defective mod resources with SHA-256 fingerprints
