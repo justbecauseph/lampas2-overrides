@@ -1,14 +1,12 @@
 package lampas2overrides.gardenersdream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -17,30 +15,21 @@ import net.minecraft.resources.Identifier;
 
 public class GardenersDreamCompatibilityTest {
 
-	private static final String PACK_ROOT = "resourcepacks/gardeners_dream_2_6_optimizations/";
+	private static final String PACK_ROOT = "resourcepacks/gardeners_dream_optimizations/";
 
 	@Test
-	void supportsOnlyVerifiedVersions() {
-		assertTrue(GardenersDreamCompatibility.supportsVersion("2.6"));
-		assertFalse(GardenersDreamCompatibility.supportsVersion("2.5"));
-		assertFalse(GardenersDreamCompatibility.supportsVersion("2.7"));
-		assertFalse(GardenersDreamCompatibility.supportsVersion("2.6.1"));
-		assertFalse(GardenersDreamCompatibility.supportsVersion(""));
-	}
-
-	@Test
-	void versionProfileMapsToPack() {
-		Optional<DatapackReplacement.Profile> profile = GardenersDreamCompatibility.getProfile("2.6");
-		assertTrue(profile.isPresent());
-		assertEquals("2.6", profile.get().version());
-		assertEquals(Identifier.fromNamespaceAndPath("lampas2-overrides", "gardeners_dream_2_6_optimizations"),
-				profile.get().packId());
+	void profileMapsToPackAndFingerprintsTheWholeChain() {
+		DatapackReplacement.Profile profile = GardenersDreamCompatibility.getProfile();
+		// The version only records where the fingerprints were audited; registration does not compare it.
+		assertEquals("2.6", profile.version());
+		assertEquals(Identifier.fromNamespaceAndPath("lampas2-overrides", "gardeners_dream_optimizations"), profile.packId());
 		// The replaced function plus pot_broken and the two functions it calls, which must not read the player.
-		assertEquals(4, profile.get().expectedResources().size());
+		assertEquals(4, profile.expectedResources().size());
 		for (String function : List.of("pot_break_check", "pot_broken", "plant_break", "destroy_halfpot")) {
-			assertTrue(profile.get().expectedResources().containsKey(
+			assertTrue(profile.expectedResources().containsKey(
 					"data/gardenersdream/function/" + function + ".mcfunction"), function);
 		}
+		assertEquals(java.util.Map.of("2.6", profile), GardenersDreamCompatibility.getProfiles());
 	}
 
 	@Test

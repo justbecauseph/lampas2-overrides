@@ -1,26 +1,27 @@
 package lampas2overrides.gardenersdream;
 
 import java.util.Map;
-import java.util.Optional;
 
 import lampas2overrides.datapack.DatapackReplacement;
 import net.minecraft.resources.Identifier;
 
 /**
- * Version profiles for the Gardener's Dream pot-break-check replacement. The replacement rewrites
+ * Profile for the Gardener's Dream pot-break-check replacement. The replacement rewrites
  * {@code gardenersdream:pot_break_check} to run {@code pot_broken} once per firing instead of once per online
  * player. It is only equivalent while nothing reached from {@code pot_broken} reads the executing player, so the
- * profile fingerprints {@code pot_broken} and both functions it calls as well as the replaced function.
+ * profile fingerprints {@code pot_broken} and both functions it calls as well as the replaced function. The pack is
+ * not gated on the mod version: any release whose four functions match the fingerprints audited on 2.6 gets it.
  */
 public final class GardenersDreamCompatibility {
 
 	public static final String MOD_ID = "mr_gardeners_dream";
 	public static final String MOD_NAME = "Gardener's Dream";
+	public static final String AUDITED_VERSION = "2.6";
 
-	private static final DatapackReplacement.Profile PROFILE_2_6 = new DatapackReplacement.Profile(
-			"2.6",
-			Identifier.fromNamespaceAndPath("lampas2-overrides", "gardeners_dream_2_6_optimizations"),
-			"Lampas2 Gardener's Dream 2.6 optimizations",
+	private static final DatapackReplacement.Profile PROFILE = new DatapackReplacement.Profile(
+			AUDITED_VERSION,
+			Identifier.fromNamespaceAndPath("lampas2-overrides", "gardeners_dream_optimizations"),
+			"Lampas2 Gardener's Dream optimizations",
 			Map.of(
 					// Replaced.
 					"data/gardenersdream/function/pot_break_check.mcfunction",
@@ -35,22 +36,15 @@ public final class GardenersDreamCompatibility {
 			)
 	);
 
-	private static final Map<String, DatapackReplacement.Profile> PROFILES = Map.of(
-			"2.6", PROFILE_2_6
-	);
-
 	private GardenersDreamCompatibility() {
 	}
 
-	public static boolean supportsVersion(String version) {
-		return PROFILES.containsKey(version);
+	public static DatapackReplacement.Profile getProfile() {
+		return PROFILE;
 	}
 
-	public static Optional<DatapackReplacement.Profile> getProfile(String version) {
-		return Optional.ofNullable(PROFILES.get(version));
-	}
-
+	/** The single profile keyed by the version its fingerprints were audited on, for the compatibility manifest. */
 	public static Map<String, DatapackReplacement.Profile> getProfiles() {
-		return PROFILES;
+		return Map.of(AUDITED_VERSION, PROFILE);
 	}
 }

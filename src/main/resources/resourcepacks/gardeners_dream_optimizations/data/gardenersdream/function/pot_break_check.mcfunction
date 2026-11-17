@@ -1,4 +1,4 @@
-# Lampas2 override of Gardener's Dream 2.6 pot_break_check.
+# Lampas2 override of Gardener's Dream pot_break_check (audited on 2.6).
 # Upstream runs pot_broken once per online player (execute as @a). pot_broken re-binds @s on every line with an
 # un-ranged @e[type=block_display,tag=...] selector and never reads the player, so each pass after the first walks
 # the whole loaded entity list four more times and finds nothing left to do. One pass per firing does the same work.
