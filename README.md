@@ -15,7 +15,7 @@ ungated hotbar slot resync after respawn.
 | [Additional Lanterns chunk loading](#additional-lanterns-chunk-loading) | Additional Lanterns 1.1.2 | Prevents redstone neighbor checks from synchronously loading unloaded chunks |
 | [Mob Filter worldgen safety and dimension context](#mob-filter-worldgen-safety-and-dimension-context) | Mob Filter | Prevents C2ME worldgen deadlock on rejected mobs and provides dimension context for worldgen rules |
 | [Visual Workbench tag rebinding](#visual-workbench-tag-rebinding) | Visual Workbench + Puzzles Lib | Prevents replay loading and tag reload crashes from stale Visual Workbench tags |
-| [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.1 | Removes a redundant 20 Hz entity-ID scan, throttles living-mob initialization, and stops helper markers accumulating in chunk [0, 0] |
+| [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.1 | Removes a redundant 20 Hz entity-ID scan, throttles living-mob initialization, gates the per-player held-item checks and the frozen-mob walk, and stops helper markers accumulating in chunk [0, 0] |
 | [Builder's Boundry tick optimization](#builders-boundry-tick-optimization) | Builder's Boundry 0.2 | Replaces 26 full entity scans per tick with one scan every 4 ticks and repairs the wall-clock function for 26.2 |
 | [Dungeons and Taverns Swift Soar tick](#dungeons-and-taverns-swift-soar-tick) | Dungeons and Taverns 5.3.2 | Limits the per-tick FOV-modifier removal to players that carry it |
 | [Gardener's Dream pot-break check](#gardeners-dream-pot-break-check) | Gardener's Dream (any version; audited on 2.6) | Runs the scheduled pot-break check once per firing instead of once per online player |
@@ -354,8 +354,9 @@ bytecode of 26.2.4 (checked 2026-10-13).
 Incendium Legacy 5.5.1 scans every living non-player entity each tick to repair missing or
 invalid entity IDs, even though the same clock initializes previously unseen mobs. Lampas2 Overrides
 installs an always-enabled built-in datapack that removes that redundant scan and runs only the unseen
-living-mob initialization pass every five ticks (4 Hz). Existing ticking mobs, frozen-state updates,
-particles, player logic, altar items, and short-lived projectile initialization remain at 20 Hz.
+living-mob initialization pass every five ticks (4 Hz). Existing ticking mobs, particles, player logic, altar
+items, and short-lived projectile initialization remain at 20 Hz; frozen-state updates run at 20 Hz while armed
+(see below).
 
 The pack also makes the 15-bit ID rollover safe without relying on the removed validation pass. It
 resets before assigning 32768, immediately reassigns every existing player and initialized mob, and
@@ -371,6 +372,29 @@ force-load before every count, so the existing markers become visible and upstre
 kills every duplicate and summons one. The first check after the chunk is re-added can add one extra marker
 while the chunk's entities load; the next 7-second check removes it. If another mod blocks force-loading
 outright, this override cannot help.
+
+The pack also gates two per-tick costs that do nothing on almost every tick:
+
+- **Held-item checks.** Upstream's `player/main` runs as every player every tick, and seven consecutive lines in it
+  (Voltaic Trident, Hefty Pickaxe, Scout's Battle Helm, Firestorm, the two loaded-crossbow arrow checks, Sentry's Wrath)
+  each evaluate loot-table predicates on the player's slots. Every one of them requires an item whose `custom_data`
+  holds `{incendium:{item:'…'}}` in the main hand, off hand or head slot. The override moves those seven lines, unchanged
+  and in order, into `player/lampas_held_items` and calls it from the same place only when
+  `incendium:lampas/holds_incendium_item` passes: a check of those three slots for `custom_data` `{incendium:{}}`, which
+  Minecraft's partial NBT match accepts for any item carrying an `incendium` compound. No line can match while the
+  check fails, so behaviour is unchanged. The gate uses the same `execute if entity @s[predicate=…]` form as upstream,
+  so a predicate that fails to load makes the gate false rather than dropping all of `player/main`. The rest of
+  `player/main` is upstream's text, and the profile fingerprints the ten predicate files the seven lines use.
+- **Frozen-mob walk.** Upstream's clock runs `execute as @e[type=#incendium:mobs,scores={in.frozen=1..},…]` every
+  tick; a type tag does not narrow the walk, so it visits every loaded entity although a mob is frozen only after a
+  Chilling Blade hit. `item/chilling_blade/on_hit`, the only function that gives a mob `in.frozen`, now also sets the
+  fake player `$lampas.frozen` in `in.dummy` to 200. The clock runs the walk (moved to `clocks/lampas_frozen`) only
+  while that score is positive, counts it down, and re-arms it when it runs out while any loaded mob is still frozen.
+  Side effect: a mob that is still frozen when its chunk unloads, or that was frozen before this version was deployed,
+  keeps its `in.frozen` score but gets no freeze particles and no countdown after it loads again, until the next
+  Chilling Blade hit anywhere re-arms the walk. The same holds for a player hit in PvP who logs out or stays dead
+  while the score runs out (`#incendium:mobs` includes players, and `@e` skips dead entities). `in.frozen` drives only those particles and that countdown; the
+  slowness from the hit is a normal effect and is unaffected.
 
 This feature fails closed using an explicit version profile for Incendium 5.5.1, the only supported release.
 It registers `incendium_5_5_1_optimizations` only when Incendium 5.5.1 matches that profile's exact SHA-256

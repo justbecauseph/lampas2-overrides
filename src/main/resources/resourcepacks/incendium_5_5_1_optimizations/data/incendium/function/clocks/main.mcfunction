@@ -1,4 +1,4 @@
-# Incendium 5.5.1 clock with Lampas2's mob-init scan throttled to every 5 ticks.
+# Incendium 5.5.1 clock with Lampas2's mob-init scan throttled to every 5 ticks and the frozen-mob walk gated.
 
 schedule function incendium:clocks/main 1t replace
 
@@ -11,7 +11,9 @@ execute if score $lampas.mob_init in.dummy matches 5.. run function incendium:cl
 
 execute as @e[type=#incendium:mobs_no_player, tag=in.ticking_entity] at @s run function incendium:entity/mob/main
 
-execute as @e[type=#incendium:mobs,scores={in.frozen=1..},predicate=incendium:random/10] run function incendium:entity/chilling
+# The frozen-mob walk visits every loaded entity. It runs only while item/chilling_blade/on_hit has armed
+# $lampas.frozen; clocks/lampas_frozen counts it down and re-arms it while a loaded mob is still frozen.
+execute if score $lampas.frozen in.dummy matches 1.. run function incendium:clocks/lampas_frozen
 
 # Non-living initialization remains at 20 Hz because it detects altar items and short-lived projectiles.
 execute as @e[type=#incendium:other, tag=!in.checked] at @s run function incendium:entity/other/init

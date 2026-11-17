@@ -154,6 +154,11 @@ fingerprint mismatch must instead log that the performance datapack remains disa
 For the helper marker, `/forceload query 0 0` in the overworld must report the chunk as force-loaded, and
 `/execute store result score #n in.dummy if entity @e[type=marker,tag=in.helper_entity]` must settle at 1
 within two 7-second clock cycles, including on a world that already holds duplicate markers.
+For the held-item gate, a player with an Incendium item only in the main hand, only in the off hand, or only on the head
+must still run that item's `player/main` line (`execute as @p if predicate incendium:lampas/holds_incendium_item` succeeds),
+and a player whose Incendium items sit only in other slots must fail the predicate. For the frozen-mob gate, a Chilling
+Blade hit must set `$lampas.frozen` in `in.dummy` to 200, the mob's `in.frozen` must count down while it is positive, and
+the score must be re-armed to 200 when it reaches 0 while the mob is still frozen.
 
 For Builder's Boundry and Dungeons and Taverns, dedicated-server startup must log
 `Enabled the version-gated Builder's Boundry 0.2 performance datapack` and
@@ -312,6 +317,21 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   datapack. 5.5.1 preserves upstream's freezing delegate (`entity/chilling`) while removing the redundant
   20 Hz entity-ID scan and throttling living mob initialization. Unknown versions or tampered functions disable
   the datapack fail-closed.
+- **Incendium's held-item lines and frozen-mob walk are gated, and both gates rest on whole-mod facts.** The
+  `player/main` override moves upstream's seven consecutive held-item lines into `player/lampas_held_items` behind
+  `incendium:lampas/holds_incendium_item` (main hand, off hand or head with `custom_data` `{incendium:{}}`;
+  `CustomData.matchedBy` calls `NbtUtils.compareNbt(expected, actual, true)`, which treats an expected compound as a
+  subset). That is only sound while each of the seven lines' selectors includes at least one predicate requiring an
+  `incendium` custom-data compound in the main hand, off hand or head (the two `check_arrow` lines also test
+  `holding/loaded`, which reads only `charged_projectiles`, but each ANDs it with `holding/firestorm` or
+  `holding/holy_wrath`). The profile fingerprints those ten predicate files; `IncendiumCompatibilityTest` rebuilds
+  upstream `player/main` from the two files and checks its SHA-256. Keep the gate in the selector form
+  `execute if entity @s[predicate=…]`: `execute if predicate <id>` resolves the ID when the function is compiled, so a
+  predicate that fails to load would drop all of `player/main`, while the selector form just evaluates false.
+  The frozen gate (`$lampas.frozen` in `in.dummy`, armed for 200 ticks by `item/chilling_blade/on_hit`, run down and
+  re-armed by `clocks/lampas_frozen`) is only sound while `on_hit` is the one function that sets `in.frozen`; in 5.5.1
+  `in.frozen` appears only in `load`, `clocks/main`, `entity/chilling` and `item/chilling_blade/on_hit`. Re-check both
+  by searching every function and predicate before widening the profile to another release.
 - **Incendium's helper marker needs overworld chunk [0, 0] loaded.** `technical/summon_helper` counts
   `in.helper_entity` markers with `@e`, which cannot see entities in unloaded chunks, and summons a new one
   whenever the count is not 1. Upstream force-loads [0, 0] only from `technical/load`. On the live server that
@@ -661,7 +681,8 @@ incendium/
   IncendiumOptimization     fingerprints Incendium and registers version-specific built-in pack
   IncendiumCompatibility    version profiles and upstream-function fingerprint gate
 resourcepacks/incendium_5_5_1_optimizations/
-  data/incendium/function/  clock and entity-ID overrides for verified Incendium 5.5.1
+  data/incendium/function/  clock, entity-ID, held-item gate and Chilling Blade overrides for verified Incendium 5.5.1
+  data/incendium/predicate/lampas/ holds_incendium_item gate predicate
 datapack/
   DatapackReplacement       version- and fingerprint-gated built-in datapack registration; registerAnyVersion skips the version (and, with an empty map, the fingerprints)
   ResourceFingerprint       SHA-256 of upstream resources

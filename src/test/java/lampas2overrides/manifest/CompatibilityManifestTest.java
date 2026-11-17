@@ -46,6 +46,11 @@ public class CompatibilityManifestTest {
 		JsonObject incendium = targets.getAsJsonObject("incendium").getAsJsonObject("versions");
 		assertTrue(incendium.has("5.5.1"));
 		assertTrue(IncendiumCompatibility.supportsVersion("5.5.1"));
+		Map<String, String> incendiumListed = new HashMap<>();
+		incendium.getAsJsonObject("5.5.1").getAsJsonObject("resources").entrySet()
+			.forEach(resource -> incendiumListed.put(resource.getKey(), resource.getValue().getAsString()));
+		assertEquals(IncendiumCompatibility.getProfile("5.5.1").orElseThrow().expectedResources(), incendiumListed,
+			"Manifest resources differ from the Incendium 5.5.1 profile");
 
 		// Datapack replacements built on DatapackReplacement list exactly their fingerprinted upstream resources.
 		assertDatapackReplacement(targets, BuildersBoundryCompatibility.MOD_ID, BuildersBoundryCompatibility.getProfiles());
