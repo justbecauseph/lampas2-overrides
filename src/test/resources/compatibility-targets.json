@@ -606,14 +606,15 @@
           "status": "patched",
           "artifact_sha256": "e8969dc76b067fe1bef64c948db13a4d43d1c2a8f92975002e8a707635f1c376",
           "pack_id": "lampas2-overrides:gardeners_dream_optimizations",
-          "activation_policy": "Any mr_gardeners_dream version whose four listed functions match these SHA-256 values; the mod version is not compared.",
-          "resources": {
+          "activation_policy": "Whenever mr_gardeners_dream is installed; neither the version nor any resource fingerprint is compared. audited_resources records the 2.6 functions the equivalence was checked against.",
+          "resources": {},
+          "audited_resources": {
             "data/gardenersdream/function/pot_break_check.mcfunction": "87ba3baeb6b5c8979abb5bf4271ca620757be3760a88cedea5cf08e5afeb7538",
             "data/gardenersdream/function/pot_broken.mcfunction": "151ae3e59a190b97ac47c7b55be9e1149ae30cc294386029f0055a8d2907bede",
             "data/gardenersdream/function/plant_break.mcfunction": "d43df0365c966ac7e07f92071aef8c1d0657a09f1c1add4ac53641805bf0bfe6",
             "data/gardenersdream/function/destroy_halfpot.mcfunction": "6a597481b65a2b0f33efb1a949f94a68d524c589bc441e5e4bbe6b8b0fcf1e73"
           },
-          "verification_limit": "Unit tests verify the upstream fingerprints, that the replacement runs pot_broken once per firing only while a player is online, and that the three reschedule lines are upstream's verbatim. The equivalence argument (pot_broken, plant_break and destroy_halfpot never read the executing player, and un-ranged @e selectors search every level) was checked by reading the 2.6 functions and the 26.2 EntitySelector sources. On 17 Nov 2026 a temporary, uncommitted GameTest ran with the real 2.6 jar and with a copy relabelled 2.7: both enabled the pack after mr_gardeners_dream, and one pot_break_check with one mock player removed orphaned smallpp and gd_halfpot_pot displays in the Overworld and a widepp display in the Nether, dropped their plants, and kept a smallpp display on a flower pot. Not checked: a real server with player-placed pots, and the tick-time saving."
+          "verification_limit": "Unit tests verify that the profile has no gate, that the replacement runs pot_broken once per firing only while a player is online, and that the three reschedule lines are upstream's verbatim. The equivalence argument (pot_broken, plant_break and destroy_halfpot never read the executing player, and un-ranged @e selectors search every level) was checked by reading the 2.6 functions and the 26.2 EntitySelector sources. On 17 Nov 2026 a temporary, uncommitted GameTest ran with the real 2.6 jar and with a copy relabelled 2.7: both enabled the pack after mr_gardeners_dream, and one pot_break_check with one mock player removed orphaned smallpp and gd_halfpot_pot displays in the Overworld and a widepp display in the Nether, dropped their plants, and kept a smallpp display on a flower pot. Not checked: a real server with player-placed pots, and the tick-time saving."
         }
       }
     },

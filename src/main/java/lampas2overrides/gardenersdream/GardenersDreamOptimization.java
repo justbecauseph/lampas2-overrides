@@ -8,7 +8,7 @@ import net.fabricmc.api.ModInitializer;
 
 /**
  * Runs Gardener's Dream's scheduled pot-break check once per firing instead of once per online player (four full
- * entity walks per player), for any release whose functions match the audited fingerprints.
+ * entity walks per player), whenever Gardener's Dream is installed.
  */
 public final class GardenersDreamOptimization implements ModInitializer {
 

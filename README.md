@@ -18,7 +18,7 @@ ungated hotbar slot resync after respawn.
 | [Incendium tick optimization](#incendium-tick-optimization) | Incendium Legacy 5.5.1 | Removes a redundant 20 Hz entity-ID scan, throttles living-mob initialization, and stops helper markers accumulating in chunk [0, 0] |
 | [Builder's Boundry tick optimization](#builders-boundry-tick-optimization) | Builder's Boundry 0.2 | Replaces 26 full entity scans per tick with one scan every 4 ticks and repairs the wall-clock function for 26.2 |
 | [Dungeons and Taverns Swift Soar tick](#dungeons-and-taverns-swift-soar-tick) | Dungeons and Taverns 5.3.2 | Limits the per-tick FOV-modifier removal to players that carry it |
-| [Gardener's Dream pot-break check](#gardeners-dream-pot-break-check) | Gardener's Dream (any version; functions audited on 2.6) | Runs the scheduled pot-break check once per firing instead of once per online player |
+| [Gardener's Dream pot-break check](#gardeners-dream-pot-break-check) | Gardener's Dream (any version; audited on 2.6) | Runs the scheduled pot-break check once per firing instead of once per online player |
 | [Gravestones death inscription and glow](#gravestones-death-inscription-and-glow) | Gravestones | Suppresses technical death grave text and renders a glowing outline only on your own graves |
 | [Jade nameplates and Custom Name](#jade-nameplates-and-custom-name) | Client Jade; server TAB name sync | Suppresses vanilla in-world entity/player nameplates and shows server-synced player display names in Jade |
 | [Custom Name multi-word names](#custom-name-multi-word-names) | Custom Name 0.4.4-26.2 | Permits spaces in nickname, prefix, and suffix commands for non-operators |
@@ -438,10 +438,11 @@ and the position and dimension with `at @s`, and `plant_break` and `destroy_half
 display whose pot is gone, so passes 2..N found nothing. Running from the scheduler's source (server, Overworld)
 instead of a player's does not narrow the search, because a selector without positional options is not world-limited
 in 26.2 (`EntitySelector.findEntitiesRaw` loops over `getAllLevels()`). The `@a[limit=1]` test keeps upstream's
-behaviour of not checking while nobody is online. The pack is not gated on the mod version: it registers for any
-installed Gardener's Dream whose `pot_break_check`, `pot_broken`, `plant_break` and `destroy_halfpot` match the
-SHA-256 recorded from 2.6, because the equivalence depends on those four functions and not on the release number. A
-release that changes any of them logs a WARN and leaves the pack disabled until the new functions are audited.
+behaviour of not checking while nobody is online. The pack is gated on neither the mod version nor the content of
+the upstream functions: it registers whenever Gardener's Dream is installed. The equivalence was checked only on 2.6
+(SHA-256 of the four functions under `audited_resources` in `compatibility-targets.json`). A later release that makes
+`pot_broken`, `plant_break` or `destroy_halfpot` read the player, changes the reschedule lines or renames
+`pot_broken` still gets this `pot_break_check`, so re-audit those functions when Gardener's Dream is updated.
 
 On 17 Nov 2026 a temporary, uncommitted GameTest on this repo's GameTest server ran with the real Gardener's Dream 2.6 jar in its `mods/` folder, and again with a copy whose `fabric.mod.json` declares version 2.7. Both runs enabled the pack (the second logged `Enabled the Gardener's Dream performance datapack for 2.7 (functions audited on 2.6)`) and selected it after `mr_gardeners_dream`. With one mock player online, one `function gardenersdream:pot_break_check` removed orphaned `smallpp` and `gd_halfpot_pot` displays in the Overworld and a `widepp` display in the Nether and dropped their plants, and a `smallpp` display on a flower pot stayed. Not checked: a real server with real players and player-placed pots, and the tick-time saving, which the
 load test has to measure.

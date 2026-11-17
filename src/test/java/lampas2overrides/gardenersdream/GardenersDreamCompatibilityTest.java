@@ -18,17 +18,13 @@ public class GardenersDreamCompatibilityTest {
 	private static final String PACK_ROOT = "resourcepacks/gardeners_dream_optimizations/";
 
 	@Test
-	void profileMapsToPackAndFingerprintsTheWholeChain() {
+	void profileMapsToPackWithoutAnyGate() {
 		DatapackReplacement.Profile profile = GardenersDreamCompatibility.getProfile();
-		// The version only records where the fingerprints were audited; registration does not compare it.
+		// The version only records where the override was audited; registration does not compare it.
 		assertEquals("2.6", profile.version());
 		assertEquals(Identifier.fromNamespaceAndPath("lampas2-overrides", "gardeners_dream_optimizations"), profile.packId());
-		// The replaced function plus pot_broken and the two functions it calls, which must not read the player.
-		assertEquals(4, profile.expectedResources().size());
-		for (String function : List.of("pot_break_check", "pot_broken", "plant_break", "destroy_halfpot")) {
-			assertTrue(profile.expectedResources().containsKey(
-					"data/gardenersdream/function/" + function + ".mcfunction"), function);
-		}
+		// No upstream fingerprints, so the pack registers whenever the mod is installed.
+		assertTrue(profile.expectedResources().isEmpty());
 		assertEquals(java.util.Map.of("2.6", profile), GardenersDreamCompatibility.getProfiles());
 	}
 
