@@ -13,8 +13,11 @@ import java.util.function.Consumer;
  * control reaches End top-band mobs (736.5 health at level 200) for an optimized Pinnacle user; the five frost
  * multipliers are the smallest multiples of 0.5 that reach 1.1 x 736.5 at the modelled Pinnacle frost power with
  * Apotheosis caster loot (119.19). Fire: Fire Wall and the Meteor burning ground ({@code fire_tier_3_spell_1_modifier_2})
- * deal 0.4 x their upstream damage spell_power_coefficient. Each replacement is the upstream JSON with only those keys
- * changed, and a file that needs both P1 and D9 has a single replacement.
+ * deal 0.4 x their upstream damage spell_power_coefficient. HEAL: eleven healing spells add 0.1 x c x max health to their
+ * heal (c the upstream coefficient of the healing impact); eight read the target's max health (Lightwell Heal's share is
+ * appended after its unchanged impact) and three read the caster's (the Paladin tier 2 modifier and the two relic perks).
+ * Each replacement is the upstream JSON with only those keys changed, and a file that needs both P1 and D9 has a single
+ * replacement.
  * {@code tools/generate_rpg_spell_patches.py} rebuilds the replacements from the pinned jars; the upstream and
  * replacement SHA-256 of every entry are in {@code docs/evidence/rpg-spell-patches.manifest.json}.
  */
@@ -49,7 +52,14 @@ final class RpgSeriesSpellPatches {
 		spellEngine.spell("whirlwind", "dfa96b6720080946f2fd5213d7cd8fefa0ea20a9e23053c3bfd740d78c67e47c");
 
 		Target paladins = new Target(register, "paladins", "3.1.3.003+26.2", "paladins"); // paladins-fabric-3.1.3.003+26.2.jar
+		paladins.spell("circle_of_healing", "0ff8eeced4709a98296f2b77b0d9d5769c6a398f9cfa8fbdbba43413d7c19858"); // HEAL impacts[0] 0.4 -> 0.44, target max health
+		paladins.spell("flash_heal", "444e1f1a12a96059c6b27ba23a85a0d89c6a434be6d174b3b6690aaaf5e8d77f"); // HEAL impacts[0] 1.2 -> 1.32, target max health
+		paladins.spell("heal", "eb5d70eee717ecba3a4e481a42bb5219b351702afd753a5d0c487abddf4c2dc7"); // HEAL impacts[0] 0.5 -> 0.55, target max health
+		paladins.spell("holy_beam", "dc07b90805b4e1af54076e2ef64c5483d2581ea0cad0cd54d56e3a0c63778bcd"); // HEAL impacts[0] 0.4 -> 0.44, target max health
+		paladins.spell("holy_shock", "6b61e66578ce0aaf9f20e84e4f97b8bd8f81c99e6391b59dae1ae0978a866672"); // HEAL impacts[0] 0.4 -> 0.44, target max health
+		paladins.spell("immolation", "6445c7a57718863e40e5fd3837cf61ef5bd5fffd7a96d26a0882da60da891dc5"); // HEAL impacts[2] 0.5 -> 0.55, blended, target max health
 		paladins.spell("judgement", "a85576a3d32814d575117a9c82b7780676679add9e36164c73304ecec39a6fc0"); // D9 impacts[1] apply_limit 50+2P -> 50+7.5P
+		paladins.spell("lightwell_heal", "201a50b28727b99d2587da08647e15255a4c5513fe6b20c63e4ec438d5509b26"); // HEAL impacts[1] appended, 0.035 x target max health
 
 		Target archers = new Target(register, "archers", "3.1.3.003+26.2", "archers"); // archers-fabric-3.1.3.003+26.2.jar
 		archers.spell("barrage", "a0b9787786cf1811793379f990e21d2a42f08db07831818380201fdd2f589ff8");
@@ -74,7 +84,9 @@ final class RpgSeriesSpellPatches {
 		skillTree.spell("archer_tier_3_passive_2", "6b98d8eacb90199234a7f29f38673ecb2327d1ea36d02681a3c1ba4747fc44fb");
 		skillTree.spell("fire_tier_3_spell_1_modifier_2", "2544bbb53753ef276caa1488deb430b60010cf39842cc88a8d07219cb36a2ad1"); // Meteor burning ground: impacts[0] damage spell_power_coefficient 0.3 -> 0.12
 		skillTree.spell("paladin_tier_1_passive_1", "edabee86309d3d3eafc0c52ea5f4a6feb497e7cbbc0e46b2ce380cd5aeb2b549");
+		skillTree.spell("paladin_tier_2_spell_2_modifier_2", "80f5e6e840d3d5b0cb36aa0d9ae7ce9e539285a16446298d1a592b49045efe25"); // HEAL modifiers[0].impacts[0] 0.25 -> 0.275, caster max health, blended
 		skillTree.spell("paladin_tier_3_passive_2", "87caab49c3b400009198ff4e79541ee5682e6ccba18ff6e574a5b6b161872694");
+		skillTree.spell("priest_tier_4_spell_2_modifier_1", "36b6f9a9573d16a2bfc62265a367c8c207d8d919c625fad426ff15ab48f3091f"); // HEAL impacts[0] 0.1 -> 0.11, target max health
 		skillTree.spell("rogue_tier_1_passive_2", "6ecd5b00ab1598fc2c23d5327cb1c0d493ca91c094f58cc7a72c9b494783524c");
 		skillTree.spell("rogue_tier_2_passive_2", "a13709a6a6d9585f5eab9459e4a03dda0806b64357f303f9c6847d821129cc35");
 		skillTree.spell("rogue_tier_3_passive_1", "41473ec727c3d2b13ecdf33aadb37bc4bd3a6330725811d87fb0e6432aca9a9f");
@@ -88,8 +100,10 @@ final class RpgSeriesSpellPatches {
 		skillTree.spell("weapon_swipe_modifier_2", "72158c5732d410f3d4dd3f342c9e7a277fa0f465c35e02120f9f81ad5f9c25f2");
 
 		Target relics = new Target(register, "relics_rpgs", "1.4.1+26.2", "relics_rpgs"); // relics-fabric-1.4.1+26.2.jar
+		relics.spell("greater_perk_defense_block", "2baf60ebea04e5de4632b1f20ef22d7f158bdd757f8d2984fd6c365055e9d399"); // HEAL impacts[1] appended, 0.025 x caster max health
 		relics.spell("greater_perk_defense_danger", "343c5d2fe74b4a2ccbbf23b14f9ca6c60cbdd5bc118e85e5edf2f2a6e4a3c20e");
 		relics.spell("greater_perk_evasion_attack", "d357983ec923e8fdaf456178aa49d1ca8e092917fb723e21126c2c831aec4e70");
+		relics.spell("greater_perk_heal_danger", "05a4ce3f2fa2fd7fae7c00856dae24e97d01d5c104ef7435e4efb6e2231548c6"); // HEAL impacts[1] appended, 0.03 x caster max health
 		relics.spell("greater_perk_melee_stun", "78131e0de3052abc4b801214d0f586488cdc7730fa752a12a49e6e1e8bb084e3");
 		relics.spell("greater_perk_ranged_levitate", "6f17c142beb379aa13e44503eea519b07e415696346d84074f368839297a82ab");
 		relics.spell("greater_proc_physical_trance", "270a703789c63eab88f9ee256497a0616e6199c3b74832c3b5078a86c2c72c68");

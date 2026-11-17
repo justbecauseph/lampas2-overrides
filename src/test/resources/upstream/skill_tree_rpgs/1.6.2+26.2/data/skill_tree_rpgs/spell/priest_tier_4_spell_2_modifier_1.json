@@ -1,0 +1,121 @@
+{
+  "school": "spell_power:healing",
+  "range": 0.0,
+  "tier": 1,
+  "tooltip": {
+    "show_activation": false
+  },
+  "type": "PASSIVE",
+  "passive": {
+    "triggers": [
+      {
+        "target_override": "CASTER",
+        "aoe_source_override": "CASTER",
+        "type": "SPELL_CAST",
+        "spell": {
+          "id": "paladins:barrier"
+        }
+      }
+    ]
+  },
+  "target": {
+    "type": "FROM_TRIGGER"
+  },
+  "deliver": {
+    "type": "CLOUD",
+    "clouds": [
+      {
+        "volume": {
+          "radius": 4.0
+        },
+        "time_to_live_seconds": 10.0,
+        "impact_tick_interval": 40,
+        "client_data": {
+          "particles": [
+            {
+              "id": "spell_engine:magic_spark",
+              "appearance": {
+                "color": 3439329279,
+                "motion": "FLOAT"
+              },
+              "batch": {
+                "count": 2.0,
+                "shape": "PILLAR",
+                "anchor": "GROUND",
+                "min_speed": 0.02,
+                "max_speed": 0.08
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "HEAL",
+        "heal": {
+          "spell_power_coefficient": 0.1
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:magic_heal",
+            "appearance": {
+              "color": 3439329279,
+              "motion": "DECELERATE"
+            },
+            "batch": {
+              "count": 6.0,
+              "shape": "SPHERE",
+              "anchor": "ENTITY",
+              "min_speed": 0.1,
+              "max_speed": 0.15
+            }
+          }
+        ]
+      },
+      "sound": {
+        "id": "spell_engine:generic_healing_impact_2",
+        "volume": 0.4
+      }
+    },
+    {
+      "action": {
+        "type": "STATUS_EFFECT",
+        "status_effect": {
+          "apply_mode": "REMOVE",
+          "remove": {
+            "id": "!minecraft:trial_omen"
+          }
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:magic_spark",
+            "appearance": {
+              "color": 3439329279,
+              "motion": "DECELERATE"
+            },
+            "batch": {
+              "count": 25.0,
+              "shape": "PILLAR",
+              "anchor": "ENTITY",
+              "min_speed": 0.3,
+              "max_speed": 0.5
+            }
+          }
+        ]
+      },
+      "sound": {
+        "id": "spell_engine:generic_dispel_1"
+      }
+    }
+  ],
+  "cost": {
+    "durability": 0
+  }
+}

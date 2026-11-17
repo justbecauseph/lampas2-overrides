@@ -1,0 +1,107 @@
+{
+  "school": "spell_power:healing",
+  "range": 12.0,
+  "tier": 0,
+  "group": "priest_holy",
+  "active": {},
+  "release": {
+    "animation": {
+      "id": "spell_engine:one_handed_healing_release"
+    },
+    "visuals": {
+      "particles": [
+        {
+          "id": "spell_engine:magic_spark",
+          "appearance": {
+            "playback_speed": 0.6,
+            "color": 4294954239,
+            "opacity_curve": {
+              "out": "LINEAR",
+              "hold": 0.5
+            },
+            "motion": "DECELERATE"
+          },
+          "batch": {
+            "count": 28.0,
+            "shape": "CONE",
+            "anchor": "ENTITY",
+            "alignment": "LOOK",
+            "min_speed": 0.5,
+            "max_speed": 1.0,
+            "angle": 8.0
+          }
+        }
+      ]
+    },
+    "sound": {
+      "id": "spell_engine:generic_healing_release_2"
+    }
+  },
+  "target": {
+    "type": "AIM",
+    "aim": {
+      "required": true
+    }
+  },
+  "impacts": [
+    {
+      "action": {
+        "type": "HEAL",
+        "heal": {
+          "spell_power_coefficient": 0.35
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:magic_heal",
+            "appearance": {
+              "color": 1728014079,
+              "motion": "ASCEND"
+            },
+            "batch": {
+              "count": 15.0,
+              "shape": "PILLAR",
+              "anchor": "ENTITY",
+              "vertical_origin": 0.1,
+              "min_speed": 0.02,
+              "max_speed": 0.15
+            }
+          },
+          {
+            "id": "spell_engine:magic_holy",
+            "appearance": {
+              "color": 4294954239,
+              "motion": "DECELERATE"
+            },
+            "batch": {
+              "count": 12.0,
+              "shape": "SPHERE",
+              "anchor": "ENTITY",
+              "min_speed": 0.2,
+              "max_speed": 0.25
+            }
+          }
+        ]
+      },
+      "sound": {
+        "id": "spell_engine:generic_healing_impact_2"
+      }
+    },
+    {
+      "attribute": "minecraft:max_health",
+      "attribute_from_target": true,
+      "action": {
+        "type": "HEAL",
+        "heal": {
+          "spell_power_coefficient": 0.035
+        }
+      }
+    }
+  ],
+  "cost": {
+    "cooldown": {
+      "duration": 1.5
+    }
+  }
+}

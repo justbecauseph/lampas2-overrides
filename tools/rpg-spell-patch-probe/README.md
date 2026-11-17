@@ -1,7 +1,7 @@
 # RPG Series spell patch probe
 
-Launches a disposable Fabric dedicated server to check the 66 RPG Series spell patches (D3 P1 cooldown
-haste, D9 apply limits, Fire Wall and burning ground damage coefficients) with production JARs. Run from
+Launches a disposable Fabric dedicated server to check the 77 RPG Series spell patches (D3 P1 cooldown
+haste, D9 apply limits, Fire Wall and burning ground damage coefficients, HEAL healing shares) with production JARs. Run from
 the repository root after `./gradlew build`:
 
 ```powershell
@@ -27,14 +27,14 @@ The probe mod (`RpgSpellPatchProbe.java`) is compiled against this project's mai
 which `classpath.init.gradle` writes, and reaches Spell Engine and Spell Power by reflection. On the
 first server tick (after Spell Engine has classified movement-impairing effects) it writes
 `rpg-spell-patch-probe.json`: for each spell in `docs/evidence/rpg-spell-patches.manifest.json` and the
-controls `wizards:fire_meteor` and `paladins:flash_heal`, the decoded school,
+controls `wizards:fire_meteor` and `paladins:divine_protection`, the decoded school,
 cooldown and `haste_affected`; `SpellPower.getHaste` and `SpellParameters.getCooldownDuration` for a
 FakePlayer with attack speed x2, `ranged_weapon:haste` +100 and `spell_power:haste` +100; for the twelve
 D9 spells the decoded `apply_limit`, `SpellImpacts.underApplyLimit` against zombies at the Overworld,
 Nether and End top-band health (517.5, 617, 736.5) at threshold -/+ 0.5 and at modelled Pinnacle
 power, and the effect's boss-gate classification; and the SHA-256 and pack the resource manager serves
-through `getResource` and `listResources`. The two fire coefficient patches are checked only through that
-served SHA-256; the probe does not decode their damage coefficient.
+through `getResource` and `listResources`. The two fire coefficient patches and the eleven HEAL patches are checked
+only through that served SHA-256; the probe does not decode their damage coefficients or blends.
 
 `results.json` compares all of that, plus the count of `Applied …/spell/…` lines and of
 `is not registered` and `SHA-256 mismatch` WARNs, with values computed in `run.py` from the decision

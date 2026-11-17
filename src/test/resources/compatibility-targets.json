@@ -257,14 +257,21 @@
         "3.1.3.003+26.2": {
           "status": "patched",
           "resources": {
+            "data/paladins/spell/circle_of_healing.json": "0ff8eeced4709a98296f2b77b0d9d5769c6a398f9cfa8fbdbba43413d7c19858",
+            "data/paladins/spell/flash_heal.json": "444e1f1a12a96059c6b27ba23a85a0d89c6a434be6d174b3b6690aaaf5e8d77f",
+            "data/paladins/spell/heal.json": "eb5d70eee717ecba3a4e481a42bb5219b351702afd753a5d0c487abddf4c2dc7",
+            "data/paladins/spell/holy_beam.json": "dc07b90805b4e1af54076e2ef64c5483d2581ea0cad0cd54d56e3a0c63778bcd",
+            "data/paladins/spell/holy_shock.json": "6b61e66578ce0aaf9f20e84e4f97b8bd8f81c99e6391b59dae1ae0978a866672",
+            "data/paladins/spell/immolation.json": "6445c7a57718863e40e5fd3837cf61ef5bd5fffd7a96d26a0882da60da891dc5",
             "data/paladins/spell/judgement.json": "a85576a3d32814d575117a9c82b7780676679add9e36164c73304ecec39a6fc0",
+            "data/paladins/spell/lightwell_heal.json": "201a50b28727b99d2587da08647e15255a4c5513fe6b20c63e4ec438d5509b26",
             "data/paladins/recipe/aeternium_claymore.json": "fa5e637b0bc9a4c9a44d38e42cd1fa846d9430e76e835a3c8c283975b431c82c",
             "data/paladins/recipe/aeternium_great_hammer.json": "820b2782dbf37a61ddf3722eb1a40354fad5ef75a015cc08b50bb0dbcff33622",
             "data/paladins/recipe/aeternium_mace.json": "67265d2248c2c53c82217fed21f3f75b3bf449a936fa5f1ad423629cf8dd07fa"
           },
           "artifact_sha256": "f36009e6a60fae66ca195fc9165a2d7a59c92bd55fd75b1e2e18620ffa4fc492",
           "probe_evidence": "docs/evidence/rpg-spell-patches.json",
-          "verification_limit": "Unit tests cover the exact version and SHA-256 gate, the WARN paths and that each replacement changes only the decided keys; with -PserverModsDir they also check every spell in the deployed jar. The dedicated-server probe (docs/evidence/rpg-spell-patches.json) covers the decoded minecraft:spell entries, cooldowns under haste and SpellImpacts.underApplyLimit. Combat with a real player, the client-side registry decode and tooltips, full-pack behavior and elite/invader immunity (lampas-addons) are unverified. The aeternium recipe resources replace the [\"#c:wood_sticks\", \"minecraft:stick\"] handle key with \"minecraft:stick\": unit tests cover the version and SHA-256 gate and that only that key changes; crafting in-game and the BetterEnd-loaded recipe decode on a dedicated server are unverified."
+          "verification_limit": "Unit tests cover the exact version and SHA-256 gate, the WARN paths and that each replacement changes only the decided keys; with -PserverModsDir they also check every spell in the deployed jar. The dedicated-server probe (docs/evidence/rpg-spell-patches.json) covers the decoded minecraft:spell entries, cooldowns under haste and SpellImpacts.underApplyLimit. Combat with a real player, the client-side registry decode and tooltips, full-pack behavior and elite/invader immunity (lampas-addons) are unverified. The aeternium recipe resources replace the [\"#c:wood_sticks\", \"minecraft:stick\"] handle key with \"minecraft:stick\": unit tests cover the version and SHA-256 gate and that only that key changes; crafting in-game and the BetterEnd-loaded recipe decode on a dedicated server are unverified. The 1.0.22 HEAL impacts are covered by unit tests (the replacement formula, including the appended shares) and a GameTest on test spells; the probe evidence predates them."
         }
       }
     },
@@ -321,7 +328,9 @@
             "data/skill_tree_rpgs/spell/archer_tier_3_passive_2.json": "6b98d8eacb90199234a7f29f38673ecb2327d1ea36d02681a3c1ba4747fc44fb",
             "data/skill_tree_rpgs/spell/fire_tier_3_spell_1_modifier_2.json": "2544bbb53753ef276caa1488deb430b60010cf39842cc88a8d07219cb36a2ad1",
             "data/skill_tree_rpgs/spell/paladin_tier_1_passive_1.json": "edabee86309d3d3eafc0c52ea5f4a6feb497e7cbbc0e46b2ce380cd5aeb2b549",
+            "data/skill_tree_rpgs/spell/paladin_tier_2_spell_2_modifier_2.json": "80f5e6e840d3d5b0cb36aa0d9ae7ce9e539285a16446298d1a592b49045efe25",
             "data/skill_tree_rpgs/spell/paladin_tier_3_passive_2.json": "87caab49c3b400009198ff4e79541ee5682e6ccba18ff6e574a5b6b161872694",
+            "data/skill_tree_rpgs/spell/priest_tier_4_spell_2_modifier_1.json": "36b6f9a9573d16a2bfc62265a367c8c207d8d919c625fad426ff15ab48f3091f",
             "data/skill_tree_rpgs/spell/rogue_tier_1_passive_2.json": "6ecd5b00ab1598fc2c23d5327cb1c0d493ca91c094f58cc7a72c9b494783524c",
             "data/skill_tree_rpgs/spell/rogue_tier_2_passive_2.json": "a13709a6a6d9585f5eab9459e4a03dda0806b64357f303f9c6847d821129cc35",
             "data/skill_tree_rpgs/spell/rogue_tier_3_passive_1.json": "41473ec727c3d2b13ecdf33aadb37bc4bd3a6330725811d87fb0e6432aca9a9f",
@@ -336,7 +345,7 @@
           },
           "artifact_sha256": "405ff761ba518c87a14d8923f0c8db5f01311b86d58ca78c3e1f2731d3469901",
           "probe_evidence": "docs/evidence/rpg-spell-patches.json",
-          "verification_limit": "Unit tests cover the exact version and SHA-256 gate, the WARN paths and that each replacement changes only the decided keys; with -PserverModsDir they also check every spell in the deployed jar. The dedicated-server probe (docs/evidence/rpg-spell-patches.json) covers the decoded minecraft:spell entries, cooldowns under haste and SpellImpacts.underApplyLimit. Combat with a real player, the client-side registry decode and tooltips, full-pack behavior and elite/invader immunity (lampas-addons) are unverified. The 1.0.9 fire_tier_3_spell_1_modifier_2 damage coefficient is covered by unit tests only; the probe evidence predates it."
+          "verification_limit": "Unit tests cover the exact version and SHA-256 gate, the WARN paths and that each replacement changes only the decided keys; with -PserverModsDir they also check every spell in the deployed jar. The dedicated-server probe (docs/evidence/rpg-spell-patches.json) covers the decoded minecraft:spell entries, cooldowns under haste and SpellImpacts.underApplyLimit. Combat with a real player, the client-side registry decode and tooltips, full-pack behavior and elite/invader immunity (lampas-addons) are unverified. The 1.0.9 fire_tier_3_spell_1_modifier_2 damage coefficient is covered by unit tests only; the probe evidence predates it. The 1.0.22 HEAL impacts are covered by unit tests (the replacement formula, including the appended shares) and a GameTest on test spells; the probe evidence predates them."
         }
       }
     },
@@ -347,8 +356,10 @@
         "1.4.1+26.2": {
           "status": "patched",
           "resources": {
+            "data/relics_rpgs/spell/greater_perk_defense_block.json": "2baf60ebea04e5de4632b1f20ef22d7f158bdd757f8d2984fd6c365055e9d399",
             "data/relics_rpgs/spell/greater_perk_defense_danger.json": "343c5d2fe74b4a2ccbbf23b14f9ca6c60cbdd5bc118e85e5edf2f2a6e4a3c20e",
             "data/relics_rpgs/spell/greater_perk_evasion_attack.json": "d357983ec923e8fdaf456178aa49d1ca8e092917fb723e21126c2c831aec4e70",
+            "data/relics_rpgs/spell/greater_perk_heal_danger.json": "05a4ce3f2fa2fd7fae7c00856dae24e97d01d5c104ef7435e4efb6e2231548c6",
             "data/relics_rpgs/spell/greater_perk_melee_stun.json": "78131e0de3052abc4b801214d0f586488cdc7730fa752a12a49e6e1e8bb084e3",
             "data/relics_rpgs/spell/greater_perk_ranged_levitate.json": "6f17c142beb379aa13e44503eea519b07e415696346d84074f368839297a82ab",
             "data/relics_rpgs/spell/greater_proc_physical_trance.json": "270a703789c63eab88f9ee256497a0616e6199c3b74832c3b5078a86c2c72c68",
@@ -364,7 +375,7 @@
           },
           "artifact_sha256": "013eae223a352138342e5d629e5fec75ee7f19405b82589435993f403be8469f",
           "probe_evidence": "docs/evidence/rpg-spell-patches.json",
-          "verification_limit": "Unit tests cover the exact version and SHA-256 gate, the WARN paths and that each replacement changes only the decided keys; with -PserverModsDir they also check every spell in the deployed jar. The dedicated-server probe (docs/evidence/rpg-spell-patches.json) covers the decoded minecraft:spell entries, cooldowns under haste and SpellImpacts.underApplyLimit. Combat with a real player, the client-side registry decode and tooltips, full-pack behavior and elite/invader immunity (lampas-addons) are unverified."
+          "verification_limit": "Unit tests cover the exact version and SHA-256 gate, the WARN paths and that each replacement changes only the decided keys; with -PserverModsDir they also check every spell in the deployed jar. The dedicated-server probe (docs/evidence/rpg-spell-patches.json) covers the decoded minecraft:spell entries, cooldowns under haste and SpellImpacts.underApplyLimit. Combat with a real player, the client-side registry decode and tooltips, full-pack behavior and elite/invader immunity (lampas-addons) are unverified. The 1.0.22 HEAL impacts are covered by unit tests (the replacement formula, including the appended shares) and a GameTest on test spells; the probe evidence predates them."
         }
       }
     },

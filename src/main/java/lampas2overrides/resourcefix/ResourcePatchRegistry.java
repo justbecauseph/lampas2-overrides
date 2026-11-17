@@ -170,8 +170,9 @@ public final class ResourcePatchRegistry {
 		aeterniumRecipe("rogues", "sickle", "2277d4e7cb73b661c964dad281e116c86c9dbeb08e7abe0abc6784fa38613483");
 
 		// 8. RPG Series 26.2 spells - martial cooldowns stop scaling with haste (D3 P1), twelve crowd-control
-		// apply limits reach the End top band at Pinnacle (D9), and Fire Wall and the Meteor burning ground deal
-		// 0.4 x their upstream damage. 66 patches across seven jars.
+		// apply limits reach the End top band at Pinnacle (D9), Fire Wall and the Meteor burning ground deal
+		// 0.4 x their upstream damage, and eleven healing spells add 0.1 x c x max health to their heal (HEAL).
+		// 77 patches across seven jars.
 		RpgSeriesSpellPatches.registerAll(ResourcePatchRegistry::register);
 
 		// 9. Waystone template pools. These pools are the only places Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2

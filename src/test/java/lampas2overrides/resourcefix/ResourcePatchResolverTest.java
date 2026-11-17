@@ -55,9 +55,9 @@ public class ResourcePatchResolverTest {
 
 	@Test
 	void registryContainsAllTargetPatches() {
-		// 19 pack metadata, worldgen and Sharpness patches, 7 aeternium recipe patches, 66 RPG Series spell patches
+		// 19 pack metadata, worldgen and Sharpness patches, 7 aeternium recipe patches, 77 RPG Series spell patches
 		// and 16 waystone template pool patches.
-		assertEquals(108, ResourcePatchRegistry.getAllPatches().size());
+		assertEquals(119, ResourcePatchRegistry.getAllPatches().size());
 
 		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", "pack.mcmeta"));
 		assertNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", "data/formationsoverworld/loot_table/stone_tower/smithing.json"));

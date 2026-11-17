@@ -26,7 +26,7 @@ ungated hotbar slot resync after respawn.
 | [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Paladins and Rogues 3.1.3.003+26.2, RPG Series spells, Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2, Trek B0.6.2 | Transparently repairs malformed `pack.mcmeta` formats, worldgen resources, Rogues' Sharpness, the aeternium weapon recipes and RPG Series spell data at runtime |
 | [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.3.3 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
 | [Rogues Sharpness](#rogues-sharpness) | Rogues 3.1.3.003+26.2 | Restores flat Sharpness in place of Rogues' +8% base attack damage per level |
-| [RPG Series spell patches](#rpg-series-spell-patches) | RPG Series 26.2 (Rogues, Wizards, Paladins, Archers, Spell Engine, Skill Tree, Relics) | Martial spell cooldowns ignore haste; crowd-control apply limits reach Pinnacle mobs; Fire Wall and the Meteor burning ground deal 40% of their upstream damage |
+| [RPG Series spell patches](#rpg-series-spell-patches) | RPG Series 26.2 (Rogues, Wizards, Paladins, Archers, Spell Engine, Skill Tree, Relics) | Martial spell cooldowns ignore haste; crowd-control apply limits reach Pinnacle mobs; Fire Wall and the Meteor burning ground deal 40% of their upstream damage; eleven heals add 0.1 x c x max health (12% for Flash Heal) |
 | [Spell crowd-control immunity](#spell-crowd-control-immunity) | Spell Engine (any version); Placebo + Apotheosis for markers | Apotheosis invaders and elites, their mounts and `lampas.cc_immune` mobs ignore RPG Series crowd control |
 | [Thrown-trident crits](#thrown-trident-crits) | Critical Strike (any version) | Thrown tridents roll Critical Strike crits with the thrower's stats from the moment of the throw |
 | [Bee and spawner structure DFU validation](#bee-and-spawner-structure-dfu-validation) | Exact Trek and Stoneholm fixtures | Historical run on the removed Trinkets 4.1.0 profile; re-validation on 4.1.1 is pending |
@@ -541,7 +541,7 @@ the server deals flat damage. The client-side path has not been probed.
 
 Two class balance decisions of 17 October 2026 (D3 P1 and D9) and the caster loot scaling calibration of
 29 October 2026 (frost multipliers and fire damage) change RPG Series spell data. All are version- and
-SHA-gated resource patches: 66 spell files in seven jars, one replacement per file even where a file gets
+SHA-gated resource patches: 77 spell files in seven jars, one replacement per file even where a file gets
 both P1 and D9.
 
 **Martial cooldowns ignore haste (D3 P1).** Spell Engine 1.10.9's `SpellParameters.getCooldownDuration`
@@ -606,6 +606,37 @@ augments alone, so both cloud spells' damage `spell_power_coefficient` is multip
 
 Only the coefficient changes, so the hits still land, roll crit and trigger on-hit passives. Meteor's own
 hit is unchanged.
+
+**Healing adds a share of max health (HEAL, 1.0.22).** Lampas players have 70 to 380+ max health from tier bonuses, which made the fixed heals small. Eleven healing spells each gain `0.1 x c x max health` on top of their heal, where c is the impact's upstream `spell_power_coefficient`. Flash Heal (c 1.2) therefore adds 12% of max health, Heal (c 0.5) adds 5%. Each heal becomes `c x P + 0.1 x c x max health`, where P is the impact's upstream power. Two kinds of change produce it:
+
+- **Blend kind (eight impacts).** The impact gets `"attribute": "minecraft:max_health"` and a `power_blend`, and its coefficient becomes c x 1.1. For a plain impact the blend is the healing school at weight 10, so Spell Engine computes power = (max health + 10P) / 11 and the heal is 1.1c x (max health + 10P) / 11 = c x P + 0.1 x c x max health. Immolation and the Seal of Light modifier blend 7.5 healing and 2.5 melee instead, which keeps the upstream 0.75 P_heal + 0.25 P_melee and the melee crit blend.
+- **Appended kind (three impacts).** The upstream impact is unchanged, and one impact is inserted directly after it with `"attribute": "minecraft:max_health"` and coefficient 0.1 x c. The upstream `min_power` (8.0 and 10.0 on the relic perks) clamps only the upstream part, so the share is not cut when healing power is below `min_power`. The heal is c x max(P, min_power) + 0.1 x c x max health. Lightwell Heal is appended for a different reason: the lightwell casts with a cached context power of 1.0 + 0.5 x its owner's healing power, but the effective caster is the owner, so a weight-10 blend entry would read the owner's full healing power and roughly double the healing-power term.
+
+P is the impact's upstream power: the healing power for most spells; the healing and melee blend for Immolation and the Seal of Light modifier; and the lightwell's cached power for Lightwell Heal.
+
+Max health is read from the **target** for `circle_of_healing`, `flash_heal`, `heal`, `holy_beam`, `holy_shock`, `immolation`, `lightwell_heal` and `priest_tier_4_spell_2_modifier_1`. It is read from the **caster** for `greater_perk_defense_block`, `greater_perk_heal_danger` and `paladin_tier_2_spell_2_modifier_2`. The modifier is `apply_to_caster`, so it must not set `attribute_from_target`. The two relic perks have no `attribute_from_target` either, so their max health comes from the caster as the table sets. That accounts for all eleven.
+
+| Spell (impact) | Kind | Upstream | New coefficient | Max health read from |
+|---|---|---|---|---|
+| Paladins: Circle of Healing [0] | blend | 0.4 | 0.44 | target |
+| Paladins: Flash Heal [0] | blend | 1.2 | 1.32 | target |
+| Paladins: Heal [0] | blend | 0.5 | 0.55 | target |
+| Paladins: Holy Beam [0] | blend | 0.4 | 0.44 | target |
+| Paladins: Holy Shock [0] | blend | 0.4 | 0.44 | target |
+| Paladins: Immolation [2] | blend, melee share kept | 0.5 | 0.55 | target |
+| Paladins: Lightwell Heal [0] | appended after [0] | 0.35 | 0.035 (share) | target |
+| Skill Tree: Sacred Refuge, priest tier 4 spell 2 modifier 1 [0] | blend | 0.1 | 0.11 | target |
+| Skill Tree: Seal of Light, paladin tier 2 spell 2 modifier 2, modifiers[0].impacts[0] | blend, melee share kept | 0.25 | 0.275 | caster |
+| Relics: Greater Perk Defense Block [0] | appended after [0] | 0.25 | 0.025 (share) | caster |
+| Relics: Greater Perk Heal Danger [0] | appended after [0] | 0.3 | 0.03 (share) | caster |
+
+Limitations:
+
+- **Multipliers apply to the share of the blend kind.** The share is part of the blended power, so skill-tree power modifiers, charge, channel and haste multiply it too. Flash Heal with a +10% power modifier adds 13.2% of max health, not 12%. Healing power is read live when the impact lands, not from the snapshot taken at cast time. Whether the three appended shares take the same multipliers is not checked.
+- **Tooltips** estimate a target heal with the viewer's own max health, not the target's.
+- **Neutral mobs with large health pools.** A direct heal on a NEUTRAL mob heals it by a share of that mob's pool. In 26.2 hoglins are `AgeableMob`, so `player_relation_to_passives` makes them NEUTRAL; a server Spell Engine `player_relations` entry `"minecraft:hoglin": "HOSTILE"` would close this. That entry is not changed here.
+
+Verification on 17 November 2026: unit tests read each HEAL replacement back from its file and evaluate Spell Engine's HEAL total from the JSON alone (max health 380, healing power 47, melee power 90), check the appended shape of Lightwell Heal and the relic perks, check the relic perks at healing power 1 (7.0 and 9.0 at max health 200), and the deployed-jar scan covers all eleven. `SpellHealShareGameTests` casts test spells on the GameTest server: the upstream 1.2 coefficient heals 48, the 1.32 share heals 93.6 on a 380 max health ally, the caster-read 0.275 share heals 12.5 when the caster has 100 max health, and an upstream 0.25 with min_power 8 plus a 0.025 appended share heals 11.5 at context power 1. Not verified: the eleven real spells in play, tooltips, the client decode, and the probe, which was not rerun.
 
 Each patch requires the mod ID, the version the upstream `fabric.mod.json` declares and the upstream
 file's SHA-256; another release or a changed file keeps the upstream spell and logs WARN. The
@@ -874,7 +905,7 @@ Patched mods and resources:
    - **Fix**: Replaces `pack.mcmeta` with valid `supported_formats: [48, 107]`.
 5. **Wilder Wild (4.3)**: The stone-pool radius repair is described in [Wilder Wild stone pool](#wilder-wild-stone-pool).
 6. **Rogues (3.1.3.003+26.2)**: The Sharpness replacement is described in [Rogues Sharpness](#rogues-sharpness).
-7. **RPG Series spells**: 66 spell files across seven jars, described in [RPG Series spell patches](#rpg-series-spell-patches).
+7. **RPG Series spells**: 77 spell files across seven jars, described in [RPG Series spell patches](#rpg-series-spell-patches).
 8. **Paladins and Rogues (3.1.3.003+26.2) aeternium weapons**:
    - **Defect**: The BetterEnd-gated recipes for the aeternium claymore, great hammer and mace (Paladins) and dagger,
      double axe, glaive and sickle (Rogues) write the handle key as `["#c:wood_sticks", "minecraft:stick"]`. A 26.2

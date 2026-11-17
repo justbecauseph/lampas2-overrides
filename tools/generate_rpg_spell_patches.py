@@ -1,5 +1,5 @@
-"""Generates the RPG Series spell resource patches (class balance decisions D3 P1 and D9, 17 Oct 2026, and the
-caster loot scaling calibration, 29 Oct 2026).
+"""Generates the RPG Series spell resource patches (class balance decisions D3 P1 and D9, 17 Oct 2026, the
+caster loot scaling calibration, 29 Oct 2026, and the HEAL healing share).
 
 Reads the seven pinned RPG Series jars and, for every data/<ns>/spell/*.json entry:
 
@@ -9,7 +9,13 @@ Reads the seven pinned RPG Series jars and, for every data/<ns>/spell/*.json ent
 - D9: the twelve audited status-effect apply limits get the decided health_base and spell_power_multiplier
   (the five frost multipliers re-derived by the caster loot calibration);
 - FIRE: Fire Wall and the Meteor burning ground (Skill Tree fire_tier_3_spell_1_modifier_2) get their damage
-  spell_power_coefficient multiplied by 0.4.
+  spell_power_coefficient multiplied by 0.4;
+- HEAL: eleven healing spells add 0.1 x c x max health to their heal (c the upstream spell_power_coefficient,
+  P the healing power). Eight healing impacts are rewritten: each reads minecraft:max_health, from the target or,
+  where the table says so, from the caster, blended with the spell's school at weight 10 (plain) or with the 7.5
+  healing and 2.5 melee blend that keeps the upstream melee share (blended), and its coefficient becomes c x 1.1.
+  Three impacts (Lightwell Heal and the two relic perks, whose min_power clamps the blended power) are left
+  unchanged, and one impact with minecraft:max_health and coefficient 0.1 x c is inserted directly after each.
 
 Every upstream spell file round-trips byte-exactly through json.dumps(indent=2, ensure_ascii=False) with no
 trailing newline (asserted below), so each replacement differs from upstream only in the decided keys.
@@ -25,6 +31,7 @@ Re-pin by updating JARS and rerunning; RpgSeriesSpellPatches.java and compatibil
 """
 
 import argparse
+import copy
 import hashlib
 import json
 import pathlib
@@ -83,6 +90,42 @@ FIRE = {
     ("skill_tree_rpgs", "data/skill_tree_rpgs/spell/fire_tier_3_spell_1_modifier_2.json"): (0, 0.3, 0.12),
 }
 
+HEAL_SHARE = 0.1
+# The upstream power_blend of the two blended heals: physical melee at weight 1/3, plus its critical chance and damage.
+HEAL_UPSTREAM_BLEND = [{"school": "spell_power:physical_melee", "power": True, "critical_chance": True,
+                        "critical_damage": True, "weight": 0.33333334}]
+# The new blend of the two blended heals. With the x 1.1 coefficient, weights 7.5 (healing) and 2.5 (melee) give
+# c x (0.75 P_heal + 0.25 P_melee), the upstream power, plus 0.1 x c x max health; the melee crit blend is unchanged.
+HEAL_BLENDED = [
+    {"school": "spell_power:healing", "power": True, "weight": 7.5},
+    {"school": "spell_power:physical_melee", "power": True, "weight": 2.5},
+    {"school": "spell_power:physical_melee", "critical_chance": True, "critical_damage": True, "weight": 0.33333334},
+]
+# (mod, path) -> (impact location, upstream spell_power_coefficient, new coefficient, from_target, kind). The location is
+# ("impacts", i) or ("modifiers", 0, "impacts", i). kind "plain": the upstream impact has no power_blend and is rewritten
+# with a healing-school blend at weight 10 (new = upstream x 1.1). kind "blended": the upstream power_blend is
+# HEAL_UPSTREAM_BLEND and is rewritten to HEAL_BLENDED (new = upstream x 1.1). kind "append": the upstream impact is kept
+# unchanged and one impact is inserted directly after it, with minecraft:max_health and coefficient 0.1 x upstream
+# (new is that share). min_power on the upstream impact clamps only the upstream part, so the appended share is not
+# clamped. from_target False reads the attribute from the caster: the apply_to_caster modifier and the two relic perks.
+# New coefficients are written out, because 1.2 * 1.1 is not exactly 1.32 in floating point.
+HEAL = {
+    ("paladins", "data/paladins/spell/circle_of_healing.json"): (("impacts", 0), 0.4, 0.44, True, "plain"),
+    ("paladins", "data/paladins/spell/flash_heal.json"): (("impacts", 0), 1.2, 1.32, True, "plain"),
+    ("paladins", "data/paladins/spell/heal.json"): (("impacts", 0), 0.5, 0.55, True, "plain"),
+    ("paladins", "data/paladins/spell/holy_beam.json"): (("impacts", 0), 0.4, 0.44, True, "plain"),
+    ("paladins", "data/paladins/spell/holy_shock.json"): (("impacts", 0), 0.4, 0.44, True, "plain"),
+    ("paladins", "data/paladins/spell/lightwell_heal.json"): (("impacts", 0), 0.35, 0.035, True, "append"),
+    ("relics_rpgs", "data/relics_rpgs/spell/greater_perk_defense_block.json"):
+        (("impacts", 0), 0.25, 0.025, False, "append"),
+    ("relics_rpgs", "data/relics_rpgs/spell/greater_perk_heal_danger.json"):
+        (("impacts", 0), 0.3, 0.03, False, "append"),
+    ("skill_tree_rpgs", "data/skill_tree_rpgs/spell/priest_tier_4_spell_2_modifier_1.json"): (("impacts", 0), 0.1, 0.11, True, "plain"),
+    ("paladins", "data/paladins/spell/immolation.json"): (("impacts", 2), 0.5, 0.55, True, "blended"),
+    ("skill_tree_rpgs", "data/skill_tree_rpgs/spell/paladin_tier_2_spell_2_modifier_2.json"):
+        (("modifiers", 0, "impacts", 0), 0.25, 0.275, False, "blended"),
+}
+
 
 def sha256(data):
     return hashlib.sha256(data).hexdigest()
@@ -95,6 +138,71 @@ def dump(spell):
 def is_spell(name):
     parts = name.split("/")
     return len(parts) >= 4 and parts[0] == "data" and parts[2] == "spell" and name.endswith(".json")
+
+
+def impact_slot(spell, location):
+    """(list, index) holding the impact at location, such as ("impacts", 0) or ("modifiers", 0, "impacts", 0)."""
+    node = spell
+    for step in location[:-2]:
+        node = node[step]
+    return node[location[-2]], location[-1]
+
+
+def location_text(location):
+    return ".".join(f"{location[i]}[{location[i + 1]}]" for i in range(0, len(location), 2))
+
+
+def heal_impact(mod, path, spell, location, old, new, from_target, kind):
+    """Rewrites one HEAL impact in place, or appends its share impact, and returns the change text. Fails hard on any
+    unexpected upstream shape."""
+    if kind == "append":
+        if abs(new - old * HEAL_SHARE) > 1e-9:
+            raise SystemExit(f"{mod} {path}: share {new:g} is not {old:g} x {HEAL_SHARE:g}")
+    elif abs(new - old * (1 + HEAL_SHARE)) > 1e-9:
+        raise SystemExit(f"{mod} {path}: {new:g} is not {old:g} x {1 + HEAL_SHARE:g}")
+    if spell.get("school") != "spell_power:healing":
+        raise SystemExit(f"{mod} {path}: top-level school {spell.get('school')} is not spell_power:healing")
+    container, index = impact_slot(spell, location)
+    impact = container[index]
+    action = impact.get("action") or {}
+    heal = action.get("heal") or {}
+    if action.get("type") != "HEAL" or heal.get("spell_power_coefficient") != old:
+        raise SystemExit(f"{mod} {path} {location_text(location)}: not a HEAL impact with spell_power_coefficient {old:g}")
+    if "attribute" in impact or "school" in impact:
+        raise SystemExit(f"{mod} {path} {location_text(location)} already has an attribute or school")
+    if action.get("apply_to_caster") and from_target:
+        raise SystemExit(f"{mod} {path}: an apply_to_caster impact must not read attribute_from_target")
+    source = "target" if from_target else "caster"
+    if kind in ("plain", "append") and "power_blend" in impact:
+        raise SystemExit(f"{mod} {path} {location_text(location)}: {kind} heal has a power_blend")
+    if kind == "append":
+        appended = {"attribute": "minecraft:max_health"}
+        if from_target:
+            appended["attribute_from_target"] = True
+        appended["action"] = {"type": "HEAL", "heal": {"spell_power_coefficient": new}}
+        container.insert(index + 1, appended)
+        appended_location = location[:-1] + (location[-1] + 1,)
+        return (f"{location_text(appended_location)} appended: action.heal.spell_power_coefficient {new:g} x {source} "
+                f"max_health")
+    if kind == "plain":
+        blend = [{"school": spell["school"], "power": True, "weight": 10.0}]
+        blend_text = "spell_power:healing x10"
+    elif kind == "blended":
+        if impact.get("power_blend") != HEAL_UPSTREAM_BLEND:
+            raise SystemExit(f"{mod} {path} {location_text(location)}: power_blend is not the decided melee blend")
+        blend = copy.deepcopy(HEAL_BLENDED)
+        blend_text = "spell_power:healing x7.5 and spell_power:physical_melee x2.5 (melee crit blend kept)"
+    else:
+        raise SystemExit(f"{mod} {path}: unknown heal kind {kind}")
+    rebuilt = {"attribute": "minecraft:max_health"}
+    if from_target:
+        rebuilt["attribute_from_target"] = True
+    rebuilt["power_blend"] = blend
+    rebuilt.update((key, value) for key, value in impact.items() if key != "power_blend")
+    rebuilt["action"]["heal"]["spell_power_coefficient"] = new
+    container[index] = rebuilt
+    return (f"{location_text(location)}.action.heal.spell_power_coefficient {old:g} -> {new:g}; "
+            f"power = {source} max_health blended with {blend_text}")
 
 
 def patch_spell(mod, path, raw):
@@ -131,12 +239,18 @@ def patch_spell(mod, path, raw):
                              f"is not {old:g}")
         damage["spell_power_coefficient"] = new
         changes.append(f"impacts[{index}].action.damage.spell_power_coefficient {old:g} -> {new:g}")
+    heal = HEAL.get((mod, path))
+    if heal is not None:
+        location, old, new, from_target, kind = heal
+        changes.append(heal_impact(mod, path, spell, location, old, new, from_target, kind))
     return (dump(spell), changes) if changes else (None, [])
 
 
 def workstream(change):
     if change.startswith("cost"):
         return "P1"
+    if ".heal." in change:
+        return "HEAL"
     return "FIRE" if ".damage." in change else "D9"
 
 
@@ -145,6 +259,7 @@ def build(mods_dir):
     files = {}
     seen_limits = set()
     seen_coefficients = set()
+    seen_heals = set()
     for jar_name, mod, version, jar_sha in JARS:
         jar = mods_dir / jar_name
         if sha256(jar.read_bytes()) != jar_sha:
@@ -162,6 +277,8 @@ def build(mods_dir):
                     seen_limits.add((mod, name))
                 if (mod, name) in FIRE:
                     seen_coefficients.add((mod, name))
+                if (mod, name) in HEAL:
+                    seen_heals.add((mod, name))
                 files[REPLACEMENTS / mod / version / name] = replacement
                 files[FIXTURES / mod / version / name] = raw
                 entries.append({
@@ -176,6 +293,9 @@ def build(mods_dir):
     missing = set(FIRE) - seen_coefficients
     if missing:
         raise SystemExit(f"Decided fire coefficients not found in the jars: {sorted(missing)}")
+    missing = set(HEAL) - seen_heals
+    if missing:
+        raise SystemExit(f"Decided heals not found in the jars: {sorted(missing)}")
     return entries, files
 
 
@@ -190,7 +310,8 @@ def main():
     d9 = sum("D9" in e["workstreams"] for e in entries)
     both = sum(e["workstreams"] == ["D9", "P1"] for e in entries)
     fire = sum("FIRE" in e["workstreams"] for e in entries)
-    print(f"{len(entries)} replacements; {p1} P1; {d9} D9; {both} both; {fire} FIRE")
+    heal = sum("HEAL" in e["workstreams"] for e in entries)
+    print(f"{len(entries)} replacements; {p1} P1; {d9} D9; {both} both; {fire} FIRE; {heal} HEAL")
 
     committed = json.loads(MANIFEST.read_text(encoding="utf-8")) if MANIFEST.is_file() else None
     key = lambda e: (e["mod"], e["path"])

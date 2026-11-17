@@ -1,0 +1,24 @@
+{
+  "school": "spell_power:healing",
+  "impacts": [
+    {
+      "action": {
+        "type": "HEAL",
+        "min_power": 8.0,
+        "heal": {
+          "spell_power_coefficient": 0.25
+        }
+      }
+    },
+    {
+      "attribute": "minecraft:max_health",
+      "attribute_from_target": true,
+      "action": {
+        "type": "HEAL",
+        "heal": {
+          "spell_power_coefficient": 0.025
+        }
+      }
+    }
+  ]
+}

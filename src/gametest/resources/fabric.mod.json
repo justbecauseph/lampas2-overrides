@@ -7,7 +7,8 @@
 	"entrypoints": {
 		"fabric-gametest": [
 			"lampas2overrides.crowdcontrol.CrowdControlImmunityGameTests",
-			"lampas2overrides.tridentcrits.ThrownTridentCritGameTests"
+			"lampas2overrides.tridentcrits.ThrownTridentCritGameTests",
+			"lampas2overrides.spellheal.SpellHealShareGameTests"
 		]
 	},
 	"depends": {

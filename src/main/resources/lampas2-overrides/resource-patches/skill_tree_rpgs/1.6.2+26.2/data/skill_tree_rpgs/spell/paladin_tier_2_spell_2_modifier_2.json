@@ -1,0 +1,60 @@
+{
+  "school": "spell_power:healing",
+  "range": 0.0,
+  "tier": 1,
+  "type": "MODIFIER",
+  "modifiers": [
+    {
+      "spell_pattern": "paladins:blessed_strikes",
+      "mutate_impacts": "APPEND",
+      "impacts": [
+        {
+          "attribute": "minecraft:max_health",
+          "power_blend": [
+            {
+              "school": "spell_power:healing",
+              "power": true,
+              "weight": 7.5
+            },
+            {
+              "school": "spell_power:physical_melee",
+              "power": true,
+              "weight": 2.5
+            },
+            {
+              "school": "spell_power:physical_melee",
+              "critical_chance": true,
+              "critical_damage": true,
+              "weight": 0.33333334
+            }
+          ],
+          "action": {
+            "type": "HEAL",
+            "apply_to_caster": true,
+            "heal": {
+              "spell_power_coefficient": 0.275
+            }
+          },
+          "visuals": {
+            "particles": [
+              {
+                "id": "spell_engine:magic_heal",
+                "appearance": {
+                  "color": 4294954239,
+                  "motion": "DECELERATE"
+                },
+                "batch": {
+                  "count": 8.0,
+                  "shape": "SPHERE",
+                  "anchor": "ENTITY",
+                  "min_speed": 0.15,
+                  "max_speed": 0.25
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

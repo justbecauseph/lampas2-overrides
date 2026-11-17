@@ -1,0 +1,103 @@
+{
+  "school": "spell_power:healing",
+  "range": 16.0,
+  "tier": 2,
+  "group": "paladin_protection",
+  "learn": {},
+  "active": {
+    "cast": {
+      "duration": 0.5,
+      "animation": {
+        "id": "spell_engine:one_handed_healing_charge"
+      },
+      "sound": {
+        "id": "spell_engine:generic_healing_casting",
+        "randomness": 0.0
+      },
+      "particles": [
+        {
+          "id": "spell_engine:magic_spark",
+          "appearance": {
+            "color": 4294954239,
+            "motion": "FLOAT"
+          },
+          "batch": {
+            "count": 1.0,
+            "shape": "PIPE",
+            "anchor": "ENTITY",
+            "vertical_origin": 0.1,
+            "min_speed": 0.05,
+            "max_speed": 0.1,
+            "width_factor": 2.0
+          }
+        }
+      ]
+    }
+  },
+  "release": {
+    "animation": {
+      "id": "spell_engine:one_handed_healing_release"
+    },
+    "sound": {
+      "id": "spell_engine:generic_healing_release",
+      "randomness": 0.0
+    }
+  },
+  "target": {
+    "type": "AIM",
+    "aim": {
+      "sticky": true,
+      "use_caster_as_fallback": true
+    }
+  },
+  "impacts": [
+    {
+      "attribute": "minecraft:max_health",
+      "attribute_from_target": true,
+      "power_blend": [
+        {
+          "school": "spell_power:healing",
+          "power": true,
+          "weight": 10.0
+        }
+      ],
+      "action": {
+        "type": "HEAL",
+        "heal": {
+          "spell_power_coefficient": 1.32
+        }
+      },
+      "visuals": {
+        "particles": [
+          {
+            "id": "spell_engine:magic_heal",
+            "appearance": {
+              "color": 1728014079,
+              "motion": "ASCEND"
+            },
+            "batch": {
+              "count": 30.0,
+              "shape": "PILLAR",
+              "anchor": "ENTITY",
+              "vertical_origin": 0.1,
+              "min_speed": 0.02,
+              "max_speed": 0.15
+            }
+          }
+        ]
+      },
+      "sound": {
+        "id": "spell_engine:generic_healing_impact_1"
+      }
+    }
+  ],
+  "cost": {
+    "exhaust": 0.2,
+    "cooldown": {
+      "duration": 6.0
+    },
+    "item": {
+      "id": "runes:healing_stone"
+    }
+  }
+}

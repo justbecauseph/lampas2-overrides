@@ -7,7 +7,7 @@ Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-ac
 entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
 Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, the version-gated Wilder Delights 1.0.0-26.2 creative tab icon under Wilder Wild 4.3, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, version-gated Builder's Boundry 0.2 and Dungeons and Taverns 5.3.2 tick-function optimizations, the ungated Gardener's Dream pot-break-check optimization (audited on 2.6), the version-gated Lootr 1.24.41.124 container tick-delay gate, the version-gated
-IllagerBlabber 1.1.0 voice-registry leak fix, Critical Strike crits for thrown tridents, the ungated hotbar slot resync after respawn, Voxy 0.2.19-beta reverse-Z depth under Iris 1.11.4 shader packs, Status Effect Bars duration bars placed on VanillaHUD's effect icons, Fancy World Animations 1.3.4 animation culling under EntityCulling 1.12.0, Just Enough Filters 3.2.0 `@Inject` parameter-slot corruption under R8-shrunk JEI 30.48.0.244, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2 and Trek B0.6.2 waystone pools), the Rogues 3.1.3.003+26.2 Sharpness definition, the seven Paladins and Rogues 3.1.3.003+26.2 aeternium weapon recipes, and 66 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised; Fire Wall and Meteor burning ground damage x0.4). The first two
+IllagerBlabber 1.1.0 voice-registry leak fix, Critical Strike crits for thrown tridents, the ungated hotbar slot resync after respawn, Voxy 0.2.19-beta reverse-Z depth under Iris 1.11.4 shader packs, Status Effect Bars duration bars placed on VanillaHUD's effect icons, Fancy World Animations 1.3.4 animation culling under EntityCulling 1.12.0, Just Enough Filters 3.2.0 `@Inject` parameter-slot corruption under R8-shrunk JEI 30.48.0.244, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2 and Trek B0.6.2 waystone pools), the Rogues 3.1.3.003+26.2 Sharpness definition, the seven Paladins and Rogues 3.1.3.003+26.2 aeternium weapon recipes, and 77 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised; Fire Wall and Meteor burning ground damage x0.4; eleven heals add 0.1 x c x max health, 12% for Flash Heal). The first two
 features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, the Voxy reverse-Z fix, the Status Effect Bars alignment under VanillaHUD, the Fancy World Animations culling under EntityCulling (its canceller is common-side), and the Just Enough Filters + JEI fix are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium, Builder's Boundry, Dungeons and Taverns and Gardener's Dream datapacks, IllagerBlabber registry fix, Lootr tick-delay gate, thrown-trident crits, and virtual resource patcher are common-side and must also run on a dedicated server; the Wilder Delights tab icon fix is registered common-side because it targets Wilder Delights' main entrypoint class, though only the client runs the icon supplier; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
@@ -445,6 +445,15 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   jars and `--check` verifies the committed files. Every upstream spell round-trips byte-exactly through
   `json.dumps(indent=2, ensure_ascii=False)` without a trailing newline, so each replacement differs from upstream
   only in the decided keys. An RPG Series update drops that mod's patches with a WARN until they are re-pinned.
+- **HEAL impacts read max health through `attribute`, and `attribute_from_target` is for target reads only.** Spell Engine
+  1.10.9 takes an impact's base power from the caster's attribute unless `attribute_from_target` is true, and an
+  `apply_to_caster` impact still passes the original target, so it must not set that flag. The generator's `HEAL` table has
+  two kinds: eight impacts get `minecraft:max_health` with a healing-school power entry at weight 10 (Immolation and the
+  Seal of Light modifier blend 7.5 healing and 2.5 melee instead), and three keep the upstream impact and append a
+  `minecraft:max_health` share of 0.1 x c after it, because the upstream `min_power` would otherwise clamp that share.
+  The two relic perks read the caster's max health, as does the Seal of Light modifier. `SpellHealShareGameTests` checks
+  the target-read, caster-read and appended cases with test spells on the GameTest server; the eleven replacements are
+  checked by formula only, in `RpgSeriesSpellPatchTest`.
 - **FrozenLib wind compatibility is retired for the latest supported pair.**
   FrozenLib 3.0 clears `loadedExtensions` during reset and Wilder Wild 4.3 applies
   cloud sync to its existing extension (4.3.3 changes only boat entity/item registration). The unpatched isolated client no longer
@@ -700,7 +709,7 @@ resourcefix/
   ResourcePatchRegistry     registry of defective mod resources with SHA-256 fingerprints
   ResourcePatchResolver     runtime virtual patch resolver
   ResourcePatch             immutable patch rule record
-  RpgSeriesSpellPatches     66 RPG Series spell patches (D3 P1 cooldown haste, D9 apply limits, fire coefficients), one Target per jar
+  RpgSeriesSpellPatches     77 RPG Series spell patches (D3 P1 cooldown haste, D9 apply limits, fire coefficients, HEAL max-health share), one Target per jar
   Includes the version- and SHA-gated Wilder Wild 4.3.3 stone-pool radius repair and Rogues Sharpness replacement
 lampas2-overrides/resource-patches/
   <mod>/<version>/          replacement resource assets, e.g. wilderwild/4.3.3/, rogues/3.1.3.003+26.2/

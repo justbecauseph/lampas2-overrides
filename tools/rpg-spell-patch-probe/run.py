@@ -14,8 +14,8 @@ spell in docs/evidence/rpg-spell-patches.manifest.json and the hasted controls:
   plus whether Spell Engine's boss gate classifies the effect as movement impairing or AI disabling;
 - the SHA-256 and source pack the resource manager serves through getResource and listResources.
 
-The probe does not decode the damage coefficient of the two fire patches; it checks them only through that served
-SHA-256.
+The probe does not decode the damage coefficient of the two fire patches or the coefficients and blends of the eleven
+HEAL patches; it checks them only through that served SHA-256.
 
 Expected values come from DECISION and TOP_BAND below and the manifest's upstream/replacement SHA-256
 values, never from the overrides jar. results.json lists every mismatch under "failures".
@@ -80,7 +80,7 @@ DECISION = {
 # BALANCE.md top-band health at level 200: zombie/piglin 20 + 2.5 or 3.0 per level, enderman 40 + 3.5 per level.
 TOP_BAND = {"overworld": 20 + 199 * 2.5, "nether": 20 + 199 * 3.0, "end": 40 + 199 * 3.5}
 # Caster and healer spells keep hasted cooldowns.
-CONTROLS = {"wizards:fire_meteor": "wizards", "paladins:flash_heal": "paladins"}
+CONTROLS = {"wizards:fire_meteor": "wizards", "paladins:divine_protection": "paladins"}
 
 PROPERTIES = """\
 online-mode=false

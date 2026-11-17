@@ -1,0 +1,13 @@
+{
+  "school": "spell_power:healing",
+  "impacts": [
+    {
+      "action": {
+        "type": "HEAL",
+        "heal": {
+          "spell_power_coefficient": 1.2
+        }
+      }
+    }
+  ]
+}

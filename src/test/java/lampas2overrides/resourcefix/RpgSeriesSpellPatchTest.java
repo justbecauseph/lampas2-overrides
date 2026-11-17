@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -30,6 +31,8 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -91,6 +94,39 @@ public class RpgSeriesSpellPatchTest {
 	/** Fire Wall and burning ground: "mod version path" -> {impact index, upstream coefficient, new coefficient}. */
 	private static final Map<String, double[]> FIRE = new LinkedHashMap<>();
 
+	/** How a HEAL spell's share is written (tools/generate_rpg_spell_patches.py, HEAL table). */
+	private enum Kind {
+		/** The impact is rewritten with minecraft:max_health and a healing-school blend at weight 10. */
+		PLAIN,
+		/** The impact is rewritten with minecraft:max_health and the 7.5 healing, 2.5 melee blend. */
+		BLENDED,
+		/** The upstream impact is kept as it is; minecraft:max_health with coefficient 0.1 x c is appended after it. */
+		APPEND
+	}
+
+	/**
+	 * One HEAL impact. {@code modifier} is -1 for the spell's own impacts, else the index of {@code modifiers[modifier]}.
+	 * {@code upstream} is the old spell_power_coefficient. {@code patched} is the new coefficient: upstream x 1.1 for PLAIN and
+	 * BLENDED, and the appended share 0.1 x upstream for APPEND. {@code fromTarget} is false where the attribute is read from
+	 * the caster. {@code minPower} is the upstream action's min_power, 1.0 where it has none.
+	 */
+	private record Heal(int modifier, int impact, double upstream, double patched, boolean fromTarget, Kind kind,
+			double minPower) {
+	}
+
+	/** HEAL (healing share, 1.0.22): "mod version path" -> the healing impact. Written out here, not read from the replacements. */
+	private static final Map<String, Heal> HEAL = new LinkedHashMap<>();
+
+	/** The upstream power_blend of the two blended heals: physical melee at weight 1/3 with its crit blend. */
+	private static final String MELEE_BLEND = """
+		[{"school": "spell_power:physical_melee", "power": true, "critical_chance": true, "critical_damage": true,
+		"weight": 0.33333334}]""";
+	/** The new blend of the two blended heals: 7.5 healing, 2.5 melee and the melee crit blend unchanged. */
+	private static final String HEALING_MELEE_BLEND = """
+		[{"school": "spell_power:healing", "power": true, "weight": 7.5},
+		{"school": "spell_power:physical_melee", "power": true, "weight": 2.5},
+		{"school": "spell_power:physical_melee", "critical_chance": true, "critical_damage": true, "weight": 0.33333334}]""";
+
 	static {
 		// Frost k: the smallest multiple of 0.5 with base + k x 119.19 >= 1.1 x 736.5 (caster loot calibration).
 		limit("wizards", RPG, "data/wizards/spell/frost_nova.json", 1, 60, 4, 60, 6.5, 119.19);
@@ -110,6 +146,25 @@ public class RpgSeriesSpellPatchTest {
 		// 0.32), burning ground 0.3 (0.3 x 0.4 = 0.12; the balance model also uses 0.3).
 		coefficient("wizards", RPG, "data/wizards/spell/fire_wall.json", 0, 0.8, 0.32);
 		coefficient("skill_tree_rpgs", "1.6.2+26.2", "data/skill_tree_rpgs/spell/fire_tier_3_spell_1_modifier_2.json", 0, 0.3, 0.12);
+
+		// HEAL: PLAIN and BLENDED heals rewrite the impact with coefficient x 1.1 (c x P + 0.1 x c x max health). APPEND keeps the
+		// upstream impact and adds 0.1 x c x max health after it, which min_power cannot clamp. Max health is the target's,
+		// except for the Paladin tier 2 modifier and the two relic perks (fromTarget false).
+		heal("paladins", RPG, "data/paladins/spell/circle_of_healing.json", -1, 0, 0.4, 0.44, true, Kind.PLAIN);
+		heal("paladins", RPG, "data/paladins/spell/flash_heal.json", -1, 0, 1.2, 1.32, true, Kind.PLAIN);
+		heal("paladins", RPG, "data/paladins/spell/heal.json", -1, 0, 0.5, 0.55, true, Kind.PLAIN);
+		heal("paladins", RPG, "data/paladins/spell/holy_beam.json", -1, 0, 0.4, 0.44, true, Kind.PLAIN);
+		heal("paladins", RPG, "data/paladins/spell/holy_shock.json", -1, 0, 0.4, 0.44, true, Kind.PLAIN);
+		heal("paladins", RPG, "data/paladins/spell/immolation.json", -1, 2, 0.5, 0.55, true, Kind.BLENDED);
+		heal("paladins", RPG, "data/paladins/spell/lightwell_heal.json", -1, 0, 0.35, 0.035, true, Kind.APPEND);
+		heal("relics_rpgs", "1.4.1+26.2", "data/relics_rpgs/spell/greater_perk_defense_block.json", -1, 0, 0.25, 0.025, false,
+				Kind.APPEND, 8.0);
+		heal("relics_rpgs", "1.4.1+26.2", "data/relics_rpgs/spell/greater_perk_heal_danger.json", -1, 0, 0.3, 0.03, false,
+				Kind.APPEND, 10.0);
+		heal("skill_tree_rpgs", "1.6.2+26.2", "data/skill_tree_rpgs/spell/priest_tier_4_spell_2_modifier_1.json", -1, 0, 0.1, 0.11,
+				true, Kind.PLAIN);
+		heal("skill_tree_rpgs", "1.6.2+26.2", "data/skill_tree_rpgs/spell/paladin_tier_2_spell_2_modifier_2.json", 0, 0, 0.25,
+				0.275, false, Kind.BLENDED);
 	}
 
 	private static final Set<String> PHYSICAL = Set.of(
@@ -137,10 +192,12 @@ public class RpgSeriesSpellPatchTest {
 		assertEquals(59, P1.size());
 		assertEquals(12, LIMITS.size());
 		assertEquals(2, FIRE.size());
+		assertEquals(11, HEAL.size());
 		Set<String> decided = new HashSet<>(P1);
 		decided.addAll(LIMITS.keySet());
 		decided.addAll(FIRE.keySet());
-		assertEquals(66, decided.size(), "Seven files carry both P1 and D9 in one replacement");
+		decided.addAll(HEAL.keySet());
+		assertEquals(77, decided.size(), "Seven files carry both P1 and D9 in one replacement");
 		assertEquals(decided, spellPatches().stream().map(RpgSeriesSpellPatchTest::id).collect(Collectors.toSet()));
 
 		assertNotNull(ResourcePatchRegistry.findPatch("spell_engine", "1.10.9+26.2", "data/rpg_series/spell/whirlwind.json"));
@@ -186,6 +243,73 @@ public class RpgSeriesSpellPatchTest {
 					.getAsJsonObject("action").getAsJsonObject("damage");
 				assertEquals(coefficient[1], damage.get("spell_power_coefficient").getAsDouble(), id);
 				damage.addProperty("spell_power_coefficient", coefficient[2]);
+			}
+			Heal heal = HEAL.get(id);
+			if (heal != null) {
+				assertEquals("spell_power:healing", expected.get("school").getAsString(), id);
+				JsonObject owner = healOwner(expected, heal);
+				JsonArray impacts = owner.getAsJsonArray("impacts");
+				JsonObject old = impacts.get(heal.impact()).getAsJsonObject();
+				JsonObject action = old.getAsJsonObject("action");
+				assertEquals("HEAL", action.get("type").getAsString(), id);
+				assertEquals(heal.upstream(), action.getAsJsonObject("heal").get("spell_power_coefficient").getAsDouble(), id);
+				assertFalse(old.has("attribute") || old.has("school"), id);
+				if (heal.kind() == Kind.BLENDED) {
+					assertEquals(JsonParser.parseString(MELEE_BLEND), old.get("power_blend"), id);
+				} else {
+					assertFalse(old.has("power_blend"), id);
+				}
+				if (action.has("apply_to_caster") && action.get("apply_to_caster").getAsBoolean()) {
+					assertFalse(heal.fromTarget(), "an apply_to_caster heal must not read attribute_from_target: " + id);
+				}
+				if (heal.kind() == Kind.APPEND) {
+					// The upstream impact stays as it is, and the share impact follows it.
+					JsonObject share = new JsonObject();
+					share.addProperty("attribute", "minecraft:max_health");
+					if (heal.fromTarget()) {
+						share.addProperty("attribute_from_target", true);
+					}
+					JsonObject shareHeal = new JsonObject();
+					shareHeal.addProperty("spell_power_coefficient", heal.patched());
+					JsonObject shareAction = new JsonObject();
+					shareAction.addProperty("type", "HEAL");
+					shareAction.add("heal", shareHeal);
+					share.add("action", shareAction);
+					JsonArray rebuilt = new JsonArray();
+					for (int i = 0; i < impacts.size(); i++) {
+						rebuilt.add(impacts.get(i));
+						if (i == heal.impact()) {
+							rebuilt.add(share);
+						}
+					}
+					owner.add("impacts", rebuilt);
+				} else {
+					// The new impact: attribute, attribute_from_target (target reads only), power_blend, then the upstream keys.
+					JsonObject rebuilt = new JsonObject();
+					rebuilt.addProperty("attribute", "minecraft:max_health");
+					if (heal.fromTarget()) {
+						rebuilt.addProperty("attribute_from_target", true);
+					}
+					if (heal.kind() == Kind.BLENDED) {
+						rebuilt.add("power_blend", JsonParser.parseString(HEALING_MELEE_BLEND));
+					} else {
+						JsonObject own = new JsonObject();
+						own.addProperty("school", expected.get("school").getAsString());
+						own.addProperty("power", true);
+						own.addProperty("weight", 10.0);
+						JsonArray blend = new JsonArray();
+						blend.add(own);
+						rebuilt.add("power_blend", blend);
+					}
+					for (Map.Entry<String, JsonElement> property : old.entrySet()) {
+						if (!property.getKey().equals("power_blend")) {
+							rebuilt.add(property.getKey(), property.getValue());
+						}
+					}
+					rebuilt.getAsJsonObject("action").getAsJsonObject("heal")
+						.addProperty("spell_power_coefficient", heal.patched());
+					impacts.set(heal.impact(), rebuilt);
+				}
 			}
 			assertEquals(PRETTY.toJson(expected), new String(replacement(patch), StandardCharsets.UTF_8), id);
 		}
@@ -263,6 +387,83 @@ public class RpgSeriesSpellPatchTest {
 			assertNotNull(ResourcePatchRegistry.findPatch(id[0], id[1], id[2]), entry.getKey());
 		}
 		assertNull(ResourcePatchRegistry.findPatch("wizards", RPG, "data/wizards/spell/fire_meteor.json"));
+	}
+
+	/**
+	 * The HEAL rule, read from each replacement alone. Each HEAL impact's power is its attribute value (max health) when it has an
+	 * attribute and the healing power otherwise; a power_blend replaces it with (base + sum of w x P) / (1 + sum of w) over its
+	 * power entries; the power is clamped to min_power (1.0 when absent); the heal is that power times the coefficient. At max
+	 * health 380, healing power 47 and melee power 90, a PLAIN or APPEND replacement must heal c x max(47, min_power) + 0.1 x c
+	 * x 380, and a BLENDED one c x (0.75 x 47 + 0.25 x 90) + 0.1 x c x 380, where c is the upstream coefficient. The
+	 * attribute_from_target flag is present and true exactly for the target-read rows; for APPEND it is on the appended impact.
+	 */
+	@Test
+	void healReplacementsAddTheShareOfMaxHealthToTheUpstreamHeal() throws IOException {
+		double maxHealth = 380;
+		double healingPower = 47;
+		double meleePower = 90;
+		assertEquals(11, HEAL.size());
+		for (Map.Entry<String, Heal> entry : HEAL.entrySet()) {
+			String key = entry.getKey();
+			String[] id = key.split(" ");
+			Heal heal = entry.getValue();
+			ResourcePatch patch = ResourcePatchRegistry.findPatch(id[0], id[1], id[2]);
+			assertNotNull(patch, key);
+			JsonObject replaced = replacementJson(patch);
+			JsonArray impacts = impactArray(replaced, heal);
+			// The impact with the max-health attribute: the rewritten impact, or the share appended after the upstream one.
+			JsonObject attributed = impacts.get(heal.kind() == Kind.APPEND ? heal.impact() + 1 : heal.impact()).getAsJsonObject();
+			assertEquals("minecraft:max_health", attributed.get("attribute").getAsString(), key);
+			assertEquals(heal.fromTarget(), attributed.has("attribute_from_target"), key);
+			if (heal.fromTarget()) {
+				assertTrue(attributed.get("attribute_from_target").getAsBoolean(), key);
+			}
+			if (heal.kind() == Kind.APPEND) {
+				JsonObject upstream = impacts.get(heal.impact()).getAsJsonObject();
+				assertFalse(upstream.has("attribute") || upstream.has("power_blend"), key);
+			}
+			assertEquals(heal.patched(), attributed.getAsJsonObject("action").getAsJsonObject("heal")
+				.get("spell_power_coefficient").getAsDouble(), key);
+			double upstreamPower = heal.kind() == Kind.BLENDED
+				? 0.75 * healingPower + 0.25 * meleePower
+				: Math.max(healingPower, heal.minPower());
+			double expected = heal.upstream() * upstreamPower + 0.1 * heal.upstream() * maxHealth;
+			assertEquals(expected, healFromReplacement(replaced, maxHealth, healingPower, meleePower), 1e-6, key);
+		}
+	}
+
+	/**
+	 * The two relic perks' min_power (8 and 10) clamps the upstream part when healing power is 1, and the appended share still
+	 * adds its max-health part. At max health 200: 0.25 x 8 + 0.025 x 200 = 7.0 and 0.3 x 10 + 0.03 x 200 = 9.0.
+	 */
+	@Test
+	void relicPerksKeepTheShareWhenHealingPowerIsBelowMinPower() throws IOException {
+		ResourcePatch defenseBlock = ResourcePatchRegistry.findPatch("relics_rpgs", "1.4.1+26.2",
+			"data/relics_rpgs/spell/greater_perk_defense_block.json");
+		ResourcePatch healDanger = ResourcePatchRegistry.findPatch("relics_rpgs", "1.4.1+26.2",
+			"data/relics_rpgs/spell/greater_perk_heal_danger.json");
+		assertNotNull(defenseBlock);
+		assertNotNull(healDanger);
+		assertEquals(7.0, healFromReplacement(replacementJson(defenseBlock), 200, 1, 90), 1e-9);
+		assertEquals(9.0, healFromReplacement(replacementJson(healDanger), 200, 1, 90), 1e-9);
+	}
+
+	/** Lightwell Heal keeps its upstream impact (no attribute, no blend) and appends the share, which reads the target. */
+	@Test
+	void lightwellHealAppendsItsShareAfterTheUnchangedImpact() throws IOException {
+		ResourcePatch patch = ResourcePatchRegistry.findPatch("paladins", RPG, "data/paladins/spell/lightwell_heal.json");
+		assertNotNull(patch);
+		JsonArray impacts = replacementJson(patch).getAsJsonArray("impacts");
+		assertEquals(2, impacts.size());
+		JsonObject upstream = impacts.get(0).getAsJsonObject();
+		assertFalse(upstream.has("attribute") || upstream.has("power_blend") || upstream.has("attribute_from_target"));
+		assertEquals(0.35, upstream.getAsJsonObject("action").getAsJsonObject("heal").get("spell_power_coefficient").getAsDouble(),
+			1e-12);
+		JsonObject share = impacts.get(1).getAsJsonObject();
+		assertEquals("minecraft:max_health", share.get("attribute").getAsString());
+		assertTrue(share.get("attribute_from_target").getAsBoolean());
+		assertEquals(0.035, share.getAsJsonObject("action").getAsJsonObject("heal").get("spell_power_coefficient").getAsDouble(),
+			1e-12);
 	}
 
 	@Test
@@ -362,7 +563,7 @@ public class RpgSeriesSpellPatchTest {
 					String id = jar[1] + " " + jar[2] + " " + name;
 					assertEquals(hastedMartial, P1.contains(id), "P1 list disagrees with the deployed jar: " + id);
 					assertEquals(limited, LIMITS.containsKey(id), "D9 table disagrees with the deployed jar: " + id);
-					if (hastedMartial || limited || FIRE.containsKey(id)) {
+					if (hastedMartial || limited || FIRE.containsKey(id) || HEAL.containsKey(id)) {
 						found.add(id);
 						ResourcePatch patch = ResourcePatchRegistry.findPatch(jar[1], jar[2], name);
 						assertNotNull(patch, "Unpatched " + id);
@@ -372,7 +573,7 @@ public class RpgSeriesSpellPatchTest {
 				}
 			}
 		}
-		assertEquals(66, found.size());
+		assertEquals(77, found.size());
 		assertEquals(found, spellPatches().stream().map(RpgSeriesSpellPatchTest::id).collect(Collectors.toSet()));
 	}
 
@@ -404,6 +605,78 @@ public class RpgSeriesSpellPatchTest {
 
 	private static void coefficient(String modId, String version, String path, int impact, double upstream, double patched) {
 		FIRE.put(modId + " " + version + " " + path, new double[] {impact, upstream, patched});
+	}
+
+	private static void heal(String modId, String version, String path, int modifier, int impact, double upstream,
+			double patched, boolean fromTarget, Kind kind) {
+		heal(modId, version, path, modifier, impact, upstream, patched, fromTarget, kind, 1.0);
+	}
+
+	private static void heal(String modId, String version, String path, int modifier, int impact, double upstream,
+			double patched, boolean fromTarget, Kind kind, double minPower) {
+		HEAL.put(modId + " " + version + " " + path, new Heal(modifier, impact, upstream, patched, fromTarget, kind, minPower));
+	}
+
+	/** The object that holds the heal's impacts: the spell itself, or {@code modifiers[modifier]}. */
+	private static JsonObject healOwner(JsonObject spell, Heal heal) {
+		if (heal.modifier() < 0) {
+			return spell;
+		}
+		return spell.getAsJsonArray("modifiers").get(heal.modifier()).getAsJsonObject();
+	}
+
+	private static JsonArray impactArray(JsonObject spell, Heal heal) {
+		return healOwner(spell, heal).getAsJsonArray("impacts");
+	}
+
+	/**
+	 * Spell Engine's total HEAL of a replacement, from its JSON alone: the sum over every HEAL impact of its power times its
+	 * coefficient, where the power is the attribute value (max health) or the healing power, blended by its power entries and
+	 * clamped to min_power. Healing power and melee power are the two schools' values.
+	 */
+	private static double healFromReplacement(JsonObject spell, double maxHealth, double healingPower, double meleePower) {
+		Map<String, Double> powers = Map.of("spell_power:healing", healingPower, "spell_power:physical_melee", meleePower);
+		List<JsonObject> impacts = new ArrayList<>();
+		if (spell.has("impacts")) {
+			spell.getAsJsonArray("impacts").forEach(element -> impacts.add(element.getAsJsonObject()));
+		}
+		if (spell.has("modifiers")) {
+			for (JsonElement modifier : spell.getAsJsonArray("modifiers")) {
+				if (modifier.getAsJsonObject().has("impacts")) {
+					modifier.getAsJsonObject().getAsJsonArray("impacts").forEach(element -> impacts.add(element.getAsJsonObject()));
+				}
+			}
+		}
+		double total = 0;
+		for (JsonObject impact : impacts) {
+			JsonObject action = impact.getAsJsonObject("action");
+			if (!"HEAL".equals(action.get("type").getAsString())) {
+				continue;
+			}
+			double power = impact.has("attribute") ? maxHealth : healingPower;
+			if (impact.has("power_blend")) {
+				double weighted = 0;
+				double weight = 0;
+				for (JsonElement element : impact.getAsJsonArray("power_blend")) {
+					JsonObject blend = element.getAsJsonObject();
+					if (!blend.has("power") || !blend.get("power").getAsBoolean()) {
+						continue; // the melee crit blend carries no power
+					}
+					double w = blend.get("weight").getAsDouble();
+					weighted += w * powers.get(blend.get("school").getAsString());
+					weight += w;
+				}
+				power = (power + weighted) / (1 + weight);
+			}
+			double minPower = action.has("min_power") ? action.get("min_power").getAsDouble() : 1.0;
+			power = Math.max(power, minPower);
+			total += action.getAsJsonObject("heal").get("spell_power_coefficient").getAsDouble() * power;
+		}
+		return total;
+	}
+
+	private static JsonObject replacementJson(ResourcePatch patch) throws IOException {
+		return JsonParser.parseString(new String(replacement(patch), StandardCharsets.UTF_8)).getAsJsonObject();
 	}
 
 	private static JsonObject applyLimit(JsonObject spell, int impact) {

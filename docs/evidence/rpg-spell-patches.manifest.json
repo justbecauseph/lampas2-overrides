@@ -75,6 +75,90 @@
   "mod": "paladins",
   "version": "3.1.3.003+26.2",
   "jar": "paladins-fabric-3.1.3.003+26.2.jar",
+  "path": "data/paladins/spell/circle_of_healing.json",
+  "upstream_sha256": "0ff8eeced4709a98296f2b77b0d9d5769c6a398f9cfa8fbdbba43413d7c19858",
+  "replacement_sha256": "9a7a89df649c479c002b4816ba7b93422d399fd06ad40e4913a7adecac0a1b21",
+  "changes": [
+   "impacts[0].action.heal.spell_power_coefficient 0.4 -> 0.44; power = target max_health blended with spell_power:healing x10"
+  ],
+  "workstreams": [
+   "HEAL"
+  ]
+ },
+ {
+  "mod": "paladins",
+  "version": "3.1.3.003+26.2",
+  "jar": "paladins-fabric-3.1.3.003+26.2.jar",
+  "path": "data/paladins/spell/flash_heal.json",
+  "upstream_sha256": "444e1f1a12a96059c6b27ba23a85a0d89c6a434be6d174b3b6690aaaf5e8d77f",
+  "replacement_sha256": "0eee25bd610baaefe2419935ff69246eae45add424c15ea158bc5d584ccdf8bf",
+  "changes": [
+   "impacts[0].action.heal.spell_power_coefficient 1.2 -> 1.32; power = target max_health blended with spell_power:healing x10"
+  ],
+  "workstreams": [
+   "HEAL"
+  ]
+ },
+ {
+  "mod": "paladins",
+  "version": "3.1.3.003+26.2",
+  "jar": "paladins-fabric-3.1.3.003+26.2.jar",
+  "path": "data/paladins/spell/heal.json",
+  "upstream_sha256": "eb5d70eee717ecba3a4e481a42bb5219b351702afd753a5d0c487abddf4c2dc7",
+  "replacement_sha256": "873bcbd67246b0b461f9dd7d02228f90d7683de4366cf67aebe0f0a73a377f41",
+  "changes": [
+   "impacts[0].action.heal.spell_power_coefficient 0.5 -> 0.55; power = target max_health blended with spell_power:healing x10"
+  ],
+  "workstreams": [
+   "HEAL"
+  ]
+ },
+ {
+  "mod": "paladins",
+  "version": "3.1.3.003+26.2",
+  "jar": "paladins-fabric-3.1.3.003+26.2.jar",
+  "path": "data/paladins/spell/holy_beam.json",
+  "upstream_sha256": "dc07b90805b4e1af54076e2ef64c5483d2581ea0cad0cd54d56e3a0c63778bcd",
+  "replacement_sha256": "fa1ac5e294e17022a49c208af7a662f144aa51bc8e9ab32419b3992a27432969",
+  "changes": [
+   "impacts[0].action.heal.spell_power_coefficient 0.4 -> 0.44; power = target max_health blended with spell_power:healing x10"
+  ],
+  "workstreams": [
+   "HEAL"
+  ]
+ },
+ {
+  "mod": "paladins",
+  "version": "3.1.3.003+26.2",
+  "jar": "paladins-fabric-3.1.3.003+26.2.jar",
+  "path": "data/paladins/spell/holy_shock.json",
+  "upstream_sha256": "6b61e66578ce0aaf9f20e84e4f97b8bd8f81c99e6391b59dae1ae0978a866672",
+  "replacement_sha256": "687d81764a24695a5eb58c51cc5e7dcafb7c5829f000428ffdba6bbf8b896f11",
+  "changes": [
+   "impacts[0].action.heal.spell_power_coefficient 0.4 -> 0.44; power = target max_health blended with spell_power:healing x10"
+  ],
+  "workstreams": [
+   "HEAL"
+  ]
+ },
+ {
+  "mod": "paladins",
+  "version": "3.1.3.003+26.2",
+  "jar": "paladins-fabric-3.1.3.003+26.2.jar",
+  "path": "data/paladins/spell/immolation.json",
+  "upstream_sha256": "6445c7a57718863e40e5fd3837cf61ef5bd5fffd7a96d26a0882da60da891dc5",
+  "replacement_sha256": "1571bf00850ef3585ce407514c67f29635f232266f9bf47509e5404b58ae6c75",
+  "changes": [
+   "impacts[2].action.heal.spell_power_coefficient 0.5 -> 0.55; power = target max_health blended with spell_power:healing x7.5 and spell_power:physical_melee x2.5 (melee crit blend kept)"
+  ],
+  "workstreams": [
+   "HEAL"
+  ]
+ },
+ {
+  "mod": "paladins",
+  "version": "3.1.3.003+26.2",
+  "jar": "paladins-fabric-3.1.3.003+26.2.jar",
   "path": "data/paladins/spell/judgement.json",
   "upstream_sha256": "a85576a3d32814d575117a9c82b7780676679add9e36164c73304ecec39a6fc0",
   "replacement_sha256": "42ae2e9269c105191a5d0b967cc258d7a440c9bc01fca51b045c143b81ff3e14",
@@ -85,6 +169,20 @@
   "workstreams": [
    "D9",
    "P1"
+  ]
+ },
+ {
+  "mod": "paladins",
+  "version": "3.1.3.003+26.2",
+  "jar": "paladins-fabric-3.1.3.003+26.2.jar",
+  "path": "data/paladins/spell/lightwell_heal.json",
+  "upstream_sha256": "201a50b28727b99d2587da08647e15255a4c5513fe6b20c63e4ec438d5509b26",
+  "replacement_sha256": "88ab90b6c42ff3a8d7a3ef6fd756bfe0541d18953995483721de9bceee95ab37",
+  "changes": [
+   "impacts[1] appended: action.heal.spell_power_coefficient 0.035 x target max_health"
+  ],
+  "workstreams": [
+   "HEAL"
   ]
  },
  {
@@ -577,6 +675,20 @@
   "mod": "skill_tree_rpgs",
   "version": "1.6.2+26.2",
   "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/paladin_tier_2_spell_2_modifier_2.json",
+  "upstream_sha256": "80f5e6e840d3d5b0cb36aa0d9ae7ce9e539285a16446298d1a592b49045efe25",
+  "replacement_sha256": "2c8eef7af4fdeaadc5ed281f682eed2989ac2a74e1877895f267288f5ad6c00a",
+  "changes": [
+   "modifiers[0].impacts[0].action.heal.spell_power_coefficient 0.25 -> 0.275; power = caster max_health blended with spell_power:healing x7.5 and spell_power:physical_melee x2.5 (melee crit blend kept)"
+  ],
+  "workstreams": [
+   "HEAL"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
   "path": "data/skill_tree_rpgs/spell/paladin_tier_3_passive_2.json",
   "upstream_sha256": "87caab49c3b400009198ff4e79541ee5682e6ccba18ff6e574a5b6b161872694",
   "replacement_sha256": "ccae865cdd208f71d535aeb00e537e7be5320292f20820fd90442747bb47d077",
@@ -585,6 +697,20 @@
   ],
   "workstreams": [
    "P1"
+  ]
+ },
+ {
+  "mod": "skill_tree_rpgs",
+  "version": "1.6.2+26.2",
+  "jar": "skill_tree-fabric-1.6.2+26.2.jar",
+  "path": "data/skill_tree_rpgs/spell/priest_tier_4_spell_2_modifier_1.json",
+  "upstream_sha256": "36b6f9a9573d16a2bfc62265a367c8c207d8d919c625fad426ff15ab48f3091f",
+  "replacement_sha256": "9cc5171099e3717cd573dca1fbaa332c1f317adbfeff552fbf97fc882b34f6ec",
+  "changes": [
+   "impacts[0].action.heal.spell_power_coefficient 0.1 -> 0.11; power = target max_health blended with spell_power:healing x10"
+  ],
+  "workstreams": [
+   "HEAL"
   ]
  },
  {
@@ -745,6 +871,20 @@
   "mod": "relics_rpgs",
   "version": "1.4.1+26.2",
   "jar": "relics-fabric-1.4.1+26.2.jar",
+  "path": "data/relics_rpgs/spell/greater_perk_defense_block.json",
+  "upstream_sha256": "2baf60ebea04e5de4632b1f20ef22d7f158bdd757f8d2984fd6c365055e9d399",
+  "replacement_sha256": "b00857bf62b1ed7b8c5a6d4c149a92fdd25a3133ff9b818843f5c0200cb3642f",
+  "changes": [
+   "impacts[1] appended: action.heal.spell_power_coefficient 0.025 x caster max_health"
+  ],
+  "workstreams": [
+   "HEAL"
+  ]
+ },
+ {
+  "mod": "relics_rpgs",
+  "version": "1.4.1+26.2",
+  "jar": "relics-fabric-1.4.1+26.2.jar",
   "path": "data/relics_rpgs/spell/greater_perk_defense_danger.json",
   "upstream_sha256": "343c5d2fe74b4a2ccbbf23b14f9ca6c60cbdd5bc118e85e5edf2f2a6e4a3c20e",
   "replacement_sha256": "efbcaa1c2fb17d6f917023ea6d081b9534484a1313057b215d2b6628dcbc8376",
@@ -767,6 +907,20 @@
   ],
   "workstreams": [
    "P1"
+  ]
+ },
+ {
+  "mod": "relics_rpgs",
+  "version": "1.4.1+26.2",
+  "jar": "relics-fabric-1.4.1+26.2.jar",
+  "path": "data/relics_rpgs/spell/greater_perk_heal_danger.json",
+  "upstream_sha256": "05a4ce3f2fa2fd7fae7c00856dae24e97d01d5c104ef7435e4efb6e2231548c6",
+  "replacement_sha256": "56260d8fdff3ff8947e4df27f806971d1b1df3881a2c983e84283fbec5e73475",
+  "changes": [
+   "impacts[1] appended: action.heal.spell_power_coefficient 0.03 x caster max_health"
+  ],
+  "workstreams": [
+   "HEAL"
   ]
  },
  {
