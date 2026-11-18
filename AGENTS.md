@@ -7,8 +7,8 @@ Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-ac
 entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
 Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, the version-gated Wilder Delights 1.0.0-26.2 creative tab icon under Wilder Wild 4.3, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, version-gated Builder's Boundry 0.2 and Dungeons and Taverns 5.3.2 tick-function optimizations, the ungated Gardener's Dream pot-break-check optimization (audited on 2.6), the version-gated Lootr 1.24.41.124 container tick-delay gate, the version-gated
-IllagerBlabber 1.1.0 voice-registry leak fix, Critical Strike crits for thrown tridents, the ungated hotbar slot resync after respawn, Voxy 0.2.19-beta reverse-Z depth under Iris 1.11.4 shader packs, Voxy errors kept out of chat, Status Effect Bars duration bars placed on VanillaHUD's effect icons, Fancy World Animations 1.3.4 animation culling under EntityCulling 1.12.0, Signs Faster 1.0.3 sign text for signs with a blank first line, Just Enough Filters 3.2.0 `@Inject` parameter-slot corruption under R8-shrunk JEI 30.48.0.244, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2 and Trek B0.6.2 waystone pools), the Rogues 3.1.3.003+26.2 Sharpness definition, the seven Paladins and Rogues 3.1.3.003+26.2 aeternium weapon recipes, and 77 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised; Fire Wall and Meteor burning ground damage x0.4; eleven heals add 0.1 x c x max health, 12% for Flash Heal). The first two
-features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, the Voxy reverse-Z fix, the Voxy chat suppression, the Status Effect Bars alignment under VanillaHUD, the Fancy World Animations culling under EntityCulling (its canceller is common-side), the Signs Faster blank-line fix, and the Just Enough Filters + JEI fix are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium, Builder's Boundry, Dungeons and Taverns and Gardener's Dream datapacks, IllagerBlabber registry fix, Lootr tick-delay gate, thrown-trident crits, and virtual resource patcher are common-side and must also run on a dedicated server; the Wilder Delights tab icon fix is registered common-side because it targets Wilder Delights' main entrypoint class, though only the client runs the icon supplier; the Lootr ↔ Fast Item Frames bridge has common server
+IllagerBlabber 1.1.0 voice-registry leak fix, Critical Strike crits for thrown tridents, the ungated hotbar slot resync after respawn, Voxy 0.2.19-beta reverse-Z depth under Iris 1.11.4 shader packs, Voxy errors kept out of chat, Magic Vibe Decorations scheduled block ticks turned off (any version, by block namespace), Status Effect Bars duration bars placed on VanillaHUD's effect icons, Fancy World Animations 1.3.4 animation culling under EntityCulling 1.12.0, Signs Faster 1.0.3 sign text for signs with a blank first line, Just Enough Filters 3.2.0 `@Inject` parameter-slot corruption under R8-shrunk JEI 30.48.0.244, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2 and Trek B0.6.2 waystone pools), the Rogues 3.1.3.003+26.2 Sharpness definition, the seven Paladins and Rogues 3.1.3.003+26.2 aeternium weapon recipes, and 77 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised; Fire Wall and Meteor burning ground damage x0.4; eleven heals add 0.1 x c x max health, 12% for Flash Heal). The first two
+features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, the Voxy reverse-Z fix, the Voxy chat suppression, the Status Effect Bars alignment under VanillaHUD, the Fancy World Animations culling under EntityCulling (its canceller is common-side), the Signs Faster blank-line fix, and the Just Enough Filters + JEI fix are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium, Builder's Boundry, Dungeons and Taverns and Gardener's Dream datapacks, IllagerBlabber registry fix, Lootr tick-delay gate, Magic Vibe Decorations tick cancel, thrown-trident crits, and virtual resource patcher are common-side and must also run on a dedicated server; the Wilder Delights tab icon fix is registered common-side because it targets Wilder Delights' main entrypoint class, though only the client runs the icon supplier; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -67,6 +67,7 @@ disable an unrelated feature.
 | Incendium Legacy 5.5.1 | `../lampas-server-fabric/mods/Incendium_26.2_v5.5.1.jar` |
 | Builder's Boundry 0.2 (`mr_builders_boundry`) | `../lampas-server-fabric/mods/builders-boundry-0.2.jar` |
 | Dungeons and Taverns 5.3.2 (`mr_dungeons_andtaverns`) | `../lampas-server-fabric/mods/dungeons-and-taverns-5.3.2.jar` |
+| Magic Vibe Decorations 3.0.1 (`magic_vibe_decorations`) | `../lampas-pipeline/.lampas/cache/modrinth/MPAgKQOE/48BVdgry/magic_vibe_decorations-3.0.1-fabric-26.1.2-26.3.jar` (SHA-256 `a7d9d509…9ab1`) |
 | Gardener's Dream 2.6 (`mr_gardeners_dream`) | `../lampas-server-fabric/mods/gardeners-dream-2.6.jar` (SHA-256 `e8969dc7…c376`) |
 | Structory: Towers 1.0.17 (`structory_towers`) | `../lampas-server-fabric/mods/Structory_Towers_26.2_v1.0.17.jar` (SHA-256 `226d8cb1…a372`) |
 | Trek B0.6.2 (`mr_trek`, declared version `1-B0.6.2`) | `../lampas-server-fabric/mods/trek-B0.6.2.jar` (SHA-256 `5ea0837a…c022`) |
@@ -194,6 +195,10 @@ For the Voxy reverse-Z fix (Sodium 0.9.2, Iris 1.11.4+mc26.2, Voxy 0.2.19-beta a
 packs`; entering a world with the pack on must apply `RenderPropertiesMixin`, `IrisShaderPatchMixin`,
 `VoxyUniformsMixin` and `ViewportAccessor`, and Voxy must not log `Failed to compile shader patch`. Whether LODs render
 needs a world with LOD data beyond vanilla render distance, checked by the user in game.
+
+For the Magic Vibe Decorations tick cancel (on a server or the GameTest server with the mod installed), startup must log
+`Disabled scheduled block ticks for Magic Vibe Decorations <version>`, and `BlockStateTickMixin` must apply into
+`net.minecraft.world.level.block.state.BlockBehaviour$BlockStateBase`. `MagicVibeTicksGameTests` covers the behaviour.
 
 For the Voxy chat suppression (Sodium 0.9.2 and Voxy 0.2.19-beta in `run/mods/`), startup must log `Enabled Voxy error
 suppression in chat (errors still go to the log)`, and `VoxyLoggerMixin` must appear applying into
@@ -362,6 +367,13 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   ghast.** `attribute … modifier remove` on an absent modifier throws, and the exception message is built eagerly, so
   a per-player per-tick removal costs ~24 µs per player-tick even when nothing is removed. The override tags
   passengers when the modifier is added and only clears tagged players.
+- **The Magic Vibe Decorations tick cancel applies to any version, but only 3.0.1 is inspected.** The mixin cancels
+  `BlockStateBase#tick` for the whole `magic_vibe_decorations` namespace, so a later release that adds a block extending
+  a vanilla ticking block (a button, a falling block) or uses a scheduled tick for something functional would break
+  silently. Another version still applies and logs a WARN. On an update, bump `magic_vibe_decorations_version` and rerun
+  `MagicVibeTicksContractTest` and the GameTest. The cancel also skips other mods' hooks inside `BlockStateBase#tick` for
+  these blocks (FrozenLib's `BlockTickEvents`; Wilder Wild registers only vanilla blocks there). A cancelled tick is not
+  requeued, so removing the fix does not wake existing crystals: each must be broken and placed again.
 - **Gardener's Dream 2.6's `pot_break_check` ran `pot_broken` once per online player for nothing.** `pot_broken`'s four
   `as @e[type=block_display,tag=…] at @s` lines rebind executor, position and dimension, and `plant_break` and
   `destroy_halfpot` read only the display (`@s[gamemode=creative]` there is the display and never matches), so the
@@ -659,6 +671,10 @@ lootrfastframes/
   LootrFastItemFrameType      Lootr data type registered through ServiceLoader
   LootrFastItemFrameWrapper   resolves marked Fast Item Frames block entities for Lootr
   mixin/                      conversion, state persistence, interaction and client rendering hooks
+magicvibe/
+  MagicVibeTicks            namespace check for magic_vibe_decorations blocks
+  MagicVibeTicksMixinPlugin applies whenever the mod is installed; WARNs on a version other than the inspected 3.0.1
+  mixin/                    HEAD inject on BlockStateBase#tick, cancels the namespace's scheduled ticks
 lootrtickgate/
   LootrTickGateProfile      exact Lootr 1.24.41.124 mod ID, version and JAR SHA-256
   LootrTickGateMixinPlugin  applies the gate only to that artifact; WARNs on any other Lootr

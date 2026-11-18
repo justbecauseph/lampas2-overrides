@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "lampas2overrides.magicvibe.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.magicvibe.MagicVibeTicksMixinPlugin",
+	"mixins": [
+		"BlockStateTickMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

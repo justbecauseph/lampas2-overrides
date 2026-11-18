@@ -8,7 +8,8 @@
 		"fabric-gametest": [
 			"lampas2overrides.crowdcontrol.CrowdControlImmunityGameTests",
 			"lampas2overrides.tridentcrits.ThrownTridentCritGameTests",
-			"lampas2overrides.spellheal.SpellHealShareGameTests"
+			"lampas2overrides.spellheal.SpellHealShareGameTests",
+			"lampas2overrides.magicvibe.MagicVibeTicksGameTests"
 		]
 	},
 	"depends": {
@@ -18,6 +19,7 @@
 		"lampas2-overrides": "*",
 		"spell_engine": "*",
 		"rogues": "*",
-		"critical_strike": "*"
+		"critical_strike": "*",
+		"magic_vibe_decorations": "*"
 	}
 }

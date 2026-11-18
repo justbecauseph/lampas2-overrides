@@ -98,6 +98,9 @@ dependencies {
 	// Optional mods are compile-only: every compatibility feature is gated by its mixin plugin, and none of their
 	// classes are bundled into the output jar. MixinSquared, nested above, is the exception.
 
+	// Magic Vibe Decorations: MagicVibeTicksContractTest reads its classes. Test-only; the mixin targets Minecraft, not the mod.
+	testRuntimeOnly("maven.modrinth:MPAgKQOE:${project.magic_vibe_decorations_version}") { transitive = false }
+
 	testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
 	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
@@ -129,6 +132,7 @@ dependencies {
 	gametestRuntimeOnly("maven.modrinth:structure-pool-api:${project.structure_pool_api_version}") { transitive = false }
 	gametestCompileOnly("maven.modrinth:critical-strike:${project.critical_strike_version}") { transitive = false }
 	gametestRuntimeOnly("maven.modrinth:critical-strike:${project.critical_strike_version}") { transitive = false }
+	gametestRuntimeOnly("maven.modrinth:MPAgKQOE:${project.magic_vibe_decorations_version}") { transitive = false }
 }
 
 def gameTestReportFile = layout.buildDirectory.file('test-results/gameTest/TEST-lampas2-overrides-gametest.xml')
