@@ -41,6 +41,15 @@ ungated hotbar slot resync after respawn.
 | [Status Effect Bars under VanillaHUD](#status-effect-bars-under-vanillahud) | Status Effect Bars + VanillaHUD | Draws the duration bars on the status effect icons where VanillaHUD puts them |
 | [Fancy World Animations under EntityCulling](#fancy-world-animations-under-entityculling) | Fancy World Animations 1.3.4 + EntityCulling 1.12.0 | Stops the client crashing at startup and keeps Fancy World Animations' animation occlusion culling working |
 | [Waystone-free structures](#waystone-free-structures) | Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2, Trek B0.6.2 | Empties the Structory: Towers and Dungeons and Taverns waystone pools and repoints Trek's to a plaza without the waystone, so new structures generate without waystones |
+| [Signs Faster blank first line](#signs-faster-blank-first-line) | Signs Faster 1.0.3 | Draws the lines of a sign whose first line is blank, which Signs Faster drew as an empty sign |
+
+## Signs Faster blank first line
+
+Signs Faster **1.0.3** (`signfasterlegacy`, closed source) replaces vanilla sign text rendering. Its `SignTextureManager.getOrCreateRegion` returned null whenever the first line of a sign was empty, and a null region makes the caller draw nothing. The mod had already cancelled vanilla's `AbstractSignRenderer.submitSignText`, so a sign with a blank first line and text on lines 2 to 4 showed no text. The texture generator already skips empty lines one at a time, so that first-line check was the only defect.
+
+The client-only `SignsFasterMixinPlugin` applies `SignTextureManagerMixin` only when Signs Faster is installed at exactly 1.0.3. The mixin wraps the one `String.isEmpty` call in `getOrCreateRegion` by string target, so no Signs Faster type is referenced. It returns null only when every line of `SignText#getMessages(false)` is empty. Any other Signs Faster version logs a `WARN` naming the installed version and leaves the mod unchanged.
+
+`SignsFasterBlankCheckTest` covers the all-empty and text-on-one-line cases. `SignsFasterContractTest` reads the 1.0.3 jar with ASM and checks that `getOrCreateRegion` reads line 0, calls `isEmpty` once right after `Component#getString` and returns null on an empty line, that `generate` skips an empty line with a `continue` to the loop increment, the jar's mod ID and version, and the mixin's target and handler descriptor. A dev client with Signs Faster 1.0.3 showed the mixin applying; a sign in a world has not been checked.
 
 ## Fancy World Animations under EntityCulling
 

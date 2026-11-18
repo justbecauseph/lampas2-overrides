@@ -1,0 +1,8 @@
+{
+	"required": true,
+	"package": "lampas2overrides.client.signsfaster.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.client.signsfaster.SignsFasterMixinPlugin",
+	"client": ["SignTextureManagerMixin"],
+	"injectors": { "defaultRequire": 1 }
+}
