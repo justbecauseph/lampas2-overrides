@@ -61,6 +61,8 @@ dependencies {
 	compileOnly("maven.modrinth:voxy:${project.voxy_version}") { transitive = false }
 	compileOnly("maven.modrinth:iris:${project.iris_version}") { transitive = false }
 	compileOnly "io.github.douira:glsl-transformer:${project.glsl_transformer_version}"
+	// VoxyChatContractTest reads the pinned Voxy Logger bytecode.
+	testRuntimeOnly("maven.modrinth:voxy:${project.voxy_version}") { transitive = false }
 	// VoxyReverseZTest runs Iris's real DepthTransformer over a Voxy-style shader patch.
 	testRuntimeOnly("maven.modrinth:iris:${project.iris_version}") { transitive = false }
 	testRuntimeOnly "io.github.douira:glsl-transformer:${project.glsl_transformer_version}"
