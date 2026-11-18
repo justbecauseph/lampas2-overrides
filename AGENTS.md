@@ -6,9 +6,9 @@ heads, Figura avatars under Punchy! Moves' root-part body tilt, the Punchy! Move
 Additional Lanterns 1.1.2 unloaded-chunk redstone checks, Mob Filter presence-activated threaded-worldgen
 entity-discard deadlock and missing dimension context, Beautiful Enchanted Books and Beautiful
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
-Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, the version-gated Wilder Delights 1.0.0-26.2 creative tab icon under Wilder Wild 4.3, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, version-gated Builder's Boundry 0.2 and Dungeons and Taverns 5.3.2 tick-function optimizations, the ungated Gardener's Dream pot-break-check optimization (audited on 2.6), the version-gated Lootr 1.24.41.124 container tick-delay gate, the version-gated
+Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, the Custom Name `/name other` operator gate (any installed version, inspected on 0.4.4-26.2), the version-gated Wilder Delights 1.0.0-26.2 creative tab icon under Wilder Wild 4.3, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, version-gated Builder's Boundry 0.2 and Dungeons and Taverns 5.3.2 tick-function optimizations, the ungated Gardener's Dream pot-break-check optimization (audited on 2.6), the version-gated Lootr 1.24.41.124 container tick-delay gate, the version-gated
 IllagerBlabber 1.1.0 voice-registry leak fix, Critical Strike crits for thrown tridents, the ungated hotbar slot resync after respawn, Voxy 0.2.19-beta reverse-Z depth under Iris 1.11.4 shader packs, Voxy errors kept out of chat, Magic Vibe Decorations scheduled block ticks turned off (any version, by block namespace), Status Effect Bars duration bars placed on VanillaHUD's effect icons, Fancy World Animations 1.3.4 animation culling under EntityCulling 1.12.0, Signs Faster 1.0.3 sign text for signs with a blank first line, Just Enough Filters 3.2.0 `@Inject` parameter-slot corruption under R8-shrunk JEI 30.48.0.244, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2 and Trek B0.6.2 waystone pools), the Rogues 3.1.3.003+26.2 Sharpness definition, the seven Paladins and Rogues 3.1.3.003+26.2 aeternium weapon recipes, and 77 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised; Fire Wall and Meteor burning ground damage x0.4; eleven heals add 0.1 x c x max health, 12% for Flash Heal). The first two
-features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, the Voxy reverse-Z fix, the Voxy chat suppression, the Status Effect Bars alignment under VanillaHUD, the Fancy World Animations culling under EntityCulling (its canceller is common-side), the Signs Faster blank-line fix, and the Just Enough Filters + JEI fix are client-only; the Custom Name space fix, Better Lib demo villager suppression, Incendium, Builder's Boundry, Dungeons and Taverns and Gardener's Dream datapacks, IllagerBlabber registry fix, Lootr tick-delay gate, Magic Vibe Decorations tick cancel, thrown-trident crits, and virtual resource patcher are common-side and must also run on a dedicated server; the Wilder Delights tab icon fix is registered common-side because it targets Wilder Delights' main entrypoint class, though only the client runs the icon supplier; the Lootr ↔ Fast Item Frames bridge has common server
+features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, the Voxy reverse-Z fix, the Voxy chat suppression, the Status Effect Bars alignment under VanillaHUD, the Fancy World Animations culling under EntityCulling (its canceller is common-side), the Signs Faster blank-line fix, and the Just Enough Filters + JEI fix are client-only; the Custom Name space fix, the Custom Name `/name other` gate, Better Lib demo villager suppression, Incendium, Builder's Boundry, Dungeons and Taverns and Gardener's Dream datapacks, IllagerBlabber registry fix, Lootr tick-delay gate, Magic Vibe Decorations tick cancel, thrown-trident crits, and virtual resource patcher are common-side and must also run on a dedicated server; the Wilder Delights tab icon fix is registered common-side because it targets Wilder Delights' main entrypoint class, though only the client runs the icon supplier; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -61,7 +61,7 @@ disable an unrelated feature.
 | Underground Village 2.1.1 | `../lampas-server-fabric/mods/underground_village-fabric-26.1-2.1.1.jar` |
 | Additional Lanterns 1.1.2 | `../lampas-server-fabric/mods/additionallanterns-1.1.2-fabric-mc26.2.jar` |
 | Jade 26.2.11 | `../lampas-server-fabric/mods/Jade-mc26.2-Fabric-26.2.11.jar` |
-| Custom Name 0.4.4 | `../lampas-server-fabric/mods/customname-fabric-0.4.4-26.2.jar` |
+| Custom Name 0.4.4 | `../lampas-server-fabric/mods/customname-fabric-0.4.4-26.2.jar` (SHA-256 `d70aff25…bb04`, Modrinth `saIlazMs` version `w6yXsioC`; the Gradle test and GameTest classpath copy is byte-identical; nests Common Permissions API 0.1.3-26.2) |
 | Wilder Delights 1.0.0-26.2 | `../lampas-server-fabric/mods/wilderdelights-1.0.0-26.2.jar` (SHA-256 `b21035bd…c543`, Modrinth version `eeUXfbLN`) |
 | Gravestones 1.4.3 | `../lampas-server-fabric/mods/gravestones-1.4.3+26.2+A.jar` |
 | Incendium Legacy 5.5.1 | `../lampas-server-fabric/mods/Incendium_26.2_v5.5.1.jar` |
@@ -199,6 +199,17 @@ needs a world with LOD data beyond vanilla render distance, checked by the user 
 For the Magic Vibe Decorations tick cancel (on a server or the GameTest server with the mod installed), startup must log
 `Disabled scheduled block ticks for Magic Vibe Decorations <version>`, and `BlockStateTickMixin` must apply into
 `net.minecraft.world.level.block.state.BlockBehaviour$BlockStateBase`. `MagicVibeTicksGameTests` covers the behaviour.
+
+For the Custom Name `/name other` gate (Custom Name 0.4.4-26.2, `require_permissions` false), `./gradlew runGameTest` runs
+`CustomNameOtherPermissionGameTests` against the pinned jar with the production-shaped config in `src/gametest/rundir/config`, copied
+into `build/run/gameTest` before the server starts. It asks Brigadier's `canUse` whether `/name other` is usable at level 0, at level 2
+and by a non-operator player, and whether the own-name commands and the root `/itemname` and `/itemlore` stay open to a player. A
+second case ops the mock player at level 2 through `PlayerList.op`, checks `/name other`, de-ops it and checks again. Without the gate
+the level-0 assertion fails with `/name other is usable at permission level 0`. A dedicated server must log `Enabled the Custom Name
+0.4.4-26.2 /name other operator gate` and `CustomNameCommandsMixin` must apply into `xyz.eclipseisoffline.eclipsescustomname.CustomNameCommands`.
+An unaudited Custom Name version still gets the gate and logs a WARN, so check `/name other` by hand after an upgrade. The GameTest
+server extends `MinecraftServer`, not `DedicatedServer`, so the dedicated-server check is a separate `runServer` run. Provider-granted
+`customname:other` is not exercised by any test.
 
 For the Voxy chat suppression (Sodium 0.9.2 and Voxy 0.2.19-beta in `run/mods/`), startup must log `Enabled Voxy error
 suppression in chat (errors still go to the log)`, and `VoxyLoggerMixin` must appear applying into
@@ -564,6 +575,18 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   max-name-length and blacklist enforcement must remain active. The patch intentionally affects `PREFIX`, `NICKNAME`, and
   `SUFFIX` because all three use the same `playerNameArgumentToComponent` path. Spaces are syntax, not a bypass.
   Do not move this fix into `jadecustomname`; Jade is only a display consumer and is unrelated to command parsing.
+- **Custom Name 0.4.4-26.2 with `require_permissions: false` lets any player run `/name other`.** `CustomNameCommands#permissionCheck(node)`
+  returns `CommonPermissions.require(node, GAMEMASTERS)` when `requirePermissions()` is true and an always-true predicate otherwise.
+  `register` attaches `permissionCheck(CustomNamePermissions.OTHER)` to the `other` literal, and `otherPlayerNameCommand` ANDs it onto each
+  `other <type>` literal; the other nodes (own-name commands and the root `/itemname` and `/itemlore`) keep the always-true predicate. The
+  `customnamepermissions` injection returns `require(OTHER, GAMEMASTERS)` only for the `customname:other` identity. That predicate is a
+  lazy `CommonPermissions.check(source, node, level)`: Brigadier's `CommandNode#canUse` calls it on every use, and with no provider the
+  Fabric implementation returns `TriState.DEFAULT`, so the vanilla level decides (level 2 for `GAMEMASTERS`). The own-name commands AND
+  `CommandSourceStack#isPlayer`, so a console-type source cannot use them; `/itemname` and `/itemlore` also AND `formattingEnabled`.
+  `BYPASS_RESTRICTIONS` is read only in `lambda$updatePlayerName$0`, after `operatorsBypassRestrictions()`, through a direct `checkPermission` call, and the fix does not touch it. `PlayerNameManager.updatePlayerName` is called only by `lambda$updatePlayerName$0` and `CustomNameUtil.clearPlayerName`; `clearPlayerName` only by `lambda$menuOrClearPlayerName$0` (with `other` true it clears the named player and never opens a menu) and by the clear-name packet handler (the sender only). `CustomNamePermissionsMixinTest` pins these sets.
+  With `require_permissions` false, `checkPermission` returns true for everyone, so `operators_bypass_restrictions: true` would grant
+  bypass to every player, and `name_groups` validation in `invalidNameArgument` would be skipped; the pipeline keeps the first off and
+  its groups empty.
 - **Wilder Delights 1.0.0-26.2 reads `WWItems.SPLIT_COCONUT` as an `Item`; Wilder Wild 4.3 made it `DeferredItem<Item>`.**
   The JVM resolves field references lazily, so startup succeeds and the `NoSuchFieldError` fires only when
   `CreativeModeTab.getIconItem` first runs the tab's icon supplier `lambda$onInitialize$0`, i.e. when the creative
@@ -744,6 +767,10 @@ lampas2-overrides/resource-patches/
 customname/
   CustomNameMixinPlugin     applies only to Custom Name 0.4.4-26.2 (common-side, server-safe)
   mixin/                    forces spaceAllowed=true in playerNameArgumentToComponent's nameArgumentToComponent call
+customnamepermissions/
+  CustomNamePermissionsMixinPlugin  applies whenever Custom Name is present (common-side, server-safe); WARNs that another version is unaudited
+  CustomNameOtherPermission reflective bridge to customname:other and CommonPermissions.require(node, GAMEMASTERS)
+  mixin/                    HEAD inject on CustomNameCommands#permissionCheck; replaces the predicate for customname:other only
 wilderdelights/
   WilderDelightsMixinPlugin applies only to Wilder Delights 1.0.0-26.2 (common-side, server-safe)
   mixin/                    redirects the WWItems.SPLIT_COCONUT read in the tab icon supplier to a registry lookup

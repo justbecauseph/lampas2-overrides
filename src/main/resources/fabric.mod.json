@@ -122,6 +122,9 @@
 			"config": "lampas2-overrides.customname.mixins.json"
 		},
 		{
+			"config": "lampas2-overrides.customnamepermissions.mixins.json"
+		},
+		{
 			"config": "lampas2-overrides.wilderdelights.mixins.json"
 		},
 		{

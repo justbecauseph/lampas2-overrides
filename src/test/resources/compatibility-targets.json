@@ -439,7 +439,16 @@
       "type": "exact_mixin_gate",
       "versions": {
         "0.4.4-26.2": {
-          "status": "patched"
+          "status": "patched",
+          "modrinth_project_id": "saIlazMs",
+          "modrinth_version_id": "w6yXsioC",
+          "artifact_sha256": "d70aff259e65ca2a9c8ca9d4b3734b6f9089e93141ba2283e06e23bbe0e3bb04",
+          "other_permission_gate": {
+            "type": "presence_mixin",
+            "status": "patched",
+            "activation_policy": "Presence of Custom Name in any version; an unaudited version still gets the gate and logs a WARN.",
+            "verification_limit": "CustomNamePermissionsMixinTest pins the injection target, the permissionCheck descriptor, the OTHER and BYPASS_RESTRICTIONS readers, the updatePlayerName and clearPlayerName callers, and the require call in the Modrinth jar. CustomNameOtherPermissionGameTests runs /name other with the real jar on the GameTest server and checks Brigadier canUse for a level-0 source, a level-2 source, a non-operator player, a player opped at level 2 and then de-opped, and the own-name, /itemname and /itemlore commands for a player. A permissions provider granting customname:other is not tested. Dedicated-server startup was checked with the deployed jar in a scratch server directory; no player connected."
+          }
         }
       }
     },

@@ -9,7 +9,8 @@
 			"lampas2overrides.crowdcontrol.CrowdControlImmunityGameTests",
 			"lampas2overrides.tridentcrits.ThrownTridentCritGameTests",
 			"lampas2overrides.spellheal.SpellHealShareGameTests",
-			"lampas2overrides.magicvibe.MagicVibeTicksGameTests"
+			"lampas2overrides.magicvibe.MagicVibeTicksGameTests",
+			"lampas2overrides.customnamepermissions.CustomNameOtherPermissionGameTests"
 		]
 	},
 	"depends": {
@@ -20,6 +21,7 @@
 		"spell_engine": "*",
 		"rogues": "*",
 		"critical_strike": "*",
-		"magic_vibe_decorations": "*"
+		"magic_vibe_decorations": "*",
+		"eclipsescustomname": "*"
 	}
 }

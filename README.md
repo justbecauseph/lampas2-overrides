@@ -22,6 +22,7 @@ ungated hotbar slot resync after respawn.
 | [Gravestones death inscription and glow](#gravestones-death-inscription-and-glow) | Gravestones | Suppresses technical death grave text and renders a glowing outline only on your own graves |
 | [Jade nameplates and Custom Name](#jade-nameplates-and-custom-name) | Client Jade; server TAB name sync | Suppresses vanilla in-world entity/player nameplates and shows server-synced player display names in Jade |
 | [Custom Name multi-word names](#custom-name-multi-word-names) | Custom Name 0.4.4-26.2 | Permits spaces in nickname, prefix, and suffix commands for non-operators |
+| [Custom Name /name other](#custom-name-name-other) | Custom Name 0.4.4-26.2 | Lets only permission level 2 and above rename other players, while own-name commands stay open to every player |
 | [Wilder Delights tab icon](#wilder-delights-tab-icon) | Wilder Delights 1.0.0-26.2 | Stops the creative inventory crashing when it draws the Wilder Delights tab under Wilder Wild 4.3 |
 | [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Paladins and Rogues 3.1.3.003+26.2, RPG Series spells, Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2, Trek B0.6.2 | Transparently repairs malformed `pack.mcmeta` formats, worldgen resources, Rogues' Sharpness, the aeternium weapon recipes and RPG Series spell data at runtime |
 | [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.3.3 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
@@ -295,6 +296,14 @@ Lampas2 Overrides applies a server-safe, common mixin to `CustomNameUtil` that s
 `playerNameArgumentToComponent`. This allows non-operator players to set multi-word nicknames, prefixes, and suffixes
 while keeping name length limits, regex validation, and blacklist enforcement fully active.
 The mixin is common-side (runs on both dedicated servers and clients) and is version-gated to Custom Name `0.4.4-26.2`.
+
+## Custom Name /name other
+
+With `require_permissions` set to `false` in `eclipsescustomname.json`, Custom Name 0.4.4-26.2 skips its permission check for every `/name` command, so any player can run `/name other`. That command renames another player: `/name other prefix|suffix|nickname <player> <name>` sets that player's prefix, suffix or nickname. `/name other prefix|suffix|nickname <player>` with no name clears that player's name; it never opens a menu. Setting `require_permissions` to `true` would close the hole, but it also makes `/name prefix`, `/name suffix`, `/name nickname`, `/itemname` and `/itemlore` require permission level 2, and this server has no permissions mod to grant those back to players.
+
+Lampas2 Overrides keeps `require_permissions` as configured and changes only the `customname:other` node behind `/name other`. That node now requires permission level 2 (game master) or higher, checked with the same `CommonPermissions.require` call Custom Name makes when `require_permissions` is `true`. A permissions mod that sets `customname:other` for a player overrides that level check, as Common Permissions does for any node. The other `/name` commands keep their behaviour under `require_permissions: false`, so players still rename themselves.
+
+The mixin is common-side and applies whenever any Custom Name version is installed, so an upgrade keeps the gate. On the inspected `0.4.4-26.2` it logs `Enabled the Custom Name 0.4.4-26.2 /name other operator gate` at startup. On any other version it still applies and logs a WARN naming that version as not inspected, so check `/name other` after an upgrade. If a later release moves the members the fix depends on, the server fails to start rather than leaving `/name other` open.
 
 ## Wilder Delights tab icon
 

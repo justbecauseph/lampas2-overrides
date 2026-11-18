@@ -100,6 +100,9 @@ dependencies {
 
 	// Magic Vibe Decorations: MagicVibeTicksContractTest reads its classes. Test-only; the mixin targets Minecraft, not the mod.
 	testRuntimeOnly("maven.modrinth:MPAgKQOE:${project.magic_vibe_decorations_version}") { transitive = false }
+	// CustomNamePermissionsMixinTest reads the pinned Custom Name jar. The /name other mixin names Custom Name only by
+	// string and reaches it through reflection, so the test-only copy is never bundled.
+	testRuntimeOnly("maven.modrinth:saIlazMs:${project.custom_name_version}") { transitive = false }
 
 	testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
 	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
@@ -133,11 +136,22 @@ dependencies {
 	gametestCompileOnly("maven.modrinth:critical-strike:${project.critical_strike_version}") { transitive = false }
 	gametestRuntimeOnly("maven.modrinth:critical-strike:${project.critical_strike_version}") { transitive = false }
 	gametestRuntimeOnly("maven.modrinth:MPAgKQOE:${project.magic_vibe_decorations_version}") { transitive = false }
+	// CustomNameOtherPermissionGameTests compiles against Custom Name's config and runs /name other with the real jar.
+	gametestCompileOnly("maven.modrinth:saIlazMs:${project.custom_name_version}") { transitive = false }
+	gametestRuntimeOnly("maven.modrinth:saIlazMs:${project.custom_name_version}") { transitive = false }
 }
 
 def gameTestReportFile = layout.buildDirectory.file('test-results/gameTest/TEST-lampas2-overrides-gametest.xml')
 
+// The GameTest server reads Custom Name's config from its run directory. src/gametest/rundir/config holds the production
+// shape with require_permissions false, which the /name other GameTest depends on.
+def copyGameTestRunConfig = tasks.register('copyGameTestRunConfig', Copy) {
+	from file('src/gametest/rundir')
+	into layout.buildDirectory.dir('run/gameTest')
+}
+
 tasks.named('runGameTest') {
+	dependsOn copyGameTestRunConfig
 	systemProperty 'fabric-api.gametest.report-file', gameTestReportFile.get().asFile.absolutePath
 	doFirst {
 		gameTestReportFile.get().asFile.parentFile.mkdirs()
