@@ -28,3 +28,11 @@
 # Trek village plaza templates: Waystones 26.2.0.13 village templates with the two waystone blocks set to air.
 /src/main/resources/data/lampas/structure/**/*.nbt binary
 /src/test/resources/upstream/waystones/**/*.nbt binary
+# Spanish Delight Refabricated 26.2-1.0.11 wild crops: fixtures are byte-exact jar entries (LF, no trailing newline) and
+# replacements change only the tag of two placement predicates, so both keep those bytes.
+/src/test/resources/upstream/spanishdelight/26.2-1.0.11/data/spanishdelight/worldgen/configured_feature/wild_garlic.json -text
+/src/test/resources/upstream/spanishdelight/26.2-1.0.11/data/spanishdelight/worldgen/configured_feature/wild_green_pepper.json -text
+/src/test/resources/upstream/spanishdelight/26.2-1.0.11/data/spanishdelight/worldgen/configured_feature/wild_red_pepper.json -text
+/src/main/resources/lampas2-overrides/resource-patches/spanishdelight/26.2-1.0.11/data/spanishdelight/worldgen/configured_feature/wild_garlic.json -text
+/src/main/resources/lampas2-overrides/resource-patches/spanishdelight/26.2-1.0.11/data/spanishdelight/worldgen/configured_feature/wild_green_pepper.json -text
+/src/main/resources/lampas2-overrides/resource-patches/spanishdelight/26.2-1.0.11/data/spanishdelight/worldgen/configured_feature/wild_red_pepper.json -text

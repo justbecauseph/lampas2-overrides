@@ -24,8 +24,9 @@ ungated hotbar slot resync after respawn.
 | [Custom Name multi-word names](#custom-name-multi-word-names) | Custom Name 0.4.4-26.2 | Permits spaces in nickname, prefix, and suffix commands for non-operators |
 | [Custom Name /name other](#custom-name-name-other) | Custom Name 0.4.4-26.2 | Lets only permission level 2 and above rename other players, while own-name commands stay open to every player |
 | [Wilder Delights tab icon](#wilder-delights-tab-icon) | Wilder Delights 1.0.0-26.2 | Stops the creative inventory crashing when it draws the Wilder Delights tab under Wilder Wild 4.3 |
-| [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Paladins and Rogues 3.1.3.003+26.2, RPG Series spells, Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2, Trek B0.6.2 | Transparently repairs malformed `pack.mcmeta` formats, worldgen resources, Rogues' Sharpness, the aeternium weapon recipes and RPG Series spell data at runtime |
+| [Virtual Resource & Datapack Patches](#virtual-resource--datapack-patches) | Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Spanish Delight 26.2-1.0.11, Paladins and Rogues 3.1.3.003+26.2, RPG Series spells, Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2, Trek B0.6.2 | Transparently repairs malformed `pack.mcmeta` formats, worldgen resources, Rogues' Sharpness, the aeternium weapon recipes and RPG Series spell data at runtime |
 | [Wilder Wild stone pool](#wilder-wild-stone-pool) | Wilder Wild 4.3.3 | Keeps the mesoglea stone pool inside C2ME's safe worldgen read/write radius |
+| [Spanish Delight wild crops](#spanish-delight-wild-crops) | Spanish Delight 26.2-1.0.11 | Lets the wild garlic and pepper crops generate on grass, podzol, mud and moss blocks again |
 | [Rogues Sharpness](#rogues-sharpness) | Rogues 3.1.3.003+26.2 | Restores flat Sharpness in place of Rogues' +8% base attack damage per level |
 | [RPG Series spell patches](#rpg-series-spell-patches) | RPG Series 26.2 (Rogues, Wizards, Paladins, Archers, Spell Engine, Skill Tree, Relics) | Martial spell cooldowns ignore haste; crowd-control apply limits reach Pinnacle mobs; Fire Wall and the Meteor burning ground deal 40% of their upstream damage; eleven heals add 0.1 x c x max health (12% for Flash Heal) |
 | [Spell crowd-control immunity](#spell-crowd-control-immunity) | Spell Engine (any version); Placebo + Apotheosis for markers | Apotheosis invaders and elites, their mounts and `lampas.cc_immune` mobs ignore RPG Series crowd control |
@@ -526,6 +527,26 @@ On 16 October 2026 the patch moved from Wilder Wild `4.3` to `4.3.3`. The two JA
 `stone_pool.json` (SHA-256 `59cf59a1…f2efe4`) and FrozenLib 3.0.3 are unchanged, so the analysis above
 still applies. The dedicated-server probe was not re-run on 4.3.3.
 
+## Spanish Delight wild crops
+
+Spanish Delight Refabricated **26.2-1.0.11** places wild garlic, wild green pepper and wild red pepper with
+`farmersdelight:in_order` features. Each file has two `minecraft:matching_block_tag` predicates that check the block
+below against `minecraft:dirt`: one for the crop and one for the `minecraft:short_grass` beside it. In 26.2 that tag
+holds only dirt, coarse dirt and rooted dirt, so the crops do not generate on grass blocks, podzol, mud or moss blocks.
+
+The virtual patch changes each `"tag": "minecraft:dirt"` to `"tag": "minecraft:substrate_overworld"` and nothing else.
+In 26.2 that tag holds `#minecraft:dirt`, `#minecraft:mud`, `#minecraft:moss_blocks` and `#minecraft:grass_blocks`, the
+last of which holds grass blocks, podzol and mycelium. Farmer's Delight Refabricated 26.2-3.6.30 made the same change to
+its own wild crops. The patch is version- and SHA-256-gated: it applies only to Spanish Delight 26.2-1.0.11 with the
+upstream fingerprints of `wild_garlic.json` (`be5683c9…3999`), `wild_green_pepper.json` (`4455e65c…d2a8`) and
+`wild_red_pepper.json` (`c3ea5d6b…eded`). An unknown version or a changed file keeps the upstream placement.
+
+Checks run on 21 Nov 2026: `./gradlew build` passed with 287 unit tests (one skipped without `-PserverModsDir`) and 17
+GameTests. The unit tests check the three fingerprints against the fixtures and the deployed jar, check that each
+replacement differs from its fixture only in those tags, and check that an unknown version or a changed file stays
+unpatched. Not checked: no world was generated with the patch and no server ran with Spanish Delight. The crops change
+only in chunks generated after the patch loads; existing crops stay as they are.
+
 ## Rogues Sharpness
 
 Rogues `3.1.3.003+26.2` (RPG Series) ships `data/minecraft/enchantment/sharpness.json` with a
@@ -944,6 +965,7 @@ Patched mods and resources:
      does; the `betterend` load condition is unchanged. Crafting in-game is unverified.
 9. **Waystone template pools (Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2, Trek B0.6.2)**: The 16 waystone pools are changed. Structory and Dungeons pools become empty pools; Trek's are repointed to plaza
    templates without the waystone. See [Waystone-free structures](#waystone-free-structures).
+10. **Spanish Delight Refabricated (26.2-1.0.11)**: The wild crop substrate repair is described in [Spanish Delight wild crops](#spanish-delight-wild-crops).
 
 A registered patch whose mod is installed at a different version is skipped with a WARN naming both
 versions, as a changed SHA-256 is. Fabric Loader reports versions without leading zeros in numeric

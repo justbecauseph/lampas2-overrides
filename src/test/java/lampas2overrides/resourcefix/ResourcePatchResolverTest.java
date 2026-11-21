@@ -15,7 +15,9 @@ import java.lang.reflect.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -29,6 +31,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -47,6 +50,14 @@ public class ResourcePatchResolverTest {
 	private static final String ROGUES = "rogues";
 	private static final String ROGUES_VERSION = "3.1.3.003+26.2";
 	private static final String SHARPNESS = "data/minecraft/enchantment/sharpness.json";
+	private static final String SPANISH_DELIGHT_VERSION = "26.2-1.0.11";
+	private static final String SPANISH_DELIGHT_CROPS = "data/spanishdelight/worldgen/configured_feature/";
+	/** Each Spanish Delight wild crop placement file name and its upstream SHA-256. */
+	private static final String[][] SPANISH_DELIGHT_CROP_FIXTURES = {
+		{"wild_garlic.json", "be5683c98d1debabf5953655e95f8e7cfcee48c5b7c7738f971fd55af4f33999"},
+		{"wild_green_pepper.json", "4455e65c6c9f24075ccf40a1424b31e52cc45ca1edfa2a52143e40937fb7d2a8"},
+		{"wild_red_pepper.json", "c3ea5d6b34fd7a178c4268554257c11ab0123ca207b1821986927f04e455eded"}
+	};
 
 	@BeforeEach
 	void setUp() {
@@ -55,9 +66,9 @@ public class ResourcePatchResolverTest {
 
 	@Test
 	void registryContainsAllTargetPatches() {
-		// 19 pack metadata, worldgen and Sharpness patches, 7 aeternium recipe patches, 77 RPG Series spell patches
-		// and 16 waystone template pool patches.
-		assertEquals(119, ResourcePatchRegistry.getAllPatches().size());
+		// 19 pack metadata, worldgen and Sharpness patches, 3 Spanish Delight wild crop patches, 7 aeternium recipe patches,
+		// 77 RPG Series spell patches and 16 waystone template pool patches.
+		assertEquals(122, ResourcePatchRegistry.getAllPatches().size());
 
 		assertNotNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", "pack.mcmeta"));
 		assertNull(ResourcePatchRegistry.findPatch("formationsoverworld", "1.0.5+c", "data/formationsoverworld/loot_table/stone_tower/smithing.json"));
@@ -110,6 +121,8 @@ public class ResourcePatchResolverTest {
 					assertEquals(14, config.getAsJsonObject("xz_radius").get("max_inclusive").getAsInt());
 					assertEquals(4, config.get("depth").getAsInt());
 					assertEquals(2, config.get("vertical_range").getAsInt());
+				} else if (patch.resourcePath().startsWith(SPANISH_DELIGHT_CROPS)) {
+					assertSubstrateTagPredicates(content, patch.replacementPath());
 				} else if (patch.resourcePath().equals(SHARPNESS)) {
 					assertFlatExclusiveSharpness(json);
 				} else if (patch.resourcePath().contains("/spell/")) {
@@ -193,6 +206,66 @@ public class ResourcePatchResolverTest {
 		assertNotNull(wrongHash);
 		try (InputStream in = wrongHash.get()) {
 			assertArrayEquals(tampered, in.readAllBytes(), "A changed resource must pass through unchanged");
+		}
+	}
+
+	@Test
+	void appliesSpanishDelightWildCropPatchesWithExactVersionAndHash() throws IOException {
+		for (String[] crop : SPANISH_DELIGHT_CROP_FIXTURES) {
+			String path = SPANISH_DELIGHT_CROPS + crop[0];
+			byte[] original = readFixtureResource("upstream/spanishdelight/" + SPANISH_DELIGHT_VERSION + "/" + path);
+			assertEquals(crop[1], ResourcePatchResolver.sha256Hex(original), path);
+
+			ResourcePatch patch = ResourcePatchRegistry.findPatch("spanishdelight", SPANISH_DELIGHT_VERSION, path);
+			assertNotNull(patch, path);
+			assertEquals(SPANISH_DELIGHT_VERSION, patch.expectedVersion());
+			assertEquals("lampas2-overrides/resource-patches/spanishdelight/" + SPANISH_DELIGHT_VERSION + "/" + path,
+				patch.replacementPath());
+
+			// The replacement is the upstream file with its two placement tags changed and nothing else.
+			byte[] replacement = readClasspathResource(patch.replacementPath());
+			assertArrayEquals(original, new String(replacement, StandardCharsets.UTF_8)
+				.replace("\"tag\": \"minecraft:substrate_overworld\"", "\"tag\": \"minecraft:dirt\"")
+				.getBytes(StandardCharsets.UTF_8), path);
+
+			IoSupplier<InputStream> patched = ResourcePatchResolver.resolve(
+				createMockModContainer("spanishdelight", SPANISH_DELIGHT_VERSION),
+				path,
+				() -> new ByteArrayInputStream(original)
+			);
+			assertNotNull(patched, path);
+			try (InputStream in = patched.get()) {
+				byte[] patchedBytes = in.readAllBytes();
+				assertArrayEquals(replacement, patchedBytes, path);
+				assertSubstrateTagPredicates(new String(patchedBytes, StandardCharsets.UTF_8), path);
+			}
+		}
+	}
+
+	@Test
+	void leavesSpanishDelightWildCropPatchesUntouchedForUnknownVersionOrHash() throws IOException {
+		for (String[] crop : SPANISH_DELIGHT_CROP_FIXTURES) {
+			String path = SPANISH_DELIGHT_CROPS + crop[0];
+			byte[] original = readFixtureResource("upstream/spanishdelight/" + SPANISH_DELIGHT_VERSION + "/" + path);
+			for (String unknownVersion : new String[] {"26.2-1.0.10", "26.2-1.0.12", "26.1-1.0.11", "26.2-1.0.11-mc26.2"}) {
+				assertNull(ResourcePatchResolver.resolve(
+					createMockModContainer("spanishdelight", unknownVersion),
+					path,
+					() -> new ByteArrayInputStream(original)
+				), "Unregistered Spanish Delight version must remain unpatched: " + unknownVersion);
+			}
+
+			byte[] tampered = original.clone();
+			tampered[0] = (byte) (tampered[0] ^ 1);
+			IoSupplier<InputStream> wrongHash = ResourcePatchResolver.resolve(
+				createMockModContainer("spanishdelight", SPANISH_DELIGHT_VERSION),
+				path,
+				() -> new ByteArrayInputStream(tampered)
+			);
+			assertNotNull(wrongHash, path);
+			try (InputStream in = wrongHash.get()) {
+				assertArrayEquals(tampered, in.readAllBytes(), "A changed resource must pass through unchanged");
+			}
 		}
 	}
 
@@ -366,6 +439,12 @@ public class ResourcePatchResolverTest {
 			{"grim-kingdoms-lost-structures-ruins-2.0.3.jar", "mr_grim_kingdomsloststructuresruins", "2.0.3", "pack.mcmeta"},
 			{"WilderWild-4.3.3-mc26.2-fabric.jar", "wilderwild", "4.3.3", "data/wilderwild/worldgen/configured_feature/stone_pool.json",
 				"dfcc128df21715b20fe86bba18c5b9f731a66d3854269044ead125f6f9c20204"},
+			{"spanishdelight-26.2-1.0.11.jar", "spanishdelight", SPANISH_DELIGHT_VERSION,
+				SPANISH_DELIGHT_CROPS + "wild_garlic.json", "dfa91d73d11e2743a8baaf7f0c47aa34c0348d5f555f9b05dca176d06d13e74c"},
+			{"spanishdelight-26.2-1.0.11.jar", "spanishdelight", SPANISH_DELIGHT_VERSION,
+				SPANISH_DELIGHT_CROPS + "wild_green_pepper.json", "dfa91d73d11e2743a8baaf7f0c47aa34c0348d5f555f9b05dca176d06d13e74c"},
+			{"spanishdelight-26.2-1.0.11.jar", "spanishdelight", SPANISH_DELIGHT_VERSION,
+				SPANISH_DELIGHT_CROPS + "wild_red_pepper.json", "dfa91d73d11e2743a8baaf7f0c47aa34c0348d5f555f9b05dca176d06d13e74c"},
 			{"rogues-fabric-3.1.3.003+26.2.jar", ROGUES, ROGUES_VERSION, SHARPNESS,
 				"77bdff881c01011bff6e6e722a1f47dc01ca7d377a1f08231d305fc11b08f113"}
 		};
@@ -557,6 +636,37 @@ public class ResourcePatchResolverTest {
 				return java.util.Arrays.copyOf(bytes, bytes.length - 1);
 			}
 			return bytes;
+		}
+	}
+
+	/** The wild crop placements match minecraft:substrate_overworld where the upstream file matched minecraft:dirt. */
+	private static void assertSubstrateTagPredicates(String json, String label) {
+		assertFalse(json.contains("minecraft:dirt"), "Replacement still names minecraft:dirt: " + label);
+		List<String> tags = new ArrayList<>();
+		collectMatchingBlockTags(JsonParser.parseString(json), tags);
+		assertEquals(List.of("minecraft:substrate_overworld", "minecraft:substrate_overworld"), tags, label);
+	}
+
+	private static void collectMatchingBlockTags(JsonElement element, List<String> tags) {
+		if (element.isJsonObject()) {
+			JsonObject object = element.getAsJsonObject();
+			if (object.has("type") && "minecraft:matching_block_tag".equals(object.get("type").getAsString())) {
+				tags.add(object.get("tag").getAsString());
+			}
+			for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
+				collectMatchingBlockTags(entry.getValue(), tags);
+			}
+		} else if (element.isJsonArray()) {
+			for (JsonElement child : element.getAsJsonArray()) {
+				collectMatchingBlockTags(child, tags);
+			}
+		}
+	}
+
+	private static byte[] readClasspathResource(String resource) throws IOException {
+		try (InputStream input = ResourcePatchResolverTest.class.getClassLoader().getResourceAsStream(resource)) {
+			assertNotNull(input, "Missing replacement resource: " + resource);
+			return input.readAllBytes();
 		}
 	}
 

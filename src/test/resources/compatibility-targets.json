@@ -155,6 +155,21 @@
         }
       }
     },
+    "spanishdelight": {
+      "name": "Spanish Delight Refabricated",
+      "type": "resource_patch",
+      "versions": {
+        "26.2-1.0.11": {
+          "status": "patched",
+          "resources": {
+            "data/spanishdelight/worldgen/configured_feature/wild_garlic.json": "be5683c98d1debabf5953655e95f8e7cfcee48c5b7c7738f971fd55af4f33999",
+            "data/spanishdelight/worldgen/configured_feature/wild_green_pepper.json": "4455e65c6c9f24075ccf40a1424b31e52cc45ca1edfa2a52143e40937fb7d2a8",
+            "data/spanishdelight/worldgen/configured_feature/wild_red_pepper.json": "c3ea5d6b34fd7a178c4268554257c11ab0123ca207b1821986927f04e455eded"
+          },
+          "artifact_sha256": "dfa91d73d11e2743a8baaf7f0c47aa34c0348d5f555f9b05dca176d06d13e74c"
+        }
+      }
+    },
     "structory_towers": {
       "name": "Structory: Towers",
       "type": "resource_patch",

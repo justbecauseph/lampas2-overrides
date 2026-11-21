@@ -92,6 +92,15 @@ public class CompatibilityManifestTest {
 		assertEquals("dfcc128df21715b20fe86bba18c5b9f731a66d3854269044ead125f6f9c20204",
 			wilderWild433.get("artifact_sha256").getAsString());
 
+		JsonObject spanishDelight = targets.getAsJsonObject("spanishdelight").getAsJsonObject("versions")
+			.getAsJsonObject("26.2-1.0.11");
+		assertEquals("patched", spanishDelight.get("status").getAsString());
+		assertEquals("be5683c98d1debabf5953655e95f8e7cfcee48c5b7c7738f971fd55af4f33999",
+			spanishDelight.getAsJsonObject("resources")
+				.get("data/spanishdelight/worldgen/configured_feature/wild_garlic.json").getAsString());
+		assertEquals("dfa91d73d11e2743a8baaf7f0c47aa34c0348d5f555f9b05dca176d06d13e74c",
+			spanishDelight.get("artifact_sha256").getAsString());
+
 		JsonObject rogues = targets.getAsJsonObject("rogues").getAsJsonObject("versions").getAsJsonObject("3.1.3.003+26.2");
 		assertEquals("patched", rogues.get("status").getAsString());
 		assertEquals("fe176357898633059d7e37643e19115d25352725a0015630f92f39b2f96f620e",

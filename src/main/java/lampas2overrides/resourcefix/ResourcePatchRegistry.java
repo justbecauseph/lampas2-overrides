@@ -147,6 +147,31 @@ public final class ResourcePatchRegistry {
 			"lampas2-overrides/resource-patches/wilderwild/4.3.3/data/wilderwild/worldgen/configured_feature/stone_pool.json"
 		));
 
+		// 5b. Spanish Delight Refabricated 26.2-1.0.11 - the wild crops' placement predicates match #minecraft:dirt, which 26.1
+		// narrowed to dirt, coarse dirt and rooted dirt, so they miss grass blocks, mud and moss blocks. The replacements match
+		// minecraft:substrate_overworld instead, as Farmer's Delight Refabricated 26.2-3.6.30 does for its wild crops.
+		register(new ResourcePatch(
+			"spanishdelight",
+			"26.2-1.0.11",
+			"data/spanishdelight/worldgen/configured_feature/wild_garlic.json",
+			"be5683c98d1debabf5953655e95f8e7cfcee48c5b7c7738f971fd55af4f33999",
+			"lampas2-overrides/resource-patches/spanishdelight/26.2-1.0.11/data/spanishdelight/worldgen/configured_feature/wild_garlic.json"
+		));
+		register(new ResourcePatch(
+			"spanishdelight",
+			"26.2-1.0.11",
+			"data/spanishdelight/worldgen/configured_feature/wild_green_pepper.json",
+			"4455e65c6c9f24075ccf40a1424b31e52cc45ca1edfa2a52143e40937fb7d2a8",
+			"lampas2-overrides/resource-patches/spanishdelight/26.2-1.0.11/data/spanishdelight/worldgen/configured_feature/wild_green_pepper.json"
+		));
+		register(new ResourcePatch(
+			"spanishdelight",
+			"26.2-1.0.11",
+			"data/spanishdelight/worldgen/configured_feature/wild_red_pepper.json",
+			"c3ea5d6b34fd7a178c4268554257c11ab0123ca207b1821986927f04e455eded",
+			"lampas2-overrides/resource-patches/spanishdelight/26.2-1.0.11/data/spanishdelight/worldgen/configured_feature/wild_red_pepper.json"
+		));
+
 		// 6. Rogues 3.1.3.003+26.2 - Sharpness rewritten as +8% per level of base attack damage plus flat
 		// attack-damage modifiers (weapon damage, Strength). Restores flat Sharpness (Apothic Enchanting's
 		// definition) and keeps the damage exclusive set so Sharpness cannot stack with Smite or Bane.
