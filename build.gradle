@@ -91,6 +91,13 @@ dependencies {
 	// Signs Faster 1.0.3 is test-only. SignsFasterContractTest reads its SignTextureManager bytecode and fabric.mod.json;
 	// the mixin names the mod only by string, so nothing from it is compiled in or bundled.
 	testRuntimeOnly("maven.modrinth:sf-plus:${project.signs_faster_version}") { transitive = false }
+	// DefaultPacksContractTest reads Fabric API's built-in pack registration path and the pack IDs that Continuity,
+	// Elytra Contrails and More Bed Variants register, from the versions the pack ships. None of them is bundled.
+	testRuntimeOnly(fabricApi.module("fabric-resource-loader-v1", project.fabric_api_version)) { transitive = false }
+	testRuntimeOnly(fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)) { transitive = false }
+	testRuntimeOnly("maven.modrinth:1IjD5062:${project.continuity_version}") { transitive = false }
+	testRuntimeOnly("maven.modrinth:dWMHBEAQ:${project.elytra_trails_version}") { transitive = false }
+	testRuntimeOnly("maven.modrinth:nKaiA11S:${project.more_bed_variants_version}") { transitive = false }
 	// MixinSquared runs the fwaentityculling canceller that removes fwa's CullTaskMixin, which fails against
 	// EntityCulling 1.12.0. It is the only library nested into the output jar; Fabric loads it from the mod jar.
 	include(implementation("com.github.bawnorton.mixinsquared:mixinsquared-fabric:${project.mixinsquared_version}"))

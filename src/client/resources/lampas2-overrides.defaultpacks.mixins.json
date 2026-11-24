@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "lampas2overrides.client.defaultpacks.mixin",
+	"plugin": "lampas2overrides.client.defaultpacks.DefaultPacksMixinPlugin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"ResourceLoaderImplMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

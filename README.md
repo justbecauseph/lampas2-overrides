@@ -2,7 +2,8 @@
 
 A Fabric mod for Minecraft 26.2 holding compatibility fixes between mods that do not know
 about each other. Each feature is gated on the mods it bridges and is inert without them, except the
-ungated hotbar slot resync after respawn.
+ungated hotbar slot resync after respawn and the default-selected built-in packs, which apply with Fabric API and change
+nothing unless Continuity, Elytra Contrails or More Bed Variants registers a listed pack.
 
 | Feature | Needs | What it does |
 |---|---|---|
@@ -43,8 +44,60 @@ ungated hotbar slot resync after respawn.
 | [Status Effect Bars under VanillaHUD](#status-effect-bars-under-vanillahud) | Status Effect Bars + VanillaHUD | Draws the duration bars on the status effect icons where VanillaHUD puts them |
 | [Fancy World Animations under EntityCulling](#fancy-world-animations-under-entityculling) | Fancy World Animations 1.3.4 + EntityCulling 1.12.0 | Stops the client crashing at startup and keeps Fancy World Animations' animation occlusion culling working |
 | [Waystone-free structures](#waystone-free-structures) | Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2, Trek B0.6.2 | Empties the Structory: Towers and Dungeons and Taverns waystone pools and repoints Trek's to a plaza without the waystone, so new structures generate without waystones |
+| [Built-in resource packs selected by default](#built-in-resource-packs-selected-by-default) | Fabric API resource loader; Continuity, Elytra Contrails, More Bed Variants | Selects five of their built-in resource packs on first launch; players can still turn them off |
 | [Signs Faster blank first line](#signs-faster-blank-first-line) | Signs Faster 1.0.3 | Draws the lines of a sign whose first line is blank, which Signs Faster drew as an empty sign |
 | [Magic Vibe Decorations crystal ticks](#magic-vibe-decorations-crystal-ticks) | Magic Vibe Decorations (any version) | Turns off every scheduled block tick of the mod, so its protective crystals no longer delete, damage or burn mobs |
+
+## Built-in resource packs selected by default
+
+Continuity, Elytra Contrails and More Bed Variants ship optional built-in resource packs that they register as
+`PackActivationType.NORMAL`, so a new install lists them under Available. The client-only `defaultpacks` mixin raises
+these five to `DEFAULT_ENABLED`:
+
+| Pack ID | Pack screen name | Mod |
+|---|---|---|
+| `continuity:default` | Default Connected Textures | Continuity 3.0.1+26.2 |
+| `continuity:glass_pane_culling_fix` | Glass Pane Culling Fix | Continuity 3.0.1+26.2 |
+| `elytratrails:allaytrails` | Allay Trails | Elytra Contrails 1.6.9-26.2 |
+| `elytratrails:arrowtrails` | Arrow Trails | Elytra Contrails 1.6.9-26.2 |
+| `quad-lolmbdv:more-pillowed-connected-bed-variants` | More Pillowed (C) Bed Variants | More Bed Variants 2.2.0+26.2 |
+
+Fabric API's `DefaultResourcePackStorage` selects a default-enabled pack the first time it sees the pack ID and records
+the ID in `data/fabric_default_resource_packs.json`. After that, `options.txt` decides, so a player who turns a pack off
+keeps it off. Existing installs have never tracked these IDs, so the first launch with this version selects them too.
+Fabric API drops an ID from the tracker file on any launch where that pack is not default-enabled: the owning mod or
+this mod removed or disabled, or a later release dropping the ID. The next launch with both mods then selects the pack
+again, even if the player had turned it off.
+
+Fabric API appends the packs to the end of the selected list, which is the top of the Selected column on that launch.
+The Lampas Launcher keeps them as player packs and re-appends its required packs after them on every sync, so from the
+next launch the launcher's required packs outrank them. On 25 Nov 2026 none of the files the five packs override was
+also in a required pack.
+
+`ResourceLoaderImplMixin` is a `@ModifyArg` on the `activationType` argument of the first `ModNioPackResources.create`
+call in Fabric API's five-argument `ResourceLoaderImpl.registerBuiltinPack`, where every v1 `ResourceLoader` and
+deprecated v0 `ResourceManagerHelper` registration ends. That call creates the client resource pack; the second call,
+for a data pack under the same ID, keeps the mod's own activation type. Only `NORMAL` registrations of the listed IDs
+change; each logs `Raised built-in resource pack <id> to DEFAULT_ENABLED` on every launch, whether or not Fabric API
+then selects it. `DefaultPacksMixinPlugin` applies the mixin when `fabric-resource-loader-v1` is loaded. The list is
+fixed in `DefaultEnabledPacks`, so changing it needs a new release.
+
+`DefaultPacksContractTest` reads Fabric API 0.161.0+26.2 and the three mod jars pinned in `gradle.properties` (the
+builds the pack ships) with ASM. It checks the mixin's target, `@At` ordinal and argument index; that the first `create`
+call is `CLIENT_RESOURCES` and receives the registered activation type; that every v1 and v0 overload delegates to the
+target; that Fabric API's `OptionsMixin` runs `DefaultResourcePackStorage.process`, which selects by
+`isEnabledByDefault`; and that each mod registers each listed ID with `NORMAL` passed directly to the registration call
+and ships `resourcepacks/<path>/pack.mcmeta` with no `overlays` and no `data/`. A pack with overlays opens as a
+`CompositePackResources`, which Fabric API never default-selects. The test covers only the pinned versions: the pipeline
+updates Fabric API and the three mods on its own, and a renamed pack or a pack that gains overlays is then skipped
+without an error until the ID or pin here is updated. A changed `registerBuiltinPack` signature stops the client at
+startup (`defaultRequire: 1`).
+
+A dev client with only Fabric API 0.161.0+26.2, Continuity 3.0.1+26.2, Elytra Contrails 1.6.9-26.2 and More Bed
+Variants 2.2.0+26.2 in `run/mods/`, an empty `resourcePacks` list and an empty tracker file applied
+`ResourceLoaderImplMixin`, logged the five raised packs, listed all five IDs in `Reloading ResourceManager`, and wrote
+them to `data/fabric_default_resource_packs.json`. Not checked: the full pack, and a second launch after a player turns
+a pack off (that path is Fabric API's own tracking).
 
 ## Signs Faster blank first line
 
