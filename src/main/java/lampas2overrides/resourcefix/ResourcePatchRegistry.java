@@ -3,9 +3,11 @@ package lampas2overrides.resourcefix;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Registry of known-defective mod resources targeted for virtual patching.
@@ -16,6 +18,11 @@ public final class ResourcePatchRegistry {
 	private static final Map<ResourcePatchKey, ResourcePatch> PATCHES = new HashMap<>();
 	/** Declared versions per normalized "modId|path"; the resolver asks for these on every unpatched resource. */
 	private static final Map<String, List<String>> VERSIONS = new HashMap<>();
+	/**
+	 * Normalized mod IDs that have at least one patch. Every resource of every Fabric mod pack passes through the
+	 * resource hooks, and only these mods need the key, version and path work.
+	 */
+	private static final Set<String> PATCHED_MOD_IDS = new HashSet<>();
 
 	static {
 		// 1. Formations Overworld 1.0.5+c - The loot tables are already 26.2-compatible; only pack.mcmeta needs the format range.
@@ -256,6 +263,7 @@ public final class ResourcePatchRegistry {
 		}
 		VERSIONS.computeIfAbsent(resourceKey(key.modId(), key.resourcePath()), resource -> new ArrayList<>())
 			.add(patch.expectedVersion());
+		PATCHED_MOD_IDS.add(key.modId());
 	}
 
 	private static void aeterniumRecipe(String modId, String weapon, String upstreamSha256) {
@@ -271,6 +279,14 @@ public final class ResourcePatchRegistry {
 
 	private static String resourceKey(String normalizedModId, String normalizedPath) {
 		return normalizedModId + "|" + normalizedPath;
+	}
+
+	/**
+	 * Whether any patch, for any version, targets this mod. False means no resource of the mod can be patched or warned
+	 * about, so callers may skip it entirely. Fabric mod IDs are lowercase, so the lowercase call does not allocate.
+	 */
+	public static boolean hasPatchesFor(String modId) {
+		return modId != null && PATCHED_MOD_IDS.contains(modId.toLowerCase(Locale.ROOT));
 	}
 
 	public static ResourcePatch findPatch(String modId, String version, String resourcePath) {

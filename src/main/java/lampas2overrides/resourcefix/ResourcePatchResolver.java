@@ -44,6 +44,9 @@ public final class ResourcePatchResolver {
 		}
 
 		String modId = modContainer.getMetadata().getId();
+		if (!ResourcePatchRegistry.hasPatchesFor(modId)) {
+			return null;
+		}
 		String normalizedPath = normalizePath(rawPath);
 
 		String actualVersion = modContainer.getMetadata().getVersion().getFriendlyString();

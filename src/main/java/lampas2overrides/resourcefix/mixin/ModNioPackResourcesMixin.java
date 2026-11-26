@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import lampas2overrides.resourcefix.ResourcePatchRegistry;
 import lampas2overrides.resourcefix.ResourcePatchResolver;
 import net.fabricmc.fabric.impl.resource.pack.ModNioPackResources;
 import net.fabricmc.loader.api.ModContainer;
@@ -26,6 +27,9 @@ import net.minecraft.server.packs.resources.IoSupplier;
 /**
  * Intercepts Fabric's ModNioPackResources to inject virtual resource replacements
  * for known-defective mod resources without touching mod archives on disk.
+ *
+ * <p>Every hook returns at once for a mod with no registered patch, which is almost every mod pack: these hooks see
+ * every resource of every mod on each reload, and only patched mods need the path and registry work.
  */
 @Mixin(value = ModNioPackResources.class, remap = false)
 abstract class ModNioPackResourcesMixin {
@@ -48,6 +52,11 @@ abstract class ModNioPackResourcesMixin {
 	}
 
 	@Unique
+	private boolean lampas2$hasPatches() {
+		return this.mod != null && ResourcePatchRegistry.hasPatchesFor(this.mod.getMetadata().getId());
+	}
+
+	@Unique
 	private String lampas2$resolveRelativePath(Path path, String fallbackFilename) {
 		if (this.mod != null && path != null) {
 			for (Path root : this.mod.getRootPaths()) {
@@ -66,6 +75,9 @@ abstract class ModNioPackResourcesMixin {
 
 	@Inject(method = "openFile", at = @At("HEAD"), cancellable = true, remap = false)
 	private void lampas2$patchOpenFile(String filename, CallbackInfoReturnable<IoSupplier<InputStream>> cir) {
+		if (!lampas2$hasPatches()) {
+			return;
+		}
 		Path path = this.getPath(filename);
 		String fullPath = lampas2$resolveRelativePath(path, filename);
 		String normalized = ResourcePatchResolver.normalizePath(fullPath);
@@ -85,6 +97,9 @@ abstract class ModNioPackResourcesMixin {
 		net.minecraft.server.packs.metadata.MetadataSectionType<T> type,
 		CallbackInfoReturnable<T> cir
 	) {
+		if (!lampas2$hasPatches()) {
+			return;
+		}
 		Path path = this.getPath("pack.mcmeta");
 		String fullPath = lampas2$resolveRelativePath(path, "pack.mcmeta");
 		String modId = this.mod != null ? this.mod.getMetadata().getId() : "unknown";
@@ -111,6 +126,9 @@ abstract class ModNioPackResourcesMixin {
 
 	@Inject(method = "getResource", at = @At("HEAD"), cancellable = true, remap = false)
 	private void lampas2$patchGetResource(PackType type, Identifier id, CallbackInfoReturnable<IoSupplier<InputStream>> cir) {
+		if (!lampas2$hasPatches()) {
+			return;
+		}
 		String resourcePath = type.getDirectory() + "/" + id.getNamespace() + "/" + id.getPath();
 		IoSupplier<InputStream> patched = ResourcePatchResolver.resolve(this.mod, resourcePath, () -> {
 			Path path = this.getPath(getFilename(type, id));
@@ -131,7 +149,7 @@ abstract class ModNioPackResourcesMixin {
 		String namespace,
 		String path
 	) {
-		if (visitor == null || this.mod == null) {
+		if (visitor == null || !lampas2$hasPatches()) {
 			return visitor;
 		}
 		return (id, supplier) -> {

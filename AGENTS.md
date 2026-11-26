@@ -422,6 +422,11 @@ Zip-level and format work can be tested outside the game entirely; that is how `
   provenance is recorded in `docs/evidence/formations-overworld-1.0.5c.json`.
   A registered patch whose mod is present at another version logs WARN, like a SHA-256 mismatch, so an
   upstream update cannot silently drop a patch.
+  `ModNioPackResourcesMixin` and `ResourcePatchResolver.resolve` return first when
+  `ResourcePatchRegistry.hasPatchesFor(modId)` is false (no patch for that mod at any version). Before this,
+  every resource of all ~250 mods built a `ResourcePatchKey`, which runs `Version.parse` (about 0.2-0.7 µs a
+  resource, 74k data and 111k asset files in the server mods). The check is by mod ID only, so the WARN for an
+  unregistered version still fires; keep it that way.
 - **Waystone pools use `minecraft:empty_pool_element` rather than an empty `elements` list.** `JigsawPlacement` logs `Empty or non-existent pool` for a zero-size pool that is not `minecraft:empty`, and it breaks out silently on the empty element.
 - **Trek's waystone pools are repointed, not emptied.** Their element is Waystones' whole 6x6x6 village plaza (`waystones:village/*`), so an empty pool would also remove the plaza. Each Trek replacement points at `lampas:village/waystone_plaza/common` or `lampas:village/waystone_plaza/desert`, copies of Waystones 26.2.0.13's plaza templates with the two waystone blocks set to air. The templates live in `src/main/resources/data/lampas/structure/village/waystone_plaza/`. Waystones skips a `village/*/waystone` piece that is within 100 blocks of one placed earlier (`SinglePoolElementMixin`, which matches on the template path); the repointed plaza no longer matches, so it is placed in every Trek town center that has room for it.
 - **Fabric Loader drops leading zeros from version components.** It rebuilds a semantic version's

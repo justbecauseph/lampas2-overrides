@@ -1042,6 +1042,10 @@ versions, as a changed SHA-256 is. Fabric Loader reports versions without leadin
 components (Rogues `3.1.3.003+26.2` appears as `3.1.3.3+26.2` in the mod list); registered versions are
 compared in that form, so register the version the upstream `fabric.mod.json` declares.
 
+The resource hooks on Fabric's `ModNioPackResources` see every resource of every mod pack on each reload. A mod with no
+registered patch, for any version, returns from all four hooks before any path or registry work, so only the 16 patched
+mods pay for the version and path lookup. Adding a patch for a new mod ID needs nothing else: registering it adds the ID.
+
 Moog's Voyager Structures 5.1.3 and Moog's Nether Structures 3.1.1 declare `supported_formats: [48, 121]` upstream,
 which covers 26.2's data format 107.1, so neither needs a virtual patch. Better Lib 2.1.2 (and 2.1.3) fixed its POI tag
 upstream and needs no virtual patch.

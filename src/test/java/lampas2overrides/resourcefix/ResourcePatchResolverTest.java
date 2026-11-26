@@ -416,6 +416,22 @@ public class ResourcePatchResolverTest {
 	}
 
 	@Test
+	void patchedModFastPathCoversEveryRegisteredPatch() {
+		// The mixin hooks skip a mod pack entirely when this is false, so a false negative silently drops a patch.
+		for (ResourcePatchKey key : ResourcePatchRegistry.getAllPatches().keySet()) {
+			assertTrue(ResourcePatchRegistry.hasPatchesFor(key.modId()), "fast path skips patched mod " + key.modId());
+		}
+		for (String modId : List.of("formationsoverworld", "mr_grim_kingdomsloststructuresruins", "pyrite", "eastersdelight",
+				"wilderwild", "spanishdelight", "rogues", "paladins", "archers", "wizards", "spell_engine", "skill_tree_rpgs",
+				"relics_rpgs", "structory_towers", "mr_dungeons_andtaverns", "mr_trek")) {
+			assertTrue(ResourcePatchRegistry.hasPatchesFor(modId), "fast path skips patched mod " + modId);
+		}
+		assertFalse(ResourcePatchRegistry.hasPatchesFor("unrelated_mod"));
+		assertFalse(ResourcePatchRegistry.hasPatchesFor("minecraft"));
+		assertFalse(ResourcePatchRegistry.hasPatchesFor(null));
+	}
+
+	@Test
 	void leavesUnrelatedPathInAffectedModUntouched() {
 		ModContainer mod = createMockModContainer("formationsoverworld", "1.0.5+c");
 		IoSupplier<InputStream> patched = ResourcePatchResolver.resolve(
