@@ -5,11 +5,19 @@ import java.util.List;
 
 /**
  * Pure state machine and predicate deciding when Wall-Jump TXF activity should suppress vanilla jump-to-elytra
- * activation. Kept free of Minecraft classes so unit tests run directly against it.
+ * activation and when elytra flight should block or be cancelled on wall-jump actions. Kept free of Minecraft classes
+ * so unit tests run directly against it.
  */
 public final class WallJumpElytraPolicy {
 
 	public static final int WALL_JUMP_GRACE_TICKS = 8;
+
+	/** Action taken when {@code WallJumpLogic.doWallJump} evaluates whether wall-clinging may run on this tick. */
+	public enum WallClingAction {
+		ALLOW,
+		BLOCK,
+		CANCEL_ELYTRA_AND_BLOCK
+	}
 
 	/**
 	 * Player and Wall-Jump TXF state captured inside {@code LocalPlayer#aiStep} right before vanilla's
@@ -43,6 +51,7 @@ public final class WallJumpElytraPolicy {
 	private WeakReference<Object> trackedPlayer = new WeakReference<>(null);
 	private int lastWallJumpCount;
 	private int graceTicks;
+	private boolean clingSuppressedUntilKeyRelease;
 
 	/**
 	 * Updates the post-wall-jump grace counter at the start of {@code LocalPlayer#aiStep}, after the previous tick's
@@ -53,12 +62,14 @@ public final class WallJumpElytraPolicy {
 			trackedPlayer = new WeakReference<>(null);
 			lastWallJumpCount = 0;
 			graceTicks = 0;
+			clingSuppressedUntilKeyRelease = false;
 			return;
 		}
 		if (trackedPlayer.get() != playerToken) {
 			trackedPlayer = new WeakReference<>(playerToken);
 			lastWallJumpCount = currentWallJumpCount;
 			graceTicks = 0;
+			clingSuppressedUntilKeyRelease = false;
 			return;
 		}
 		if (resetGrace) {
@@ -77,15 +88,51 @@ public final class WallJumpElytraPolicy {
 		}
 	}
 
+	/** Clears the post-elytra-cancel cling latch once the player releases the cling key or lands. */
+	public void releaseClingSuppressionIfNeeded(boolean wallJumpKeyDown, boolean onGround) {
+		if (!wallJumpKeyDown || onGround) {
+			clingSuppressedUntilKeyRelease = false;
+		}
+	}
+
 	public int graceTicks() {
 		return graceTicks;
+	}
+
+	public boolean isClingSuppressedUntilKeyRelease() {
+		return clingSuppressedUntilKeyRelease;
+	}
+
+	/**
+	 * Decides whether {@code WallJumpLogic.doWallJump} should be blocked for this tick and whether holding the cling
+	 * key against an adjacent wall should cancel active elytra flight without clinging.
+	 */
+	public WallClingAction evaluateWallCling(
+		boolean isFallFlying,
+		boolean wallJumpKeyDown,
+		boolean hasAdjacentAllowedWall
+	) {
+		if (isFallFlying) {
+			if (wallJumpKeyDown && hasAdjacentAllowedWall) {
+				clingSuppressedUntilKeyRelease = true;
+				return WallClingAction.CANCEL_ELYTRA_AND_BLOCK;
+			}
+			return WallClingAction.BLOCK;
+		}
+		if (clingSuppressedUntilKeyRelease) {
+			if (wallJumpKeyDown) {
+				return WallClingAction.BLOCK;
+			}
+			clingSuppressedUntilKeyRelease = false;
+		}
+		return WallClingAction.ALLOW;
 	}
 
 	public boolean shouldSuppressElytra(Snapshot s) {
 		if (s.ticksWallClinged() > 0) {
 			return true;
 		}
-		if (isStartingWallCling(s)) {
+		if (!clingSuppressedUntilKeyRelease && isStartingWallCling(s)) {
 			return true;
 		}
 		if (graceTicks > 0) {

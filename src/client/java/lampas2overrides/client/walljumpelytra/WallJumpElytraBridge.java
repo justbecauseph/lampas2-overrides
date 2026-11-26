@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import lampas2overrides.Lampas2Overrides;
 import lampas2overrides.client.compat.BridgeException;
 import lampas2overrides.client.compat.Reflection;
+import lampas2overrides.walljumpelytra.StopFallFlyingC2SPayload;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -22,7 +24,7 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * Reflective client bridge to Wall-Jump TXF's config and movement state. No Wall-Jump TXF type is referenced at
- * compile time; a missing or failing member disables the bridge loudly once and falls back to vanilla elytra behavior.
+ * compile time; a missing or failing member disables the bridge loudly once and falls back to vanilla behavior.
  */
 public final class WallJumpElytraBridge {
 
@@ -57,7 +59,7 @@ public final class WallJumpElytraBridge {
 	private WallJumpElytraBridge() {
 	}
 
-	/** Updates the post-wall-jump grace tracker at the start of {@code LocalPlayer#aiStep}. */
+	/** Updates the post-wall-jump grace tracker and cling-latch at the start of {@code LocalPlayer#aiStep}. */
 	public static void onAiStepHead(LocalPlayer player) {
 		if (!ensureBound()) {
 			return;
@@ -69,6 +71,7 @@ public final class WallJumpElytraBridge {
 				|| player.isInWater()
 				|| player.isFallFlying();
 			POLICY.onTickHead(player, wallJumpCount, resetGrace);
+			POLICY.releaseClingSuppressionIfNeeded(readWallJumpKeyDown(), player.onGround());
 		} catch (BridgeException e) {
 			disable("failed reading Wall-Jump TXF tick state", e);
 		}
@@ -82,11 +85,7 @@ public final class WallJumpElytraBridge {
 		try {
 			int ticksWallClinged = readInt(ticksWallClingedField, WALL_JUMP_LOGIC + ".ticksWallClinged");
 			boolean stopSlid = readBoolean(stopSlidField, WALL_JUMP_LOGIC + ".stopSlid");
-			KeyMapping wallJumpKey = (KeyMapping) Reflection.read(keyWallJumpField, null);
-			if (wallJumpKey == null) {
-				throw new BridgeException(WALL_JUMP_CLIENT + ".KEY_WALL_JUMP is null");
-			}
-			boolean wallJumpKeyDown = wallJumpKey.isDown();
+			boolean wallJumpKeyDown = readWallJumpKeyDown();
 			int ticksKeyDown = readInt(ticksKeyDownField, WALL_JUMP_LOGIC + ".ticksKeyDown");
 			boolean canWallJump = invokeBoolean(canWallJumpMethod, WALL_JUMP_LOGIC + ".canWallJump", player);
 
@@ -98,7 +97,8 @@ public final class WallJumpElytraBridge {
 			boolean doubleJumpKeyHeld = readBoolean(doubleJumpKeyField, DOUBLE_JUMP_LOGIC + ".jumpKey");
 			boolean onFallDoubleJump = readBoolean(onFallDoubleJumpField, MOD_CONFIG + ".onFallDoubleJump");
 
-			boolean needWallCheck = ticksWallClinged <= 0 && !stopSlid && wallJumpKeyDown && ticksKeyDown < 3 && canWallJump;
+			boolean needWallCheck = !POLICY.isClingSuppressedUntilKeyRelease()
+				&& ticksWallClinged <= 0 && !stopSlid && wallJumpKeyDown && ticksKeyDown < 3 && canWallJump;
 			boolean hasAdjacentAllowedWall = false;
 			boolean wallClingClearOfGround = false;
 			if (needWallCheck) {
@@ -140,6 +140,42 @@ public final class WallJumpElytraBridge {
 			disable("failed evaluating Wall-Jump TXF elytra suppression", e);
 			return false;
 		}
+	}
+
+	/**
+	 * Called from {@code WallJumpLogic.doWallJump} via {@code isHandsBusy()}: blocks wall-clinging while gliding and
+	 * cancels elytra flight when pressing/holding the cling key against an adjacent wall without clinging on that grab.
+	 */
+	public static boolean handleWallClingWhileGliding(LocalPlayer player) {
+		if (!ensureBound()) {
+			return false;
+		}
+		try {
+			boolean wallJumpKeyDown = readWallJumpKeyDown();
+			boolean isFallFlying = player.isFallFlying();
+			boolean hasAdjacentAllowedWall = isFallFlying && wallJumpKeyDown && hasAdjacentAllowedWall(player);
+			WallJumpElytraPolicy.WallClingAction action =
+				POLICY.evaluateWallCling(isFallFlying, wallJumpKeyDown, hasAdjacentAllowedWall);
+			if (action == WallJumpElytraPolicy.WallClingAction.CANCEL_ELYTRA_AND_BLOCK) {
+				if (ClientPlayNetworking.canSend(StopFallFlyingC2SPayload.TYPE)) {
+					player.stopFallFlying();
+					ClientPlayNetworking.send(StopFallFlyingC2SPayload.INSTANCE);
+				}
+				return true;
+			}
+			return action == WallJumpElytraPolicy.WallClingAction.BLOCK;
+		} catch (BridgeException e) {
+			disable("failed handling Wall-Jump TXF cling check while gliding", e);
+			return false;
+		}
+	}
+
+	private static boolean readWallJumpKeyDown() {
+		KeyMapping wallJumpKey = (KeyMapping) Reflection.read(keyWallJumpField, null);
+		if (wallJumpKey == null) {
+			throw new BridgeException(WALL_JUMP_CLIENT + ".KEY_WALL_JUMP is null");
+		}
+		return wallJumpKey.isDown();
 	}
 
 	/**
@@ -212,7 +248,7 @@ public final class WallJumpElytraBridge {
 		String missing = bind();
 		if (missing != null) {
 			disabled = true;
-			LOGGER.error("Wall-Jump TXF member {} is unavailable; elytra takeoff suppression is disabled", missing);
+			LOGGER.error("Wall-Jump TXF member {} is unavailable; elytra compatibility is disabled", missing);
 			return false;
 		}
 		bound = true;
@@ -324,6 +360,6 @@ public final class WallJumpElytraBridge {
 
 	private static void disable(String message, Throwable error) {
 		disabled = true;
-		LOGGER.error("{}; disabling Wall-Jump TXF elytra takeoff suppression", message, error);
+		LOGGER.error("{}; disabling Wall-Jump TXF elytra compatibility", message, error);
 	}
 }

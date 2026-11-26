@@ -8,7 +8,7 @@ entity-discard deadlock and missing dimension context, Beautiful Enchanted Books
 Potions stale item-model keys after resource reload, Visual Workbench tag reloads under
 Puzzles Lib, Gravestones death inscriptions and glowing outline, Jade entity nameplate suppression, Jade ↔ Custom Name display name bridge, Custom Name 0.4.4-26.2 multi-word player-name parsing, the Custom Name `/name other` operator gate (any installed version, inspected on 0.4.4-26.2), the version-gated Wilder Delights 1.0.0-26.2 creative tab icon under Wilder Wild 4.3, Better Lib demo villager suppression, version-gated Incendium Legacy 5.5.1 tick-function optimization, version-gated Builder's Boundry 0.2 and Dungeons and Taverns 5.3.2 tick-function optimizations, the ungated Gardener's Dream pot-break-check optimization (audited on 2.6), the version-gated Lootr 1.24.41.124 container tick-delay gate, the version-gated
 IllagerBlabber 1.1.0 voice-registry leak fix, Critical Strike crits for thrown tridents, the ungated hotbar slot resync after respawn, Voxy 0.2.19-beta reverse-Z depth under Iris 1.11.4 shader packs, Voxy errors kept out of chat, Magic Vibe Decorations scheduled block ticks turned off (any version, by block namespace), Status Effect Bars duration bars placed on VanillaHUD's effect icons, Fancy World Animations 1.3.4 animation culling under EntityCulling 1.12.0, Signs Faster 1.0.3 sign text for signs with a blank first line, five Continuity, Elytra Contrails and More Bed Variants built-in resource packs selected by default, Wall-Jump TXF elytra takeoff suppression during wall clings, an 8-tick post-wall-jump grace window, and available double jumps (any version, audited on `26.2-1.3.8-fabric`), Just Enough Filters 3.2.0 `@Inject` parameter-slot corruption under R8-shrunk JEI 30.48.0.244, plus a version-gated virtual resource patcher for defective mod `pack.mcmeta` files and worldgen resources (Formations Overworld, Grim Kingdoms, Pyrite, Easter's Delight, Wilder Wild 4.3.3, Spanish Delight 26.2-1.0.11, Structory: Towers 1.0.17, Dungeons and Taverns 5.3.2 and Trek B0.6.2 waystone pools), the Rogues 3.1.3.003+26.2 Sharpness definition, the seven Paladins and Rogues 3.1.3.003+26.2 aeternium weapon recipes, and 77 RPG Series spell patches (martial cooldowns ignore haste; crowd-control apply limits raised; Fire Wall and Meteor burning ground damage x0.4; eleven heals add 0.1 x c x max health, 12% for Flash Heal). The first two
-features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, the Voxy reverse-Z fix, the Voxy chat suppression, the Status Effect Bars alignment under VanillaHUD, the Fancy World Animations culling under EntityCulling (its canceller is common-side), the Signs Faster blank-line fix, the default-selected built-in packs, the Wall-Jump TXF elytra suppression, and the Just Enough Filters + JEI fix are client-only; the Custom Name space fix, the Custom Name `/name other` gate, Better Lib demo villager suppression, Incendium, Builder's Boundry, Dungeons and Taverns and Gardener's Dream datapacks, IllagerBlabber registry fix, Lootr tick-delay gate, Magic Vibe Decorations tick cancel, thrown-trident crits, and virtual resource patcher are common-side and must also run on a dedicated server; the Wilder Delights tab icon fix is registered common-side because it targets Wilder Delights' main entrypoint class, though only the client runs the icon supplier; the Lootr ↔ Fast Item Frames bridge has common server
+features, Visual Workbench, Gravestones, Jade nameplates, Jade Custom Name, Beautiful item models, the hotbar slot resync, the Voxy reverse-Z fix, the Voxy chat suppression, the Status Effect Bars alignment under VanillaHUD, the Fancy World Animations culling under EntityCulling (its canceller is common-side), the Signs Faster blank-line fix, the default-selected built-in packs, and the Just Enough Filters + JEI fix are client-only; the Custom Name space fix, the Custom Name `/name other` gate, Better Lib demo villager suppression, Incendium, Builder's Boundry, Dungeons and Taverns and Gardener's Dream datapacks, IllagerBlabber registry fix, Lootr tick-delay gate, Magic Vibe Decorations tick cancel, thrown-trident crits, and virtual resource patcher are common-side and must also run on a dedicated server; the Wall-Jump TXF elytra compatibility has client mixins and a common C2S packet (`walljumpelytra`) registered when `walljump` is loaded; the Wilder Delights tab icon fix is registered common-side because it targets Wilder Delights' main entrypoint class, though only the client runs the icon supplier; the Lootr ↔ Fast Item Frames bridge has common server
 hooks and client renderer hooks, so the mod's declared environment is `*`. Read this file fully
 before touching anything; most of it is knowledge that cost real time to establish and is not
 recoverable from the code.
@@ -224,12 +224,14 @@ For the Signs Faster blank-first-line fix (Signs Faster 1.0.3 in `run/mods/`), s
 calls `SignTextureManager.updateDirty()` at the head of `Minecraft.runTick`, so the class loads on the first frame. The
 rendered sign (text on lines 2 to 4 under a blank line 1) is checked by the user in game.
 
-For the Wall-Jump TXF elytra takeoff suppression (Wall-Jump TXF `26.2-1.3.8-fabric` in `run/mods/`), startup must log
-`Enabled Wall-Jump TXF 26.2-1.3.8-fabric elytra takeoff suppression` and `LocalPlayerElytraMixin` must appear applying
-into `net.minecraft.client.player.LocalPlayer` with no `Wall-Jump TXF member … is unavailable` error in `latest.log`.
-`WallJumpElytraPolicyTest` covers the cling, start-cling, 8-tick grace, and double-jump conditions; `WallJumpElytraContractTest`
-checks all reflected Wall-Jump TXF members and mixin targets against the pinned jar with ASM. In-game wall-jumping and
-double-jumping with an elytra equipped is checked by the user in game.
+For the Wall-Jump TXF elytra compatibility (Wall-Jump TXF `26.2-1.3.8-fabric` in `run/mods/`), startup must log
+`Enabled Wall-Jump TXF 26.2-1.3.8-fabric elytra takeoff suppression` and `Registered Wall-Jump TXF elytra-cancel packet receiver`,
+and `LocalPlayerElytraMixin`, `WallJumpLogicMixin`, and `DoubleJumpLogicMixin` must apply into `LocalPlayer`,
+`WallJumpLogic`, and `DoubleJumpLogic` with no `Wall-Jump TXF member … is unavailable` error in `latest.log`.
+`WallJumpElytraPolicyTest` covers the cling, start-cling, 8-tick grace, double-jump, and gliding-cancel/latch conditions;
+`WallJumpElytraContractTest` checks all reflected Wall-Jump TXF members and mixin targets against the pinned jar with ASM;
+`WallJumpElytraGameTests` verifies server-side receiver registration and `stopFallFlying()` with the real Wall-Jump TXF jar.
+In-game wall-jumping, double-jumping, and cancelling elytra on wall grab are checked by the user in game.
 
 For the default-selected built-in packs (Fabric API 0.161.0+26.2, Continuity 3.0.1+26.2, Elytra Contrails 1.6.9-26.2 and
 More Bed Variants 2.2.0+26.2 in `run/mods/`; the stale `run/mods/` Fabric API 0.152.1 and Figura must be moved out),
@@ -827,12 +829,15 @@ client/defaultpacks/
   DefaultEnabledPacks       the five built-in pack IDs selected by default, and the selection log line
   DefaultPacksMixinPlugin   applies the mixin whenever fabric-resource-loader-v1 is loaded
   mixin/                    @ModifyArg raises NORMAL to DEFAULT_ENABLED on the client-pack create call in ResourceLoaderImpl#registerBuiltinPack
+walljumpelytra/
+  StopFallFlyingC2SPayload  unit C2S payload (lampas2-overrides:wall_jump_stop_fall_flying)
+  WallJumpElytraNetworking  main entrypoint; registers C2S receiver when walljump is loaded and calls ServerPlayer#stopFallFlying()
 client/walljumpelytra/
   WallJumpElytraMixinPlugin applies whenever walljump is loaded; WARNs on versions other than 26.2-1.3.8-fabric
-  WallJumpElytraPolicy      pure state machine and predicate for cling, start-cling, 8-tick grace window, and double-jump suppression
-  WallJumpElytraBridge      reflective client bridge to Wall-Jump TXF fields/canWallJump and read-only wall probe; disables loudly on error
-  mixin/                    @Inject HEAD on LocalPlayer#aiStep (grace tracker) and @WrapOperation on tryToStartFallFlying()Z
-src/gametest/               server GameTests (./gradlew runGameTest, part of check) with real Spell Engine, Spell Power, Rogues and Critical Strike;
+  WallJumpElytraPolicy      pure state machine and predicate for cling, start-cling, 8-tick grace window, double-jump suppression, and gliding wall-grab cancel/latch
+  WallJumpElytraBridge      reflective client bridge to Wall-Jump TXF fields/canWallJump, read-only wall probe, and C2S stopFallFlying sender; disables loudly on error
+  mixin/                    @Inject HEAD and @WrapOperation on LocalPlayer#tryToStartFallFlying()Z; @WrapOperation on WallJumpLogic#doWallJump isHandsBusy()Z and DoubleJumpLogic#doDoubleJump isPassenger()Z
+src/gametest/               server GameTests (./gradlew runGameTest, part of check) with real Spell Engine, Spell Power, Rogues, Critical Strike, and Wall-Jump TXF;
                             dev/shadowsoffire/placebo/util/PersistentData there is a TEST DOUBLE, never shipped
 ```
 

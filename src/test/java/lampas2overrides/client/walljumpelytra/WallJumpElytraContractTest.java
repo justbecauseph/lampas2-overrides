@@ -42,12 +42,18 @@ class WallJumpElytraContractTest {
 	private static final String MIXIN_CONFIG = "lampas2-overrides.walljumpelytra.mixins.json";
 	private static final String FABRIC_MOD_JSON = "fabric.mod.json";
 	private static final String OUR_MIXIN = "lampas2overrides/client/walljumpelytra/mixin/LocalPlayerElytraMixin";
+	private static final String OUR_WALL_JUMP_MIXIN =
+		"lampas2overrides/client/walljumpelytra/mixin/WallJumpLogicMixin";
+	private static final String OUR_DOUBLE_JUMP_MIXIN =
+		"lampas2overrides/client/walljumpelytra/mixin/DoubleJumpLogicMixin";
 
 	private static final String VENDOR_CLIENT = "com/jahirtrap/walljump/WallJumpClient";
 	private static final String VENDOR_CONFIG = "com/jahirtrap/walljump/init/ModConfig";
 	private static final String VENDOR_BLOCK_LIST_MODE = "com/jahirtrap/walljump/init/ModConfig$BlockListMode";
 	private static final String VENDOR_WALL_JUMP_LOGIC = "com/jahirtrap/walljump/logic/WallJumpLogic";
+	private static final String VENDOR_WALL_JUMP_LOGIC_NAME = "com.jahirtrap.walljump.logic.WallJumpLogic";
 	private static final String VENDOR_DOUBLE_JUMP_LOGIC = "com/jahirtrap/walljump/logic/DoubleJumpLogic";
+	private static final String VENDOR_DOUBLE_JUMP_LOGIC_NAME = "com.jahirtrap.walljump.logic.DoubleJumpLogic";
 	private static final String VENDOR_MIXIN = "com/jahirtrap/walljump/init/mixin/LocalPlayerMixin";
 
 	private static final String LOCAL_PLAYER = "net/minecraft/client/player/LocalPlayer";
@@ -65,7 +71,10 @@ class WallJumpElytraContractTest {
 		assertTrue(config.get("required").getAsBoolean());
 		assertEquals("lampas2overrides.client.walljumpelytra.mixin", config.get("package").getAsString());
 		assertEquals("lampas2overrides.client.walljumpelytra.WallJumpElytraMixinPlugin", config.get("plugin").getAsString());
-		assertEquals(List.of("LocalPlayerElytraMixin"), jsonStrings(config.getAsJsonArray("client")));
+		assertEquals(
+			List.of("LocalPlayerElytraMixin", "WallJumpLogicMixin", "DoubleJumpLogicMixin"),
+			jsonStrings(config.getAsJsonArray("client"))
+		);
 		assertFalse(config.has("mixins"), "the Wall-Jump elytra mixin must not be common");
 		assertEquals(1, config.getAsJsonObject("injectors").get("defaultRequire").getAsInt());
 
@@ -78,6 +87,11 @@ class WallJumpElytraContractTest {
 		}
 		assertNotNull(registered, "fabric.mod.json must register " + MIXIN_CONFIG);
 		assertEquals("client", registered.get("environment").getAsString());
+		assertTrue(
+			jsonStrings(metadata.getAsJsonObject("entrypoints").getAsJsonArray("main"))
+				.contains("lampas2overrides.walljumpelytra.WallJumpElytraNetworking"),
+			"fabric.mod.json must register WallJumpElytraNetworking as a main entrypoint"
+		);
 		assertFalse(metadata.getAsJsonObject("depends").has("walljump"), "walljump must stay optional");
 		assertTrue(metadata.getAsJsonObject("suggests").has("walljump"), "walljump should be listed in suggests");
 	}
@@ -207,6 +221,78 @@ class WallJumpElytraContractTest {
 		AnnotationNode wrapAt = (AnnotationNode) ((List<?>) value(wrap, "at")).get(0);
 		assertEquals("INVOKE", value(wrapAt, "value"));
 		assertEquals("Lnet/minecraft/client/player/LocalPlayer;tryToStartFallFlying()Z", value(wrapAt, "target"));
+	}
+
+	@Test
+	void wallJumpAndDoubleJumpMixinsMatchPinnedVendorContracts() throws IOException {
+		ClassNode wallJump = read(VENDOR_WALL_JUMP_LOGIC);
+		MethodNode doWallJump = method(wallJump, "doWallJump", "(L" + LOCAL_PLAYER + ";)V");
+		List<MethodInsnNode> handsBusyCalls = invokeVirtualCalls(doWallJump, LOCAL_PLAYER, "isHandsBusy", "()Z");
+		assertEquals(1, handsBusyCalls.size(), "WallJumpLogic#doWallJump must call isHandsBusy()Z once");
+
+		ClassNode ourWallJumpMixin = read(OUR_WALL_JUMP_MIXIN);
+		AnnotationNode wallJumpMixinAnn =
+			annotation(ourWallJumpMixin.visibleAnnotations, ourWallJumpMixin.invisibleAnnotations, MIXIN_ANNOTATION);
+		assertNotNull(wallJumpMixinAnn);
+		assertEquals(List.of(VENDOR_WALL_JUMP_LOGIC_NAME), listOf(value(wallJumpMixinAnn, "targets")));
+		assertEquals(Boolean.FALSE, value(wallJumpMixinAnn, "remap"));
+		MethodNode wallJumpWrap = method(
+			ourWallJumpMixin,
+			"lampas2$blockWallClingWhileGliding",
+			"(Lnet/minecraft/client/player/LocalPlayer;Lcom/llamalad7/mixinextras/injector/wrapoperation/Operation;)Z"
+		);
+		assertTrue((wallJumpWrap.access & Opcodes.ACC_STATIC) != 0);
+		AnnotationNode wjWrap =
+			annotation(wallJumpWrap.visibleAnnotations, wallJumpWrap.invisibleAnnotations, WRAP_OPERATION_ANNOTATION);
+		assertNotNull(wjWrap);
+		assertEquals(List.of("doWallJump"), listOf(value(wjWrap, "method")));
+		AnnotationNode wjAt = (AnnotationNode) ((List<?>) value(wjWrap, "at")).get(0);
+		assertEquals("INVOKE", value(wjAt, "value"));
+		assertEquals("Lnet/minecraft/client/player/LocalPlayer;isHandsBusy()Z", value(wjAt, "target"));
+
+		ClassNode doubleJump = read(VENDOR_DOUBLE_JUMP_LOGIC);
+		MethodNode doDoubleJump = method(doubleJump, "doDoubleJump", "(L" + LOCAL_PLAYER + ";)V");
+		List<MethodInsnNode> passengerCalls = invokeVirtualCalls(doDoubleJump, LOCAL_PLAYER, "isPassenger", "()Z");
+		assertEquals(1, passengerCalls.size(), "DoubleJumpLogic#doDoubleJump must call isPassenger()Z once");
+
+		ClassNode ourDoubleJumpMixin = read(OUR_DOUBLE_JUMP_MIXIN);
+		AnnotationNode doubleJumpMixinAnn =
+			annotation(ourDoubleJumpMixin.visibleAnnotations, ourDoubleJumpMixin.invisibleAnnotations, MIXIN_ANNOTATION);
+		assertNotNull(doubleJumpMixinAnn);
+		assertEquals(List.of(VENDOR_DOUBLE_JUMP_LOGIC_NAME), listOf(value(doubleJumpMixinAnn, "targets")));
+		assertEquals(Boolean.FALSE, value(doubleJumpMixinAnn, "remap"));
+		MethodNode doubleJumpWrap = method(
+			ourDoubleJumpMixin,
+			"lampas2$blockDoubleJumpWhileGliding",
+			"(Lnet/minecraft/client/player/LocalPlayer;Lcom/llamalad7/mixinextras/injector/wrapoperation/Operation;)Z"
+		);
+		assertTrue((doubleJumpWrap.access & Opcodes.ACC_STATIC) != 0);
+		AnnotationNode djWrap =
+			annotation(doubleJumpWrap.visibleAnnotations, doubleJumpWrap.invisibleAnnotations, WRAP_OPERATION_ANNOTATION);
+		assertNotNull(djWrap);
+		assertEquals(List.of("doDoubleJump"), listOf(value(djWrap, "method")));
+		AnnotationNode djAt = (AnnotationNode) ((List<?>) value(djWrap, "at")).get(0);
+		assertEquals("INVOKE", value(djAt, "value"));
+		assertEquals("Lnet/minecraft/client/player/LocalPlayer;isPassenger()Z", value(djAt, "target"));
+	}
+
+	private static List<MethodInsnNode> invokeVirtualCalls(
+		MethodNode method,
+		String owner,
+		String name,
+		String desc
+	) {
+		List<MethodInsnNode> calls = new ArrayList<>();
+		for (AbstractInsnNode insn : method.instructions) {
+			if (insn instanceof MethodInsnNode call
+				&& call.getOpcode() == Opcodes.INVOKEVIRTUAL
+				&& owner.equals(call.owner)
+				&& name.equals(call.name)
+				&& desc.equals(call.desc)) {
+				calls.add(call);
+			}
+		}
+		return calls;
 	}
 
 	private static void assertStaticField(ClassNode owner, String name, String desc) {

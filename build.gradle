@@ -149,6 +149,8 @@ dependencies {
 	// CustomNameOtherPermissionGameTests compiles against Custom Name's config and runs /name other with the real jar.
 	gametestCompileOnly("maven.modrinth:saIlazMs:${project.custom_name_version}") { transitive = false }
 	gametestRuntimeOnly("maven.modrinth:saIlazMs:${project.custom_name_version}") { transitive = false }
+	// WallJumpElytraGameTests runs with the real Wall-Jump TXF jar so WallJumpElytraNetworking registers its payload.
+	gametestRuntimeOnly("maven.modrinth:oUoetxfR:${project.wall_jump_txf_version}") { transitive = false }
 }
 
 def gameTestReportFile = layout.buildDirectory.file('test-results/gameTest/TEST-lampas2-overrides-gametest.xml')

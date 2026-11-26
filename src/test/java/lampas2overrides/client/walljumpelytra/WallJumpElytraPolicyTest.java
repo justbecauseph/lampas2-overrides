@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import lampas2overrides.client.walljumpelytra.WallJumpElytraPolicy.Snapshot;
+import lampas2overrides.client.walljumpelytra.WallJumpElytraPolicy.WallClingAction;
 
 class WallJumpElytraPolicyTest {
 
@@ -229,5 +230,58 @@ class WallJumpElytraPolicyTest {
 
 		assertTrue(WallJumpElytraPolicy.isBlockAllowed("WHITELIST", list, null, "minecraft:glass"));
 		assertFalse(WallJumpElytraPolicy.isBlockAllowed("WHITELIST", list, "minecraft:oak_planks", "minecraft:dirt"));
+	}
+
+	@Test
+	void glidingAgainstWallWithKeyCancelsElytraAndLatchesClingBlockUntilRelease() {
+		WallJumpElytraPolicy policy = new WallJumpElytraPolicy();
+		Object player = new Object();
+		policy.onTickHead(player, 0, false);
+
+		// Gliding in open air blocks clinging without cancelling elytra or latching.
+		assertEquals(WallClingAction.BLOCK, policy.evaluateWallCling(true, true, false));
+		assertFalse(policy.isClingSuppressedUntilKeyRelease());
+
+		// Gliding against a wall without pressing the cling key blocks clinging without cancelling elytra.
+		assertEquals(WallClingAction.BLOCK, policy.evaluateWallCling(true, false, true));
+		assertFalse(policy.isClingSuppressedUntilKeyRelease());
+
+		// Gliding + Shift against an allowed wall cancels elytra and latches cling suppression.
+		assertEquals(WallClingAction.CANCEL_ELYTRA_AND_BLOCK, policy.evaluateWallCling(true, true, true));
+		assertTrue(policy.isClingSuppressedUntilKeyRelease());
+
+		// Next tick: no longer gliding, Shift still held -> cling stays blocked and start-cling does not suppress Space.
+		policy.onTickHead(player, 0, false);
+		policy.releaseClingSuppressionIfNeeded(true, false);
+		assertFalse(policy.shouldSuppressElytra(withStartCling(true, false, true, 1, true, true, 20, -0.1)));
+		assertEquals(WallClingAction.BLOCK, policy.evaluateWallCling(false, true, true));
+		assertTrue(policy.isClingSuppressedUntilKeyRelease());
+
+		// Releasing Shift clears the latch and restores clinging.
+		policy.releaseClingSuppressionIfNeeded(false, false);
+		assertFalse(policy.isClingSuppressedUntilKeyRelease());
+		assertEquals(WallClingAction.ALLOW, policy.evaluateWallCling(false, true, true));
+		assertTrue(policy.shouldSuppressElytra(withStartCling(true, false, true, 1, true, true, 20, -0.1)));
+	}
+
+	@Test
+	void groundTouchOrPlayerSwitchClearsPostCancelClingLatch() {
+		WallJumpElytraPolicy policy = new WallJumpElytraPolicy();
+		Object player = new Object();
+		policy.onTickHead(player, 0, false);
+
+		assertEquals(WallClingAction.CANCEL_ELYTRA_AND_BLOCK, policy.evaluateWallCling(true, true, true));
+		assertTrue(policy.isClingSuppressedUntilKeyRelease());
+
+		// Landing clears latch even while Shift remains held.
+		policy.releaseClingSuppressionIfNeeded(true, true);
+		assertFalse(policy.isClingSuppressedUntilKeyRelease());
+		assertEquals(WallClingAction.ALLOW, policy.evaluateWallCling(false, true, true));
+
+		// Re-latch then switch player token -> latch clears.
+		assertEquals(WallClingAction.CANCEL_ELYTRA_AND_BLOCK, policy.evaluateWallCling(true, true, true));
+		assertTrue(policy.isClingSuppressedUntilKeyRelease());
+		policy.onTickHead(new Object(), 0, false);
+		assertFalse(policy.isClingSuppressedUntilKeyRelease());
 	}
 }
