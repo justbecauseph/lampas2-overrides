@@ -3,7 +3,7 @@
 	"id": "lampas2-overrides",
 	"version": "${version}",
 	"name": "Lampas2 Overrides",
-	"description": "Compatibility fixes for Figura, ReplayMod, Chatting, Lootr, Fast Item Frames, Better Lib, Underground Village, Additional Lanterns, Mob Filter, Incendium, Visual Workbench, Gravestones, Jade, Custom Name, optional boat water masks, optional beautiful item models, IllagerBlabber 1.1.0 registry cleanup, Spell Engine crowd-control immunity for Apotheosis elites and invaders, Critical Strike crits for thrown tridents, the vanilla hotbar slot resync after respawn, the Wilder Delights 1.0.0-26.2 creative tab icon under Wilder Wild 4.3, the Lootr 1.24.41.124 container tick-delay gate, Voxy 0.2.19-beta LOD depth under Iris 1.11.4 shader packs, Voxy errors kept out of chat, Magic Vibe Decorations crystal ticks turned off, Signs Faster 1.0.3 blank-first-line sign text, Fancy World Animations 1.3.4 animation culling under EntityCulling 1.12.0, and five Continuity, Elytra Contrails and More Bed Variants built-in resource packs selected by default.",
+	"description": "Compatibility fixes for Figura, ReplayMod, Chatting, Lootr, Fast Item Frames, Better Lib, Underground Village, Additional Lanterns, Mob Filter, Incendium, Visual Workbench, Gravestones, Jade, Custom Name, optional boat water masks, optional beautiful item models, IllagerBlabber 1.1.0 registry cleanup, Spell Engine crowd-control immunity for Apotheosis elites and invaders, Critical Strike crits for thrown tridents, the vanilla hotbar slot resync after respawn, the Wilder Delights 1.0.0-26.2 creative tab icon under Wilder Wild 4.3, the Lootr 1.24.41.124 container tick-delay gate, Voxy 0.2.19-beta LOD depth under Iris 1.11.4 shader packs, Voxy errors kept out of chat, Magic Vibe Decorations crystal ticks turned off, Signs Faster 1.0.3 blank-first-line sign text, Fancy World Animations 1.3.4 animation culling under EntityCulling 1.12.0, five Continuity, Elytra Contrails and More Bed Variants built-in resource packs selected by default, and elytra takeoff suppression during Wall-Jump TXF wall clings, post-wall-jump grace windows, and double jumps.",
 	"authors": [
 		"justbecauseph"
 	],
@@ -108,6 +108,10 @@
 			"environment": "client"
 		},
 		{
+			"config": "lampas2-overrides.walljumpelytra.mixins.json",
+			"environment": "client"
+		},
+		{
 			"config": "lampas2-overrides.lootrfastframes.mixins.json"
 		},
 		{
@@ -190,6 +194,7 @@
 		"magic_vibe_decorations": "*",
 		"continuity": "*",
 		"elytratrails": "*",
-		"quad-lolmbdv": "*"
+		"quad-lolmbdv": "*",
+		"walljump": "*"
 	}
 }

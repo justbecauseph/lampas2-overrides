@@ -47,6 +47,20 @@ nothing unless Continuity, Elytra Contrails or More Bed Variants registers a lis
 | [Built-in resource packs selected by default](#built-in-resource-packs-selected-by-default) | Fabric API resource loader; Continuity, Elytra Contrails, More Bed Variants | Selects five of their built-in resource packs on first launch; players can still turn them off |
 | [Signs Faster blank first line](#signs-faster-blank-first-line) | Signs Faster 1.0.3 | Draws the lines of a sign whose first line is blank, which Signs Faster drew as an empty sign |
 | [Magic Vibe Decorations crystal ticks](#magic-vibe-decorations-crystal-ticks) | Magic Vibe Decorations (any version) | Turns off every scheduled block tick of the mod, so its protective crystals no longer delete, damage or burn mobs |
+| [Wall-Jump TXF elytra takeoff suppression](#wall-jump-txf-elytra-takeoff-suppression) | Wall-Jump TXF 26.2-1.3.8-fabric (any version; audited on 26.2-1.3.8-fabric) | Suppresses vanilla jump-to-elytra activation during wall clings, starting a cling, an 8-tick post-wall-jump grace window, and available double jumps |
+
+## Wall-Jump TXF elytra takeoff suppression
+
+Vanilla `LocalPlayer#aiStep` triggers `tryToStartFallFlying()` and sends `START_FALL_FLYING` on any fresh mid-air jump press when `!onClimbable()`. Wall-Jump TXF (`walljump`) runs `WallJumpLogic.doWallJump` and `DoubleJumpLogic.doDoubleJump` at `@At("TAIL")` of `LocalPlayer#aiStep` after vanilla has already started fall-flying, and does not affect `onClimbable()` or `tryToStartFallFlying()`.
+
+The client-only `walljumpelytra` feature tracks `WallJumpLogic.wallJumpCount` at `@At("HEAD")` of `LocalPlayer#aiStep` and wraps the `LocalPlayer#tryToStartFallFlying()` call in `LocalPlayer#aiStep` with `@WrapOperation`, returning `false` when any of the following hold:
+
+- **Active cling or slide:** `WallJumpLogic.ticksWallClinged > 0`.
+- **Starting a cling on the current tick:** `KEY_WALL_JUMP` is down (`ticksKeyDown < 3`), `canWallJump(player)` is true, `!stopSlid`, the player is clear of the ground (`-0.8` AABB check) with `deltaY <= 0.2`, food level `>= 1`, not on ground/climbable/flying/hands-busy/fluid, and a read-only 4-direction wall probe finds an adjacent block allowed by `ModConfig.blockList` / `blockListMode`.
+- **Post-wall-jump grace window:** for `8` ticks (`WallJumpElytraPolicy.WALL_JUMP_GRACE_TICKS`) after `WallJumpLogic.wallJumpCount` increases, reset early if the player touches the ground, enters water, flies creatively, starts fall-flying, or switches player instances.
+- **Available Double Jump:** Wall-Jump TXF double jump is enabled (`(enableEnchantments && enableDoubleJump) || useDoubleJump`), `DoubleJumpLogic.jumpCount > 0`, `!DoubleJumpLogic.jumpKey`, and the player satisfies `DoubleJumpLogic`'s jump conditions (`!onGround`, `!passenger`, `!mayfly`, not in upper liquid, `foodLevel > 0`, and `onFallDoubleJump || deltaY >= -0.8`).
+
+`WallJumpElytraMixinPlugin` applies whenever `walljump` is installed (silent when absent) and logs a `WARN` on versions other than `26.2-1.3.8-fabric`. `WallJumpElytraBridge` binds Wall-Jump TXF fields and `canWallJump` lazily by reflection; if any member is missing or fails, it logs an `ERROR` once and disables suppression rather than half-working. Easy Elytra Takeoff's firework-right-click takeoff is server-side and is left unchanged. `WallJumpElytraPolicyTest` and `WallJumpElytraContractTest` (ASM against the pinned `26.2-1.3.8-fabric` jar) verify the state machine, mixin target, and reflected members; in-game wall-jumping with an elytra in a live client has not been checked.
 
 ## Built-in resource packs selected by default
 

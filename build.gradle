@@ -110,6 +110,9 @@ dependencies {
 	// CustomNamePermissionsMixinTest reads the pinned Custom Name jar. The /name other mixin names Custom Name only by
 	// string and reaches it through reflection, so the test-only copy is never bundled.
 	testRuntimeOnly("maven.modrinth:saIlazMs:${project.custom_name_version}") { transitive = false }
+	// WallJumpElytraContractTest reads the pinned Wall-Jump TXF jar. The client bridge binds by reflection, so nothing
+	// from Wall-Jump TXF is compiled in or bundled.
+	testRuntimeOnly("maven.modrinth:oUoetxfR:${project.wall_jump_txf_version}") { transitive = false }
 
 	testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
 	testRuntimeOnly "org.junit.platform:junit-platform-launcher"

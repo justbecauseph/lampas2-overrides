@@ -1,0 +1,8 @@
+{
+	"required": true,
+	"package": "lampas2overrides.client.walljumpelytra.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.client.walljumpelytra.WallJumpElytraMixinPlugin",
+	"client": ["LocalPlayerElytraMixin"],
+	"injectors": { "defaultRequire": 1 }
+}
