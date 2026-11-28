@@ -1,0 +1,8 @@
+{
+	"required": true,
+	"package": "lampas2overrides.client.diagonalbars.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "lampas2overrides.client.diagonalbars.DiagonalBarsMixinPlugin",
+	"client": ["MultiPartAppenderMixin"],
+	"injectors": { "defaultRequire": 1 }
+}

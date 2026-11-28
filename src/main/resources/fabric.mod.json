@@ -109,6 +109,10 @@
 			"environment": "client"
 		},
 		{
+			"config": "lampas2-overrides.diagonalbars.mixins.json",
+			"environment": "client"
+		},
+		{
 			"config": "lampas2-overrides.walljumpelytra.mixins.json",
 			"environment": "client"
 		},

@@ -91,6 +91,9 @@ dependencies {
 	// Signs Faster 1.0.3 is test-only. SignsFasterContractTest reads its SignTextureManager bytecode and fabric.mod.json;
 	// the mixin names the mod only by string, so nothing from it is compiled in or bundled.
 	testRuntimeOnly("maven.modrinth:sf-plus:${project.signs_faster_version}") { transitive = false }
+	// Diagonal Windows 26.2.0 nests Diagonal Blocks 26.2.0. DiagonalBarsContractTest reads its MultiPartAppender bytecode
+	// and fabric.mod.json from the nested jar; the mixin names the mod only by string, so nothing from it is bundled.
+	testRuntimeOnly("maven.modrinth:oOi0CKes:${project.diagonal_windows_version}") { transitive = false }
 	// DefaultPacksContractTest reads Fabric API's built-in pack registration path and the pack IDs that Continuity,
 	// Elytra Contrails and More Bed Variants register, from the versions the pack ships. None of them is bundled.
 	testRuntimeOnly(fabricApi.module("fabric-resource-loader-v1", project.fabric_api_version)) { transitive = false }
